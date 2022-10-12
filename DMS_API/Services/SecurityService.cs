@@ -16,7 +16,7 @@ namespace DMS_API.Services
     public static class SecurityService
     {
         public static readonly string ConnectionString =
-            "Server=10.55.76.100,1433;Database=ArchiveSystem_dev_db;Integrated Security=false;User ID=testuser; Password=1234;Connection Timeout=60";
+            "Server=10.55.101.20,1433;Database=DMS_DB;Integrated Security=false;User ID=dms; Password=dms;Connection Timeout=60";
 
         public static readonly string PasswordEncryptionKey =
             "MSSH24919831610";

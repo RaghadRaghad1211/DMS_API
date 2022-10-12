@@ -1,8 +1,10 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 
 namespace DMS_API.Controllers
 {
+
     [ApiController]
     [Route("[controller]")]
     public class WeatherForecastController : ControllerBase
@@ -19,10 +21,14 @@ namespace DMS_API.Controllers
             _logger = logger;
         }
 
+        
         [HttpGet(Name = "GetWeatherForecast")]
         public IEnumerable<WeatherForecast> Get()
         {
+            
             Log.Information("WeatherForecast is Running (hael)");
+            _logger.LogInformation("WeatherForecast is Running (hael) _logger");
+            
 
 
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
