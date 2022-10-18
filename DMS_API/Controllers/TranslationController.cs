@@ -21,7 +21,7 @@ namespace DMS_API.Controllers
 
             var ff = SecurityService.PasswordEnecrypt("$ystemAdm!n");// $ystemAdm!n
             //var ff1 = SecurityService.PasswordEnecrypt1("$ystemAdm!n");// $ystemAdm!n
-            //var ff2 = SecurityService.PasswordEnecrypt2("$ystemAdm!n");// $ystemAdm!n
+            //var ff2 = SecurityService.PasswordEnecrypt2("$ystemAdm!n");// $ystemAdm!n 
         }
 
         [AllowAnonymous]
