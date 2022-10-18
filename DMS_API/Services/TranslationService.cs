@@ -306,78 +306,82 @@ namespace DMS_API.Services
             }
         }
 
-        public async Task<ResponseModelView> EditTranslationWords1(TranslationModel Translation_M, string Lang)
-        {
-            try
-            {
-                string Mlang = GetMessageLanguages(Lang);
-                int check = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(Trid) FROM Main.Translation WHERE Trid={Translation_M.Trid}"));
-                if (check > 0)
-                {
-                    string update = $"UPDATE Main.Translation SET TrArName='{Translation_M.TrArName}', TrEnName='{Translation_M.TrEnName}', TrKrName='{Translation_M.TrKrName}'  WHERE Trid={Translation_M.Trid} ";
-                    var gg = dam.DoQuery(update);
+        #region MyRegion
+        //public async Task<ResponseModelView> EditTranslationWords1(TranslationModel Translation_M, string Lang)
+        //{
+        //    try
+        //    {
+        //        string Mlang = GetMessageLanguages(Lang);
+        //        int check = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(Trid) FROM Main.Translation WHERE Trid={Translation_M.Trid}"));
+        //        if (check > 0)
+        //        {
+        //            string update = $"UPDATE Main.Translation SET TrArName='{Translation_M.TrArName}', TrEnName='{Translation_M.TrEnName}', TrKrName='{Translation_M.TrKrName}'  WHERE Trid={Translation_M.Trid} ";
+        //            var gg = dam.DoQuery(update);
 
 
-                    string get = "SELECT Trid, TrArName, TrEnName, TrKrName FROM Main.Translation";
-                    dt = new DataTable();
-                    dt = await Task.Run(() => dam.FireDataTable(get));
-                    Translation_Mlist = new List<TranslationModel>();
-                    if (dt.Rows.Count > 0)
-                    {
-                        for (int i = 0; i < dt.Rows.Count; i++)
-                        {
-                            Translation_M = new TranslationModel
-                            {
-                                Trid = Convert.ToInt32(dt.Rows[i]["Trid"].ToString()),
-                                TrArName = dt.Rows[i]["TrArName"].ToString(),
-                                TrEnName = dt.Rows[i]["TrEnName"].ToString(),
-                                TrKrName = dt.Rows[i]["TrKrName"].ToString()
-                            };
-                            Translation_Mlist.Add(Translation_M);
-                        }
+        //            string get = "SELECT Trid, TrArName, TrEnName, TrKrName FROM Main.Translation";
+        //            dt = new DataTable();
+        //            dt = await Task.Run(() => dam.FireDataTable(get));
+        //            Translation_Mlist = new List<TranslationModel>();
+        //            if (dt.Rows.Count > 0)
+        //            {
+        //                for (int i = 0; i < dt.Rows.Count; i++)
+        //                {
+        //                    Translation_M = new TranslationModel
+        //                    {
+        //                        Trid = Convert.ToInt32(dt.Rows[i]["Trid"].ToString()),
+        //                        TrArName = dt.Rows[i]["TrArName"].ToString(),
+        //                        TrEnName = dt.Rows[i]["TrEnName"].ToString(),
+        //                        TrKrName = dt.Rows[i]["TrKrName"].ToString()
+        //                    };
+        //                    Translation_Mlist.Add(Translation_M);
+        //                }
 
-                        response_MV = new ResponseModelView
-                        {
-                            Success = true,
-                            Message = Mlang,// dam.FireSQL($"SELECT {Mlang} FROM Main.Messages WHERE MesEnName= 'english' "),
-                            Data = Translation_Mlist
-                        };
-                        return response_MV;
-                    }
-                    else
-                    {
-                        response_MV = new ResponseModelView
-                        {
-                            Success = false,
-                            Message = Mlang,//dam.FireSQL($"SELECT {Mlang} FROM Main.Messages WHERE MesEnName= 'english' "),
-                            Data = new List<object>()
-                        };
-                        return response_MV;
-                    }
-                }
-                else
-                {
-                    // not found id for this record
-                    response_MV = new ResponseModelView
-                    {
-                        Success = false,
-                        Message = Mlang,//dam.FireSQL($"SELECT {Mlang} FROM Main.Messages WHERE MesEnName= 'english' "),
-                        Data = new List<object>()
-                    };
-                    return response_MV;
-                }
-            }
-            catch (Exception ex)
-            {
-                response_MV = new ResponseModelView
-                {
-                    Success = false,
-                    Message = ex.Message,
-                    Data = new List<object>()
-                };
-                return response_MV;
-            }
-        }
+        //                response_MV = new ResponseModelView
+        //                {
+        //                    Success = true,
+        //                    Message = Mlang,// dam.FireSQL($"SELECT {Mlang} FROM Main.Messages WHERE MesEnName= 'english' "),
+        //                    Data = Translation_Mlist
+        //                };
+        //                return response_MV;
+        //            }
+        //            else
+        //            {
+        //                response_MV = new ResponseModelView
+        //                {
+        //                    Success = false,
+        //                    Message = Mlang,//dam.FireSQL($"SELECT {Mlang} FROM Main.Messages WHERE MesEnName= 'english' "),
+        //                    Data = new List<object>()
+        //                };
+        //                return response_MV;
+        //            }
+        //        }
+        //        else
+        //        {
+        //            // not found id for this record
+        //            response_MV = new ResponseModelView
+        //            {
+        //                Success = false,
+        //                Message = Mlang,//dam.FireSQL($"SELECT {Mlang} FROM Main.Messages WHERE MesEnName= 'english' "),
+        //                Data = new List<object>()
+        //            };
+        //            return response_MV;
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        response_MV = new ResponseModelView
+        //        {
+        //            Success = false,
+        //            Message = ex.Message,
+        //            Data = new List<object>()
+        //        };
+        //        return response_MV;
+        //    }
+        //}
+        #endregion
+
+
         #endregion
 
         #region Methods

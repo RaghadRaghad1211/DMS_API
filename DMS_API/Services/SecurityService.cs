@@ -76,8 +76,12 @@ namespace DMS_API.Services
         public static string PasswordEnecrypt(string pass)
         {
             byte[] bytes = Encoding.UTF8.GetBytes(pass);//Encoding.UTF8.GetBytes
+            byte[] src = Encoding.UTF8.GetBytes(PasswordSaltKey);
+            byte[] dst = new byte[src.Length + bytes.Length];
+            Buffer.BlockCopy(src, 0, dst, 0, src.Length);
+            Buffer.BlockCopy(bytes, 0, dst, src.Length, bytes.Length);
             SHA256Managed hashstring = new SHA256Managed();
-            byte[] hash = hashstring.ComputeHash(bytes);
+            byte[] hash = hashstring.ComputeHash(dst);
             string hashString = string.Empty;
             foreach (byte x in hash)
             {
@@ -86,17 +90,35 @@ namespace DMS_API.Services
             return hashString;
         }
 
-        public static string PasswordEnecrypt1(string pass)
-        {
-            byte[] bytes = Encoding.Unicode.GetBytes(pass);
-            byte[] src = Encoding.Unicode.GetBytes(PasswordSaltKey);
-            byte[] dst = new byte[src.Length + bytes.Length];
-            Buffer.BlockCopy(src, 0, dst, 0, src.Length);
-            Buffer.BlockCopy(bytes, 0, dst, src.Length, bytes.Length);
-            HashAlgorithm algorithm = HashAlgorithm.Create("SHA1");
-            byte[] inArray = algorithm.ComputeHash(dst);
-            return Convert.ToBase64String(inArray);
-        }     
+
+
+        #region Password    
+        //public static string PasswordEnecrypt1(string pass)
+        //{
+        //    byte[] bytes = Encoding.UTF8.GetBytes(pass);
+        //    byte[] src = Encoding.UTF8.GetBytes(PasswordSaltKey);
+        //    byte[] dst = new byte[src.Length + bytes.Length];
+        //    Buffer.BlockCopy(src, 0, dst, 0, src.Length);
+        //    Buffer.BlockCopy(bytes, 0, dst, src.Length, bytes.Length);
+        //    HashAlgorithm algorithm = HashAlgorithm.Create("SHA1");
+        //    byte[] inArray = algorithm.ComputeHash(dst);
+        //    return Convert.ToBase64String(inArray);
+        //}
+
+        //public static string PasswordEnecrypt(string pass)
+        //{
+        //    byte[] bytes = Encoding.UTF8.GetBytes(pass);//Encoding.UTF8.GetBytes
+        //    SHA256Managed hashstring = new SHA256Managed();
+        //    byte[] hash = hashstring.ComputeHash(bytes);
+        //    string hashString = string.Empty;
+        //    foreach (byte x in hash)
+        //    {
+        //        hashString += String.Format("{0:x2}", x);
+        //    }
+        //    return hashString;
+        //}
+
+        #endregion
     }
 
     public class JwtToken
