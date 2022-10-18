@@ -19,7 +19,10 @@ namespace DMS_API.Services
         public static readonly string ConnectionString =
             "Server=10.55.101.20,1433;Database=DMS_DB;Integrated Security=false;User ID=dms; Password=dms;Connection Timeout=60";
 
-        public static readonly string PasswordEncryptionKey =
+        //public static readonly string PasswordEncryptionKey =
+        //    "MSSH24919831610";
+
+        public static readonly string PasswordSaltKey =
             "MSSH24919831610";
 
         public static readonly string JwtKey =
@@ -82,6 +85,18 @@ namespace DMS_API.Services
             }
             return hashString;
         }
+
+        public static string PasswordEnecrypt1(string pass)
+        {
+            byte[] bytes = Encoding.Unicode.GetBytes(pass);
+            byte[] src = Encoding.Unicode.GetBytes(PasswordSaltKey);
+            byte[] dst = new byte[src.Length + bytes.Length];
+            Buffer.BlockCopy(src, 0, dst, 0, src.Length);
+            Buffer.BlockCopy(bytes, 0, dst, src.Length, bytes.Length);
+            HashAlgorithm algorithm = HashAlgorithm.Create("SHA1");
+            byte[] inArray = algorithm.ComputeHash(dst);
+            return Convert.ToBase64String(inArray);
+        }     
     }
 
     public class JwtToken

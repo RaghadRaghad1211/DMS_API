@@ -260,7 +260,7 @@ namespace DMS_API.Services
                 string get = $"SELECT DISTINCT  TrEnName, {Mlang} AS 'Word' FROM Main.Translation";
                 dt = new DataTable();
                 dt = await Task.Run(() => dam.FireDataTable(get));
-                Dictionary<string, string> dict = new();
+                Dictionary<string, string> dict1 = new();
                 //dict[Lang] = Lang;
                 // List<TranslationPageModel> Translation_Mlist = new List<TranslationModel> ();
                 if (dt.Rows.Count > 0)
@@ -268,15 +268,18 @@ namespace DMS_API.Services
                     for (int i = 0; i < dt.Rows.Count; i++)
                     {
 
-                        dict.Add(dt.Rows[i]["TrEnName"].ToString(), dt.Rows[i]["Word"].ToString());
+                        dict1.Add(dt.Rows[i]["TrEnName"].ToString(), dt.Rows[i]["Word"].ToString());
 
                     }
+
+                    Dictionary<string, Dictionary<string, string>> dict2 = new();
+                    dict2.Add(Lang, dict1);
 
                     response_MV = new ResponseModelView
                     {
                         Success = true,
                         Message = Lang,// dam.FireSQL($"SELECT {Mlang} FROM Main.Messages WHERE MesEnName= 'english' "),
-                        Data = dict
+                        Data = dict2
                     };
                     return response_MV;
                 }
