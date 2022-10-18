@@ -168,40 +168,47 @@ namespace ArchiveAPI.Services
         /// <returns> Return DataSet </returns>
         public DataSet DoQuery(string Query, params string[] ParameterValue)
         {
-            int noOfParam = 0;
-            Query = Query.Trim();
-            SqlCommand sqlCommand = new SqlCommand()
+            try
             {
-                Connection = this.CON,
-                CommandText = Query
-            };
-            this.CMD = sqlCommand;
-            for (int i = 0; i < ParameterValue.Length; i++)
-            {
-                this.CMD.Parameters.AddWithValue(this.Getparam(Query, ref noOfParam), ParameterValue[i]);
-            }
-            Query = Query.TrimStart(new char[0]);
+                int noOfParam = 0;
+                Query = Query.Trim();
+                SqlCommand sqlCommand = new SqlCommand()
+                {
+                    Connection = this.CON,
+                    CommandText = Query
+                };
+                this.CMD = sqlCommand;
+                for (int i = 0; i < ParameterValue.Length; i++)
+                {
+                    this.CMD.Parameters.AddWithValue(this.Getparam(Query, ref noOfParam), ParameterValue[i]);
+                }
+                Query = Query.TrimStart(new char[0]);
 
-            if (this.CON.State == ConnectionState.Closed)
-            {
-                this.CON.Open();
+                if (this.CON.State == ConnectionState.Closed)
+                {
+                    this.CON.Open();
+                }
+                if (Query.Substring(0, 6).ToUpper() == "SELECT")
+                {
+                    SqlDataAdapter db = new SqlDataAdapter(this.CMD);
+                    DataSet ds = new DataSet();
+                    db.Fill(ds);
+                    this.CON.Close();
+                    this.DATA_SET = ds;
+                }
+                else
+                {
+                    this.CMD.ExecuteNonQuery();
+                    this.CMD.Parameters.Clear();
+                    this.CON.Close();
+                    this.DATA_SET = null;
+                }
+                return this.DATA_SET;
             }
-            if (Query.Substring(0, 6).ToUpper() == "SELECT")
+            catch (Exception)
             {
-                SqlDataAdapter db = new SqlDataAdapter(this.CMD);
-                DataSet ds = new DataSet();
-                db.Fill(ds);
-                this.CON.Close();
-                this.DATA_SET = ds;
+                return null;
             }
-            else
-            {
-                this.CMD.ExecuteNonQuery();
-                this.CMD.Parameters.Clear();
-                this.CON.Close();
-                this.DATA_SET = null;
-            }
-            return this.DATA_SET;
         }
 
         /// <summary>
@@ -214,35 +221,42 @@ namespace ArchiveAPI.Services
         /// <returns> Return String </returns>
         public string DoQueryAndPutOutValue(string Query, string @Out, params string[] ParameterValue)
         {
-            int noOfParam = 0;
-            string OutValue = "";
-            Query = Query.Trim();
-            SqlCommand sqlCommand = new SqlCommand()
+            try
             {
-                Connection = this.CON,
-                CommandText = Query
-            };
-            this.CMD = sqlCommand;
-            for (int i = 0; i < ParameterValue.Length; i++)
-            {
-                this.CMD.Parameters.AddWithValue(this.Getparam(Query, ref noOfParam), ParameterValue[i]);
-            }
-            Query = Query.TrimStart(new char[0]);
-            if (this.CON.State == ConnectionState.Closed)
-            {
-                this.CON.Open();
-            }
-            if (Query.Substring(0, 6).ToUpper() != "SELECT")
-            {
-                SqlDataReader myReader = this.CMD.ExecuteReader();
-                while (myReader.Read())
+                int noOfParam = 0;
+                string OutValue = "";
+                Query = Query.Trim();
+                SqlCommand sqlCommand = new SqlCommand()
                 {
-                    OutValue = myReader[@Out].ToString();
+                    Connection = this.CON,
+                    CommandText = Query
+                };
+                this.CMD = sqlCommand;
+                for (int i = 0; i < ParameterValue.Length; i++)
+                {
+                    this.CMD.Parameters.AddWithValue(this.Getparam(Query, ref noOfParam), ParameterValue[i]);
                 }
-                myReader.Close();
-            }
+                Query = Query.TrimStart(new char[0]);
+                if (this.CON.State == ConnectionState.Closed)
+                {
+                    this.CON.Open();
+                }
+                if (Query.Substring(0, 6).ToUpper() != "SELECT")
+                {
+                    SqlDataReader myReader = this.CMD.ExecuteReader();
+                    while (myReader.Read())
+                    {
+                        OutValue = myReader[@Out].ToString();
+                    }
+                    myReader.Close();
+                }
 
-            return OutValue;
+                return OutValue;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
         /// <summary>
@@ -255,31 +269,38 @@ namespace ArchiveAPI.Services
         /// <returns> Return String </returns>
         public string DoStoredProceAndPutOutValue(string StoredProcedure, string @Out, params string[] ParameterValue)
         {
-            int noOfParam = 0;
-            string OutValue = "";
-            StoredProcedure = StoredProcedure.Trim();
-            this.CMD = new SqlCommand(StoredProcedure, CON);
-            CMD.CommandType = CommandType.StoredProcedure;
-            for (int i = 0; i < ParameterValue.Length; i++)
+            try
             {
-                this.CMD.Parameters.AddWithValue(this.Getparam(StoredProcedure, ref noOfParam), ParameterValue[i]);
-            }
-            StoredProcedure = StoredProcedure.TrimStart(new char[0]);
-            if (this.CON.State == ConnectionState.Closed)
-            {
-                this.CON.Open();
-            }
-            if (StoredProcedure.Substring(0, 6).ToUpper() != "SELECT")
-            {
-                SqlDataReader myReader = this.CMD.ExecuteReader();
-                while (myReader.Read())
+                int noOfParam = 0;
+                string OutValue = "";
+                StoredProcedure = StoredProcedure.Trim();
+                this.CMD = new SqlCommand(StoredProcedure, CON);
+                CMD.CommandType = CommandType.StoredProcedure;
+                for (int i = 0; i < ParameterValue.Length; i++)
                 {
-                    OutValue = myReader[@Out].ToString();
+                    this.CMD.Parameters.AddWithValue(this.Getparam(StoredProcedure, ref noOfParam), ParameterValue[i]);
                 }
-                myReader.Close();
-            }
+                StoredProcedure = StoredProcedure.TrimStart(new char[0]);
+                if (this.CON.State == ConnectionState.Closed)
+                {
+                    this.CON.Open();
+                }
+                if (StoredProcedure.Substring(0, 6).ToUpper() != "SELECT")
+                {
+                    SqlDataReader myReader = this.CMD.ExecuteReader();
+                    while (myReader.Read())
+                    {
+                        OutValue = myReader[@Out].ToString();
+                    }
+                    myReader.Close();
+                }
 
-            return OutValue;
+                return OutValue;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
 
         }
 
@@ -290,25 +311,32 @@ namespace ArchiveAPI.Services
         /// <returns> Return DataTable </returns>
         public DataTable FireDataTable(string Query)
         {
-            DataTable dt = new DataTable();
-            if (this.CON.State == ConnectionState.Closed)
+            try
             {
-                this.CON.Open();
+                DataTable dt = new DataTable();
+                if (this.CON.State == ConnectionState.Closed)
+                {
+                    this.CON.Open();
+                }
+                SqlCommand sqlCommand = new SqlCommand()
+                {
+                    Connection = this.CON,
+                    CommandText = Query
+                };
+                this.CMD = sqlCommand;
+                this.CMD.CommandTimeout = this.CON.ConnectionTimeout;
+                this.CMD.CommandType = CommandType.Text;
+                this.CMD.CommandText = Query;
+                this.CMD.CommandTimeout = this.CON.ConnectionTimeout;
+                this.SQL_DA.SelectCommand = this.CMD;
+                this.SQL_DA.Fill(dt);
+                this.CON.Close();
+                return dt;
             }
-            SqlCommand sqlCommand = new SqlCommand()
+            catch (Exception)
             {
-                Connection = this.CON,
-                CommandText = Query
-            };
-            this.CMD = sqlCommand;
-            this.CMD.CommandTimeout = this.CON.ConnectionTimeout;
-            this.CMD.CommandType = CommandType.Text;
-            this.CMD.CommandText = Query;
-            this.CMD.CommandTimeout = this.CON.ConnectionTimeout;
-            this.SQL_DA.SelectCommand = this.CMD;
-            this.SQL_DA.Fill(dt);
-            this.CON.Close();
-            return dt;
+                return null;
+            }
         }
 
         /// <summary>
@@ -318,25 +346,32 @@ namespace ArchiveAPI.Services
         /// <returns> Return DataRow </returns>
         public DataRow FireDataRow(string Query)
         {
-            DataTable dt = new DataTable();
-            if (this.CON.State == ConnectionState.Closed)
+            try
             {
-                this.CON.Open();
+                DataTable dt = new DataTable();
+                if (this.CON.State == ConnectionState.Closed)
+                {
+                    this.CON.Open();
+                }
+                SqlCommand sqlCommand = new SqlCommand()
+                {
+                    Connection = this.CON,
+                    CommandText = Query
+                };
+                this.CMD = sqlCommand;
+                this.CMD.CommandTimeout = this.CON.ConnectionTimeout;
+                this.CMD.CommandType = CommandType.Text;
+                this.CMD.CommandText = Query;
+                this.CMD.CommandTimeout = this.CON.ConnectionTimeout;
+                this.SQL_DA.SelectCommand = this.CMD;
+                this.SQL_DA.Fill(dt);
+                this.CON.Close();
+                return dt.Rows[0];
             }
-            SqlCommand sqlCommand = new SqlCommand()
+            catch (Exception)
             {
-                Connection = this.CON,
-                CommandText = Query
-            };
-            this.CMD = sqlCommand;
-            this.CMD.CommandTimeout = this.CON.ConnectionTimeout;
-            this.CMD.CommandType = CommandType.Text;
-            this.CMD.CommandText = Query;
-            this.CMD.CommandTimeout = this.CON.ConnectionTimeout;
-            this.SQL_DA.SelectCommand = this.CMD;
-            this.SQL_DA.Fill(dt);
-            this.CON.Close();
-            return dt.Rows[0];
+                return null;
+            }
         }
 
         /// <summary>
@@ -346,20 +381,27 @@ namespace ArchiveAPI.Services
         /// <returns> Return String </returns>
         public string FireSQL(string Query)
         {
-            string str;
-            if (this.CON.State == ConnectionState.Closed)
+            try
             {
-                this.CON.Open();
+                string str;
+                if (this.CON.State == ConnectionState.Closed)
+                {
+                    this.CON.Open();
+                }
+                SqlCommand sqlCommand = new SqlCommand()
+                {
+                    Connection = this.CON,
+                    CommandText = Query
+                };
+                this.CMD = sqlCommand;
+                this.CMD.CommandTimeout = this.CON.ConnectionTimeout;
+                str = (this.CMD.ExecuteScalar() == null ? "" : this.CMD.ExecuteScalar().ToString());
+                return str;
             }
-            SqlCommand sqlCommand = new SqlCommand()
+            catch (Exception)
             {
-                Connection = this.CON,
-                CommandText = Query
-            };
-            this.CMD = sqlCommand;
-            this.CMD.CommandTimeout = this.CON.ConnectionTimeout;
-            str = (this.CMD.ExecuteScalar() == null ? "" : this.CMD.ExecuteScalar().ToString());
-            return str;
+                return null;
+            }
         }
 
         /// <summary>
@@ -459,46 +501,60 @@ namespace ArchiveAPI.Services
         /// <returns> Return String </returns>
         public string CheckText(string YourTextForCheck)
         {
-            string Value = YourTextForCheck;
-
-            foreach (char C in Value)
+            try
             {
-                if (C == 'أ' || C == 'إ' || C == 'آ')
+                string Value = YourTextForCheck;
+
+                foreach (char C in Value)
                 {
-                    Value = Value.Replace(C, 'ا');
+                    if (C == 'أ' || C == 'إ' || C == 'آ')
+                    {
+                        Value = Value.Replace(C, 'ا');
+                    }
                 }
+                return Value;
             }
-            return Value;
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
         ///////////////////////////////////// Private Methods ////////////////////////////////////////        
         private string Getparam(string query, ref int y)
         {
-            string param = "";
-            int no = query.IndexOf('@', y);
-            int space = (query.IndexOf(" ", no) < 0 ? query.Length : query.IndexOf(" ", no));
-            int comma = (query.IndexOf(",", no) < 0 ? query.Length : query.IndexOf(",", no));
-            int bracket = (query.IndexOf(")", no) < 0 ? query.Length : query.IndexOf(")", no));
-            if (!(space > comma ? true : space > bracket))
+            try
             {
-                param = query.Substring(no, space - no);
-                y = query.IndexOf(" ", no + 1);
+                string param = "";
+                int no = query.IndexOf('@', y);
+                int space = (query.IndexOf(" ", no) < 0 ? query.Length : query.IndexOf(" ", no));
+                int comma = (query.IndexOf(",", no) < 0 ? query.Length : query.IndexOf(",", no));
+                int bracket = (query.IndexOf(")", no) < 0 ? query.Length : query.IndexOf(")", no));
+                if (!(space > comma ? true : space > bracket))
+                {
+                    param = query.Substring(no, space - no);
+                    y = query.IndexOf(" ", no + 1);
+                }
+                else if (!(comma > space ? true : comma > bracket))
+                {
+                    param = query.Substring(no, comma - no);
+                    y = query.IndexOf(",", no + 1);
+                }
+                else if ((bracket > comma ? true : bracket > space))
+                {
+                    param = query.Substring(no, query.Length - no);
+                }
+                else
+                {
+                    param = query.Substring(no, bracket - no);
+                    y = query.IndexOf(")", no + 1);
+                }
+                return param;
             }
-            else if (!(comma > space ? true : comma > bracket))
+            catch (Exception)
             {
-                param = query.Substring(no, comma - no);
-                y = query.IndexOf(",", no + 1);
+                return null;
             }
-            else if ((bracket > comma ? true : bracket > space))
-            {
-                param = query.Substring(no, query.Length - no);
-            }
-            else
-            {
-                param = query.Substring(no, bracket - no);
-                y = query.IndexOf(")", no + 1);
-            }
-            return param;
         }
     }
 }
