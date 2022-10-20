@@ -13,7 +13,6 @@ namespace DMS_API.Services
         private readonly DataAccessService dam;
         private DataTable dt { get; set; }
         private TranslationModel Translation_M { get; set; }
-        private TranslationModelView translation_MV { get; set; }
         private List<TranslationModel> Translation_Mlist { get; set; }
         private ResponseModelView response_MV { get; set; }
 
@@ -33,7 +32,7 @@ namespace DMS_API.Services
             {
                 string Mlang = GetMessageLanguages(Lang);
 
-                string get = "SELECT Trid, TrArName, TrEnName, TrKrName FROM Main.Translation";
+                string get = "SELECT Trid, TrKey, TrArName, TrEnName, TrKrName FROM Main.Translation";
                 dt = new DataTable();
                 dt = await Task.Run(() => dam.FireDataTable(get));
                 Translation_Mlist = new List<TranslationModel>();
@@ -44,6 +43,7 @@ namespace DMS_API.Services
                         Translation_M = new TranslationModel
                         {
                             Trid = Convert.ToInt32(dt.Rows[i]["Trid"].ToString()),
+                            TrKey = dt.Rows[i]["TrKey"].ToString(),
                             TrArName = dt.Rows[i]["TrArName"].ToString(),
                             TrEnName = dt.Rows[i]["TrEnName"].ToString(),
                             TrKrName = dt.Rows[i]["TrKrName"].ToString()
@@ -88,15 +88,15 @@ namespace DMS_API.Services
             {
                 string Mlang = GetMessageLanguages(Lang);
 
-                string get = $"SELECT Trid, TrArName, TrEnName, TrKrName FROM Main.Translation WHERE Trid={id}";
+                string get = $"SELECT Trid, TrKey, TrArName, TrEnName, TrKrName FROM Main.Translation WHERE Trid={id}";
                 dt = new DataTable();
                 dt = await Task.Run(() => dam.FireDataTable(get));
-                // Translation_Mlist = new List<TranslationModel>();
                 if (dt.Rows.Count > 0)
                 {
                     Translation_M = new TranslationModel
                     {
                         Trid = Convert.ToInt32(dt.Rows[0]["Trid"].ToString()),
+                        TrKey = dt.Rows[0]["TrKey"].ToString(),
                         TrArName = dt.Rows[0]["TrArName"].ToString(),
                         TrEnName = dt.Rows[0]["TrEnName"].ToString(),
                         TrKrName = dt.Rows[0]["TrKrName"].ToString()
@@ -139,13 +139,13 @@ namespace DMS_API.Services
             {
                 string Mlang = GetMessageLanguages(Lang);
 
-                int checkDeblicate = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(TrEnName) FROM Main.Translation WHERE TrEnName = '{Translation_M.TrEnName}' "));
+                int checkDeblicate = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(TrKey) FROM Main.Translation WHERE TrKey = '{Translation_M.TrKey}' "));
                 if (checkDeblicate == 0)
                 {
-                    string insert = "INSERT INTO Main.Translation (TrArName, TrEnName, TrKrName) VALUES(@TrArName, @TrEnName, @TrKrName) ";
-                    dam.DoQuery(insert, Translation_M.TrArName, Translation_M.TrEnName, Translation_M.TrKrName);
+                    string insert = "INSERT INTO Main.Translation (TrKey, TrArName, TrEnName, TrKrName) VALUES(@TrKey, @TrArName, @TrEnName, @TrKrName) ";
+                    dam.DoQuery(insert, Translation_M.TrKey, Translation_M.TrArName, Translation_M.TrEnName, Translation_M.TrKrName);
 
-                    string get = "SELECT Trid, TrArName, TrEnName, TrKrName FROM Main.Translation";
+                    string get = "SELECT Trid, TrKey, TrArName, TrEnName, TrKrName FROM Main.Translation";
                     dt = new DataTable();
                     dt = await Task.Run(() => dam.FireDataTable(get));
                     Translation_Mlist = new List<TranslationModel>();
@@ -156,6 +156,7 @@ namespace DMS_API.Services
                             Translation_M = new TranslationModel
                             {
                                 Trid = Convert.ToInt32(dt.Rows[i]["Trid"].ToString()),
+                                TrKey = dt.Rows[0]["TrKey"].ToString(),
                                 TrArName = dt.Rows[i]["TrArName"].ToString(),
                                 TrEnName = dt.Rows[i]["TrEnName"].ToString(),
                                 TrKrName = dt.Rows[i]["TrKrName"].ToString()
@@ -257,7 +258,7 @@ namespace DMS_API.Services
             {
                 string Mlang = GetTranslationLanguages(Lang);
 
-                string get = $"SELECT DISTINCT  TrEnName, {Mlang} AS 'Word' FROM Main.Translation";
+                string get = $"SELECT DISTINCT  TrKey, {Mlang} AS 'Word' FROM Main.Translation";
                 dt = new DataTable();
                 dt = await Task.Run(() => dam.FireDataTable(get));
                 Dictionary<string, string> dict1 = new();
@@ -268,12 +269,12 @@ namespace DMS_API.Services
                     for (int i = 0; i < dt.Rows.Count; i++)
                     {
 
-                        dict1.Add(dt.Rows[i]["TrEnName"].ToString(), dt.Rows[i]["Word"].ToString());
+                        dict1.Add(dt.Rows[i]["TrKey"].ToString(), dt.Rows[i]["Word"].ToString());
 
                     }
 
                     Dictionary<string, Dictionary<string, string>> dict2 = new();
-                    dict2.Add(Lang, dict1);
+                    dict2.Add("Trans", dict1);
 
                     response_MV = new ResponseModelView
                     {
