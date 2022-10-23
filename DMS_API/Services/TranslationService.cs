@@ -26,13 +26,24 @@ namespace DMS_API.Services
         #endregion
 
         #region CURD Functions
-        public async Task<ResponseModelView> GetTranslationList(string Lang)
+        public async Task<ResponseModelView> GetTranslationList(RequestPaginationModelView Pagination_MV, string Lang)
         {
             try
             {
                 string Mlang = GetMessageLanguages(Lang);
+                //var msgA = MessageService.MsgDictionary["Ar"]["InvalidUsername"];
+                int _PageNumber = Pagination_MV.PageNumber == 0 ? 1 : Pagination_MV.PageNumber;
+                int _PageRows = Pagination_MV.PageRows == 0 ? 1 : Pagination_MV.PageRows;
 
-                string get = "SELECT Trid, TrKey, TrArName, TrEnName, TrKrName FROM Main.Translation";
+                int CurrentPage = _PageNumber;
+                //int TotalRows = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) AS TotalRows FROM Main.Translation"));
+                //int MaxPage = Convert.ToInt32(dam.FireSQL($"SELECT CEILING(COUNT(*) / CAST({_PageRows} AS FLOAT)) AS MaxPage FROM Main.Translation"));
+
+                var MaxTotal = dam.FireDataTable($"SELECT COUNT(*) AS TotalRows, CEILING(COUNT(*) / CAST({_PageRows} AS FLOAT)) AS MaxPage FROM Main.Translation");
+
+                string get = $"SELECT Trid, TrKey, TrArName, TrEnName, TrKrName FROM Main.Translation ORDER BY TrId " +
+                             $"OFFSET ({_PageNumber}-1)*{_PageRows} ROWS " +
+                             $"FETCH NEXT {_PageRows} ROWS ONLY ";
                 dt = new DataTable();
                 dt = await Task.Run(() => dam.FireDataTable(get));
                 Translation_Mlist = new List<TranslationModel>();
@@ -55,7 +66,7 @@ namespace DMS_API.Services
                     {
                         Success = true,
                         Message = Mlang,// dam.FireSQL($"SELECT {Mlang} FROM Main.Messages WHERE MesEnName= 'english' "),
-                        Data = Translation_Mlist
+                        Data = new { TotalRows = MaxTotal.Rows[0]["TotalRows"], MaxPage = MaxTotal.Rows[0]["MaxPage"], CurrentPage, data = Translation_Mlist }
                     };
                     return response_MV;
                 }
@@ -86,6 +97,7 @@ namespace DMS_API.Services
         {
             try
             {
+
                 string Mlang = GetMessageLanguages(Lang);
 
                 string get = $"SELECT Trid, TrKey, TrArName, TrEnName, TrKrName FROM Main.Translation WHERE Trid={id}";
@@ -176,7 +188,7 @@ namespace DMS_API.Services
                     {
                         response_MV = new ResponseModelView
                         {
-                            
+
                             Success = false,
                             Message = Mlang,//dam.FireSQL($"SELECT {Mlang} FROM Main.Messages WHERE MesEnName= 'english' "),
                             Data = new List<object>()
@@ -231,6 +243,72 @@ namespace DMS_API.Services
                 else
                 {
                     // not found id for this record
+                    response_MV = new ResponseModelView
+                    {
+                        Success = false,
+                        Message = Mlang,//dam.FireSQL($"SELECT {Mlang} FROM Main.Messages WHERE MesEnName= 'english' "),
+                        Data = new List<object>()
+                    };
+                    return response_MV;
+                }
+            }
+            catch (Exception ex)
+            {
+                response_MV = new ResponseModelView
+                {
+                    Success = false,
+                    Message = ex.Message,
+                    Data = new List<object>()
+                };
+                return response_MV;
+            }
+        }
+
+        public async Task<ResponseModelView> SearchTranslationWords(RequestSearchTranslationModelView SearchTranslation_MV, string Lang)
+        {
+            try
+            {
+                string Mlang = GetMessageLanguages(Lang);
+                string ColumnSearch = GetTranslationSearchColumn(SearchTranslation_MV.KeySearch);
+                //var msgA = MessageService.MsgDictionary["Ar"]["InvalidUsername"];
+                int _PageNumber = SearchTranslation_MV.PageNumber == 0 ? 1 : SearchTranslation_MV.PageNumber;
+                int _PageRows = SearchTranslation_MV.PageRows == 0 ? 1 : SearchTranslation_MV.PageRows;
+                int CurrentPage = _PageNumber;
+                var MaxTotal = dam.FireDataTable($"SELECT COUNT(*) AS TotalRows, CEILING(COUNT(*) / CAST({_PageRows} AS FLOAT)) AS MaxPage " +
+                                                 $"FROM Main.Translation WHERE {ColumnSearch} = '{SearchTranslation_MV.WordSearch}' ");
+
+                string get = $"SELECT Trid, TrKey, TrArName, TrEnName, TrKrName FROM Main.Translation " +
+                             $"WHERE {ColumnSearch} = '{SearchTranslation_MV.WordSearch}' ORDER BY TrId " +
+                             $"OFFSET ({_PageNumber}-1)*{_PageRows} ROWS " +
+                             $"FETCH NEXT {_PageRows} ROWS ONLY ";
+                dt = new DataTable();
+                dt = await Task.Run(() => dam.FireDataTable(get));
+                Translation_Mlist = new List<TranslationModel>();
+                if (dt.Rows.Count > 0)
+                {
+                    for (int i = 0; i < dt.Rows.Count; i++)
+                    {
+                        Translation_M = new TranslationModel
+                        {
+                            Trid = Convert.ToInt32(dt.Rows[i]["Trid"].ToString()),
+                            TrKey = dt.Rows[i]["TrKey"].ToString(),
+                            TrArName = dt.Rows[i]["TrArName"].ToString(),
+                            TrEnName = dt.Rows[i]["TrEnName"].ToString(),
+                            TrKrName = dt.Rows[i]["TrKrName"].ToString()
+                        };
+                        Translation_Mlist.Add(Translation_M);
+                    }
+
+                    response_MV = new ResponseModelView
+                    {
+                        Success = true,
+                        Message = Mlang,// dam.FireSQL($"SELECT {Mlang} FROM Main.Messages WHERE MesEnName= 'english' "),
+                        Data = new { TotalRows = MaxTotal.Rows[0]["TotalRows"], MaxPage = MaxTotal.Rows[0]["MaxPage"], CurrentPage, data = Translation_Mlist }
+                    };
+                    return response_MV;
+                }
+                else
+                {
                     response_MV = new ResponseModelView
                     {
                         Success = false,
@@ -406,7 +484,6 @@ namespace DMS_API.Services
             }
             return Mlang;
         }
-
         private string GetTranslationLanguages(string Lang)
         {
             string Mlang = "TrArName";
@@ -423,6 +500,29 @@ namespace DMS_API.Services
                     break;
                 default:
                     Mlang = "TrArName";
+                    break;
+            }
+            return Mlang;
+        }
+        private string GetTranslationSearchColumn(string Lang)
+        {
+            string Mlang = "TrKey";
+            switch (Lang.ToLower())
+            {
+                case "ar":
+                    Mlang = "TrArName";
+                    break;
+                case "en":
+                    Mlang = "TrEnName";
+                    break;
+                case "kr":
+                    Mlang = "TrKrName";
+                    break;
+                case "key":
+                    Mlang = "TrKey";
+                    break;
+                default:
+                    Mlang = "TrKey";
                     break;
             }
             return Mlang;
