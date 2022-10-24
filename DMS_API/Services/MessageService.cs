@@ -41,9 +41,9 @@ namespace DMS_API.Services
         public static readonly string Active = "Active";
         public static readonly string NotActive = "NotActive";
         public static readonly string IsEmpty = "IsEmpty";
-        public static readonly string IsInt = "IsEmpty";
-        public static readonly string IsDate = "IsEmpty";
-        //public static readonly string IsEmpty = "IsEmpty";
+        public static readonly string IsInt = "IsInt";
+        public static readonly string IsDate = "IsInt";
+        public static readonly string NoData = "NoData";
 
 
 
@@ -57,17 +57,17 @@ namespace DMS_API.Services
 
         public static readonly string UserNotExist = "UserNotExist";
         public static readonly string UserIsDeleted = "UserIsDeleted";
-        
-        
+
+
         public static readonly string OldPasswordNotCorrect = "OldPasswordNotCorrect";
         public static readonly string VerificationCodeNotCorrect = "VerificationCodeNotCorrect";
         public static readonly string UsernameOrEmailAlreadyExist = "UsernameOrEmailAlreadyExist";
         public static readonly string EmailOrVerificationCodeNotCorrect = "EmailOrVerificationCodeNotCorrect";
 
-        
+
         public static readonly string RegisterFaild = "RegisterFaild";
         public static readonly string VerificationFaild = "VerificationFaild";
-        
+
         public static readonly string ForgetPasswordFaild = "ForgetPasswordFaild";
         public static readonly string FindUserProfileFaild = "FindUserProfileFaild";
         public static readonly string GetUserAccountsFaild = "GetUserAccountsFaild";
@@ -79,49 +79,31 @@ namespace DMS_API.Services
         public static readonly Dictionary<string, Dictionary<string, string>> MsgDictionary = new()
         {
             {
-                "Ar",
+                "ar",
                 new Dictionary<string, string>()
                 {
+                    {NoData,"لا توجد بيانات" },
+                    {UsernameMustEnter,"يجب ادخال اسم المستخدم" },
+                    {PasswordMustEnter,"يجب ادخال اسم كلمة المرور" },
+                    {Password8Characters, "يجب ادخال 8 احرف او اكثر" },
+                    {GetSuccess,"تم جلب البيانات بشكل صحيح" },
+                    { LoginFaild, "فشل بالدخول" },
+                    { UserNotActive, "المستخدم غير فعال" },
+
+
+
+
                     { InvalidUsername, "اسم مستخدم غير صالح" },
                     { InvalidPassword, "كلمة المرور غير صالحة" },
                     { InvalidEmail, "" },
-                    { Password8Characters, "يجب ادخال 8 احرف او اكثر" },
                     { PasswordIsStrength, "كلمة المرور قوية" },
                     { PasswordNotStrength, "كلمة المرور ضعيفة" },
                     { UsernameOrPasswordNotCorrect, "" },
-                    { LoginFaild, "فشل بالدخول" },
+                    
                     { RegisterFaild, "" },
                     { UserIsDeleted, "" },
                     { UsernameOrEmailAlreadyExist, "" },
-                    { UserNotActive, "" },
-                    { VerificationFaild, "" },
-                    { InvalidVerificationCode, "" },
-                    { EmailOrVerificationCodeNotCorrect, "" },
-                    { InvalidIdentity, "" },
-                    { UserNotExist, "" },
-                    { ForgetPasswordFaild, "" },
-                    { FindUserProfileFaild, "" },
-                    { ChangePasswordFaild, "" },
-                    { OldPasswordNotCorrect, "" },
-                    { VerificationCodeNotCorrect, "" }                    
-                }
-            },
-            {
-                "En",
-                new Dictionary<string, string>()
-                {
-                    { InvalidUsername, "Invalid Username" },
-                    { InvalidPassword, "Invalid Password" },
-                    { InvalidEmail, "" },
-                    { Password8Characters, "Must enter 8 characters or more" },
-                    { PasswordIsStrength, "Password is strong" },
-                    { PasswordNotStrength, "Password is weak" },
-                    { UsernameOrPasswordNotCorrect, "" },
-                    { LoginFaild, "Login Faild" },
-                    { RegisterFaild, "" },
-                    { UserIsDeleted, "" },
-                    { UsernameOrEmailAlreadyExist, "" },
-                    { UserNotActive, "" },
+                    
                     { VerificationFaild, "" },
                     { InvalidVerificationCode, "" },
                     { EmailOrVerificationCodeNotCorrect, "" },
@@ -132,6 +114,44 @@ namespace DMS_API.Services
                     { ChangePasswordFaild, "" },
                     { OldPasswordNotCorrect, "" },
                     { VerificationCodeNotCorrect, "" }
+
+                }
+            },
+            {
+                "en",
+                new Dictionary<string, string>()
+                {
+                     {NoData,"No Data Found" },
+                     {UsernameMustEnter,"Username Must Enter" },
+                     {PasswordMustEnter,"Password Must Enter" },
+                     {Password8Characters, "Must enter 8 characters or more" },
+                     {GetSuccess,"Get Data Success" },
+                     {LoginFaild,"Login Faild"},
+                     { UserNotActive, "User is Not Active" },
+
+
+
+
+                    { InvalidUsername, "Invalid Username" },
+                    { InvalidPassword, "Invalid Password" },
+                    { InvalidEmail, "" },
+                    { PasswordIsStrength, "Password is strong" },
+                    { PasswordNotStrength, "Password is weak" },
+                    { UsernameOrPasswordNotCorrect, "" },
+                    { RegisterFaild, "" },
+                    { UserIsDeleted, "" },
+                    { UsernameOrEmailAlreadyExist, "" },
+                    { VerificationFaild, "" },
+                    { InvalidVerificationCode, "" },
+                    { EmailOrVerificationCodeNotCorrect, "" },
+                    { InvalidIdentity, "" },
+                    { UserNotExist, "" },
+                    { ForgetPasswordFaild, "" },
+                    { FindUserProfileFaild, "" },
+                    { ChangePasswordFaild, "" },
+                    { OldPasswordNotCorrect, "" },
+                    { VerificationCodeNotCorrect, "" }
+
                 }
             }
         };

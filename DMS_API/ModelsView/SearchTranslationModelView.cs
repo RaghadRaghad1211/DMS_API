@@ -1,6 +1,6 @@
 ﻿namespace DMS_API.ModelsView
 {
-    public class RequestSearchTranslationModelView
+    public class SearchTranslationModelView
     {
         public string WordSearch { get; set; }
         public string KeySearch { get; set; } // language or key

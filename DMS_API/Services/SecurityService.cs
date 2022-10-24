@@ -32,7 +32,7 @@ namespace DMS_API.Services
         public static readonly string JwtAudience =
             "APIsecurity";
 
-        public static JwtToken GeneratTokenAuthenticate(LoginModel UserLogin)
+        public static JwtToken GeneratTokenAuthenticate(UserModel User_M)
         {
             var JwtKeyByte = Encoding.ASCII.GetBytes(JwtKey); // Convert.FromBase64String(JwtKey);
             var SecurityKey = new SymmetricSecurityKey(JwtKeyByte);
@@ -43,18 +43,16 @@ namespace DMS_API.Services
                 Issuer = JwtIssuer,
                 Audience = JwtAudience,
                 NotBefore = DateTime.UtcNow,
-                Expires = DateTime.UtcNow.AddHours(3).AddDays(30),
+                Expires = DateTime.UtcNow.AddHours(3).AddDays(8),
                 Subject = new ClaimsIdentity(new Claim[]
                 {
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                    new Claim("UserLogin", JsonConvert.SerializeObject(UserLogin)),
-                    new Claim("Name", UserLogin.username),
-                    new Claim("Pass", UserLogin.password),
-                    new Claim("Role", UserLogin.role),
-                    new Claim("id", "101"),
-                    new Claim(ClaimTypes.Role,UserLogin.role),
-                    new Claim(ClaimTypes.Name,UserLogin.username),
-                    new Claim(ClaimTypes.NameIdentifier,"101")
+                    new Claim("UserInfo", JsonConvert.SerializeObject(User_M)),
+                    new Claim(ClaimTypes.NameIdentifier,User_M.UserID.ToString()),
+                    new Claim("Username", User_M.UserName),
+                    new Claim("Password", User_M.Password),
+                    new Claim("FullName", User_M.FullName),
+                    new Claim(ClaimTypes.Role,User_M.Role),
                 }),
 
                 SigningCredentials = new SigningCredentials(SecurityKey, SecurityAlgorithm)

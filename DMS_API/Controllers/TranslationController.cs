@@ -13,80 +13,68 @@ namespace DMS_API.Controllers
     {
         private TranslationService Translation_S; 
         private ResponseModelView response_MV { get; set; }
-       // private TranslationModel Translation_M { get; set; }
 
         public TranslationController()
         {
             Translation_S = new TranslationService();
-
-            var ff = SecurityService.PasswordEnecrypt("$ystemAdm!n");// $ystemAdm!n
-            //var ff1 = SecurityService.PasswordEnecrypt1("$ystemAdm!n");// $ystemAdm!n
-            //var ff2 = SecurityService.PasswordEnecrypt2("$ystemAdm!n");// $ystemAdm!n 
         }
 
-        [AllowAnonymous]
+        //[AllowAnonymous]
+        [Authorize(Roles = "Administrator,User")]        
         [HttpPost]
         [Route("GetTranslationList")]
-        //[Route("GetTranslationList/{Lang}")]
-        public async Task<IActionResult> GetTranslationList([FromBody] RequestPaginationModelView Pagination_MV, [FromHeader]string? Lang="Ar")
+        public async Task<IActionResult> GetTranslationList([FromBody] PaginationModelView Pagination_MV, [FromHeader]string? Lang="Ar")
         {
+            var info = User.Claims.ToList();
+
             response_MV = await Translation_S.GetTranslationList(Pagination_MV,Lang);
             return response_MV.Success == true ? Ok(response_MV) : NotFound(response_MV);
-
-            //return statistics_Mlist != null ? Ok(statistics_Mlist) :
-            //    NotFound(response_S = new ResponseService { ResponseBool = false, ResponseString = "No Found Data" });
-
         }
 
-        [AllowAnonymous]
+        //[AllowAnonymous]
+        [Authorize(Roles = "Administrator,User")]
         [HttpGet]
         [Route("GetTranslationByID/{id}")]
-        //[Route("GetTranslationByID/{id}/{Lang}")]
         public async Task<IActionResult> GetTranslationByID([FromRoute] int id,[FromHeader] string? Lang = "Ar")
         {
             response_MV = await Translation_S.GetTranslationByID(id,Lang);
             return response_MV.Success == true ? Ok(response_MV) : NotFound(response_MV);
         }
 
-        [AllowAnonymous]
+        //[AllowAnonymous]
+        [Authorize(Roles = "Administrator,User")]
         [HttpPost]
         [Route("AddTranslationWords")]
-        //[Route("AddTranslationWords/{Lang}")]
         public async Task<IActionResult> AddTranslationWords([FromBody] TranslationModel Translation_M, [FromHeader] string? Lang = "Ar")
         {
             response_MV = await Translation_S.AddTranslationWords(Translation_M,Lang);
             return response_MV.Success == true ? Ok(response_MV) : NotFound(response_MV);
         }
 
-        [AllowAnonymous]
+        //[AllowAnonymous]
+        [Authorize(Roles = "Administrator,User")]
         [HttpPut]
         [Route("EditTranslationWords")]
-        //[Route("EditTranslationWords/{Lang}")]
         public async Task<IActionResult> EditTranslationWords([FromBody] TranslationModel Translation_M, [FromHeader] string? Lang = "Ar")
         {
             response_MV = await Translation_S.EditTranslationWords(Translation_M,Lang);
             return response_MV.Success == true ? Ok(response_MV) : NotFound(response_MV);
         }
 
-        [AllowAnonymous]
+        //[AllowAnonymous]
+        [Authorize(Roles = "Administrator,User")]
         [HttpPost]
         [Route("SearchTranslationWords")]
-        //[Route("GetTranslationList/{Lang}")]
-        public async Task<IActionResult> SearchTranslationWords([FromBody] RequestSearchTranslationModelView SearchTranslation_MV, [FromHeader] string? Lang = "Ar")
+        public async Task<IActionResult> SearchTranslationWords([FromBody] SearchTranslationModelView SearchTranslation_MV, [FromHeader] string? Lang = "Ar")
         {
             response_MV = await Translation_S.SearchTranslationWords(SearchTranslation_MV, Lang);
             return response_MV.Success == true ? Ok(response_MV) : NotFound(response_MV);
-
-            //return statistics_Mlist != null ? Ok(statistics_Mlist) :
-            //    NotFound(response_S = new ResponseService { ResponseBool = false, ResponseString = "No Found Data" });
-
         }
 
-
-        [AllowAnonymous]
+        //[AllowAnonymous]
+        [Authorize(Roles = "Administrator,User")]
         [HttpGet]
         [Route("GetTranslationPage")]
-        //[Route("GetTranslationPage/{Lang}")]
         public async Task<IActionResult> GetTranslationPage([FromHeader] string? Lang = "Ar")
         {
             response_MV = await Translation_S.GetTranslationPage(Lang);

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DMS_API.Services
 {
-    public static class Validation
+    public static class ValidationService
     {
         public static bool IsEmpty(this string str)
         {
