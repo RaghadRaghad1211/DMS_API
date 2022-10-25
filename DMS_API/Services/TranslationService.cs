@@ -2,6 +2,7 @@
 using DMS_API.Models;
 using DMS_API.ModelsView;
 using System.Data;
+using System.Net;
 
 namespace DMS_API.Services
 {
@@ -27,58 +28,95 @@ namespace DMS_API.Services
         {
             try
             {
-                string ColLang = HelpService.GetMessageColumn(Lang);                
+                string ColLang = HelpService.GetMessageColumn(Lang);
                 int _PageNumber = Pagination_MV.PageNumber == 0 ? 1 : Pagination_MV.PageNumber;
                 int _PageRows = Pagination_MV.PageRows == 0 ? 1 : Pagination_MV.PageRows;
                 int CurrentPage = _PageNumber;
                 var MaxTotal = dam.FireDataTable($"SELECT COUNT(*) AS TotalRows, CEILING(COUNT(*) / CAST({_PageRows} AS FLOAT)) AS MaxPage FROM Main.Translation");
-                string get = $"SELECT Trid, TrKey, TrArName, TrEnName, TrKrName FROM Main.Translation ORDER BY TrId " +
-                             $"OFFSET ({_PageNumber}-1)*{_PageRows} ROWS " +
-                             $"FETCH NEXT {_PageRows} ROWS ONLY ";
-                dt = new DataTable();
-                dt = await Task.Run(() => dam.FireDataTable(get));
-                Translation_Mlist = new List<TranslationModel>();
-                if (dt.Rows.Count > 0)
+                if (MaxTotal == null)
                 {
-                    for (int i = 0; i < dt.Rows.Count; i++)
-                    {
-                        Translation_M = new TranslationModel
-                        {
-                            Trid = Convert.ToInt32(dt.Rows[i]["Trid"].ToString()),
-                            TrKey = dt.Rows[i]["TrKey"].ToString(),
-                            TrArName = dt.Rows[i]["TrArName"].ToString(),
-                            TrEnName = dt.Rows[i]["TrEnName"].ToString(),
-                            TrKrName = dt.Rows[i]["TrKrName"].ToString()
-                        };
-                        Translation_Mlist.Add(Translation_M);
-                    }
-
                     response_MV = new ResponseModelView
                     {
-                        Success = true,
-                        Message = ColLang,// dam.FireSQL($"SELECT {Mlang} FROM Main.Messages WHERE MesEnName= 'english' "),
-                        Data = new { TotalRows = MaxTotal.Rows[0]["TotalRows"], MaxPage = MaxTotal.Rows[0]["MaxPage"], CurrentPage, data = Translation_Mlist }
+                        Success = false,
+                        Message = MessageService.MsgDictionary[Lang.ToLower()]["GetFaild"],
+                        Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
                     };
                     return response_MV;
                 }
                 else
                 {
-                    response_MV = new ResponseModelView
+                    if (MaxTotal.Rows.Count == 0)
                     {
-                        Success = true,
-                        Message = MessageService.MsgDictionary[Lang.ToLower()]["NoData"] ,
-                        Data = new List<object>()
-                    };
-                    return response_MV;
+                        response_MV = new ResponseModelView
+                        {
+                            Success = false,
+                            Message = MessageService.MsgDictionary[Lang.ToLower()]["NoData"],
+                            Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                        };
+                        return response_MV;
+                    }
+                    else
+                    {
+                        string get = $"SELECT Trid, TrKey, TrArName, TrEnName, TrKrName FROM Main.Translation ORDER BY TrId " +
+                                                     $"OFFSET ({_PageNumber}-1)*{_PageRows} ROWS " +
+                                                     $"FETCH NEXT {_PageRows} ROWS ONLY ";
+                        dt = new DataTable();
+                        dt = await Task.Run(() => dam.FireDataTable(get));
+                        if (dt == null)
+                        {
+                            response_MV = new ResponseModelView
+                            {
+                                Success = false,
+                                Message = MessageService.MsgDictionary[Lang.ToLower()]["GetFaild"],
+                                Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                            };
+                            return response_MV;
+                        }
+                        Translation_Mlist = new List<TranslationModel>();
+                        if (dt.Rows.Count > 0)
+                        {
+                            for (int i = 0; i < dt.Rows.Count; i++)
+                            {
+                                Translation_M = new TranslationModel
+                                {
+                                    Trid = Convert.ToInt32(dt.Rows[i]["Trid"].ToString()),
+                                    TrKey = dt.Rows[i]["TrKey"].ToString(),
+                                    TrArName = dt.Rows[i]["TrArName"].ToString(),
+                                    TrEnName = dt.Rows[i]["TrEnName"].ToString(),
+                                    TrKrName = dt.Rows[i]["TrKrName"].ToString()
+                                };
+                                Translation_Mlist.Add(Translation_M);
+                            }
+
+                            response_MV = new ResponseModelView
+                            {
+                                Success = true,
+                                Message = MessageService.MsgDictionary[Lang.ToLower()]["GetSuccess"],
+                                Data = new { TotalRows = MaxTotal.Rows[0]["TotalRows"], MaxPage = MaxTotal.Rows[0]["MaxPage"], CurrentPage, data = Translation_Mlist }
+                            };
+                            return response_MV;
+                        }
+                        else
+                        {
+                            response_MV = new ResponseModelView
+                            {
+                                Success = false,
+                                Message = MessageService.MsgDictionary[Lang.ToLower()]["NoData"],
+                                Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                            };
+                            return response_MV;
+                        }
+                    }
                 }
+
             }
             catch (Exception ex)
             {
                 response_MV = new ResponseModelView
                 {
                     Success = false,
-                    Message = ex.Message,
-                    Data = new List<object>()
+                    Message = MessageService.MsgDictionary[Lang.ToLower()]["GetFaild"] + " - " + ex.Message,
+                    Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
                 };
                 return response_MV;
             }
@@ -93,6 +131,16 @@ namespace DMS_API.Services
                 string get = $"SELECT Trid, TrKey, TrArName, TrEnName, TrKrName FROM Main.Translation WHERE Trid={id}";
                 dt = new DataTable();
                 dt = await Task.Run(() => dam.FireDataTable(get));
+                if (dt == null)
+                {
+                    response_MV = new ResponseModelView
+                    {
+                        Success = false,
+                        Message = MessageService.MsgDictionary[Lang.ToLower()]["GetFaild"],
+                        Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                    };
+                    return response_MV;
+                }
                 if (dt.Rows.Count > 0)
                 {
                     Translation_M = new TranslationModel
@@ -107,7 +155,7 @@ namespace DMS_API.Services
                     response_MV = new ResponseModelView
                     {
                         Success = true,
-                        Message = Mlang,// dam.FireSQL($"SELECT {Mlang} FROM Main.Messages WHERE MesEnName= 'english' "),
+                        Message = MessageService.MsgDictionary[Lang.ToLower()]["GetSuccess"],
                         Data = Translation_M
                     };
                     return response_MV;
@@ -117,8 +165,8 @@ namespace DMS_API.Services
                     response_MV = new ResponseModelView
                     {
                         Success = false,
-                        Message = Mlang,//dam.FireSQL($"SELECT {Mlang} FROM Main.Messages WHERE MesEnName= 'english' "),
-                        Data = new List<object>()
+                        Message = MessageService.MsgDictionary[Lang.ToLower()]["NoData"],
+                        Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
                     };
                     return response_MV;
                 }
@@ -128,8 +176,8 @@ namespace DMS_API.Services
                 response_MV = new ResponseModelView
                 {
                     Success = false,
-                    Message = ex.Message,
-                    Data = new List<object>()
+                    Message = MessageService.MsgDictionary[Lang.ToLower()]["GetFaild"] + " - " + ex.Message,
+                    Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
                 };
                 return response_MV;
             }
@@ -139,73 +187,64 @@ namespace DMS_API.Services
         {
             try
             {
-                string Mlang = HelpService.GetMessageColumn(Lang);
-
-                int checkDeblicate = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(TrKey) FROM Main.Translation WHERE TrKey = '{Translation_M.TrKey}' "));
-                if (checkDeblicate == 0)
+                if (ValidationService.IsEmpty(Translation_M.TrKey) == true || ValidationService.IsEmpty(Translation_M.TrArName) == true || ValidationService.IsEmpty(Translation_M.TrEnName) == true)
                 {
-                    string insert = "INSERT INTO Main.Translation (TrKey, TrArName, TrEnName, TrKrName) VALUES(@TrKey, @TrArName, @TrEnName, @TrKrName) ";
-                    dam.DoQuery(insert, Translation_M.TrKey, Translation_M.TrArName, Translation_M.TrEnName, Translation_M.TrKrName);
-
-                    string get = "SELECT Trid, TrKey, TrArName, TrEnName, TrKrName FROM Main.Translation";
-                    dt = new DataTable();
-                    dt = await Task.Run(() => dam.FireDataTable(get));
-                    Translation_Mlist = new List<TranslationModel>();
-                    if (dt.Rows.Count > 0)
+                    response_MV = new ResponseModelView
                     {
-                        for (int i = 0; i < dt.Rows.Count; i++)
+                        Success = false,
+                        Message = MessageService.MsgDictionary[Lang.ToLower()]["MustFillInformation"],
+                        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                    };
+                    return response_MV;
+                }
+                else
+                {
+                    string Mlang = HelpService.GetMessageColumn(Lang);
+                    int checkDeblicate = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(TrKey) FROM Main.Translation WHERE TrKey = '{Translation_M.TrKey}' "));
+                    if (checkDeblicate == 0)
+                    {
+                        string insert = "INSERT INTO Main.Translation (TrKey, TrArName, TrEnName, TrKrName) OUTPUT INSERTED.TrId VALUES(@TrKey, @TrArName, @TrEnName, @TrKrName) ";
+                        string outValue = await Task.Run(() => dam.DoQueryAndPutOutValue(insert, "TrId", Translation_M.TrKey, Translation_M.TrArName, Translation_M.TrEnName, Translation_M.TrKrName));
+                        if (outValue == null || outValue.Trim() == "")
                         {
-                            Translation_M = new TranslationModel
+                            response_MV = new ResponseModelView
                             {
-                                Trid = Convert.ToInt32(dt.Rows[i]["Trid"].ToString()),
-                                TrKey = dt.Rows[0]["TrKey"].ToString(),
-                                TrArName = dt.Rows[i]["TrArName"].ToString(),
-                                TrEnName = dt.Rows[i]["TrEnName"].ToString(),
-                                TrKrName = dt.Rows[i]["TrKrName"].ToString()
+                                Success = false,
+                                Message = MessageService.MsgDictionary[Lang.ToLower()]["InsertFaild"],
+                                Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
                             };
-                            Translation_Mlist.Add(Translation_M);
+                            return response_MV;
                         }
-
-                        response_MV = new ResponseModelView
+                        else
                         {
-                            Success = true,
-                            Message = Mlang,// dam.FireSQL($"SELECT {Mlang} FROM Main.Messages WHERE MesEnName= 'english' "),
-                            Data = Translation_Mlist
-                        };
-                        return response_MV;
+                            response_MV = new ResponseModelView
+                            {
+                                Success = true,
+                                Message = MessageService.MsgDictionary[Lang.ToLower()]["InsertSuccess"],
+                                Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
+                            };
+                            return response_MV;
+                        }
                     }
                     else
                     {
                         response_MV = new ResponseModelView
                         {
-
                             Success = false,
-                            Message = Mlang,//dam.FireSQL($"SELECT {Mlang} FROM Main.Messages WHERE MesEnName= 'english' "),
-                            Data = new List<object>()
+                            Message = Translation_M.TrKey.ToString() + " " + MessageService.MsgDictionary[Lang.ToLower()]["IsExist"],
+                            Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
                         };
                         return response_MV;
                     }
                 }
-                else
-                {
-                    response_MV = new ResponseModelView
-                    {
-                        // الحقل متكرر
-                        Success = false,
-                        Message = Mlang,//dam.FireSQL($"SELECT {Mlang} FROM Main.Messages WHERE MesEnName= 'english' "),
-                        Data = new List<object>()
-                    };
-                    return response_MV;
-                }
-
             }
             catch (Exception ex)
             {
                 response_MV = new ResponseModelView
                 {
                     Success = false,
-                    Message = ex.Message,
-                    Data = new List<object>()
+                    Message = MessageService.MsgDictionary[Lang.ToLower()]["InsertFaild"] + " - " + ex.Message,
+                    Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
                 };
                 return response_MV;
             }
@@ -215,40 +254,55 @@ namespace DMS_API.Services
         {
             try
             {
-                string Mlang = HelpService.GetMessageColumn(Lang);
-                int check = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(Trid) FROM Main.Translation WHERE Trid={Translation_M.Trid}"));
-                if (check > 0)
+                if (ValidationService.IsEmpty(Translation_M.TrArName) == true || ValidationService.IsEmpty(Translation_M.TrEnName) == true)
                 {
-                    string update = $"UPDATE Main.Translation SET TrArName='{Translation_M.TrArName}', TrEnName='{Translation_M.TrEnName}', TrKrName='{Translation_M.TrKrName}'  WHERE Trid={Translation_M.Trid} ";
-                    var gg = await Task.Run(() => dam.DoQuery(update));
-
                     response_MV = new ResponseModelView
                     {
-                        Success = true,
-                        Message = Mlang,// dam.FireSQL($"SELECT {Mlang} FROM Main.Messages WHERE MesEnName= 'english' "),
-                        Data = new List<object>()
+                        Success = false,
+                        Message = MessageService.MsgDictionary[Lang.ToLower()]["MustFillInformation"],
+                        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
                     };
                     return response_MV;
                 }
                 else
                 {
-                    // not found id for this record
-                    response_MV = new ResponseModelView
+                    string Mlang = HelpService.GetMessageColumn(Lang);
+                    int check = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(Trid) FROM Main.Translation WHERE Trid={Translation_M.Trid}"));
+                    if (check > 0)
                     {
-                        Success = false,
-                        Message = Mlang,//dam.FireSQL($"SELECT {Mlang} FROM Main.Messages WHERE MesEnName= 'english' "),
-                        Data = new List<object>()
-                    };
-                    return response_MV;
+                        string update = $"UPDATE Main.Translation SET TrArName='{Translation_M.TrArName}', TrEnName='{Translation_M.TrEnName}', TrKrName='{Translation_M.TrKrName}'  WHERE Trid={Translation_M.Trid} ";
+                        await Task.Run(() => dam.DoQuery(update));
+
+                        response_MV = new ResponseModelView
+                        {
+                            Success = true,
+                            Message = MessageService.MsgDictionary[Lang.ToLower()]["UpdateSuccess"],
+                            Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
+                        };
+                        return response_MV;
+                    }
+                    else
+                    {
+                        // not found id for this record
+                        response_MV = new ResponseModelView
+                        {
+                            Success = false,
+                            Message = Translation_M.Trid.ToString() + " " + MessageService.MsgDictionary[Lang.ToLower()]["IsNotExist"],
+                            Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                        };
+                        return response_MV;
+                    }
                 }
+
+
             }
             catch (Exception ex)
             {
                 response_MV = new ResponseModelView
                 {
                     Success = false,
-                    Message = ex.Message,
-                    Data = new List<object>()
+                    Message = MessageService.MsgDictionary[Lang.ToLower()]["UpdateFaild"] + " - " + ex.Message,
+                    Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
                 };
                 return response_MV;
             }
@@ -260,52 +314,86 @@ namespace DMS_API.Services
             {
                 string Mlang = HelpService.GetMessageColumn(Lang);
                 string ColumnSearch = HelpService.GetTranslationSearchColumn(SearchTranslation_MV.KeySearch);
-                //var msgA = MessageService.MsgDictionary["Ar"]["InvalidUsername"];
                 int _PageNumber = SearchTranslation_MV.PageNumber == 0 ? 1 : SearchTranslation_MV.PageNumber;
                 int _PageRows = SearchTranslation_MV.PageRows == 0 ? 1 : SearchTranslation_MV.PageRows;
                 int CurrentPage = _PageNumber;
                 var MaxTotal = dam.FireDataTable($"SELECT COUNT(*) AS TotalRows, CEILING(COUNT(*) / CAST({_PageRows} AS FLOAT)) AS MaxPage " +
                                                  $"FROM Main.Translation WHERE {ColumnSearch} = '{SearchTranslation_MV.WordSearch}' ");
-
-                string get = $"SELECT Trid, TrKey, TrArName, TrEnName, TrKrName FROM Main.Translation " +
-                             $"WHERE {ColumnSearch} = '{SearchTranslation_MV.WordSearch}' ORDER BY TrId " +
-                             $"OFFSET ({_PageNumber}-1)*{_PageRows} ROWS " +
-                             $"FETCH NEXT {_PageRows} ROWS ONLY ";
-                dt = new DataTable();
-                dt = await Task.Run(() => dam.FireDataTable(get));
-                Translation_Mlist = new List<TranslationModel>();
-                if (dt.Rows.Count > 0)
+                if (MaxTotal == null)
                 {
-                    for (int i = 0; i < dt.Rows.Count; i++)
-                    {
-                        Translation_M = new TranslationModel
-                        {
-                            Trid = Convert.ToInt32(dt.Rows[i]["Trid"].ToString()),
-                            TrKey = dt.Rows[i]["TrKey"].ToString(),
-                            TrArName = dt.Rows[i]["TrArName"].ToString(),
-                            TrEnName = dt.Rows[i]["TrEnName"].ToString(),
-                            TrKrName = dt.Rows[i]["TrKrName"].ToString()
-                        };
-                        Translation_Mlist.Add(Translation_M);
-                    }
-
                     response_MV = new ResponseModelView
                     {
-                        Success = true,
-                        Message = Mlang,// dam.FireSQL($"SELECT {Mlang} FROM Main.Messages WHERE MesEnName= 'english' "),
-                        Data = new { TotalRows = MaxTotal.Rows[0]["TotalRows"], MaxPage = MaxTotal.Rows[0]["MaxPage"], CurrentPage, data = Translation_Mlist }
+                        Success = false,
+                        Message = MessageService.MsgDictionary[Lang.ToLower()]["GetFaild"],
+                        Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
                     };
                     return response_MV;
                 }
                 else
                 {
-                    response_MV = new ResponseModelView
+                    if (MaxTotal.Rows.Count == 0)
                     {
-                        Success = false,
-                        Message = Mlang,//dam.FireSQL($"SELECT {Mlang} FROM Main.Messages WHERE MesEnName= 'english' "),
-                        Data = new List<object>()
-                    };
-                    return response_MV;
+                        response_MV = new ResponseModelView
+                        {
+                            Success = false,
+                            Message = MessageService.MsgDictionary[Lang.ToLower()]["NoData"],
+                            Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                        };
+                        return response_MV;
+                    }
+                    else
+                    {
+                        string get = $"SELECT Trid, TrKey, TrArName, TrEnName, TrKrName FROM Main.Translation " +
+                                                     $"WHERE {ColumnSearch} = '{SearchTranslation_MV.WordSearch}' ORDER BY TrId " +
+                                                     $"OFFSET ({_PageNumber}-1)*{_PageRows} ROWS " +
+                                                     $"FETCH NEXT {_PageRows} ROWS ONLY ";
+                        dt = new DataTable();
+                        dt = await Task.Run(() => dam.FireDataTable(get));
+                        if (dt == null)
+                        {
+                            response_MV = new ResponseModelView
+                            {
+                                Success = false,
+                                Message = MessageService.MsgDictionary[Lang.ToLower()]["GetFaild"],
+                                Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                            };
+                            return response_MV;
+                        }
+                        Translation_Mlist = new List<TranslationModel>();
+                        if (dt.Rows.Count > 0)
+                        {
+                            for (int i = 0; i < dt.Rows.Count; i++)
+                            {
+                                Translation_M = new TranslationModel
+                                {
+                                    Trid = Convert.ToInt32(dt.Rows[i]["Trid"].ToString()),
+                                    TrKey = dt.Rows[i]["TrKey"].ToString(),
+                                    TrArName = dt.Rows[i]["TrArName"].ToString(),
+                                    TrEnName = dt.Rows[i]["TrEnName"].ToString(),
+                                    TrKrName = dt.Rows[i]["TrKrName"].ToString()
+                                };
+                                Translation_Mlist.Add(Translation_M);
+                            }
+
+                            response_MV = new ResponseModelView
+                            {
+                                Success = true,
+                                Message = MessageService.MsgDictionary[Lang.ToLower()]["GetSuccess"],
+                                Data = new { TotalRows = MaxTotal.Rows[0]["TotalRows"], MaxPage = MaxTotal.Rows[0]["MaxPage"], CurrentPage, data = Translation_Mlist }
+                            };
+                            return response_MV;
+                        }
+                        else
+                        {
+                            response_MV = new ResponseModelView
+                            {
+                                Success = false,
+                                Message = MessageService.MsgDictionary[Lang.ToLower()]["NoData"],
+                                Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                            };
+                            return response_MV;
+                        }
+                    }
                 }
             }
             catch (Exception ex)
@@ -313,8 +401,8 @@ namespace DMS_API.Services
                 response_MV = new ResponseModelView
                 {
                     Success = false,
-                    Message = ex.Message,
-                    Data = new List<object>()
+                    Message = MessageService.MsgDictionary[Lang.ToLower()]["GetFaild"] + " - " + ex.Message,
+                    Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
                 };
                 return response_MV;
             }
@@ -329,9 +417,17 @@ namespace DMS_API.Services
                 string get = $"SELECT DISTINCT  TrKey, {Mlang} AS 'Word' FROM Main.Translation";
                 dt = new DataTable();
                 dt = await Task.Run(() => dam.FireDataTable(get));
+                if (dt == null)
+                {
+                    response_MV = new ResponseModelView
+                    {
+                        Success = false,
+                        Message = MessageService.MsgDictionary[Lang.ToLower()]["GetFaild"],
+                        Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                    };
+                    return response_MV;
+                }
                 Dictionary<string, string> dict1 = new();
-                //dict[Lang] = Lang;
-                // List<TranslationPageModel> Translation_Mlist = new List<TranslationModel> ();
                 if (dt.Rows.Count > 0)
                 {
                     for (int i = 0; i < dt.Rows.Count; i++)
@@ -347,7 +443,7 @@ namespace DMS_API.Services
                     response_MV = new ResponseModelView
                     {
                         Success = true,
-                        Message = Lang,// dam.FireSQL($"SELECT {Mlang} FROM Main.Messages WHERE MesEnName= 'english' "),
+                        Message = MessageService.MsgDictionary[Lang.ToLower()]["GetSuccess"],
                         Data = dict2
                     };
                     return response_MV;
@@ -357,8 +453,8 @@ namespace DMS_API.Services
                     response_MV = new ResponseModelView
                     {
                         Success = false,
-                        Message = Lang,//dam.FireSQL($"SELECT {Mlang} FROM Main.Messages WHERE MesEnName= 'english' "),
-                        Data = new List<object>()
+                        Message = MessageService.MsgDictionary[Lang.ToLower()]["NoData"],
+                        Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
                     };
                     return response_MV;
                 }
@@ -368,8 +464,8 @@ namespace DMS_API.Services
                 response_MV = new ResponseModelView
                 {
                     Success = false,
-                    Message = ex.Message,
-                    Data = new List<object>()
+                    Message = MessageService.MsgDictionary[Lang.ToLower()]["GetFaild"] + " - " + ex.Message,
+                    Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
                 };
                 return response_MV;
             }
@@ -444,6 +540,91 @@ namespace DMS_API.Services
         //            Success = false,
         //            Message = ex.Message,
         //            Data = new List<object>()
+        //        };
+        //        return response_MV;
+        //    }
+        //}
+
+        //public async Task<ResponseModelView> AddTranslationWords1(TranslationModel Translation_M, string Lang)
+        //{
+        //    try
+        //    {
+        //        string Mlang = HelpService.GetMessageColumn(Lang);
+
+        //        int checkDeblicate = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(TrKey) FROM Main.Translation WHERE TrKey = '{Translation_M.TrKey}' "));
+        //        if (checkDeblicate == 0)
+        //        {
+        //            string insert = "INSERT INTO Main.Translation (TrKey, TrArName, TrEnName, TrKrName) OUTPUT INSERTED.TrId VALUES(@TrKey, @TrArName, @TrEnName, @TrKrName) ";
+        //            string outValue = dam.DoQueryAndPutOutValue(insert, Translation_M.TrKey, Translation_M.TrArName, Translation_M.TrEnName, Translation_M.TrKrName);
+        //            if (outValue == null)
+        //            {
+        //                response_MV = new ResponseModelView
+        //                {
+        //                    Success = false,
+        //                    Message = MessageService.MsgDictionary[Lang.ToLower()]["InsertFaild"],
+        //                    Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+        //                };
+        //                return response_MV;
+        //            }
+        //            string get = "SELECT Trid, TrKey, TrArName, TrEnName, TrKrName FROM Main.Translation";
+        //            dt = new DataTable();
+        //            dt = await Task.Run(() => dam.FireDataTable(get));
+        //            Translation_Mlist = new List<TranslationModel>();
+        //            if (dt.Rows.Count > 0)
+        //            {
+        //                for (int i = 0; i < dt.Rows.Count; i++)
+        //                {
+        //                    Translation_M = new TranslationModel
+        //                    {
+        //                        Trid = Convert.ToInt32(dt.Rows[i]["Trid"].ToString()),
+        //                        TrKey = dt.Rows[0]["TrKey"].ToString(),
+        //                        TrArName = dt.Rows[i]["TrArName"].ToString(),
+        //                        TrEnName = dt.Rows[i]["TrEnName"].ToString(),
+        //                        TrKrName = dt.Rows[i]["TrKrName"].ToString()
+        //                    };
+        //                    Translation_Mlist.Add(Translation_M);
+        //                }
+
+        //                response_MV = new ResponseModelView
+        //                {
+        //                    Success = true,
+        //                    Message = Mlang,// dam.FireSQL($"SELECT {Mlang} FROM Main.Messages WHERE MesEnName= 'english' "),
+        //                    Data = Translation_Mlist
+        //                };
+        //                return response_MV;
+        //            }
+        //            else
+        //            {
+        //                response_MV = new ResponseModelView
+        //                {
+
+        //                    Success = false,
+        //                    Message = Mlang,//dam.FireSQL($"SELECT {Mlang} FROM Main.Messages WHERE MesEnName= 'english' "),
+        //                    Data = new List<object>()
+        //                };
+        //                return response_MV;
+        //            }
+        //        }
+        //        else
+        //        {
+        //            response_MV = new ResponseModelView
+        //            {
+        //                // الحقل متكرر
+        //                Success = false,
+        //                Message = Translation_M.TrKey.ToString() + " " + MessageService.MsgDictionary[Lang.ToLower()]["IsExist"],
+        //                Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+        //            };
+        //            return response_MV;
+        //        }
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        response_MV = new ResponseModelView
+        //        {
+        //            Success = false,
+        //            Message = MessageService.MsgDictionary[Lang.ToLower()]["InsertFaild"] + " - " + ex.Message,
+        //            Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
         //        };
         //        return response_MV;
         //    }

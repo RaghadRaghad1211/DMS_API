@@ -1,7 +1,11 @@
+using DMS_API.ModelsView;
 using DMS_API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using Serilog;
+using System.Net;
 using System.Text;
 
 
@@ -56,6 +60,33 @@ try
              ValidIssuer = SecurityService.JwtIssuer,
              IssuerSigningKey = new SymmetricSecurityKey(KeyByte)
          };
+
+         //option.Events = new JwtBearerEvents
+         //{
+         //    OnAuthenticationFailed = async (context) =>
+         //    {
+         //        Console.WriteLine("Printing in the delegate OnAuthFailed");
+         //    },
+         //    OnChallenge = async (context) =>
+         //    {
+         //        Console.WriteLine("Printing in the delegate OnChallenge");
+
+         //        // this is a default method
+         //        // the response statusCode and headers are set here
+         //        context.HandleResponse();
+
+         //        // AuthenticateFailure property contains 
+         //        // the details about why the authentication has failed
+         //        if (context.AuthenticateFailure != null)
+         //        {
+         //            context.Response.StatusCode = 401;
+
+         //            // we can write our own custom response content here
+         //            await context.HttpContext.Response.WriteAsync("Token Validation Has Failed. Request Access Denied");
+         //        }
+         //    }
+         //};
+
      });
 
     builder.Services.AddControllers();
@@ -79,7 +110,40 @@ try
     app.UseCors();
 
     //app.UseCors(c => c.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
-    //
+
+    app.Use(async (context, next) =>
+    {
+        await next();
+
+        if (context.Response.StatusCode == (int)HttpStatusCode.Unauthorized)
+        {
+            await context.Response.WriteAsync(Newtonsoft.Json.JsonConvert.SerializeObject(new ResponseModelView
+            {
+                Success = false,                
+                Message = "User Unauthorized - Token is not valid",
+                Data = (int)HttpStatusCode.Unauthorized
+            }));
+        }
+        else if (context.Response.StatusCode == (int)HttpStatusCode.Forbidden)
+        {
+            await context.Response.WriteAsync(Newtonsoft.Json.JsonConvert.SerializeObject(new ResponseModelView
+            {
+                Success = false,
+                Message = "User Forbidden - Access Denied",
+                Data = (int)HttpStatusCode.Forbidden
+            }));
+        }
+        else if (context.Response.StatusCode == (int)HttpStatusCode.InternalServerError)
+        {
+            await context.Response.WriteAsync(Newtonsoft.Json.JsonConvert.SerializeObject(new ResponseModelView
+            {
+                Success = false,
+                Message = "Internal Server Error",
+                Data = (int)HttpStatusCode.InternalServerError
+            }));
+        }
+    });
+
     app.UseAuthentication();
 
     app.UseAuthorization();

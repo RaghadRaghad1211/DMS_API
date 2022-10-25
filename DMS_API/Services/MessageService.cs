@@ -32,10 +32,10 @@ namespace DMS_API.Services
         public static readonly string EditFaild = "EditFaild";
         public static readonly string UserNotActive = "UserNotActive";
         public static readonly string LoginFaild = "LoginFaild";
-        public static readonly string GetFaild = "GetFaild";
         public static readonly string InsertFaild = "InsertFaild";
         public static readonly string UpdateFaild = "UpdateFaild";
         public static readonly string GetSuccess = "GetSuccess";
+        public static readonly string GetFaild = "GetFaild";
         public static readonly string InsertSuccess = "InsertSuccess";
         public static readonly string UpdateSuccess = "UpdateSuccess";
         public static readonly string Active = "Active";
@@ -44,6 +44,10 @@ namespace DMS_API.Services
         public static readonly string IsInt = "IsInt";
         public static readonly string IsDate = "IsInt";
         public static readonly string NoData = "NoData";
+        public static readonly string IsExist = "IsExist";
+        public static readonly string IsNotExist = "IsNotExist";
+        public static readonly string MustFillInformation = "MustFillInformation";
+
 
 
 
@@ -87,8 +91,17 @@ namespace DMS_API.Services
                     {PasswordMustEnter,"يجب ادخال اسم كلمة المرور" },
                     {Password8Characters, "يجب ادخال 8 احرف او اكثر" },
                     {GetSuccess,"تم جلب البيانات بشكل صحيح" },
+                    {GetFaild,"فشل في جلب البيانات" },
                     { LoginFaild, "فشل بالدخول" },
                     { UserNotActive, "المستخدم غير فعال" },
+                    { InsertSuccess, "تمت عملية الاضافة" },
+                    { InsertFaild, "فشل بعملية الادخال" },
+                    { IsExist, "موجود" },
+                    { IsNotExist, "غير موجود" },
+                    { IsEmpty, "حقل فارغ" },
+                    { MustFillInformation, "يجب ملئ البيانات" },
+                    { UpdateSuccess, "تمت عملية التعديل" },
+                    { UpdateFaild, "فشل بعملية التعديل" },
 
 
 
@@ -99,11 +112,11 @@ namespace DMS_API.Services
                     { PasswordIsStrength, "كلمة المرور قوية" },
                     { PasswordNotStrength, "كلمة المرور ضعيفة" },
                     { UsernameOrPasswordNotCorrect, "" },
-                    
+
                     { RegisterFaild, "" },
                     { UserIsDeleted, "" },
                     { UsernameOrEmailAlreadyExist, "" },
-                    
+
                     { VerificationFaild, "" },
                     { InvalidVerificationCode, "" },
                     { EmailOrVerificationCodeNotCorrect, "" },
@@ -126,8 +139,17 @@ namespace DMS_API.Services
                      {PasswordMustEnter,"Password Must Enter" },
                      {Password8Characters, "Must enter 8 characters or more" },
                      {GetSuccess,"Get Data Success" },
+                     {GetFaild,"Get Data Faild" },
                      {LoginFaild,"Login Faild"},
                      { UserNotActive, "User is Not Active" },
+                      { InsertSuccess, "Insert Success" },
+                    { InsertFaild, "Insert Faild" },
+                    { IsExist, "Is Exist" },
+                    { IsNotExist, "Is Not Exist" },
+                    { IsEmpty, "Field Is Empty" },
+                    { MustFillInformation, "Must Fill Information" },
+                    { UpdateSuccess, "Update Success" },
+                    { UpdateFaild, "Update Faild" },
 
 
 

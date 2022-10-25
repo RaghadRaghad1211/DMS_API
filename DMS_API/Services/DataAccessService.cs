@@ -224,7 +224,7 @@ namespace ArchiveAPI.Services
             try
             {
                 int noOfParam = 0;
-                string OutValue = "";
+                string OutValue = null;
                 Query = Query.Trim();
                 SqlCommand sqlCommand = new SqlCommand()
                 {

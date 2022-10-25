@@ -43,7 +43,7 @@ namespace DMS_API.Services
                 Issuer = JwtIssuer,
                 Audience = JwtAudience,
                 NotBefore = DateTime.UtcNow,
-                Expires = DateTime.UtcNow.AddHours(3).AddDays(8),
+                Expires = DateTime.UtcNow.AddHours(3).AddDays(1),
                 Subject = new ClaimsIdentity(new Claim[]
                 {
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),

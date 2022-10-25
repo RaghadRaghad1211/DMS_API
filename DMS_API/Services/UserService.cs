@@ -61,7 +61,7 @@ namespace DMS_API.Services
                         return response_MV;
                     }
                     else
-                    { // $ystemAdm!n
+                    { // $ystemAdm!n 
                         string getUserInfo = "SELECT   UserID, FullName, UsUserName, CONVERT(varchar(MAX), UsPassword) AS UsPassword, Role, UserIsActive, " +
                                             "         UsPhoneNo, UsEmail, UsUserEmpNo, UsUserIdintNo, UsIsOnLine, OrgArName, OrgEnName, OrgKuName, Note " +
                                             "FROM     [User].V_Users " +
@@ -69,6 +69,16 @@ namespace DMS_API.Services
 
                         dt = new DataTable();
                         dt = await Task.Run(() => dam.FireDataTable(getUserInfo));
+                        if (dt == null)
+                        {
+                            response_MV = new ResponseModelView
+                            {
+                                Success = false,
+                                Message = MessageService.MsgDictionary[Lang.ToLower()]["LoginFaild"],
+                                Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                            };
+                            return response_MV;
+                        }
                         if (dt.Rows.Count > 0)
                         {
                             if (bool.Parse(dt.Rows[0]["UserIsActive"].ToString()) == false)
@@ -126,12 +136,12 @@ namespace DMS_API.Services
                 }
 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 response_MV = new ResponseModelView
                 {
                     Success = false,
-                    Message = MessageService.MsgDictionary[Lang.ToLower()]["LoginFaild"],
+                    Message = MessageService.MsgDictionary[Lang.ToLower()]["LoginFaild"] + " - " + ex.Message,
                     Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
                 };
                 return response_MV;
