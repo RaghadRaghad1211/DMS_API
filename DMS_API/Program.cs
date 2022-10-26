@@ -3,6 +3,7 @@ using DMS_API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using Serilog;
 using System.Net;
@@ -60,39 +61,40 @@ try
              ValidIssuer = SecurityService.JwtIssuer,
              IssuerSigningKey = new SymmetricSecurityKey(KeyByte)
          };
-
-         //option.Events = new JwtBearerEvents
-         //{
-         //    OnAuthenticationFailed = async (context) =>
-         //    {
-         //        Console.WriteLine("Printing in the delegate OnAuthFailed");
-         //    },
-         //    OnChallenge = async (context) =>
-         //    {
-         //        Console.WriteLine("Printing in the delegate OnChallenge");
-
-         //        // this is a default method
-         //        // the response statusCode and headers are set here
-         //        context.HandleResponse();
-
-         //        // AuthenticateFailure property contains 
-         //        // the details about why the authentication has failed
-         //        if (context.AuthenticateFailure != null)
-         //        {
-         //            context.Response.StatusCode = 401;
-
-         //            // we can write our own custom response content here
-         //            await context.HttpContext.Response.WriteAsync("Token Validation Has Failed. Request Access Denied");
-         //        }
-         //    }
-         //};
-
      });
+
+
 
     builder.Services.AddControllers();
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
-    builder.Services.AddSwaggerGen();
+    builder.Services.AddSwaggerGen(option =>
+    {
+        option.SwaggerDoc("v1", new OpenApiInfo { Title = "Demo DMS_API", Version = "v1" });
+        option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+        {
+            In = ParameterLocation.Header,
+            Description = "Please enter a valid token",
+            Name = "Authorization",
+            Type = SecuritySchemeType.Http,
+            BearerFormat = "JWT",
+            Scheme = "Bearer"
+        });
+        option.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type=ReferenceType.SecurityScheme,
+                    Id="Bearer"
+                }
+            },
+            new string[]{}
+        }
+    });
+    });
 
     var app = builder.Build();
 
@@ -119,7 +121,7 @@ try
         {
             await context.Response.WriteAsync(Newtonsoft.Json.JsonConvert.SerializeObject(new ResponseModelView
             {
-                Success = false,                
+                Success = false,
                 Message = "User Unauthorized - Token is not valid",
                 Data = (int)HttpStatusCode.Unauthorized
             }));

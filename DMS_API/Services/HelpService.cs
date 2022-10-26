@@ -69,7 +69,6 @@
         {
             try
             {
-                //Convert.ToDateTime(date);
                 DateTime.ParseExact(date, "dd/MM/yyyy", null);
                 return true;
             }
