@@ -19,9 +19,6 @@ namespace DMS_API.Services
         public static readonly string ConnectionString =
             "Server=10.55.101.20,1433;Database=DMS_DB;Integrated Security=false;User ID=dms; Password=dms;Connection Timeout=60";
 
-        //public static readonly string PasswordEncryptionKey =
-        //    "MSSH24919831610";
-
         public static readonly string PasswordSaltKey =
             "MSSH24919831610";
 
@@ -43,7 +40,7 @@ namespace DMS_API.Services
                 Issuer = JwtIssuer,
                 Audience = JwtAudience,
                 NotBefore = DateTime.UtcNow,
-                Expires = DateTime.UtcNow.AddHours(3).AddDays(1),
+                Expires = DateTime.UtcNow.AddHours(3).AddHours(8),
                 Subject = new ClaimsIdentity(new Claim[]
                 {
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
@@ -53,6 +50,7 @@ namespace DMS_API.Services
                     new Claim("Password", User_M.Password),
                     new Claim("FullName", User_M.FullName),
                     new Claim(ClaimTypes.Role,User_M.Role),
+                    new Claim("Datetime", DateTime.UtcNow.ToString())
                 }),
 
                 SigningCredentials = new SigningCredentials(SecurityKey, SecurityAlgorithm)
@@ -64,8 +62,8 @@ namespace DMS_API.Services
             JwtToken TokenInfo = new()
             {
                 TokenID = TokenID,
-                TokenExpireFrom = TokenExFrom,
-                TokenExpireTo = TokenExTo
+                TokenExpairy = TokenExTo,
+                UserID = User_M.UserID
             };
             return TokenInfo;
             // return TokenID;
@@ -87,9 +85,6 @@ namespace DMS_API.Services
             }
             return hashString;
         }
-
-
-
         #region Password    
         //public static string PasswordEnecrypt1(string pass)
         //{
@@ -122,7 +117,7 @@ namespace DMS_API.Services
     public class JwtToken
     {
         public string TokenID { get; set; }
-        public DateTime TokenExpireFrom { get; set; }
-        public DateTime TokenExpireTo { get; set; }
+        public DateTime TokenExpairy { get; set; }
+        public int UserID { get; set; }
     }
 }

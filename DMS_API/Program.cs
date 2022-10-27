@@ -18,17 +18,15 @@ var builder = WebApplication.CreateBuilder(args);
 
 try
 {
+    #region Logs
     builder.Host.UseSerilog(((ctx, lc) => lc
                 .WriteTo.File(
                               path: $@"{Directory.GetCurrentDirectory()}\wwwroot\Logs\Log.txt",
                               rollingInterval: RollingInterval.Day)));
-
-
+    #endregion
     Log.Information("API is Starting");
 
-
-
-
+    #region Cors
     builder.Services.AddCors(options =>
     {
         options.AddDefaultPolicy(
@@ -39,7 +37,8 @@ try
                       .AllowAnyMethod();
             });
     });
-
+    #endregion
+    #region Authentication
     builder.Services.AddAuthentication(options =>
     {
         options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -62,12 +61,13 @@ try
              IssuerSigningKey = new SymmetricSecurityKey(KeyByte)
          };
      });
-
-
+    #endregion
 
     builder.Services.AddControllers();
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
+    builder.Services.AddSwaggerGen();
+    #region AddSwaggerGen
     builder.Services.AddSwaggerGen(option =>
     {
         option.SwaggerDoc("v1", new OpenApiInfo { Title = "Demo DMS_API", Version = "v1" });
@@ -95,6 +95,7 @@ try
         }
     });
     });
+    #endregion
 
     var app = builder.Build();
 

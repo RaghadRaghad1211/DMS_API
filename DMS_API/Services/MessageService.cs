@@ -8,10 +8,49 @@ namespace DMS_API.Services
     public static class MessageService
     {
         #region how use ?
-        //var msgA = MessageService.MsgDictionary["Ar"]["InvalidUsername"];
-        //var msgE = MessageService.MsgDictionary["En"]["InvalidUsername"];
+        //var msgA = MessageService.MsgDictionary["Ar"][MessageService.InvalidUsername];
+        //var msgE = MessageService.MsgDictionary["En"][MessageService.InvalidUsername];
         #endregion
 
+        //enum EnglishKey
+        //{
+        //    InvalidEmail,
+        //    InvalidUsername,
+        //    InvalidPassword,
+        //    UsernameOrPasswordNotCorrect,
+        //    Password8Characters,
+        //    PasswordIsStrength,
+        //    PasswordNotStrength,
+        //    PasswordMustEnter,
+        //    UsernameMustEnter,
+        //    NotPermission, // You do not have permission to do this
+        //    Forbidden, // You are Forbidden to do this
+        //    Unauthorized, // You do not have authoriz to do this
+        //    ExpiredToken, // The access token expired
+        //    ChangePasswordSuccess,
+        //    ChangePasswordFaild,
+        //    SaveSuccess,
+        //    SaveFaild,
+        //    EditSuccess,
+        //    EditFaild,
+        //    UserNotActive,
+        //    LoginFaild,
+        //    InsertFaild,
+        //    UpdateFaild,
+        //    GetSuccess,
+        //    GetFaild,
+        //    InsertSuccess,
+        //    UpdateSuccess,
+        //    Active,
+        //    NotActive,
+        //    IsEmpty,
+        //    IsInt,
+        //    IsDate,
+        //    NoData,
+        //    IsExist,
+        //    IsNotExist,
+        //    MustFillInformation,
+        //}
 
         public static readonly string InvalidEmail = "InvalidEmail";
         public static readonly string InvalidUsername = "InvalidUsername";
@@ -23,7 +62,9 @@ namespace DMS_API.Services
         public static readonly string PasswordMustEnter = "PasswordMustEnter";
         public static readonly string UsernameMustEnter = "UsernameMustEnter";
         public static readonly string NotPermission = "NotPermission"; // You do not have permission to do this
+        public static readonly string Forbidden = "Forbidden"; // You are Forbidden to do this
         public static readonly string Unauthorized = "Unauthorized"; // You do not have authoriz to do this
+        public static readonly string ExpiredToken = "ExpiredToken"; // The access token expired
         public static readonly string ChangePasswordSuccess = "ChangeSuccess";
         public static readonly string ChangePasswordFaild = "ChangePasswordFaild";
         public static readonly string SaveSuccess = "SaveSuccess";
@@ -47,6 +88,7 @@ namespace DMS_API.Services
         public static readonly string IsExist = "IsExist";
         public static readonly string IsNotExist = "IsNotExist";
         public static readonly string MustFillInformation = "MustFillInformation";
+
 
 
 
@@ -102,6 +144,13 @@ namespace DMS_API.Services
                     { MustFillInformation, "يجب ملئ البيانات" },
                     { UpdateSuccess, "تمت عملية التعديل" },
                     { UpdateFaild, "فشل بعملية التعديل" },
+                    { Unauthorized, "المستخدم غير مصرح له بطلب هذا الإجراء" },
+                    { Forbidden, "المستخدم ممنوع من طلب هذا الإجراء" },
+                    { ExpiredToken, "انتهت صلاحية رمز الوصول" },
+
+
+
+
 
 
 
@@ -150,6 +199,9 @@ namespace DMS_API.Services
                     { MustFillInformation, "Must Fill Information" },
                     { UpdateSuccess, "Update Success" },
                     { UpdateFaild, "Update Faild" },
+                    { Unauthorized, "User is Unauthorized to request this action" },
+                    { Forbidden, "User is Forbidden from requesting this action" },
+                    { ExpiredToken, "The access token expired" },
 
 
 

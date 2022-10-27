@@ -33,7 +33,7 @@ namespace DMS_API.Services
                     response_MV = new ResponseModelView
                     {
                         Success = false,
-                        Message = MessageService.MsgDictionary[Lang.ToLower()]["UsernameMustEnter"],
+                        Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.UsernameMustEnter],
                         Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
                     };
                     return response_MV;
@@ -43,7 +43,7 @@ namespace DMS_API.Services
                     response_MV = new ResponseModelView
                     {
                         Success = false,
-                        Message = MessageService.MsgDictionary[Lang.ToLower()]["PasswordMustEnter"],
+                        Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.PasswordMustEnter],
                         Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
                     };
                     return response_MV;
@@ -55,7 +55,7 @@ namespace DMS_API.Services
                         response_MV = new ResponseModelView
                         {
                             Success = false,
-                            Message = MessageService.MsgDictionary[Lang.ToLower()]["Password8Characters"],
+                            Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.Password8Characters],
                             Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
                         };
                         return response_MV;
@@ -74,7 +74,7 @@ namespace DMS_API.Services
                             response_MV = new ResponseModelView
                             {
                                 Success = false,
-                                Message = MessageService.MsgDictionary[Lang.ToLower()]["LoginFaild"],
+                                Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.LoginFaild],
                                 Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
                             };
                             return response_MV;
@@ -86,7 +86,7 @@ namespace DMS_API.Services
                                 response_MV = new ResponseModelView
                                 {
                                     Success = false,
-                                    Message = MessageService.MsgDictionary[Lang.ToLower()]["UserNotActive"],
+                                    Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.UserNotActive],
                                     Data = new HttpResponseMessage(HttpStatusCode.NotAcceptable).StatusCode
                                 };
                                 return response_MV;
@@ -111,14 +111,30 @@ namespace DMS_API.Services
                                     OrgKuName = dt.Rows[0]["OrgKuName"].ToString(),
                                     Note = dt.Rows[0]["Note"].ToString()
                                 };
-                                var UserToken = SecurityService.GeneratTokenAuthenticate(User_M);
-                                response_MV = new ResponseModelView
+                                var JWTtoken = SecurityService.GeneratTokenAuthenticate(User_M);
+                                SessionService Session_S = new SessionService();
+                                bool checkSession = await Session_S.AddSession(JWTtoken);
+                                if (checkSession == false)
                                 {
-                                    Success = true,
-                                    Message = MessageService.MsgDictionary[Lang.ToLower()]["GetSuccess"],
-                                    Data = new { data = User_M, Token = UserToken }
-                                };
-                                return response_MV;
+                                    response_MV = new ResponseModelView
+                                    {
+                                        Success = false,
+                                        Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.GetFaild],
+                                        Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                                    };
+                                    return response_MV;
+                                }
+                                else
+                                {
+                                    response_MV = new ResponseModelView
+                                    {
+                                        Success = true,
+                                        Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.GetSuccess],
+                                        Data = new { data = User_M, TokenID = JWTtoken.TokenID }
+                                    };
+                                    return response_MV;
+                                }
+
                             }
 
                         }
@@ -127,7 +143,7 @@ namespace DMS_API.Services
                             response_MV = new ResponseModelView
                             {
                                 Success = false,
-                                Message = MessageService.MsgDictionary[Lang.ToLower()]["NoData"],
+                                Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.NoData],
                                 Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
                             };
                             return response_MV;
@@ -141,7 +157,7 @@ namespace DMS_API.Services
                 response_MV = new ResponseModelView
                 {
                     Success = false,
-                    Message = MessageService.MsgDictionary[Lang.ToLower()]["LoginFaild"] + " - " + ex.Message,
+                    Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.LoginFaild] + " - " + ex.Message,
                     Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
                 };
                 return response_MV;
