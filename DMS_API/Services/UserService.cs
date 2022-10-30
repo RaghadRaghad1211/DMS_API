@@ -1,6 +1,8 @@
 ﻿using ArchiveAPI.Services;
 using DMS_API.Models;
 using DMS_API.ModelsView;
+using Microsoft.AspNetCore.Http.Headers;
+using System.Collections.Generic;
 using System.Data;
 using System.Net;
 
@@ -163,12 +165,12 @@ namespace DMS_API.Services
                 return Response_MV;
             }
         }
-        public async Task<ResponseModelView> GetUsersList(PaginationModelView Pagination_MV, string Token, string Lang)
+        public async Task<ResponseModelView> GetUsersList(PaginationModelView Pagination_MV, RequestHeaderModelView RequestHeader)
         {
             try
             {
                 Session_S = new SessionService();
-                var ResponseSession = await Session_S.CheckAuthorizationResponse(Token, Lang);
+                var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
                 if (ResponseSession.Success == false)
                 {
                     return ResponseSession;
@@ -184,7 +186,7 @@ namespace DMS_API.Services
                         Response_MV = new ResponseModelView
                         {
                             Success = false,
-                            Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.ExceptionError],
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
                             Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
                         };
                         return Response_MV;
@@ -196,7 +198,7 @@ namespace DMS_API.Services
                             Response_MV = new ResponseModelView
                             {
                                 Success = false,
-                                Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.NoData],
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoData],
                                 Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
                             };
                             return Response_MV;
@@ -214,7 +216,7 @@ namespace DMS_API.Services
                                 Response_MV = new ResponseModelView
                                 {
                                     Success = false,
-                                    Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.ExceptionError],
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
                                     Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
                                 };
                                 return Response_MV;
@@ -248,7 +250,7 @@ namespace DMS_API.Services
                                 Response_MV = new ResponseModelView
                                 {
                                     Success = true,
-                                    Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.GetSuccess],
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
                                     Data = new { TotalRows = MaxTotal.Rows[0]["TotalRows"], MaxPage = MaxTotal.Rows[0]["MaxPage"], CurrentPage, data = User_Mlist }
                                 };
                                 return Response_MV;
@@ -258,7 +260,7 @@ namespace DMS_API.Services
                                 Response_MV = new ResponseModelView
                                 {
                                     Success = false,
-                                    Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.NoData],
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoData],
                                     Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
                                 };
                                 return Response_MV;
@@ -272,18 +274,18 @@ namespace DMS_API.Services
                 Response_MV = new ResponseModelView
                 {
                     Success = false,
-                    Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.ExceptionError] + " - " + ex.Message,
+                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError] + " - " + ex.Message,
                     Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
                 };
                 return Response_MV;
             }
         }
-        public async Task<ResponseModelView> GetUsersByID(int id, string Token, string Lang)
+        public async Task<ResponseModelView> GetUsersByID(int id, RequestHeaderModelView RequestHeader)
         {
             try
             {
                 Session_S = new SessionService();
-                var ResponseSession = await Session_S.CheckAuthorizationResponse(Token, Lang);
+                var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
                 if (ResponseSession.Success == false)
                 {
                     return ResponseSession;
@@ -301,7 +303,7 @@ namespace DMS_API.Services
                         Response_MV = new ResponseModelView
                         {
                             Success = false,
-                            Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.ExceptionError],
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
                             Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
                         };
                         return Response_MV;
@@ -330,7 +332,7 @@ namespace DMS_API.Services
                         Response_MV = new ResponseModelView
                         {
                             Success = true,
-                            Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.GetSuccess],
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
                             Data = User_M
                         };
                         return Response_MV;
@@ -340,7 +342,7 @@ namespace DMS_API.Services
                         Response_MV = new ResponseModelView
                         {
                             Success = false,
-                            Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.NoData],
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoData],
                             Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
                         };
                         return Response_MV;
@@ -352,12 +354,66 @@ namespace DMS_API.Services
                 Response_MV = new ResponseModelView
                 {
                     Success = false,
-                    Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.ExceptionError] + " - " + ex.Message,
+                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError] + " - " + ex.Message,
                     Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
                 };
                 return Response_MV;
             }
         }
+        //public async Task<ResponseModelView> AddUser(UserModel User_M, string Token, string Lang)
+        //{
+        //    try
+        //    {
+        //        Session_S = new SessionService();
+        //        var ResponseSession = await Session_S.CheckAuthorizationResponse(Token, Lang);
+        //        if (ResponseSession.Success == false)
+        //        {
+        //            return ResponseSession;
+        //        }
+        //        else
+        //        {
+        //            if (ValidationService.IsEmpty(User_M.UserName) == true || ValidationService.IsEmpty(User_M.Password) == true || ValidationService.IsEmpty(User_M.PhoneNo) == true)
+        //            {
+        //                Response_MV = new ResponseModelView
+        //                {
+        //                    Success = false,
+        //                    Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.MustFillInformation],
+        //                    Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+        //                };
+        //                return Response_MV;
+        //            }
+        //            else
+        //            {
+        //                int checkDeblicate = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) FROM User.Users WHERE UsUserName = '{User_M.UserName}' "));
+        //                if (checkDeblicate == 0)
+        //                {
+
+        //                    string outValue = await Task.Run(() => dam.DoStoredProceAndPutOutValue("AddUser_pro","",));
+        //                }
+        //                else
+        //                {
+        //                    Response_MV = new ResponseModelView
+        //                    {
+        //                        Success = false,
+        //                        Message = User_M.UserName + " " + MessageService.MsgDictionary[Lang.ToLower()][MessageService.IsExist],
+        //                        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+        //                    };
+        //                    return Response_MV;
+        //                }
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Response_MV = new ResponseModelView
+        //        {
+        //            Success = false,
+        //            Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.ExceptionError] + " - " + ex.Message,
+        //            Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+        //        };
+        //        return Response_MV;
+        //    }
+        //}
 
         #endregion
 

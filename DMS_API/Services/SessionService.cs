@@ -24,16 +24,16 @@ namespace DMS_API.Services
         #endregion
 
         #region CURD Functions 
-        public async Task<ResponseModelView> CheckAuthorizationResponse(string Token, string Lang)
+        public async Task<ResponseModelView> CheckAuthorizationResponse(RequestHeaderModelView RequestHeader)
         {
             try
             {
-                if (ValidationService.IsEmpty(Token) == true)
+                if (ValidationService.IsEmpty(RequestHeader.Token) == true)
                 {
                     Response_MV = new ResponseModelView
                     {
                         Success = false,
-                        Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.TokenEmpty],
+                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.TokenEmpty],
                         Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
                     };
                     return Response_MV;
@@ -41,13 +41,13 @@ namespace DMS_API.Services
                 else
                 {
                     Session_M = new SessionModel();
-                    Session_M = await Task.Run(() => this.CheckAuthentication(Token));
+                    Session_M = await Task.Run(() => this.CheckAuthentication(RequestHeader.Token));
                     if (Session_M == null)
                     {
                         Response_MV = new ResponseModelView
                         {
                             Success = false,
-                            Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.ExceptionError],
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
                             Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
                         };
                         return Response_MV;
@@ -59,7 +59,7 @@ namespace DMS_API.Services
                             Response_MV = new ResponseModelView
                             {
                                 Success = false,
-                                Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.Unauthorized],
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.Unauthorized],
                                 Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
                             };
                             return Response_MV;
@@ -71,7 +71,7 @@ namespace DMS_API.Services
                                 Response_MV = new ResponseModelView
                                 {
                                     Success = false,
-                                    Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.ExpiredToken],
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExpiredToken],
                                     Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
                                 };
                                 return Response_MV;
@@ -103,7 +103,7 @@ namespace DMS_API.Services
                 Response_MV = new ResponseModelView
                 {
                     Success = false,
-                    Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.ExceptionError] + " - " + ex.Message,
+                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError] + " - " + ex.Message,
                     Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
                 };
                 return Response_MV;

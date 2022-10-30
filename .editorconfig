@@ -47,3 +47,6 @@ dotnet_diagnostic.CS8604.severity = silent
 
 # SYSLIB0021: Type or member is obsolete
 dotnet_diagnostic.SYSLIB0021.severity = silent
+
+# CS8602: Dereference of a possibly null reference.
+dotnet_diagnostic.CS8602.severity = none

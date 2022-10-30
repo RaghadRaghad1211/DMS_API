@@ -1,6 +1,7 @@
 ﻿using ArchiveAPI.Services;
 using DMS_API.Models;
 using DMS_API.ModelsView;
+using Microsoft.AspNetCore.Http.Headers;
 using System.Data;
 using System.Net;
 
@@ -25,12 +26,12 @@ namespace DMS_API.Services
         #endregion
 
         #region CURD Functions        
-        public async Task<ResponseModelView> GetTranslationList(PaginationModelView Pagination_MV, string Token, string Lang)
+        public async Task<ResponseModelView> GetTranslationList(PaginationModelView Pagination_MV, RequestHeaderModelView RequestHeader)
         {
             try
             {
                 Session_S = new SessionService();
-                var ResponseSession = await Session_S.CheckAuthorizationResponse(Token, Lang);
+                var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
                 if (ResponseSession.Success == false)
                 {
                     return ResponseSession;
@@ -42,14 +43,14 @@ namespace DMS_API.Services
                         Response_MV = new ResponseModelView
                         {
                             Success = false,
-                            Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.IsInt],
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsInt],
                             Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
                         };
                         return Response_MV;
                     }
                     else
                     {
-                        string ColLang = HelpService.GetMessageColumn(Lang);
+                        string ColLang = HelpService.GetMessageColumn(RequestHeader.Lang);
                         int _PageNumber = Pagination_MV.PageNumber == 0 ? 1 : Pagination_MV.PageNumber;
                         int _PageRows = Pagination_MV.PageRows == 0 ? 1 : Pagination_MV.PageRows;
                         int CurrentPage = _PageNumber;
@@ -59,7 +60,7 @@ namespace DMS_API.Services
                             Response_MV = new ResponseModelView
                             {
                                 Success = false,
-                                Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.ExceptionError],
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
                                 Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
                             };
                             return Response_MV;
@@ -71,7 +72,7 @@ namespace DMS_API.Services
                                 Response_MV = new ResponseModelView
                                 {
                                     Success = false,
-                                    Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.NoData],
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoData],
                                     Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
                                 };
                                 return Response_MV;
@@ -88,7 +89,7 @@ namespace DMS_API.Services
                                     Response_MV = new ResponseModelView
                                     {
                                         Success = false,
-                                        Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.ExceptionError],
+                                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
                                         Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
                                     };
                                     return Response_MV;
@@ -112,7 +113,7 @@ namespace DMS_API.Services
                                     Response_MV = new ResponseModelView
                                     {
                                         Success = true,
-                                        Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.GetSuccess],
+                                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
                                         Data = new { TotalRows = MaxTotal.Rows[0]["TotalRows"], MaxPage = MaxTotal.Rows[0]["MaxPage"], CurrentPage, data = Translation_Mlist }
                                     };
                                     return Response_MV;
@@ -122,7 +123,7 @@ namespace DMS_API.Services
                                     Response_MV = new ResponseModelView
                                     {
                                         Success = false,
-                                        Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.NoData],
+                                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoData],
                                         Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
                                     };
                                     return Response_MV;
@@ -137,25 +138,25 @@ namespace DMS_API.Services
                 Response_MV = new ResponseModelView
                 {
                     Success = false,
-                    Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.ExceptionError] + " - " + ex.Message,
+                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError] + " - " + ex.Message,
                     Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
                 };
                 return Response_MV;
             }
         }
-        public async Task<ResponseModelView> GetTranslationByID(int id, string Token, string Lang)
+        public async Task<ResponseModelView> GetTranslationByID(int id, RequestHeaderModelView RequestHeader)
         {
             try
             {
                 Session_S = new SessionService();
-                var ResponseSession = await Session_S.CheckAuthorizationResponse(Token, Lang);
+                var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
                 if (ResponseSession.Success == false)
                 {
                     return ResponseSession;
                 }
                 else
                 {
-                    string Mlang = HelpService.GetMessageColumn(Lang);
+                    string Mlang = HelpService.GetMessageColumn(RequestHeader.Lang);
                     string get = $"SELECT Trid, TrKey, TrArName, TrEnName, TrKrName FROM Main.Translation WHERE Trid={id}";
                     Dt = new DataTable();
                     Dt = await Task.Run(() => dam.FireDataTable(get));
@@ -164,7 +165,7 @@ namespace DMS_API.Services
                         Response_MV = new ResponseModelView
                         {
                             Success = false,
-                            Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.ExceptionError],
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
                             Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
                         };
                         return Response_MV;
@@ -183,7 +184,7 @@ namespace DMS_API.Services
                         Response_MV = new ResponseModelView
                         {
                             Success = true,
-                            Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.GetSuccess],
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
                             Data = Translation_M
                         };
                         return Response_MV;
@@ -193,7 +194,7 @@ namespace DMS_API.Services
                         Response_MV = new ResponseModelView
                         {
                             Success = false,
-                            Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.NoData],
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoData],
                             Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
                         };
                         return Response_MV;
@@ -205,18 +206,18 @@ namespace DMS_API.Services
                 Response_MV = new ResponseModelView
                 {
                     Success = false,
-                    Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.ExceptionError] + " - " + ex.Message,
+                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError] + " - " + ex.Message,
                     Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
                 };
                 return Response_MV;
             }
         }
-        public async Task<ResponseModelView> AddTranslationWords(TranslationModel Translation_M, string Token, string Lang)
+        public async Task<ResponseModelView> AddTranslationWords(TranslationModel Translation_M, RequestHeaderModelView RequestHeader)
         {
             try
             {
                 Session_S = new SessionService();
-                var ResponseSession = await Session_S.CheckAuthorizationResponse(Token, Lang);
+                var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
                 if (ResponseSession.Success == false)
                 {
                     return ResponseSession;
@@ -228,14 +229,14 @@ namespace DMS_API.Services
                         Response_MV = new ResponseModelView
                         {
                             Success = false,
-                            Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.MustFillInformation],
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.MustFillInformation],
                             Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
                         };
                         return Response_MV;
                     }
                     else
                     {
-                        string Mlang = HelpService.GetMessageColumn(Lang);
+                        string Mlang = HelpService.GetMessageColumn(RequestHeader.Lang);
                         int checkDeblicate = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(TrKey) FROM Main.Translation WHERE TrKey = '{Translation_M.TrKey}' "));
                         if (checkDeblicate == 0)
                         {
@@ -246,7 +247,7 @@ namespace DMS_API.Services
                                 Response_MV = new ResponseModelView
                                 {
                                     Success = false,
-                                    Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.InsertFaild],
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.InsertFaild],
                                     Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
                                 };
                                 return Response_MV;
@@ -256,7 +257,7 @@ namespace DMS_API.Services
                                 Response_MV = new ResponseModelView
                                 {
                                     Success = true,
-                                    Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.InsertSuccess],
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.InsertSuccess],
                                     Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
                                 };
                                 return Response_MV;
@@ -267,7 +268,7 @@ namespace DMS_API.Services
                             Response_MV = new ResponseModelView
                             {
                                 Success = false,
-                                Message = Translation_M.TrKey.ToString() + " " + MessageService.MsgDictionary[Lang.ToLower()][MessageService.IsExist],
+                                Message = Translation_M.TrKey.ToString() + " " + MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsExist],
                                 Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
                             };
                             return Response_MV;
@@ -280,18 +281,18 @@ namespace DMS_API.Services
                 Response_MV = new ResponseModelView
                 {
                     Success = false,
-                    Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.ExceptionError] + " - " + ex.Message,
+                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError] + " - " + ex.Message,
                     Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
                 };
                 return Response_MV;
             }
         }
-        public async Task<ResponseModelView> EditTranslationWords(TranslationModel Translation_M, string Token, string Lang)
+        public async Task<ResponseModelView> EditTranslationWords(TranslationModel Translation_M, RequestHeaderModelView RequestHeader)
         {
             try
             {
                 Session_S = new SessionService();
-                var ResponseSession = await Session_S.CheckAuthorizationResponse(Token, Lang);
+                var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
                 if (ResponseSession.Success == false)
                 {
                     return ResponseSession;
@@ -303,14 +304,14 @@ namespace DMS_API.Services
                         Response_MV = new ResponseModelView
                         {
                             Success = false,
-                            Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.MustFillInformation],
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.MustFillInformation],
                             Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
                         };
                         return Response_MV;
                     }
                     else
                     {
-                        string Mlang = HelpService.GetMessageColumn(Lang);
+                        string Mlang = HelpService.GetMessageColumn(RequestHeader.Lang);
                         int check = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(Trid) FROM Main.Translation WHERE Trid={Translation_M.Trid}"));
                         if (check > 0)
                         {
@@ -320,7 +321,7 @@ namespace DMS_API.Services
                             Response_MV = new ResponseModelView
                             {
                                 Success = true,
-                                Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.UpdateSuccess],
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.UpdateSuccess],
                                 Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
                             };
                             return Response_MV;
@@ -331,7 +332,7 @@ namespace DMS_API.Services
                             Response_MV = new ResponseModelView
                             {
                                 Success = false,
-                                Message = Translation_M.Trid.ToString() + " " + MessageService.MsgDictionary[Lang.ToLower()][MessageService.IsNotExist],
+                                Message = Translation_M.Trid.ToString() + " " + MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsNotExist],
                                 Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
                             };
                             return Response_MV;
@@ -344,18 +345,18 @@ namespace DMS_API.Services
                 Response_MV = new ResponseModelView
                 {
                     Success = false,
-                    Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.ExceptionError] + " - " + ex.Message,
+                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError] + " - " + ex.Message,
                     Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
                 };
                 return Response_MV;
             }
         }
-        public async Task<ResponseModelView> SearchTranslationWords(SearchTranslationModelView SearchTranslation_MV, string Token, string Lang)
+        public async Task<ResponseModelView> SearchTranslationWords(SearchTranslationModelView SearchTranslation_MV, RequestHeaderModelView RequestHeader)
         {
             try
             {
                 Session_S = new SessionService();
-                var ResponseSession = await Session_S.CheckAuthorizationResponse(Token, Lang);
+                var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
                 if (ResponseSession.Success == false)
                 {
                     return ResponseSession;
@@ -367,7 +368,7 @@ namespace DMS_API.Services
                         Response_MV = new ResponseModelView
                         {
                             Success = false,
-                            Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.IsInt],
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsInt],
                             Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
                         };
                         return Response_MV;
@@ -386,7 +387,7 @@ namespace DMS_API.Services
                             Response_MV = new ResponseModelView
                             {
                                 Success = false,
-                                Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.ExceptionError],
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
                                 Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
                             };
                             return Response_MV;
@@ -398,7 +399,7 @@ namespace DMS_API.Services
                                 Response_MV = new ResponseModelView
                                 {
                                     Success = false,
-                                    Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.NoData],
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoData],
                                     Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
                                 };
                                 return Response_MV;
@@ -416,7 +417,7 @@ namespace DMS_API.Services
                                     Response_MV = new ResponseModelView
                                     {
                                         Success = false,
-                                        Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.GetFaild],
+                                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetFaild],
                                         Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
                                     };
                                     return Response_MV;
@@ -439,7 +440,7 @@ namespace DMS_API.Services
                                     Response_MV = new ResponseModelView
                                     {
                                         Success = true,
-                                        Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.GetSuccess],
+                                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
                                         Data = new { TotalRows = MaxTotal.Rows[0]["TotalRows"], MaxPage = MaxTotal.Rows[0]["MaxPage"], CurrentPage, data = Translation_Mlist }
                                     };
                                     return Response_MV;
@@ -449,7 +450,7 @@ namespace DMS_API.Services
                                     Response_MV = new ResponseModelView
                                     {
                                         Success = false,
-                                        Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.NoData],
+                                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoData],
                                         Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
                                     };
                                     return Response_MV;
@@ -464,25 +465,25 @@ namespace DMS_API.Services
                 Response_MV = new ResponseModelView
                 {
                     Success = false,
-                    Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.ExceptionError] + " - " + ex.Message,
+                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError] + " - " + ex.Message,
                     Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
                 };
                 return Response_MV;
             }
         }
-        public async Task<ResponseModelView> GetTranslationPage(string Token, string Lang)
+        public async Task<ResponseModelView> GetTranslationPage(RequestHeaderModelView RequestHeader)
         {
             try
             {
                 Session_S = new SessionService();
-                var ResponseSession = await Session_S.CheckAuthorizationResponse(Token, Lang);
+                var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
                 if (ResponseSession.Success == false)
                 {
                     return ResponseSession;
                 }
                 else
                 {
-                    string Mlang = HelpService.GetTranslationColumn(Lang);
+                    string Mlang = HelpService.GetTranslationColumn(RequestHeader.Lang);
                     string get = $"SELECT DISTINCT  TrKey, {Mlang} AS 'Word' FROM Main.Translation";
                     Dt = new DataTable();
                     Dt = await Task.Run(() => dam.FireDataTable(get));
@@ -491,7 +492,7 @@ namespace DMS_API.Services
                         Response_MV = new ResponseModelView
                         {
                             Success = false,
-                            Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.ExceptionError],
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
                             Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
                         };
                         return Response_MV;
@@ -513,7 +514,7 @@ namespace DMS_API.Services
                         Response_MV = new ResponseModelView
                         {
                             Success = true,
-                            Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.GetSuccess],
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
                             Data = dict2
                         };
                         return Response_MV;
@@ -523,7 +524,7 @@ namespace DMS_API.Services
                         Response_MV = new ResponseModelView
                         {
                             Success = false,
-                            Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.NoData],
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoData],
                             Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
                         };
                         return Response_MV;
@@ -535,7 +536,7 @@ namespace DMS_API.Services
                 Response_MV = new ResponseModelView
                 {
                     Success = false,
-                    Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.ExceptionError] + " - " + ex.Message,
+                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError] + " - " + ex.Message,
                     Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
                 };
                 return Response_MV;
