@@ -13,7 +13,6 @@ namespace DMS_API.Services
         private readonly DataAccessService dam;
         private DataTable Dt { get; set; }
         private SessionModel Session_M { get; set; }
-        private SessionService Session_S { get; set; }
         private ResponseModelView Response_MV { get; set; }
         #endregion
 
@@ -25,20 +24,19 @@ namespace DMS_API.Services
         #endregion
 
         #region CURD Functions 
-        public async Task<ResponseModelView> CheckTokenResponse(string Token, string Lang)
+        public async Task<ResponseModelView> CheckAuthorizationResponse(string Token, string Lang)
         {
             try
             {
-                Session_S = new SessionService();
                 Session_M = new SessionModel();
-                Session_M = await Task.Run(() => Session_S.CheckSession(Token));
+                Session_M = await Task.Run(() => this.CheckAuthentication(Token));
                 if (Session_M == null)
                 {
                     Response_MV = new ResponseModelView
                     {
                         Success = false,
-                        Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.GetFaild],
-                        Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                        Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.ExceptionError],
+                        Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
                     };
                     return Response_MV;
                 }
@@ -87,18 +85,18 @@ namespace DMS_API.Services
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 Response_MV = new ResponseModelView
                 {
                     Success = false,
-                    Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.GetFaild],
-                    Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                    Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.ExceptionError] + " - " + ex.Message,
+                    Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
                 };
                 return Response_MV;
             }
         }
-        public async Task<SessionModel> CheckSession(string UserToken)
+        private async Task<SessionModel> CheckAuthentication(string UserToken)
         {
             try
             {
@@ -128,7 +126,7 @@ namespace DMS_API.Services
             }
             catch (Exception)
             {
-                Session_M = new SessionModel(); // error GetFaild
+                Session_M = new SessionModel();
                 return Session_M;
             }
         }

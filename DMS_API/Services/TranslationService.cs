@@ -1,7 +1,6 @@
 ﻿using ArchiveAPI.Services;
 using DMS_API.Models;
 using DMS_API.ModelsView;
-using Newtonsoft.Json.Linq;
 using System.Data;
 using System.Net;
 
@@ -31,7 +30,7 @@ namespace DMS_API.Services
             try
             {
                 Session_S = new SessionService();
-                var ResponseSession = await Session_S.CheckTokenResponse(Token, Lang);
+                var ResponseSession = await Session_S.CheckAuthorizationResponse(Token, Lang);
                 if (ResponseSession.Success == false)
                 {
                     return ResponseSession;
@@ -77,8 +76,8 @@ namespace DMS_API.Services
                                 Response_MV = new ResponseModelView
                                 {
                                     Success = false,
-                                    Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.GetFaild],
-                                    Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                                    Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.ExceptionError],
+                                    Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
                                 };
                                 return Response_MV;
                             }
@@ -125,8 +124,8 @@ namespace DMS_API.Services
                 Response_MV = new ResponseModelView
                 {
                     Success = false,
-                    Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.GetFaild] + " - " + ex.Message,
-                    Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                    Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.ExceptionError] + " - " + ex.Message,
+                    Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
                 };
                 return Response_MV;
             }
@@ -137,7 +136,7 @@ namespace DMS_API.Services
             try
             {
                 Session_S = new SessionService();
-                var ResponseSession = await Session_S.CheckTokenResponse(Token, Lang);
+                var ResponseSession = await Session_S.CheckAuthorizationResponse(Token, Lang);
                 if (ResponseSession.Success == false)
                 {
                     return ResponseSession;
@@ -153,8 +152,8 @@ namespace DMS_API.Services
                         Response_MV = new ResponseModelView
                         {
                             Success = false,
-                            Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.GetFaild],
-                            Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                            Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.ExceptionError],
+                            Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
                         };
                         return Response_MV;
                     }
@@ -196,8 +195,8 @@ namespace DMS_API.Services
                 Response_MV = new ResponseModelView
                 {
                     Success = false,
-                    Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.GetFaild] + " - " + ex.Message,
-                    Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                    Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.ExceptionError] + " - " + ex.Message,
+                    Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
                 };
                 return Response_MV;
             }
@@ -208,7 +207,7 @@ namespace DMS_API.Services
             try
             {
                 Session_S = new SessionService();
-                var ResponseSession = await Session_S.CheckTokenResponse(Token, Lang);
+                var ResponseSession = await Session_S.CheckAuthorizationResponse(Token, Lang);
                 if (ResponseSession.Success == false)
                 {
                     return ResponseSession;
@@ -272,8 +271,8 @@ namespace DMS_API.Services
                 Response_MV = new ResponseModelView
                 {
                     Success = false,
-                    Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.InsertFaild] + " - " + ex.Message,
-                    Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                    Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.ExceptionError] + " - " + ex.Message,
+                    Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
                 };
                 return Response_MV;
             }
@@ -284,7 +283,7 @@ namespace DMS_API.Services
             try
             {
                 Session_S = new SessionService();
-                var ResponseSession = await Session_S.CheckTokenResponse(Token, Lang);
+                var ResponseSession = await Session_S.CheckAuthorizationResponse(Token, Lang);
                 if (ResponseSession.Success == false)
                 {
                     return ResponseSession;
@@ -337,8 +336,8 @@ namespace DMS_API.Services
                 Response_MV = new ResponseModelView
                 {
                     Success = false,
-                    Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.UpdateFaild] + " - " + ex.Message,
-                    Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                    Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.ExceptionError] + " - " + ex.Message,
+                    Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
                 };
                 return Response_MV;
             }
@@ -349,7 +348,7 @@ namespace DMS_API.Services
             try
             {
                 Session_S = new SessionService();
-                var ResponseSession = await Session_S.CheckTokenResponse(Token, Lang);
+                var ResponseSession = await Session_S.CheckAuthorizationResponse(Token, Lang);
                 if (ResponseSession.Success == false)
                 {
                     return ResponseSession;
@@ -368,8 +367,8 @@ namespace DMS_API.Services
                         Response_MV = new ResponseModelView
                         {
                             Success = false,
-                            Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.GetFaild],
-                            Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                            Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.ExceptionError],
+                            Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
                         };
                         return Response_MV;
                     }
@@ -445,8 +444,8 @@ namespace DMS_API.Services
                 Response_MV = new ResponseModelView
                 {
                     Success = false,
-                    Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.GetFaild] + " - " + ex.Message,
-                    Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                    Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.ExceptionError] + " - " + ex.Message,
+                    Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
                 };
                 return Response_MV;
             }
@@ -457,7 +456,7 @@ namespace DMS_API.Services
             try
             {
                 Session_S = new SessionService();
-                var ResponseSession = await Session_S.CheckTokenResponse(Token, Lang);
+                var ResponseSession = await Session_S.CheckAuthorizationResponse(Token, Lang);
                 if (ResponseSession.Success == false)
                 {
                     return ResponseSession;
@@ -473,8 +472,8 @@ namespace DMS_API.Services
                         Response_MV = new ResponseModelView
                         {
                             Success = false,
-                            Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.GetFaild],
-                            Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                            Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.ExceptionError],
+                            Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
                         };
                         return Response_MV;
                     }
@@ -483,11 +482,8 @@ namespace DMS_API.Services
                     {
                         for (int i = 0; i < Dt.Rows.Count; i++)
                         {
-
                             dict1.Add(Dt.Rows[i]["TrKey"].ToString(), Dt.Rows[i]["Word"].ToString());
-
                         }
-
                         //Dictionary<string, Dictionary<string, string>> dict2 = new();
                         //dict2.Add("Trans", dict1);
                         Dictionary<string, Dictionary<string, string>> dict2 = new()
@@ -520,8 +516,8 @@ namespace DMS_API.Services
                 Response_MV = new ResponseModelView
                 {
                     Success = false,
-                    Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.GetFaild] + " - " + ex.Message,
-                    Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                    Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.ExceptionError] + " - " + ex.Message,
+                    Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
                 };
                 return Response_MV;
             }

@@ -88,6 +88,8 @@ namespace DMS_API.Services
         public static readonly string IsExist = "IsExist";
         public static readonly string IsNotExist = "IsNotExist";
         public static readonly string MustFillInformation = "MustFillInformation";
+        public static readonly string ServerError = "Server Error";
+        public static readonly string ExceptionError = "Exception Error";
 
 
 
@@ -147,6 +149,8 @@ namespace DMS_API.Services
                     { Unauthorized, "المستخدم غير مصرح له بطلب هذا الإجراء" },
                     { Forbidden, "المستخدم ممنوع من طلب هذا الإجراء" },
                     { ExpiredToken, "انتهت صلاحية رمز الوصول" },
+                    { ExceptionError, "فشل - استثناء" },
+                    {ServerError ,"خطأ في الخادم"},
 
 
 
@@ -202,6 +206,9 @@ namespace DMS_API.Services
                     { Unauthorized, "User is Unauthorized to request this action" },
                     { Forbidden, "User is Forbidden from requesting this action" },
                     { ExpiredToken, "The access token expired" },
+                    { ExceptionError, "Faild - Exception" },
+                    {ServerError ,"Server Error"},
+
 
 
 

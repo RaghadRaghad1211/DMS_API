@@ -67,34 +67,34 @@ try
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
-    #region AddSwaggerGen
-    builder.Services.AddSwaggerGen(option =>
-    {
-        option.SwaggerDoc("v1", new OpenApiInfo { Title = "Demo DMS_API", Version = "v1" });
-        option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-        {
-            In = ParameterLocation.Header,
-            Description = "Please enter a valid token",
-            Name = "Authorization",
-            Type = SecuritySchemeType.Http,
-            BearerFormat = "JWT",
-            Scheme = "Bearer"
-        });
-        option.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type=ReferenceType.SecurityScheme,
-                    Id="Bearer"
-                }
-            },
-            new string[]{}
-        }
-    });
-    });
+    #region AddSwaggerGen-Authorization
+    //builder.Services.AddSwaggerGen(option =>
+    //{
+    //    option.SwaggerDoc("v1", new OpenApiInfo { Title = "Demo DMS_API", Version = "v1" });
+    //    option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    //    {
+    //        In = ParameterLocation.Header,
+    //        Description = "Please enter a valid token",
+    //        Name = "Authorization",
+    //        Type = SecuritySchemeType.Http,
+    //        BearerFormat = "JWT",
+    //        Scheme = "Bearer"
+    //    });
+    //    option.AddSecurityRequirement(new OpenApiSecurityRequirement
+    //{
+    //    {
+    //        new OpenApiSecurityScheme
+    //        {
+    //            Reference = new OpenApiReference
+    //            {
+    //                Type=ReferenceType.SecurityScheme,
+    //                Id="Bearer"
+    //            }
+    //        },
+    //        new string[]{}
+    //    }
+    //});
+    //});
     #endregion
 
     var app = builder.Build();
@@ -114,6 +114,7 @@ try
 
     //app.UseCors(c => c.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 
+    #region HttpStatusCode
     app.Use(async (context, next) =>
     {
         await next();
@@ -141,11 +142,12 @@ try
             await context.Response.WriteAsync(Newtonsoft.Json.JsonConvert.SerializeObject(new ResponseModelView
             {
                 Success = false,
-                Message = "Internal Server Error",
+                Message = MessageService.MsgDictionary[context.Request.Headers["Lang"].ToString().ToLower()][MessageService.ServerError],
                 Data = (int)HttpStatusCode.InternalServerError
             }));
         }
     });
+    #endregion
 
     app.UseAuthentication();
 

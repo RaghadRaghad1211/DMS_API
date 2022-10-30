@@ -13,7 +13,7 @@ namespace DMS_API.Services
         private DataTable dt { get; set; }
         private UserModel User_M { get; set; }
         private List<UserModel> User_Mlist { get; set; }
-        private ResponseModelView response_MV { get; set; }
+        private ResponseModelView Response_MV { get; set; }
         #endregion
 
         #region Constructor        
@@ -30,35 +30,35 @@ namespace DMS_API.Services
             {
                 if (ValidationService.IsEmpty(User_MV.Username) == true)
                 {
-                    response_MV = new ResponseModelView
+                    Response_MV = new ResponseModelView
                     {
                         Success = false,
                         Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.UsernameMustEnter],
                         Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
                     };
-                    return response_MV;
+                    return Response_MV;
                 }
                 else if (ValidationService.IsEmpty(User_MV.Password) == true)
                 {
-                    response_MV = new ResponseModelView
+                    Response_MV = new ResponseModelView
                     {
                         Success = false,
                         Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.PasswordMustEnter],
                         Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
                     };
-                    return response_MV;
+                    return Response_MV;
                 }
                 else
                 {
                     if (User_MV.Password.Length < 8)
                     {
-                        response_MV = new ResponseModelView
+                        Response_MV = new ResponseModelView
                         {
                             Success = false,
                             Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.Password8Characters],
                             Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
                         };
-                        return response_MV;
+                        return Response_MV;
                     }
                     else
                     { // $ystemAdm!n 
@@ -71,25 +71,25 @@ namespace DMS_API.Services
                         dt = await Task.Run(() => dam.FireDataTable(getUserInfo));
                         if (dt == null)
                         {
-                            response_MV = new ResponseModelView
+                            Response_MV = new ResponseModelView
                             {
                                 Success = false,
                                 Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.LoginFaild],
-                                Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                                Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
                             };
-                            return response_MV;
+                            return Response_MV;
                         }
                         if (dt.Rows.Count > 0)
                         {
                             if (bool.Parse(dt.Rows[0]["UserIsActive"].ToString()) == false)
                             {
-                                response_MV = new ResponseModelView
+                                Response_MV = new ResponseModelView
                                 {
                                     Success = false,
                                     Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.UserNotActive],
                                     Data = new HttpResponseMessage(HttpStatusCode.NotAcceptable).StatusCode
                                 };
-                                return response_MV;
+                                return Response_MV;
                             }
                             else
                             {
@@ -116,23 +116,23 @@ namespace DMS_API.Services
                                 bool checkSession = await Session_S.AddSession(JWTtoken);
                                 if (checkSession == false)
                                 {
-                                    response_MV = new ResponseModelView
+                                    Response_MV = new ResponseModelView
                                     {
                                         Success = false,
-                                        Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.GetFaild],
-                                        Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                                        Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.ExceptionError],
+                                        Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
                                     };
-                                    return response_MV;
+                                    return Response_MV;
                                 }
                                 else
                                 {
-                                    response_MV = new ResponseModelView
+                                    Response_MV = new ResponseModelView
                                     {
                                         Success = true,
                                         Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.GetSuccess],
                                         Data = new { data = User_M, TokenID = JWTtoken.TokenID }
                                     };
-                                    return response_MV;
+                                    return Response_MV;
                                 }
 
                             }
@@ -140,27 +140,26 @@ namespace DMS_API.Services
                         }
                         else
                         {
-                            response_MV = new ResponseModelView
+                            Response_MV = new ResponseModelView
                             {
                                 Success = false,
                                 Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.NoData],
                                 Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
                             };
-                            return response_MV;
+                            return Response_MV;
                         }
                     }
                 }
-
             }
             catch (Exception ex)
             {
-                response_MV = new ResponseModelView
+                Response_MV = new ResponseModelView
                 {
                     Success = false,
-                    Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.LoginFaild] + " - " + ex.Message,
-                    Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                    Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.ExceptionError] + " - " + ex.Message,
+                    Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
                 };
-                return response_MV;
+                return Response_MV;
             }
         }
         #endregion
