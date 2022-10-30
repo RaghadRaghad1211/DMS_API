@@ -10,6 +10,7 @@ namespace DMS_API.Services
     {
         public static bool IsEmpty(this string str)
         {
+            str = str == null ? "" : str;
             return string.IsNullOrEmpty(str.Trim());
         }
 

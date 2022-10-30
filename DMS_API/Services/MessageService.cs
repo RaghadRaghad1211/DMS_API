@@ -90,6 +90,7 @@ namespace DMS_API.Services
         public static readonly string MustFillInformation = "MustFillInformation";
         public static readonly string ServerError = "Server Error";
         public static readonly string ExceptionError = "Exception Error";
+        public static readonly string TokenEmpty = "Token Empty";
 
 
 
@@ -151,6 +152,8 @@ namespace DMS_API.Services
                     { ExpiredToken, "انتهت صلاحية رمز الوصول" },
                     { ExceptionError, "فشل - استثناء" },
                     {ServerError ,"خطأ في الخادم"},
+                    {IsInt ,"يجب ادخال رقم"},
+                    {TokenEmpty ,"رمز الوصول فارغ"},
 
 
 
@@ -208,6 +211,8 @@ namespace DMS_API.Services
                     { ExpiredToken, "The access token expired" },
                     { ExceptionError, "Faild - Exception" },
                     {ServerError ,"Server Error"},
+                    {IsInt ,"Must enter Number"},
+                    {TokenEmpty ,"Token Is Empty"},
 
 
 

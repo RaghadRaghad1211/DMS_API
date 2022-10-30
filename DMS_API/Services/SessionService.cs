@@ -28,60 +28,73 @@ namespace DMS_API.Services
         {
             try
             {
-                Session_M = new SessionModel();
-                Session_M = await Task.Run(() => this.CheckAuthentication(Token));
-                if (Session_M == null)
+                if (ValidationService.IsEmpty(Token) == true)
                 {
                     Response_MV = new ResponseModelView
                     {
                         Success = false,
-                        Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.ExceptionError],
-                        Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                        Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.TokenEmpty],
+                        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
                     };
                     return Response_MV;
                 }
                 else
                 {
-                    if (Session_M.UserID == 0)
+                    Session_M = new SessionModel();
+                    Session_M = await Task.Run(() => this.CheckAuthentication(Token));
+                    if (Session_M == null)
                     {
                         Response_MV = new ResponseModelView
                         {
                             Success = false,
-                            Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.Unauthorized],
-                            Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                            Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.ExceptionError],
+                            Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
                         };
                         return Response_MV;
                     }
                     else
                     {
-                        if (Session_M.IsExpairy == true)
+                        if (Session_M.UserID == 0)
                         {
                             Response_MV = new ResponseModelView
                             {
                                 Success = false,
-                                Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.ExpiredToken],
+                                Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.Unauthorized],
                                 Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
                             };
                             return Response_MV;
                         }
                         else
                         {
-                            Response_MV = new ResponseModelView
+                            if (Session_M.IsExpairy == true)
                             {
-                                Success = true
-                            };
-                            return Response_MV;
+                                Response_MV = new ResponseModelView
+                                {
+                                    Success = false,
+                                    Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.ExpiredToken],
+                                    Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                                };
+                                return Response_MV;
+                            }
+                            else
+                            {
+                                Response_MV = new ResponseModelView
+                                {
+                                    Success = true
+                                };
+                                return Response_MV;
+                            }
+                            //else if (Session_M.IsAdministrator == false)
+                            //{
+                            //    Response_MV = new ResponseModelView
+                            //    {
+                            //        Success = false,
+                            //        Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.Forbidden],
+                            //        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                            //    };
+                            //    return Response_MV;
+                            //}
                         }
-                        //else if (Session_M.IsAdministrator == false)
-                        //{
-                        //    Response_MV = new ResponseModelView
-                        //    {
-                        //        Success = false,
-                        //        Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.Forbidden],
-                        //        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
-                        //    };
-                        //    return Response_MV;
-                        //}
                     }
                 }
             }
