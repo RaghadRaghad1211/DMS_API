@@ -1,4 +1,5 @@
-﻿using DMS_API.ModelsView;
+﻿using DMS_API.Models;
+using DMS_API.ModelsView;
 using DMS_API.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -44,6 +45,15 @@ namespace DMS_API.Controllers
         public async Task<IActionResult> GetUsersByID([FromRoute] int id, [FromHeader] RequestHeaderModelView RequestHeader)
         {
             Response_MV = await User_S.GetUsersByID(id, RequestHeader);
+            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        [Route("AddUser")]
+        public async Task<IActionResult> AddUser([FromBody] AddUserModelView AddUser_MV, [FromHeader] RequestHeaderModelView RequestHeader)
+        {
+            Response_MV = await User_S.AddUser(AddUser_MV, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
     }

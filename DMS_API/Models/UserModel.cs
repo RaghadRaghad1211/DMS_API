@@ -8,8 +8,8 @@ namespace DMS_API.Models
         public int UserID { get; set; }
         public string FullName { get; set; }
         public string UserName { get; set; }
-        [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
-        public string Password { get; set; }
+        //[JsonIgnore(Condition = JsonIgnoreCondition.Always)]
+        //public string Password { get; set; }
         public string Role { get; set; }
         public string PhoneNo { get; set; }
         public string Email { get; set; }

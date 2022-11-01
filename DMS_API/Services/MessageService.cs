@@ -82,6 +82,7 @@ namespace DMS_API.Services
         public static readonly string Active = "Active";
         public static readonly string NotActive = "NotActive";
         public static readonly string IsEmpty = "IsEmpty";
+        public static readonly string IsRequired = "IsRequired";
         public static readonly string IsInt = "IsInt";
         public static readonly string IsDate = "IsInt";
         public static readonly string NoData = "NoData";
@@ -143,7 +144,8 @@ namespace DMS_API.Services
                     { InsertFaild, "فشل بعملية الادخال" },
                     { IsExist, "موجود" },
                     { IsNotExist, "غير موجود" },
-                    { IsEmpty, "حقل فارغ" },
+                    { IsEmpty, "فارغ" },
+                    { IsRequired, "مطلوب" },
                     { MustFillInformation, "يجب ملئ البيانات" },
                     { UpdateSuccess, "تمت عملية التعديل" },
                     { UpdateFaild, "فشل بعملية التعديل" },
@@ -202,7 +204,8 @@ namespace DMS_API.Services
                     { InsertFaild, "Insert Faild" },
                     { IsExist, "Is Exist" },
                     { IsNotExist, "Is Not Exist" },
-                    { IsEmpty, "Field Is Empty" },
+                    { IsEmpty, "Is Empty" },
+                    { IsRequired, "Is Required" },
                     { MustFillInformation, "Must Fill Information" },
                     { UpdateSuccess, "Update Success" },
                     { UpdateFaild, "Update Faild" },

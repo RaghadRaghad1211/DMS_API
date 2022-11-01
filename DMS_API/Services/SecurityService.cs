@@ -16,6 +16,7 @@ namespace DMS_API.Services
     /// </summary>
     public static class SecurityService
     {
+        #region Properteis
         public static readonly string ConnectionString =
             "Server=10.55.101.20,1433;Database=DMS_DB;Integrated Security=false;User ID=dms; Password=dms;Connection Timeout=60";
 
@@ -28,6 +29,7 @@ namespace DMS_API.Services
             "APIsecurity";
         public static readonly string JwtAudience =
             "APIsecurity";
+        #endregion
 
         public static JwtToken GeneratTokenAuthenticate(UserModel User_M)
         {
@@ -47,7 +49,7 @@ namespace DMS_API.Services
                     new Claim("UserInfo", JsonConvert.SerializeObject(User_M)),
                     new Claim(ClaimTypes.NameIdentifier,User_M.UserID.ToString()),
                     new Claim("Username", User_M.UserName),
-                    new Claim("Password", User_M.Password),
+                    //new Claim("Password", User_M.Password),
                     new Claim("FullName", User_M.FullName),
                     new Claim(ClaimTypes.Role,User_M.Role),
                     new Claim("Datetime", DateTime.UtcNow.ToString())

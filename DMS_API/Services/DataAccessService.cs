@@ -258,6 +258,45 @@ namespace ArchiveAPI.Services
                 return null;
             }
         }
+        public string DoQueryExecProcedure(string Query, string @Out, params string[] ParameterValue)
+        {
+            try
+            {
+                int noOfParam = 0;
+                string OutValue = null;
+                Query = Query.Trim();
+                SqlCommand sqlCommand = new SqlCommand()
+                {
+                    Connection = this.CON,
+                    CommandText = Query
+                };
+                this.CMD = sqlCommand;
+                for (int i = 0; i < ParameterValue.Length; i++)
+                {
+                    this.CMD.Parameters.AddWithValue(this.Getparam(Query, ref noOfParam), ParameterValue[i]);
+                }
+                Query = Query.TrimStart(new char[0]);
+                if (this.CON.State == ConnectionState.Closed)
+                {
+                    this.CON.Open();
+                }
+                if (Query.Substring(0, 6).ToUpper() != "SELECT")
+                {
+                    SqlDataReader myReader = this.CMD.ExecuteReader();
+
+                    OutValue = myReader.RecordsAffected.ToString();
+
+                    myReader.Close();
+                }
+
+                return OutValue;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
 
         /// <summary>
         /// Method Doing StoredProcedure { Insert , Update , Delete } and Return String Value , So You Must Define Object String Type For Recieve The String From this Method .
@@ -297,9 +336,29 @@ namespace ArchiveAPI.Services
 
                 return OutValue;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                string ff = ex.Message;
                 return null;
+            }
+
+        }
+
+        public void ExecuteProcedure(string StoredProcedure, string[] parameters)
+        {
+            try
+            {
+                this.CMD = new SqlCommand(StoredProcedure, CON);
+                CMD.CommandType = CommandType.StoredProcedure;
+                foreach (var parameter in parameters)
+                {
+                    CMD.Parameters.Add(parameter);
+                }
+                CMD.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+
             }
 
         }

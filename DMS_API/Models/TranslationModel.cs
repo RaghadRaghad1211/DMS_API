@@ -5,7 +5,7 @@ namespace DMS_API.Models
 {
     public class TranslationModel
     {
-        //[JsonIgnore(Condition = JsonIgnoreCondition.Always)]
+        //[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public int Trid { get; set; }
         public string TrKey { get; set; }
         public string TrArName { get; set; }

@@ -225,6 +225,9 @@ namespace DMS_API.Services
                 else
                 {
                     if (ValidationService.IsEmpty(Translation_M.TrKey) == true || ValidationService.IsEmpty(Translation_M.TrArName) == true || ValidationService.IsEmpty(Translation_M.TrEnName) == true)
+                    //string[] str = { Translation_M.TrKey, Translation_M.TrArName, Translation_M.TrEnName };
+                    //var ff = ValidationService.IsEmpty1(Translation_M);
+                    //if (ValidationService.IsEmpty1(str) != "")
                     {
                         Response_MV = new ResponseModelView
                         {

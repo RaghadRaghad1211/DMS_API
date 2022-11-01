@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Components;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace DMS_API.Services
@@ -12,6 +14,41 @@ namespace DMS_API.Services
         {
             str = str == null ? "" : str;
             return string.IsNullOrEmpty(str.Trim());
+        }
+
+        public static string IsEmpty1(object Parameterstr)
+        {
+            var ApplicantInfo = Parameterstr.GetType();
+            var properties = ApplicantInfo.GetProperties();
+            
+
+
+            string msg = ""; int x = 1;
+            for (int i = 0; i < properties.Length; i++)
+            {
+                //msg = item == null ? "" : item.GetValue();
+                //if (msg.Trim() == "")
+                //{
+                //    msg = msg + x.ToString() + ". ";
+                //    msg = msg + "\n";
+                //    x++;
+                //}
+            }
+
+
+
+
+            foreach (var item in properties)
+            {
+                //msg = item == null ? "" : item.GetValue();
+                //if (msg.Trim() == "")
+                //{
+                //    msg = msg + x.ToString() + ". ";
+                //    msg = msg + "\n";
+                //    x++;
+                //}
+            }
+            return msg;
         }
 
         public static bool IsInt(this string num)
