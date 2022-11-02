@@ -381,6 +381,16 @@ namespace DMS_API.Services
                         };
                         return Response_MV;
                     }
+                    else if (AddUser_MV.Password.Trim() != AddUser_MV.PasswordConfirm.Trim())
+                    {
+                        Response_MV = new ResponseModelView
+                        {
+                            Success = false,
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ConfirmPasswordIsIncorrect],
+                            Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                        };
+                        return Response_MV;
+                    }
                     else
                     {
                         int checkDeblicate = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) FROM [User].Users WHERE UsUserName = '{AddUser_MV.UserName}' "));
@@ -447,6 +457,70 @@ namespace DMS_API.Services
                 return Response_MV;
             }
         }
+        //public async Task<ResponseModelView> EditTranslationWords(TranslationModel Translation_M, RequestHeaderModelView RequestHeader)
+        //{
+        //    try
+        //    {
+        //        Session_S = new SessionService();
+        //        var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
+        //        if (ResponseSession.Success == false)
+        //        {
+        //            return ResponseSession;
+        //        }
+        //        else
+        //        {
+        //            if (ValidationService.IsEmpty(Translation_M.TrArName) == true || ValidationService.IsEmpty(Translation_M.TrEnName) == true)
+        //            {
+        //                Response_MV = new ResponseModelView
+        //                {
+        //                    Success = false,
+        //                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.MustFillInformation],
+        //                    Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+        //                };
+        //                return Response_MV;
+        //            }
+        //            else
+        //            {
+        //                string Mlang = HelpService.GetMessageColumn(RequestHeader.Lang);
+        //                int check = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(Trid) FROM Main.Translation WHERE Trid={Translation_M.Trid}"));
+        //                if (check > 0)
+        //                {
+        //                    string update = $"UPDATE Main.Translation SET TrArName='{Translation_M.TrArName}', TrEnName='{Translation_M.TrEnName}', TrKrName='{Translation_M.TrKrName}'  WHERE Trid={Translation_M.Trid} ";
+        //                    await Task.Run(() => dam.DoQuery(update));
+
+        //                    Response_MV = new ResponseModelView
+        //                    {
+        //                        Success = true,
+        //                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.UpdateSuccess],
+        //                        Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
+        //                    };
+        //                    return Response_MV;
+        //                }
+        //                else
+        //                {
+        //                    // not found id for this record
+        //                    Response_MV = new ResponseModelView
+        //                    {
+        //                        Success = false,
+        //                        Message = Translation_M.Trid.ToString() + " " + MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsNotExist],
+        //                        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+        //                    };
+        //                    return Response_MV;
+        //                }
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Response_MV = new ResponseModelView
+        //        {
+        //            Success = false,
+        //            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError] + " - " + ex.Message,
+        //            Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+        //        };
+        //        return Response_MV;
+        //    }
+        //}
 
         #endregion
 

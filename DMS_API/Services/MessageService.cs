@@ -92,6 +92,7 @@ namespace DMS_API.Services
         public static readonly string ServerError = "Server Error";
         public static readonly string ExceptionError = "Exception Error";
         public static readonly string TokenEmpty = "Token Empty";
+        public static readonly string ConfirmPasswordIsIncorrect = "ConfirmPasswordIsIncorrect";
 
 
 
@@ -156,6 +157,7 @@ namespace DMS_API.Services
                     {ServerError ,"خطأ في الخادم"},
                     {IsInt ,"يجب ادخال رقم"},
                     {TokenEmpty ,"رمز الوصول فارغ"},
+                    {ConfirmPasswordIsIncorrect ,"تأكيد كلمة المرور غير صحيحة"},
 
 
 
@@ -216,6 +218,8 @@ namespace DMS_API.Services
                     {ServerError ,"Server Error"},
                     {IsInt ,"Must enter Number"},
                     {TokenEmpty ,"Token Is Empty"},
+                    {ConfirmPasswordIsIncorrect ,"Confirm Password Is Incorrect"},
+
 
 
 
