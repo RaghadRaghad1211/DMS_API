@@ -56,5 +56,14 @@ namespace DMS_API.Controllers
             Response_MV = await User_S.AddUser(AddUser_MV, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
+
+        [AllowAnonymous]
+        [HttpPut]
+        [Route("EditUser")]
+        public async Task<IActionResult> EditUser([FromBody] EditUserModelView EditUser_MV, [FromHeader] RequestHeaderModelView RequestHeader)
+        {
+            Response_MV = await User_S.EditUser(EditUser_MV, RequestHeader);
+            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
+        }
     }
 }
