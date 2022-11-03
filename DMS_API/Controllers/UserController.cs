@@ -24,9 +24,9 @@ namespace DMS_API.Controllers
         [AllowAnonymous]
         [HttpPost]
         [Route("Login")]
-        public async Task<IActionResult> Login([FromBody]LoginModelView Login_MV, [FromHeader]string? Lang="Ar")
+        public async Task<IActionResult> Login([FromBody] LoginModelView Login_MV, [FromHeader] string? Lang = "Ar")
         {
-            Response_MV = await User_S.Login(Login_MV, Lang);           
+            Response_MV = await User_S.Login(Login_MV, Lang);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
@@ -63,6 +63,23 @@ namespace DMS_API.Controllers
         public async Task<IActionResult> EditUser([FromBody] EditUserModelView EditUser_MV, [FromHeader] RequestHeaderModelView RequestHeader)
         {
             Response_MV = await User_S.EditUser(EditUser_MV, RequestHeader);
+            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
+        }
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("SearchUsersByUserName/{username}")]
+        public async Task<IActionResult> SearchUsersByUserName([FromRoute] string username, [FromHeader] RequestHeaderModelView RequestHeader)
+        {
+            Response_MV = await User_S.SearchUsersByUserName(username, RequestHeader);
+            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("SearchUsersAdvance")]
+        public async Task<IActionResult> SearchUsersAdvance([FromBody] SearchUserModelView SearchUser_MV, [FromHeader] RequestHeaderModelView RequestHeader)
+        {
+            Response_MV = await User_S.SearchUsersAdvance(SearchUser_MV, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
     }

@@ -79,9 +79,10 @@ namespace DMS_API.Services
                             }
                             else
                             {
-                                string get = $"SELECT Trid, TrKey, TrArName, TrEnName, TrKrName FROM Main.Translation ORDER BY TrId " +
-                                                             $"OFFSET ({_PageNumber}-1)*{_PageRows} ROWS " +
-                                                             $"FETCH NEXT {_PageRows} ROWS ONLY ";
+                                string get = "SELECT       Trid, TrKey, TrArName, TrEnName, TrKrName " +
+                                             "FROM         Main.Translation       ORDER BY TrId " +
+                                            $"OFFSET       ({_PageNumber}-1)*{_PageRows} ROWS " +
+                                            $"FETCH NEXT    {_PageRows} ROWS ONLY ";
                                 Dt = new DataTable();
                                 Dt = await Task.Run(() => dam.FireDataTable(get));
                                 if (Dt == null)
@@ -378,7 +379,6 @@ namespace DMS_API.Services
                     }
                     else
                     {
-                        //string Mlang = HelpService.GetMessageColumn(Lang);
                         string ColumnSearch = HelpService.GetTranslationSearchColumn(SearchTranslation_MV.KeySearch);
                         int _PageNumber = SearchTranslation_MV.PageNumber == 0 ? 1 : SearchTranslation_MV.PageNumber;
                         int _PageRows = SearchTranslation_MV.PageRows == 0 ? 1 : SearchTranslation_MV.PageRows;

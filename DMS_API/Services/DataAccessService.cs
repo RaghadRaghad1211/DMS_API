@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
+﻿using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace ArchiveAPI.Services
 {
@@ -258,7 +254,7 @@ namespace ArchiveAPI.Services
                 return null;
             }
         }
-        public string DoQueryExecProcedure(string Query, string @Out, params string[] ParameterValue)
+        public string DoQueryExecProcedure(string Query, params string[] ParameterValue)
         {
             try
             {
@@ -340,25 +336,6 @@ namespace ArchiveAPI.Services
             {
                 string ff = ex.Message;
                 return null;
-            }
-
-        }
-
-        public void ExecuteProcedure(string StoredProcedure, string[] parameters)
-        {
-            try
-            {
-                this.CMD = new SqlCommand(StoredProcedure, CON);
-                CMD.CommandType = CommandType.StoredProcedure;
-                foreach (var parameter in parameters)
-                {
-                    CMD.Parameters.Add(parameter);
-                }
-                CMD.ExecuteNonQuery();
-            }
-            catch (Exception ex)
-            {
-
             }
 
         }
