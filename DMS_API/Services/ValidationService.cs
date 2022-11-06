@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace DMS_API.Services
@@ -16,37 +17,21 @@ namespace DMS_API.Services
             return string.IsNullOrEmpty(str.Trim());
         }
 
-        public static string IsEmpty1(object Parameterstr)
+        public static string IsEmptyList(this object ObjClass)
         {
-            var ApplicantInfo = Parameterstr.GetType();
-            var properties = ApplicantInfo.GetProperties();
-            
-
-
+            var obj = ObjClass.GetType();
             string msg = ""; int x = 1;
-            for (int i = 0; i < properties.Length; i++)
+            foreach (PropertyInfo property in obj.GetProperties())
             {
-                //msg = item == null ? "" : item.GetValue();
-                //if (msg.Trim() == "")
-                //{
-                //    msg = msg + x.ToString() + ". ";
-                //    msg = msg + "\n";
-                //    x++;
-                //}
-            }
-
-
-
-
-            foreach (var item in properties)
-            {
-                //msg = item == null ? "" : item.GetValue();
-                //if (msg.Trim() == "")
-                //{
-                //    msg = msg + x.ToString() + ". ";
-                //    msg = msg + "\n";
-                //    x++;
-                //}
+                var name = property.Name;
+                var value = property.GetValue(ObjClass, null)?.ToString();
+                if (value == null || value.Trim() == "")
+                {
+                    msg = msg + x.ToString() + ". ";
+                    msg = msg + name + "  ";
+                    //msg = msg + name + "\n";
+                    x++;
+                }
             }
             return msg;
         }
@@ -60,6 +45,24 @@ namespace DMS_API.Services
         {
             return DateTime.TryParseExact(date.Trim(), new string[] { "dd/MM/yyyy", "MM/dd/yyyy" },
                                           CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime value);
+        }
+
+        public static bool IsPhoneNumber(this string phoneNumber)
+        {
+            int count = phoneNumber.Length;
+            if (count == 11)
+            {
+                return Regex.Match(phoneNumber, @"^([0-9]{11})$").Success;
+            }
+            return false;
+        }
+
+        public static bool IsEmail(this string email)
+        {
+            int count = email.Count(x => x == '@');
+            return count == 1 ? true : false;
+
+            //return email.Contains('@');
         }
 
         public static string IsPasswordStrength(this string TxtPassword)

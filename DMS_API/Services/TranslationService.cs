@@ -225,15 +225,13 @@ namespace DMS_API.Services
                 }
                 else
                 {
-                    if (ValidationService.IsEmpty(Translation_M.TrKey) == true || ValidationService.IsEmpty(Translation_M.TrArName) == true || ValidationService.IsEmpty(Translation_M.TrEnName) == true)
-                    //string[] str = { Translation_M.TrKey, Translation_M.TrArName, Translation_M.TrEnName };
-                    //var ff = ValidationService.IsEmpty1(Translation_M);
-                    //if (ValidationService.IsEmpty1(str) != "")
+                    string validation = ValidationService.IsEmptyList(Translation_M);
+                    if (ValidationService.IsEmpty(validation) == false)
                     {
                         Response_MV = new ResponseModelView
                         {
                             Success = false,
-                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.MustFillInformation],
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.MustFillInformation] + "  " + $"({validation})",
                             Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
                         };
                         return Response_MV;
@@ -367,88 +365,50 @@ namespace DMS_API.Services
                 }
                 else
                 {
-                    if (ValidationService.IsInt(SearchTranslation_MV.PageNumber.ToString()) == false || ValidationService.IsInt(SearchTranslation_MV.PageRows.ToString()) == false)
+                    string validation = ValidationService.IsEmptyList(SearchTranslation_MV);
+                    if (ValidationService.IsEmpty(validation) == false)
                     {
                         Response_MV = new ResponseModelView
                         {
                             Success = false,
-                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsInt],
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.MustFillInformation] + "  " + $"({validation})",
                             Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
                         };
                         return Response_MV;
                     }
                     else
                     {
-                        string ColumnSearch = HelpService.GetTranslationSearchColumn(SearchTranslation_MV.KeySearch);
-                        int _PageNumber = SearchTranslation_MV.PageNumber == 0 ? 1 : SearchTranslation_MV.PageNumber;
-                        int _PageRows = SearchTranslation_MV.PageRows == 0 ? 1 : SearchTranslation_MV.PageRows;
-                        int CurrentPage = _PageNumber;
-                        var MaxTotal = dam.FireDataTable($"SELECT COUNT(*) AS TotalRows, CEILING(COUNT(*) / CAST({_PageRows} AS FLOAT)) AS MaxPage " +
-                                                         $"FROM Main.Translation WHERE {ColumnSearch} = '{SearchTranslation_MV.WordSearch}' ");
-                        if (MaxTotal == null)
+                        if (ValidationService.IsInt(SearchTranslation_MV.PageNumber.ToString()) == false || ValidationService.IsInt(SearchTranslation_MV.PageRows.ToString()) == false)
                         {
                             Response_MV = new ResponseModelView
                             {
                                 Success = false,
-                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
-                                Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsInt],
+                                Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
                             };
                             return Response_MV;
                         }
                         else
                         {
-                            if (MaxTotal.Rows.Count == 0)
+                            string ColumnSearch = HelpService.GetTranslationSearchColumn(SearchTranslation_MV.KeySearch);
+                            int _PageNumber = SearchTranslation_MV.PageNumber == 0 ? 1 : SearchTranslation_MV.PageNumber;
+                            int _PageRows = SearchTranslation_MV.PageRows == 0 ? 1 : SearchTranslation_MV.PageRows;
+                            int CurrentPage = _PageNumber;
+                            var MaxTotal = dam.FireDataTable($"SELECT COUNT(*) AS TotalRows, CEILING(COUNT(*) / CAST({_PageRows} AS FLOAT)) AS MaxPage " +
+                                                             $"FROM Main.Translation WHERE {ColumnSearch} = '{SearchTranslation_MV.WordSearch}' ");
+                            if (MaxTotal == null)
                             {
                                 Response_MV = new ResponseModelView
                                 {
                                     Success = false,
-                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoData],
-                                    Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
+                                    Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
                                 };
                                 return Response_MV;
                             }
                             else
                             {
-                                string get = $"SELECT Trid, TrKey, TrArName, TrEnName, TrKrName FROM Main.Translation " +
-                                                             $"WHERE {ColumnSearch} = '{SearchTranslation_MV.WordSearch}' ORDER BY TrId " +
-                                                             $"OFFSET ({_PageNumber}-1)*{_PageRows} ROWS " +
-                                                             $"FETCH NEXT {_PageRows} ROWS ONLY ";
-                                Dt = new DataTable();
-                                Dt = await Task.Run(() => dam.FireDataTable(get));
-                                if (Dt == null)
-                                {
-                                    Response_MV = new ResponseModelView
-                                    {
-                                        Success = false,
-                                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetFaild],
-                                        Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
-                                    };
-                                    return Response_MV;
-                                }
-                                Translation_Mlist = new List<TranslationModel>();
-                                if (Dt.Rows.Count > 0)
-                                {
-                                    for (int i = 0; i < Dt.Rows.Count; i++)
-                                    {
-                                        Translation_M = new TranslationModel
-                                        {
-                                            Trid = Convert.ToInt32(Dt.Rows[i]["Trid"].ToString()),
-                                            TrKey = Dt.Rows[i]["TrKey"].ToString(),
-                                            TrArName = Dt.Rows[i]["TrArName"].ToString(),
-                                            TrEnName = Dt.Rows[i]["TrEnName"].ToString(),
-                                            TrKrName = Dt.Rows[i]["TrKrName"].ToString()
-                                        };
-                                        Translation_Mlist.Add(Translation_M);
-                                    }
-                                    Response_MV = new ResponseModelView
-                                    {
-                                        Success = true,
-                                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
-                                        Data = new { TotalRows = MaxTotal.Rows[0]["TotalRows"], MaxPage = MaxTotal.Rows[0]["MaxPage"], CurrentPage, data = Translation_Mlist }
-                                    };
-                                    return Response_MV;
-                                }
-                                else
+                                if (MaxTotal.Rows.Count == 0)
                                 {
                                     Response_MV = new ResponseModelView
                                     {
@@ -457,6 +417,58 @@ namespace DMS_API.Services
                                         Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
                                     };
                                     return Response_MV;
+                                }
+                                else
+                                {
+                                    string get = $"SELECT Trid, TrKey, TrArName, TrEnName, TrKrName FROM Main.Translation " +
+                                                                 $"WHERE {ColumnSearch} = '{SearchTranslation_MV.WordSearch}' ORDER BY TrId " +
+                                                                 $"OFFSET ({_PageNumber}-1)*{_PageRows} ROWS " +
+                                                                 $"FETCH NEXT {_PageRows} ROWS ONLY ";
+                                    Dt = new DataTable();
+                                    Dt = await Task.Run(() => dam.FireDataTable(get));
+                                    if (Dt == null)
+                                    {
+                                        Response_MV = new ResponseModelView
+                                        {
+                                            Success = false,
+                                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetFaild],
+                                            Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                                        };
+                                        return Response_MV;
+                                    }
+                                    Translation_Mlist = new List<TranslationModel>();
+                                    if (Dt.Rows.Count > 0)
+                                    {
+                                        for (int i = 0; i < Dt.Rows.Count; i++)
+                                        {
+                                            Translation_M = new TranslationModel
+                                            {
+                                                Trid = Convert.ToInt32(Dt.Rows[i]["Trid"].ToString()),
+                                                TrKey = Dt.Rows[i]["TrKey"].ToString(),
+                                                TrArName = Dt.Rows[i]["TrArName"].ToString(),
+                                                TrEnName = Dt.Rows[i]["TrEnName"].ToString(),
+                                                TrKrName = Dt.Rows[i]["TrKrName"].ToString()
+                                            };
+                                            Translation_Mlist.Add(Translation_M);
+                                        }
+                                        Response_MV = new ResponseModelView
+                                        {
+                                            Success = true,
+                                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
+                                            Data = new { TotalRows = MaxTotal.Rows[0]["TotalRows"], MaxPage = MaxTotal.Rows[0]["MaxPage"], CurrentPage, data = Translation_Mlist }
+                                        };
+                                        return Response_MV;
+                                    }
+                                    else
+                                    {
+                                        Response_MV = new ResponseModelView
+                                        {
+                                            Success = false,
+                                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoData],
+                                            Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                                        };
+                                        return Response_MV;
+                                    }
                                 }
                             }
                         }
@@ -474,64 +486,55 @@ namespace DMS_API.Services
                 return Response_MV;
             }
         }
-        public async Task<ResponseModelView> GetTranslationPage(RequestHeaderModelView RequestHeader)
+        public async Task<ResponseModelView> GetTranslationPage(string Lang)
         {
             try
             {
-                Session_S = new SessionService();
-                var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
-                if (ResponseSession.Success == false)
+                string Mlang = HelpService.GetTranslationColumn(Lang);
+                string get = $"SELECT DISTINCT  TrKey, {Mlang} AS 'Word' FROM Main.Translation";
+                Dt = new DataTable();
+                Dt = await Task.Run(() => dam.FireDataTable(get));
+                if (Dt == null)
                 {
-                    return ResponseSession;
+                    Response_MV = new ResponseModelView
+                    {
+                        Success = false,
+                        Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.ExceptionError],
+                        Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                    };
+                    return Response_MV;
                 }
-                else
+                Dictionary<string, string> dict1 = new();
+                if (Dt.Rows.Count > 0)
                 {
-                    string Mlang = HelpService.GetTranslationColumn(RequestHeader.Lang);
-                    string get = $"SELECT DISTINCT  TrKey, {Mlang} AS 'Word' FROM Main.Translation";
-                    Dt = new DataTable();
-                    Dt = await Task.Run(() => dam.FireDataTable(get));
-                    if (Dt == null)
+                    for (int i = 0; i < Dt.Rows.Count; i++)
                     {
-                        Response_MV = new ResponseModelView
-                        {
-                            Success = false,
-                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
-                            Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
-                        };
-                        return Response_MV;
+                        dict1.Add(Dt.Rows[i]["TrKey"].ToString(), Dt.Rows[i]["Word"].ToString());
                     }
-                    Dictionary<string, string> dict1 = new();
-                    if (Dt.Rows.Count > 0)
-                    {
-                        for (int i = 0; i < Dt.Rows.Count; i++)
-                        {
-                            dict1.Add(Dt.Rows[i]["TrKey"].ToString(), Dt.Rows[i]["Word"].ToString());
-                        }
-                        //Dictionary<string, Dictionary<string, string>> dict2 = new();
-                        //dict2.Add("Trans", dict1);
-                        Dictionary<string, Dictionary<string, string>> dict2 = new()
+                    //Dictionary<string, Dictionary<string, string>> dict2 = new();
+                    //dict2.Add("Trans", dict1);
+                    Dictionary<string, Dictionary<string, string>> dict2 = new()
                     {
                         { "Trans", dict1 }
                     };
 
-                        Response_MV = new ResponseModelView
-                        {
-                            Success = true,
-                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
-                            Data = dict2
-                        };
-                        return Response_MV;
-                    }
-                    else
+                    Response_MV = new ResponseModelView
                     {
-                        Response_MV = new ResponseModelView
-                        {
-                            Success = false,
-                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoData],
-                            Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
-                        };
-                        return Response_MV;
-                    }
+                        Success = true,
+                        Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.GetSuccess],
+                        Data = dict2
+                    };
+                    return Response_MV;
+                }
+                else
+                {
+                    Response_MV = new ResponseModelView
+                    {
+                        Success = false,
+                        Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.NoData],
+                        Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                    };
+                    return Response_MV;
                 }
             }
             catch (Exception ex)
@@ -539,7 +542,7 @@ namespace DMS_API.Services
                 Response_MV = new ResponseModelView
                 {
                     Success = false,
-                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError] + " - " + ex.Message,
+                    Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.ExceptionError] + " - " + ex.Message,
                     Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
                 };
                 return Response_MV;

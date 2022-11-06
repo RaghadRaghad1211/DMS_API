@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Http.Headers;
 using System.Collections.Generic;
 using System.Data;
 using System.Net;
+using System.Xml.Linq;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace DMS_API.Services
 {
@@ -31,22 +33,36 @@ namespace DMS_API.Services
         {
             try
             {
-                if (ValidationService.IsEmpty(User_MV.Username) == true)
+                #region MyRegion
+                //if (ValidationService.IsEmpty(User_MV.Username) == true)
+                //{
+                //    Response_MV = new ResponseModelView
+                //    {
+                //        Success = false,
+                //        Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.UsernameMustEnter],
+                //        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                //    };
+                //    return Response_MV;
+                //}
+                //else if (ValidationService.IsEmpty(User_MV.Password) == true)
+                //{
+                //    Response_MV = new ResponseModelView
+                //    {
+                //        Success = false,
+                //        Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.PasswordMustEnter],
+                //        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                //    };
+                //    return Response_MV;
+                //}
+                #endregion
+
+                string validation = ValidationService.IsEmptyList(User_MV);
+                if (ValidationService.IsEmpty(validation) == false)
                 {
                     Response_MV = new ResponseModelView
                     {
                         Success = false,
-                        Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.UsernameMustEnter],
-                        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
-                    };
-                    return Response_MV;
-                }
-                else if (ValidationService.IsEmpty(User_MV.Password) == true)
-                {
-                    Response_MV = new ResponseModelView
-                    {
-                        Success = false,
-                        Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.PasswordMustEnter],
+                        Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.MustFillInformation] + "  " + $"({validation})",
                         Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
                     };
                     return Response_MV;
@@ -371,17 +387,77 @@ namespace DMS_API.Services
                 }
                 else
                 {
-                    if (ValidationService.IsEmpty(AddUser_MV.UserName) == true || ValidationService.IsEmpty(AddUser_MV.Password) == true || ValidationService.IsEmpty(AddUser_MV.PhoneNo) == true)
+                    if (ValidationService.IsEmpty(AddUser_MV.FirstName) == true || ValidationService.IsEmpty(AddUser_MV.SecondName) == true || ValidationService.IsEmpty(AddUser_MV.ThirdName) == true)
                     {
                         Response_MV = new ResponseModelView
                         {
                             Success = false,
-                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.MustFillInformation],
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.FSTname],
                             Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
                         };
                         return Response_MV;
                     }
-                    else if (AddUser_MV.Password.Trim() != AddUser_MV.PasswordConfirm.Trim())
+                    else if (ValidationService.IsEmpty(AddUser_MV.UserName) == true)
+                    {
+                        Response_MV = new ResponseModelView
+                        {
+                            Success = false,
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.UsernameMustEnter],
+                            Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                        };
+                        return Response_MV;
+                    }
+                    else if (ValidationService.IsPhoneNumber(AddUser_MV.PhoneNo) == false)
+                    {
+                        Response_MV = new ResponseModelView
+                        {
+                            Success = false,
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.PhoneIncorrect],
+                            Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                        };
+                        return Response_MV;
+                    }
+                    else if (ValidationService.IsEmail(AddUser_MV.Email) == false)
+                    {
+                        Response_MV = new ResponseModelView
+                        {
+                            Success = false,
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.EmailIncorrect],
+                            Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                        };
+                        return Response_MV;
+                    }
+                    else if (AddUser_MV.OrgOwner == 0 || AddUser_MV.UserOwner == 0)
+                    {
+                        Response_MV = new ResponseModelView
+                        {
+                            Success = false,
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.MustFillInformation] + "OrgOwner , UserOwner",
+                            Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                        };
+                        return Response_MV;
+                    }
+                    else if (ValidationService.IsEmpty(AddUser_MV.Password) == true)
+                    {
+                        Response_MV = new ResponseModelView
+                        {
+                            Success = false,
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.PasswordMustEnter],
+                            Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                        };
+                        return Response_MV;
+                    }
+                    else if (AddUser_MV.Password.Length < 8)
+                    {
+                        Response_MV = new ResponseModelView
+                        {
+                            Success = false,
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.Password8Characters],
+                            Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                        };
+                        return Response_MV;
+                    }
+                    else if (AddUser_MV.PasswordConfirm.Trim() != AddUser_MV.PasswordConfirm.Trim())
                     {
                         Response_MV = new ResponseModelView
                         {
@@ -391,6 +467,7 @@ namespace DMS_API.Services
                         };
                         return Response_MV;
                     }
+
                     else
                     {
                         int checkDeblicate = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) FROM [User].Users WHERE UsUserName = '{AddUser_MV.UserName}' "));
@@ -458,7 +535,6 @@ namespace DMS_API.Services
             }
         }
         public async Task<ResponseModelView> EditUser(EditUserModelView EditUser_MV, RequestHeaderModelView RequestHeader)
-
         {
             try
             {
@@ -470,32 +546,53 @@ namespace DMS_API.Services
                 }
                 else
                 {
-                    if (ValidationService.IsEmpty(EditUser_MV.PasswordNew) == true || ValidationService.IsEmpty(EditUser_MV.PasswordOld) == true || ValidationService.IsEmpty(EditUser_MV.PhoneNo) == true)
+                    if (ValidationService.IsEmpty(EditUser_MV.FirstName) == true || ValidationService.IsEmpty(EditUser_MV.SecondName) == true || ValidationService.IsEmpty(EditUser_MV.ThirdName) == true)
                     {
                         Response_MV = new ResponseModelView
                         {
                             Success = false,
-                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.MustFillInformation],
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.FSTname],
                             Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
                         };
                         return Response_MV;
                     }
-                    else if (EditUser_MV.PasswordConfirm.Trim() != EditUser_MV.PasswordNew.Trim())
+                    else if (ValidationService.IsPhoneNumber(EditUser_MV.PhoneNo) == false)
                     {
                         Response_MV = new ResponseModelView
                         {
                             Success = false,
-                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ConfirmPasswordIsIncorrect],
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.PhoneIncorrect],
                             Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
                         };
                         return Response_MV;
                     }
+                    else if (ValidationService.IsEmail(EditUser_MV.Email) == false)
+                    {
+                        Response_MV = new ResponseModelView
+                        {
+                            Success = false,
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.EmailIncorrect],
+                            Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                        };
+                        return Response_MV;
+                    }
+                    else if (EditUser_MV.OrgOwner == 0)
+                    {
+                        Response_MV = new ResponseModelView
+                        {
+                            Success = false,
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.MustFillInformation] + "OrgOwner",
+                            Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                        };
+                        return Response_MV;
+                    }
+
                     else
                     {
                         int checkDeblicate = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) FROM [User].Users WHERE UsId = {EditUser_MV.UserID} "));
                         if (checkDeblicate > 0)
                         {
-                            string exeut = $"EXEC [User].[UpdateUserPro] '{EditUser_MV.UserID}', '{EditUser_MV.IsActive}',  '{EditUser_MV.OrgOwner}', '{EditUser_MV.Note}', '{EditUser_MV.FirstName}', '{EditUser_MV.SecondName}', '{EditUser_MV.ThirdName}', '{EditUser_MV.LastName}', '{SecurityService.PasswordEnecrypt(EditUser_MV.PasswordNew)}', '{EditUser_MV.PhoneNo}', '{EditUser_MV.Email}', '{EditUser_MV.UserEmpNo}', '{EditUser_MV.UserIdintNo}' ";
+                            string exeut = $"EXEC [User].[UpdateUserPro] '{EditUser_MV.UserID}', '{EditUser_MV.IsActive}',  '{EditUser_MV.OrgOwner}', '{EditUser_MV.Note}', '{EditUser_MV.FirstName}', '{EditUser_MV.SecondName}', '{EditUser_MV.ThirdName}', '{EditUser_MV.LastName}', '{EditUser_MV.PhoneNo}', '{EditUser_MV.Email}', '{EditUser_MV.UserEmpNo}', '{EditUser_MV.UserIdintNo}' ";
                             var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
 
                             if (outValue == null || outValue.Trim() == "")
@@ -664,8 +761,11 @@ namespace DMS_API.Services
                     int _PageNumber = SearchUser_MV.PageNumber == 0 ? 1 : SearchUser_MV.PageNumber;
                     int _PageRows = SearchUser_MV.PageRows == 0 ? 1 : SearchUser_MV.PageRows;
                     int CurrentPage = _PageNumber;
+
+                    string where = HelpService.GetUserSearchColumn(SearchUser_MV);
+
                     var MaxTotal = dam.FireDataTable($"SELECT COUNT(*) AS TotalRows, CEILING(COUNT(*) / CAST({_PageRows} AS FLOAT)) AS MaxPage " +
-                                                      "FROM [User].V_Users");
+                                                      $"FROM [User].V_Users {where}");
                     if (MaxTotal == null)
                     {
                         Response_MV = new ResponseModelView
@@ -690,25 +790,12 @@ namespace DMS_API.Services
                         }
                         else
                         {
-                            //string getUserInfo = "SELECT      UserID, FullName, UsUserName, Role, UserIsActive, UsPhoneNo, UsEmail, " +
-                            //                     "            UsUserEmpNo, UsUserIdintNo, UsIsOnLine, OrgArName, OrgEnName, OrgKuName, Note " +
-                            //                     "FROM        [User].V_Users ORDER BY UserID " +
-                            //                    $"OFFSET      ({_PageNumber}-1)*{_PageRows} ROWS " +
-                            //                    $"FETCH NEXT   {_PageRows} ROWS ONLY ";
-
-                            string _CreationDate = SearchUser_MV.CreationDate.ToString().Trim() == "" ? null : SearchUser_MV.CreationDate.ToString();
-                            string _FullName = SearchUser_MV.FullName.ToString().Trim() == "" ? null : SearchUser_MV.FullName.ToString();
-                            string _UserName = SearchUser_MV.UserName.ToString().Trim() == "" ? null : SearchUser_MV.UserName.ToString();
-                            string _PhoneNo = SearchUser_MV.PhoneNo.ToString().Trim() == "" ? null : SearchUser_MV.PhoneNo.ToString();
-                            string _Email = SearchUser_MV.Email.ToString().Trim() == "" ? null : SearchUser_MV.Email.ToString();
-                            string _UserEmpNo = SearchUser_MV.UserEmpNo.ToString().Trim() == "" ? null : SearchUser_MV.UserEmpNo.ToString();
-                            string _UserIdintNo = SearchUser_MV.UserIdintNo.ToString().Trim() == "" ? null : SearchUser_MV.UserIdintNo.ToString();
-
-
-
-                            string getUserInfo = $"EXEC [User].[UserSearchAdvanced] @UserCreationDate = '{_CreationDate}',@FullName = '{_FullName}',@UsUserName = '{_UserName}', @UsPhoneNo = '{_PhoneNo}',@UsEmail = '{_Email}',@UsUserEmpNo = '{_UserEmpNo}' ,@UsUserIdintNo = '{_UserIdintNo}' ";
-                            //var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
-
+                            string getUserInfo = "SELECT * FROM (SELECT   UserID, FullName, UsUserName, Role, UserIsActive, UsPhoneNo, UsEmail, " +
+                                             "         UsUserEmpNo, UsUserIdintNo, UsIsOnLine, OrgArName, OrgEnName, OrgKuName, Note " +
+                                            $"FROM     [User].V_Users  " +
+                                            $"{where}) AS TAB  ORDER BY UserID " +
+                                            $"OFFSET      ({_PageNumber}-1)*{_PageRows} ROWS " +
+                                            $"FETCH NEXT   {_PageRows} ROWS ONLY ";
 
                             dt = new DataTable();
                             dt = await Task.Run(() => dam.FireDataTable(getUserInfo));

@@ -1,4 +1,8 @@
-﻿namespace DMS_API.Services
+﻿using DMS_API.ModelsView;
+using Swashbuckle.AspNetCore.SwaggerGen;
+using System.Reflection;
+
+namespace DMS_API.Services
 {
     public static class HelpService
     {
@@ -64,6 +68,25 @@
                     break;
             }
             return Mlang;
+        }
+        public static string GetUserSearchColumn(SearchUserModelView SearchUser_MV)
+        {
+            var obj = SearchUser_MV.GetType();
+            string where = " WHERE ";
+            foreach (PropertyInfo property in obj.GetProperties())
+            {
+                var name = property.Name;
+                var value = property.GetValue(SearchUser_MV, null)?.ToString();
+                if (!(value == null || value.Trim() == ""))
+                {
+                    if (!(name == "PageRows" || name == "PageNumber"))
+                    {
+                        where = where + $"{name} LIKE '{value}%' AND ";
+                    }
+                }
+            }
+            string query = where.Remove(where.Length - 4, 4);
+            return query;
         }
         public static bool CheckDate(string date)
         {

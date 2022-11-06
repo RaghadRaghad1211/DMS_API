@@ -75,9 +75,9 @@ namespace DMS_API.Controllers
         //[Authorize(Roles = "Administrator,User")]
         [HttpGet]
         [Route("GetTranslationPage")]
-        public async Task<IActionResult> GetTranslationPage([FromHeader] RequestHeaderModelView RequestHeader)
+        public async Task<IActionResult> GetTranslationPage([FromHeader] string? Lang = "Ar")
         {
-            Response_MV = await Translation_S.GetTranslationPage(RequestHeader);
+            Response_MV = await Translation_S.GetTranslationPage(Lang);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
     }
