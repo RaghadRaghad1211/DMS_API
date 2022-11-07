@@ -21,7 +21,7 @@ try
     #region Logs
     builder.Host.UseSerilog(((ctx, lc) => lc
                 .WriteTo.File(
-                              path: $@"{Directory.GetCurrentDirectory()}\StaticFiles\Logs\Log.txt",
+                              path: $@"{Directory.GetCurrentDirectory()}\wwwroot\Logs\Log.txt",
                               rollingInterval: RollingInterval.Day)));
     #endregion
     Log.Information("API is Starting");
@@ -153,7 +153,7 @@ try
 
     app.UseAuthorization();
 
-    //app.UseStaticFiles();
+    app.UseStaticFiles();
 
     //app.UseSerilogRequestLogging();
 
