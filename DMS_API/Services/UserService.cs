@@ -809,24 +809,27 @@ namespace DMS_API.Services
                         User_Mlist = new List<UserModel>();
                         if (dt.Rows.Count > 0)
                         {
-                            User_M = new UserModel
+                            for (int i = 0; i < dt.Rows.Count; i++)
                             {
-                                UserID = Convert.ToInt32(dt.Rows[0]["UserID"].ToString()),
-                                FullName = dt.Rows[0]["FullName"].ToString(),
-                                UserName = dt.Rows[0]["UsUserName"].ToString(),
-                                Role = dt.Rows[0]["Role"].ToString(),
-                                IsActive = bool.Parse(dt.Rows[0]["UserIsActive"].ToString()),
-                                PhoneNo = dt.Rows[0]["UsPhoneNo"].ToString(),
-                                Email = dt.Rows[0]["UsEmail"].ToString(),
-                                UserEmpNo = dt.Rows[0]["UsUserEmpNo"].ToString(),
-                                UserIdintNo = dt.Rows[0]["UsUserIdintNo"].ToString(),
-                                IsOnLine = bool.Parse(dt.Rows[0]["UsIsOnLine"].ToString()),
-                                OrgArName = dt.Rows[0]["OrgArName"].ToString(),
-                                OrgEnName = dt.Rows[0]["OrgEnName"].ToString(),
-                                OrgKuName = dt.Rows[0]["OrgKuName"].ToString(),
-                                Note = dt.Rows[0]["Note"].ToString()
-                            };
-                            User_Mlist.Add(User_M);
+                                User_M = new UserModel
+                                {
+                                    UserID = Convert.ToInt32(dt.Rows[i]["UserID"].ToString()),
+                                    FullName = dt.Rows[i]["FullName"].ToString(),
+                                    UserName = dt.Rows[i]["UsUserName"].ToString(),
+                                    Role = dt.Rows[i]["Role"].ToString(),
+                                    IsActive = bool.Parse(dt.Rows[i]["UserIsActive"].ToString()),
+                                    PhoneNo = dt.Rows[i]["UsPhoneNo"].ToString(),
+                                    Email = dt.Rows[i]["UsEmail"].ToString(),
+                                    UserEmpNo = dt.Rows[i]["UsUserEmpNo"].ToString(),
+                                    UserIdintNo = dt.Rows[i]["UsUserIdintNo"].ToString(),
+                                    IsOnLine = bool.Parse(dt.Rows[i]["UsIsOnLine"].ToString()),
+                                    OrgArName = dt.Rows[i]["OrgArName"].ToString(),
+                                    OrgEnName = dt.Rows[i]["OrgEnName"].ToString(),
+                                    OrgKuName = dt.Rows[i]["OrgKuName"].ToString(),
+                                    Note = dt.Rows[i]["Note"].ToString()
+                                };
+                                User_Mlist.Add(User_M);
+                            }
 
                             Response_MV = new ResponseModelView
                             {
