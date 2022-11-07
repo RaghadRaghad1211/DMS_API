@@ -8,6 +8,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using System.Security.Cryptography;
+using System.Text.RegularExpressions;
 
 namespace DMS_API.Services
 {
@@ -86,6 +87,21 @@ namespace DMS_API.Services
                 hashString += String.Format("{0:x2}", x);
             }
             return hashString;
+        }
+
+        public static string RoundomPassword(int length)
+        {
+            //Regex RoundomPassword = new Regex("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$");
+            //return RoundomPassword.ToString();
+            const string valid = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+            StringBuilder res = new StringBuilder();
+            Random rnd = new Random();
+            while (0 < length--)
+            {
+                res.Append(valid[rnd.Next(valid.Length)]);
+            }
+            return res.ToString();
+
         }
         #region Password    
         //public static string PasswordEnecrypt1(string pass)

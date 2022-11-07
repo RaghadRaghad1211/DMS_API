@@ -96,6 +96,7 @@ namespace DMS_API.Services
         public static readonly string PhoneIncorrect = "PhoneIncorrect";
         public static readonly string EmailIncorrect = "EmailIncorrect";
         public static readonly string FSTname = "FSTname";
+        public static readonly string IsReset = "IsReset";
 
 
 
@@ -166,6 +167,7 @@ namespace DMS_API.Services
                      {PhoneIncorrect ,"تنسيق رقم الهاتف غير صحيح ، يجب ان يكون 11 رقم"},
                      {EmailIncorrect ,"تنسيق البريد الالكتروني غير صحيح"},
                      {FSTname ,"يجب ملئ على الاقل الاسم الثلاثي للمستخدم"},
+                     {IsReset ,"تم اعادة تعيين كلمة المرور"},
 
 
 
@@ -233,6 +235,8 @@ namespace DMS_API.Services
                      {PhoneIncorrect ,"The phone number is formatted incorrectly, it must be 11 digits"},
                      {EmailIncorrect ,"The email is formatted incorrectly"},
                      {FSTname ,"You must fill in at least the full name of the user"},
+                     {IsReset ,"Password is reset"},
+
 
 
 

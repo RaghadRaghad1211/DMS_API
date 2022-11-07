@@ -12,9 +12,7 @@ namespace DMS_API.Controllers
     public class UserController : ControllerBase
     {
         private UserService User_S;
-        //private LoginModelView Login_MV { get; set; }
         private ResponseModelView Response_MV { get; set; }
-        // private TranslationModel Translation_M { get; set; }
 
         public UserController()
         {
@@ -27,6 +25,24 @@ namespace DMS_API.Controllers
         public async Task<IActionResult> Login([FromBody] LoginModelView Login_MV, [FromHeader] string? Lang = "Ar")
         {
             Response_MV = await User_S.Login(Login_MV, Lang);
+            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("ResetPassword/{id}")]
+        public async Task<IActionResult> ResetPassword([FromRoute] int id, [FromHeader] RequestHeaderModelView RequestHeader)
+        {
+            Response_MV = await User_S.ResetPassword(id, RequestHeader);
+            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        [Route("ChangePassword")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordModelView ChangePassword_MV, [FromHeader] RequestHeaderModelView RequestHeader)
+        {
+            Response_MV = await User_S.ChangePassword(ChangePassword_MV, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 

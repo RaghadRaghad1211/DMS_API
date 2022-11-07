@@ -2,6 +2,7 @@
 using DMS_API.Models;
 using DMS_API.ModelsView;
 using Microsoft.AspNetCore.Http.Headers;
+using Microsoft.VisualBasic;
 using System.Collections.Generic;
 using System.Data;
 using System.Net;
@@ -175,6 +176,117 @@ namespace DMS_API.Services
                 {
                     Success = false,
                     Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.ExceptionError] + " - " + ex.Message,
+                    Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                };
+                return Response_MV;
+            }
+        }
+        public async Task<ResponseModelView> ResetPassword(int id, RequestHeaderModelView RequestHeader)
+        {
+            try
+            {
+                Session_S = new SessionService();
+                var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
+                if (ResponseSession.Success == false)
+                {
+                    return ResponseSession;
+                }
+                else
+                {
+                    int checkExist = Convert.ToInt16(dam.FireSQL($"SELECT COUNT(*) FROM [User].Users WHERE UserID ={id} "));
+                    if (checkExist != 0)
+                    {
+                        string RounPass = SecurityService.RoundomPassword(8);
+                        string reset = $"UPDATE [User].Users SET UsPassword='{SecurityService.PasswordEnecrypt(RounPass)}' WHERE UserID ={id} ";
+                        await Task.Run(() => dam.DoQuery(reset));
+                        Response_MV = new ResponseModelView
+                        {
+                            Success = true,
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsReset] + " " + RounPass,
+                            Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
+                        };
+                        return Response_MV;
+                    }
+                    else
+                    {
+                        Response_MV = new ResponseModelView
+                        {
+                            Success = false,
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsExist],
+                            Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                        };
+                        return Response_MV;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Response_MV = new ResponseModelView
+                {
+                    Success = false,
+                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError] + " - " + ex.Message,
+                    Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                };
+                return Response_MV;
+            }
+        }
+        public async Task<ResponseModelView> ChangePassword(ChangePasswordModelView ChangePassword_MV, RequestHeaderModelView RequestHeader)
+        {
+            try
+            {
+                Session_S = new SessionService();
+                var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
+                if (ResponseSession.Success == false)
+                {
+                    return ResponseSession;
+                }
+                else
+                {
+                    string validation = ValidationService.IsEmptyList(ChangePassword_MV);
+                    if (ValidationService.IsEmpty(validation) == false)
+                    {
+                        Response_MV = new ResponseModelView
+                        {
+                            Success = false,
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.MustFillInformation] + "  " + $"({validation})",
+                            Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                        };
+                        return Response_MV;
+                    }
+                    else
+                    {
+                        int checkExist = Convert.ToInt16(dam.FireSQL($"SELECT COUNT(*) FROM [User].Users WHERE UserID ={ChangePassword_MV.UserID} AND  UsPassword ='{SecurityService.PasswordEnecrypt(ChangePassword_MV.OldPassword)}' "));
+                        if (checkExist > 0)
+                        {
+                            string change = $"UPDATE [User].Users SET UsPassword='{SecurityService.PasswordEnecrypt(ChangePassword_MV.NewPassword)}' WHERE UserID ={ChangePassword_MV.UserID} ";
+                            await Task.Run(() => dam.DoQuery(change));
+                            Response_MV = new ResponseModelView
+                            {
+                                Success = true,
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ChangePasswordSuccess],
+                                Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
+                            };
+                            return Response_MV;
+                        }
+                        else
+                        {
+                            Response_MV = new ResponseModelView
+                            {
+                                Success = false,
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.OldPasswordNotCorrect],
+                                Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                            };
+                            return Response_MV;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Response_MV = new ResponseModelView
+                {
+                    Success = false,
+                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError] + " - " + ex.Message,
                     Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
                 };
                 return Response_MV;
