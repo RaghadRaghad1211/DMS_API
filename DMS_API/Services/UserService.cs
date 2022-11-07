@@ -193,11 +193,11 @@ namespace DMS_API.Services
                 }
                 else
                 {
-                    int checkExist = Convert.ToInt16(dam.FireSQL($"SELECT COUNT(*) FROM [User].Users WHERE UserID ={id} "));
+                    int checkExist = Convert.ToInt16(dam.FireSQL($"SELECT COUNT(*) FROM [User].Users WHERE UsId ={id} "));
                     if (checkExist != 0)
                     {
                         string RounPass = SecurityService.RoundomPassword(8);
-                        string reset = $"UPDATE [User].Users SET UsPassword='{SecurityService.PasswordEnecrypt(RounPass)}' WHERE UserID ={id} ";
+                        string reset = $"UPDATE [User].Users SET UsPassword='{SecurityService.PasswordEnecrypt(RounPass)}' WHERE UsId ={id} ";
                         await Task.Run(() => dam.DoQuery(reset));
                         Response_MV = new ResponseModelView
                         {
@@ -255,10 +255,10 @@ namespace DMS_API.Services
                     }
                     else
                     {
-                        int checkExist = Convert.ToInt16(dam.FireSQL($"SELECT COUNT(*) FROM [User].Users WHERE UserID ={ChangePassword_MV.UserID} AND  UsPassword ='{SecurityService.PasswordEnecrypt(ChangePassword_MV.OldPassword)}' "));
+                        int checkExist = Convert.ToInt16(dam.FireSQL($"SELECT COUNT(*) FROM [User].Users WHERE UsId ={ChangePassword_MV.UserID} AND  UsPassword ='{SecurityService.PasswordEnecrypt(ChangePassword_MV.OldPassword)}' "));
                         if (checkExist > 0)
                         {
-                            string change = $"UPDATE [User].Users SET UsPassword='{SecurityService.PasswordEnecrypt(ChangePassword_MV.NewPassword)}' WHERE UserID ={ChangePassword_MV.UserID} ";
+                            string change = $"UPDATE [User].Users SET UsPassword='{SecurityService.PasswordEnecrypt(ChangePassword_MV.NewPassword)}' WHERE UsId ={ChangePassword_MV.UserID} ";
                             await Task.Run(() => dam.DoQuery(change));
                             Response_MV = new ResponseModelView
                             {
@@ -826,11 +826,13 @@ namespace DMS_API.Services
                                 OrgKuName = dt.Rows[0]["OrgKuName"].ToString(),
                                 Note = dt.Rows[0]["Note"].ToString()
                             };
+                            User_Mlist.Add(User_M);
+
                             Response_MV = new ResponseModelView
                             {
                                 Success = true,
                                 Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
-                                Data = User_M
+                                Data = User_Mlist
                             };
                             return Response_MV;
                         }

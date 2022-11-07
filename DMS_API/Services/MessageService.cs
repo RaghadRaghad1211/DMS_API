@@ -168,6 +168,8 @@ namespace DMS_API.Services
                      {EmailIncorrect ,"تنسيق البريد الالكتروني غير صحيح"},
                      {FSTname ,"يجب ملئ على الاقل الاسم الثلاثي للمستخدم"},
                      {IsReset ,"تم اعادة تعيين كلمة المرور"},
+                     {OldPasswordNotCorrect ,"كلمة المرور القديمة غير صحيحة"},
+                     {ChangePasswordSuccess ,"تم تغيير كلمة المرور"},
 
 
 
@@ -196,7 +198,7 @@ namespace DMS_API.Services
                     { ForgetPasswordFaild, "" },
                     { FindUserProfileFaild, "" },
                     { ChangePasswordFaild, "" },
-                    { OldPasswordNotCorrect, "" },
+                    
                      { VerificationCodeNotCorrect, "" }
 
                 }
@@ -236,6 +238,8 @@ namespace DMS_API.Services
                      {EmailIncorrect ,"The email is formatted incorrectly"},
                      {FSTname ,"You must fill in at least the full name of the user"},
                      {IsReset ,"Password is reset"},
+                     {OldPasswordNotCorrect ,"The old password is incorrectly"},
+                     {ChangePasswordSuccess ,"Password changed"},
 
 
 
@@ -267,7 +271,7 @@ namespace DMS_API.Services
                     { ForgetPasswordFaild, "" },
                     { FindUserProfileFaild, "" },
                     { ChangePasswordFaild, "" },
-                    { OldPasswordNotCorrect, "" },
+                   
                     { VerificationCodeNotCorrect, "" }
 
                 }
