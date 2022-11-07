@@ -15,12 +15,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\Logs\" />
-    <Folder Include="wwwroot\Upload\" />
+    <None Include="..\.editorconfig" Link=".editorconfig" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\.editorconfig" Link=".editorconfig" />
+    <Folder Include="wwwroot\Log\" />
+    <Folder Include="wwwroot\Upload\" />
   </ItemGroup>
 
 </Project>

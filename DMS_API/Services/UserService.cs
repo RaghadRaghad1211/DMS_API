@@ -792,7 +792,7 @@ namespace DMS_API.Services
                     {
                         string getUserInfo = "SELECT   UserID, FullName, UsUserName, Role, UserIsActive, UsPhoneNo, UsEmail, " +
                                              "         UsUserEmpNo, UsUserIdintNo, UsIsOnLine, OrgArName, OrgEnName, OrgKuName, Note " +
-                                            $"FROM     [User].V_Users WHERE UsUserName ='{username}' ";
+                                            $"FROM     [User].V_Users WHERE UsUserName LIKE '{username}%' ";
 
                         dt = new DataTable();
                         dt = await Task.Run(() => dam.FireDataTable(getUserInfo));
