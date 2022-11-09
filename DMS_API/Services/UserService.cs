@@ -82,8 +82,8 @@ namespace DMS_API.Services
                     }
                     else
                     { // $ystemAdm!n 
-                        string getUserInfo = "SELECT  UserID, FullName, UsUserName,  Role, UserIsActive, " +
-                                            "         UsPhoneNo, UsEmail, UsUserEmpNo, UsUserIdintNo, UsIsOnLine, OrgArName, OrgEnName, OrgKuName, Note " +
+                        string getUserInfo = "SELECT  UserID, FullName, UsUserName,  Role, IsOrgAdmin, UserIsActive, UsPhoneNo, " +
+                                            "         UsEmail, UsUserEmpNo, UsUserIdintNo, UsIsOnLine, OrgArName, OrgEnName, OrgKuName, Note " +
                                             "FROM     [User].V_Users " +
                                            $"WHERE    [UsUserName] = '{User_MV.Username}' AND UsPassword = '{SecurityService.PasswordEnecrypt(User_MV.Password)}' ";
 
@@ -119,6 +119,7 @@ namespace DMS_API.Services
                                     FullName = dt.Rows[0]["FullName"].ToString(),
                                     UserName = dt.Rows[0]["UsUserName"].ToString(),
                                     Role = dt.Rows[0]["Role"].ToString(),
+                                    IsOrgAdmin = bool.Parse(dt.Rows[0]["IsOrgAdmin"].ToString()),
                                     IsActive = bool.Parse(dt.Rows[0]["UserIsActive"].ToString()),
                                     PhoneNo = dt.Rows[0]["UsPhoneNo"].ToString(),
                                     Email = dt.Rows[0]["UsEmail"].ToString(),
@@ -304,10 +305,13 @@ namespace DMS_API.Services
                 }
                 else
                 {
+                    int OrgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {ResponseSession.Data} "));
                     int _PageNumber = Pagination_MV.PageNumber == 0 ? 1 : Pagination_MV.PageNumber;
                     int _PageRows = Pagination_MV.PageRows == 0 ? 1 : Pagination_MV.PageRows;
                     int CurrentPage = _PageNumber;
-                    var MaxTotal = dam.FireDataTable($"SELECT COUNT(*) AS TotalRows, CEILING(COUNT(*) / CAST({_PageRows} AS FLOAT)) AS MaxPage FROM [User].V_Users");
+
+                    var MaxTotal = dam.FireDataTable($"SELECT COUNT(*) AS TotalRows, CEILING(COUNT(*) / CAST({_PageRows} AS FLOAT)) AS MaxPage " +
+                                                     $"FROM [User].V_Users  WHERE [OrgOwner] IN (SELECT [OrgId] FROM [User].[GetOrgsKids]({OrgOwnerID})) ");
                     if (MaxTotal == null)
                     {
                         Response_MV = new ResponseModelView
@@ -332,9 +336,11 @@ namespace DMS_API.Services
                         }
                         else
                         {
-                            string getUserInfo = "SELECT      UserID, FullName, UsUserName, Role, UserIsActive, UsPhoneNo, UsEmail, " +
+                            string getUserInfo = "SELECT      UserID, FullName, UsUserName, Role, IsOrgAdmin, UserIsActive, UsPhoneNo, UsEmail, " +
                                                  "            UsUserEmpNo, UsUserIdintNo, UsIsOnLine, OrgArName, OrgEnName, OrgKuName, Note " +
-                                                 "FROM        [User].V_Users ORDER BY UserID " +
+                                                 "FROM        [User].V_Users " +
+                                                $"WHERE [OrgOwner] IN (SELECT [OrgId] FROM [User].[GetOrgsKids]({OrgOwnerID})) " +
+                                                 "ORDER BY UserID " +
                                                 $"OFFSET      ({_PageNumber}-1)*{_PageRows} ROWS " +
                                                 $"FETCH NEXT   {_PageRows} ROWS ONLY ";
 
@@ -361,6 +367,7 @@ namespace DMS_API.Services
                                         FullName = dt.Rows[i]["FullName"].ToString(),
                                         UserName = dt.Rows[i]["UsUserName"].ToString(),
                                         Role = dt.Rows[i]["Role"].ToString(),
+                                        IsOrgAdmin = bool.Parse(dt.Rows[i]["IsOrgAdmin"].ToString()),
                                         IsActive = bool.Parse(dt.Rows[i]["UserIsActive"].ToString()),
                                         PhoneNo = dt.Rows[i]["UsPhoneNo"].ToString(),
                                         Email = dt.Rows[i]["UsEmail"].ToString(),
@@ -420,9 +427,10 @@ namespace DMS_API.Services
                 }
                 else
                 {
-                    string getUserInfo = "SELECT   UserID, FullName, UsUserName, Role, UserIsActive, UsPhoneNo, UsEmail, " +
+                    int OrgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {ResponseSession.Data} "));
+                    string getUserInfo = "SELECT   UserID, FullName, UsUserName, Role, IsOrgAdmin, UserIsActive, UsPhoneNo, UsEmail, " +
                                          "         UsUserEmpNo, UsUserIdintNo, UsIsOnLine, OrgArName, OrgEnName, OrgKuName, Note " +
-                                        $"FROM     [User].V_Users WHERE UserID={id}";
+                                        $"FROM     [User].V_Users WHERE UserID={id} AND [OrgOwner] IN (SELECT [OrgId] FROM [User].[GetOrgsKids]({OrgOwnerID})) ";
 
                     dt = new DataTable();
                     dt = await Task.Run(() => dam.FireDataTable(getUserInfo));
@@ -445,6 +453,7 @@ namespace DMS_API.Services
                             FullName = dt.Rows[0]["FullName"].ToString(),
                             UserName = dt.Rows[0]["UsUserName"].ToString(),
                             Role = dt.Rows[0]["Role"].ToString(),
+                            IsOrgAdmin = bool.Parse(dt.Rows[0]["IsOrgAdmin"].ToString()),
                             IsActive = bool.Parse(dt.Rows[0]["UserIsActive"].ToString()),
                             PhoneNo = dt.Rows[0]["UsPhoneNo"].ToString(),
                             Email = dt.Rows[0]["UsEmail"].ToString(),
@@ -585,7 +594,7 @@ namespace DMS_API.Services
                         int checkDeblicate = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) FROM [User].Users WHERE UsUserName = '{AddUser_MV.UserName}' "));
                         if (checkDeblicate == 0)
                         {
-                            string exeut = $"EXEC [User].[AddUserPro] '{AddUser_MV.UserName}', '{AddUser_MV.UserOwner}', '{AddUser_MV.OrgOwner}', '{AddUser_MV.Note}', '{AddUser_MV.FirstName}',  '{AddUser_MV.SecondName}', '{AddUser_MV.ThirdName}', '{AddUser_MV.LastName}', '{SecurityService.PasswordEnecrypt(AddUser_MV.Password)}', '{AddUser_MV.PhoneNo}', '{AddUser_MV.Email}', '{AddUser_MV.IsActive}', '{AddUser_MV.UserEmpNo}', '{AddUser_MV.UserIdintNo}' ";
+                            string exeut = $"EXEC [User].[AddUserPro] '{AddUser_MV.UserName}', '{AddUser_MV.UserOwner}', '{AddUser_MV.OrgOwner}', '{AddUser_MV.Note}', '{AddUser_MV.FirstName}',  '{AddUser_MV.SecondName}', '{AddUser_MV.ThirdName}', '{AddUser_MV.LastName}', '{SecurityService.PasswordEnecrypt(AddUser_MV.Password)}', '{AddUser_MV.PhoneNo}', '{AddUser_MV.Email}', '{AddUser_MV.IsActive}', '{AddUser_MV.UserEmpNo}', '{AddUser_MV.UserIdintNo}', '{AddUser_MV.IsOrgAdmin}' ";
                             var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
 
                             if (outValue == null || outValue.Trim() == "")
@@ -704,7 +713,7 @@ namespace DMS_API.Services
                         int checkDeblicate = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) FROM [User].Users WHERE UsId = {EditUser_MV.UserID} "));
                         if (checkDeblicate > 0)
                         {
-                            string exeut = $"EXEC [User].[UpdateUserPro] '{EditUser_MV.UserID}', '{EditUser_MV.IsActive}',  '{EditUser_MV.OrgOwner}', '{EditUser_MV.Note}', '{EditUser_MV.FirstName}', '{EditUser_MV.SecondName}', '{EditUser_MV.ThirdName}', '{EditUser_MV.LastName}', '{EditUser_MV.PhoneNo}', '{EditUser_MV.Email}', '{EditUser_MV.UserEmpNo}', '{EditUser_MV.UserIdintNo}' ";
+                            string exeut = $"EXEC [User].[UpdateUserPro] '{EditUser_MV.UserID}', '{EditUser_MV.IsActive}',  '{EditUser_MV.OrgOwner}', '{EditUser_MV.Note}', '{EditUser_MV.FirstName}', '{EditUser_MV.SecondName}', '{EditUser_MV.ThirdName}', '{EditUser_MV.LastName}', '{EditUser_MV.PhoneNo}', '{EditUser_MV.Email}', '{EditUser_MV.UserEmpNo}', '{EditUser_MV.UserIdintNo}', '{EditUser_MV.IsOrgAdmin}' ";
                             var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
 
                             if (outValue == null || outValue.Trim() == "")
@@ -790,9 +799,10 @@ namespace DMS_API.Services
                     }
                     else
                     {
-                        string getUserInfo = "SELECT   UserID, FullName, UsUserName, Role, UserIsActive, UsPhoneNo, UsEmail, " +
+                        int OrgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {ResponseSession.Data} "));
+                        string getUserInfo = "SELECT   UserID, FullName, UsUserName, Role, IsOrgAdmin, UserIsActive, UsPhoneNo, UsEmail, " +
                                              "         UsUserEmpNo, UsUserIdintNo, UsIsOnLine, OrgArName, OrgEnName, OrgKuName, Note " +
-                                            $"FROM     [User].V_Users WHERE UsUserName LIKE '{username}%' ";
+                                            $"FROM     [User].V_Users WHERE UsUserName LIKE '{username}%' AND [OrgOwner] IN (SELECT [OrgId] FROM [User].[GetOrgsKids]({OrgOwnerID})) ";
 
                         dt = new DataTable();
                         dt = await Task.Run(() => dam.FireDataTable(getUserInfo));
@@ -817,6 +827,7 @@ namespace DMS_API.Services
                                     FullName = dt.Rows[i]["FullName"].ToString(),
                                     UserName = dt.Rows[i]["UsUserName"].ToString(),
                                     Role = dt.Rows[i]["Role"].ToString(),
+                                    IsOrgAdmin = bool.Parse(dt.Rows[i]["IsOrgAdmin"].ToString()),
                                     IsActive = bool.Parse(dt.Rows[i]["UserIsActive"].ToString()),
                                     PhoneNo = dt.Rows[i]["UsPhoneNo"].ToString(),
                                     Email = dt.Rows[i]["UsEmail"].ToString(),
@@ -878,11 +889,12 @@ namespace DMS_API.Services
                     int _PageNumber = SearchUser_MV.PageNumber == 0 ? 1 : SearchUser_MV.PageNumber;
                     int _PageRows = SearchUser_MV.PageRows == 0 ? 1 : SearchUser_MV.PageRows;
                     int CurrentPage = _PageNumber;
+                    int OrgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {ResponseSession.Data} "));
 
                     string where = HelpService.GetUserSearchColumn(SearchUser_MV);
 
                     var MaxTotal = dam.FireDataTable($"SELECT COUNT(*) AS TotalRows, CEILING(COUNT(*) / CAST({_PageRows} AS FLOAT)) AS MaxPage " +
-                                                      $"FROM [User].V_Users {where}");
+                                                      $"FROM [User].V_Users {where}"); // AND [OrgOwner] IN (SELECT [OrgId] FROM [User].[GetOrgsKids]({OrgOwnerID}))
                     if (MaxTotal == null)
                     {
                         Response_MV = new ResponseModelView
@@ -907,12 +919,12 @@ namespace DMS_API.Services
                         }
                         else
                         {
-                            string getUserInfo = "SELECT * FROM (SELECT   UserID, FullName, UsUserName, Role, UserIsActive, UsPhoneNo, UsEmail, " +
+                            string getUserInfo = "SELECT * FROM (SELECT   UserID, FullName, UsUserName, Role, IsOrgAdmin, UserIsActive, UsPhoneNo, UsEmail, " +
                                              "         UsUserEmpNo, UsUserIdintNo, UsIsOnLine, OrgArName, OrgEnName, OrgKuName, Note " +
                                             $"FROM     [User].V_Users  " +
                                             $"{where}) AS TAB  ORDER BY UserID " +
                                             $"OFFSET      ({_PageNumber}-1)*{_PageRows} ROWS " +
-                                            $"FETCH NEXT   {_PageRows} ROWS ONLY ";
+                                            $"FETCH NEXT   {_PageRows} ROWS ONLY "; // // AND [OrgOwner] IN (SELECT [OrgId] FROM [User].[GetOrgsKids]({OrgOwnerID}))
 
                             dt = new DataTable();
                             dt = await Task.Run(() => dam.FireDataTable(getUserInfo));
@@ -937,6 +949,7 @@ namespace DMS_API.Services
                                         FullName = dt.Rows[i]["FullName"].ToString(),
                                         UserName = dt.Rows[i]["UsUserName"].ToString(),
                                         Role = dt.Rows[i]["Role"].ToString(),
+                                        IsOrgAdmin = bool.Parse(dt.Rows[i]["IsOrgAdmin"].ToString()),
                                         IsActive = bool.Parse(dt.Rows[i]["UserIsActive"].ToString()),
                                         PhoneNo = dt.Rows[i]["UsPhoneNo"].ToString(),
                                         Email = dt.Rows[i]["UsEmail"].ToString(),

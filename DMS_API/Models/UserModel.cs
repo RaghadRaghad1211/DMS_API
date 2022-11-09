@@ -11,6 +11,7 @@ namespace DMS_API.Models
         //[JsonIgnore(Condition = JsonIgnoreCondition.Always)]
         //public string Password { get; set; }
         public string Role { get; set; }
+        public bool IsOrgAdmin { get; set; } = false;
         public string PhoneNo { get; set; }
         public string Email { get; set; }
         public string UserEmpNo { get; set; }

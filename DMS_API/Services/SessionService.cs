@@ -80,7 +80,8 @@ namespace DMS_API.Services
                             {
                                 Response_MV = new ResponseModelView
                                 {
-                                    Success = true
+                                    Success = true,
+                                    Data = Session_M.UserID
                                 };
                                 return Response_MV;
                             }
