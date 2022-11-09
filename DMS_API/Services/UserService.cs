@@ -894,7 +894,7 @@ namespace DMS_API.Services
                     string where = HelpService.GetUserSearchColumn(SearchUser_MV);
 
                     var MaxTotal = dam.FireDataTable($"SELECT COUNT(*) AS TotalRows, CEILING(COUNT(*) / CAST({_PageRows} AS FLOAT)) AS MaxPage " +
-                                                      $"FROM [User].V_Users {where}"); // AND [OrgOwner] IN (SELECT [OrgId] FROM [User].[GetOrgsKids]({OrgOwnerID}))
+                                                      $"FROM [User].V_Users {where}  AND [OrgOwner] IN (SELECT [OrgId] FROM [User].[GetOrgsKids]({OrgOwnerID})) "); // AND [OrgOwner] IN (SELECT [OrgId] FROM [User].[GetOrgsKids]({OrgOwnerID}))
                     if (MaxTotal == null)
                     {
                         Response_MV = new ResponseModelView
@@ -922,9 +922,9 @@ namespace DMS_API.Services
                             string getUserInfo = "SELECT * FROM (SELECT   UserID, FullName, UsUserName, Role, IsOrgAdmin, UserIsActive, UsPhoneNo, UsEmail, " +
                                              "         UsUserEmpNo, UsUserIdintNo, UsIsOnLine, OrgArName, OrgEnName, OrgKuName, Note " +
                                             $"FROM     [User].V_Users  " +
-                                            $"{where}) AS TAB  ORDER BY UserID " +
+                                            $"{where}  AND [OrgOwner] IN (SELECT [OrgId] FROM [User].[GetOrgsKids]({OrgOwnerID})) ) AS TAB  ORDER BY UserID " +
                                             $"OFFSET      ({_PageNumber}-1)*{_PageRows} ROWS " +
-                                            $"FETCH NEXT   {_PageRows} ROWS ONLY "; // // AND [OrgOwner] IN (SELECT [OrgId] FROM [User].[GetOrgsKids]({OrgOwnerID}))
+                                            $"FETCH NEXT   {_PageRows} ROWS ONLY "; // AND [OrgOwner] IN (SELECT [OrgId] FROM [User].[GetOrgsKids]({OrgOwnerID}))
 
                             dt = new DataTable();
                             dt = await Task.Run(() => dam.FireDataTable(getUserInfo));
