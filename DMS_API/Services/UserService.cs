@@ -1,16 +1,8 @@
 ﻿using ArchiveAPI.Services;
 using DMS_API.Models;
 using DMS_API.ModelsView;
-using Microsoft.AspNetCore.Http.Headers;
-using Microsoft.VisualBasic;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 using System.Net;
-using System.Security.Cryptography;
-using System.Xml.Linq;
-using static System.Net.Mime.MediaTypeNames;
-
 namespace DMS_API.Services
 {
     public class UserService
@@ -31,12 +23,12 @@ namespace DMS_API.Services
         }
         #endregion
 
-        #region CURD Functions
+        #region Functions
         public async Task<ResponseModelView> Login(LoginModelView User_MV, string Lang)
         {
             try
             {
-                #region MyRegion
+                #region My Test validation
                 //if (ValidationService.IsEmpty(User_MV.Username) == true)
                 //{
                 //    Response_MV = new ResponseModelView
@@ -1025,8 +1017,7 @@ namespace DMS_API.Services
                 return Response_MV;
             }
         }
-
-        public async Task<ResponseModelView> GetOrgsChildByParentID(RequestHeaderModelView RequestHeader)
+        public async Task<ResponseModelView> GetOrgsParentWithChilds(RequestHeaderModelView RequestHeader)
         {
             Session_S = new SessionService();
             var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
@@ -1037,13 +1028,9 @@ namespace DMS_API.Services
             else
             {
                 int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
-                int OrgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {userLoginID} "));
-                //string getOrgInfo = $"SELECT OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName   FROM [User].[Orgs] WHERE OrgId ={OrgOwnerID} ";
-                string getOrgInfo = $"SELECT TOP 1 OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName FROM [User].[GetOrgsbyUserId]({userLoginID}) ";
-
-                dt = new DataTable(); 
-                dt = await Task.Run(() => dam.FireDataTable(getOrgInfo));
-                if (dt == null)
+                List<OrgModel> Org_Mlist = new List<OrgModel>();
+                Org_Mlist= await HelpService.GetOrgsParentWithChildsByUserLoginID(userLoginID);
+                if (Org_Mlist == null)
                 {
                     Response_MV = new ResponseModelView
                     {
@@ -1053,53 +1040,87 @@ namespace DMS_API.Services
                     };
                     return Response_MV;
                 }
-                OrgModel Org_M = new OrgModel();
-                List<OrgModel> Org_Mlist = new List<OrgModel>();
-                if (dt.Rows.Count > 0)
-                {
-                        Org_M = new OrgModel
-                        {
-                            OrgId = Convert.ToInt32(dt.Rows[0]["OrgId"].ToString()),
-                            OrgUp = Convert.ToInt32(dt.Rows[0]["OrgUp"].ToString()),
-                            OrgLevel = Convert.ToInt32(dt.Rows[0]["OrgLevel"].ToString()),
-                            OrgArName = dt.Rows[0]["OrgArName"].ToString(),
-                            OrgEnName = dt.Rows[0]["OrgEnName"].ToString(),
-                            OrgKuName = dt.Rows[0]["OrgKuName"].ToString(),
-                            OrgChild = await HelpService.GetChildByParentID(Convert.ToInt32(dt.Rows[0]["OrgId"].ToString()))
-
-                        };
-
-
-                        Org_Mlist.Add(Org_M);
-                    Response_MV = new ResponseModelView
-                    {
-                        Success = true,
-                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
-                        Data = Org_Mlist 
-                    };
-                    return Response_MV;
-                }
                 else
                 {
                     Response_MV = new ResponseModelView
                     {
-                        Success = false,
-                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoData],
-                        Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                        Success = true,
+                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
+                        Data = Org_Mlist
                     };
                     return Response_MV;
                 }
-
-
-
             }
-
-
-
         }
 
 
+
         #endregion
+
+        #region My Test Region
+        //public async Task<ResponseModelView> GetOrgsChildByParentID(RequestHeaderModelView RequestHeader)
+        //{
+        //    Session_S = new SessionService();
+        //    var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
+        //    if (ResponseSession.Success == false)
+        //    {
+        //        return ResponseSession;
+        //    }
+        //    else
+        //    {
+        //        int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
+        //        int OrgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {userLoginID} "));
+        //        //string getOrgInfo = $"SELECT OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName   FROM [User].[Orgs] WHERE OrgId ={OrgOwnerID} ";
+        //        string getOrgInfo = $"SELECT TOP 1 OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName FROM [User].[GetOrgsbyUserId]({userLoginID}) ";
+
+        //        dt = new DataTable();
+        //        dt = await Task.Run(() => dam.FireDataTable(getOrgInfo));
+        //        if (dt == null)
+        //        {
+        //            Response_MV = new ResponseModelView
+        //            {
+        //                Success = false,
+        //                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
+        //                Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+        //            };
+        //            return Response_MV;
+        //        }
+        //        OrgModel Org_M = new OrgModel();
+        //        List<OrgModel> Org_Mlist = new List<OrgModel>();
+        //        if (dt.Rows.Count > 0)
+        //        {
+        //            Org_M = new OrgModel
+        //            {
+        //                OrgId = Convert.ToInt32(dt.Rows[0]["OrgId"].ToString()),
+        //                OrgUp = Convert.ToInt32(dt.Rows[0]["OrgUp"].ToString()),
+        //                OrgLevel = Convert.ToInt32(dt.Rows[0]["OrgLevel"].ToString()),
+        //                OrgArName = dt.Rows[0]["OrgArName"].ToString(),
+        //                OrgEnName = dt.Rows[0]["OrgEnName"].ToString(),
+        //                OrgKuName = dt.Rows[0]["OrgKuName"].ToString(),
+        //                OrgChild = await HelpService.GetChildByParentID(Convert.ToInt32(dt.Rows[0]["OrgId"].ToString()))
+        //            };
+        //            Org_Mlist.Add(Org_M);
+        //            Response_MV = new ResponseModelView
+        //            {
+        //                Success = true,
+        //                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
+        //                Data = Org_Mlist
+        //            };
+        //            return Response_MV;
+        //        }
+        //        else
+        //        {
+        //            Response_MV = new ResponseModelView
+        //            {
+        //                Success = false,
+        //                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoData],
+        //                Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+        //            };
+        //            return Response_MV;
+        //        }
+        //    }
+        //}
+
 
         //public async Task<List<OrgModel>> GetChildByParentID(int OrgId)
         //{
@@ -1129,5 +1150,6 @@ namespace DMS_API.Services
         //    }
         //    return Org_Mlist1;
         //}
+        #endregion
     }
 }

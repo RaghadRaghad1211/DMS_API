@@ -1,15 +1,10 @@
-﻿//using Microsoft.IdentityModel.Tokens;
-using DMS_API.Models;
+﻿using DMS_API.Models;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
-using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 using System.Security.Cryptography;
-using System.Text.RegularExpressions;
-
 namespace DMS_API.Services
 {
     /// <summary>
@@ -32,6 +27,7 @@ namespace DMS_API.Services
             "APIsecurity";
         #endregion
 
+        #region Functions
         public static JwtToken GeneratTokenAuthenticate(UserModel User_M)
         {
             var JwtKeyByte = Encoding.ASCII.GetBytes(JwtKey); // Convert.FromBase64String(JwtKey);
@@ -91,8 +87,6 @@ namespace DMS_API.Services
 
         public static string RoundomPassword(int length)
         {
-            //Regex RoundomPassword = new Regex("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$");
-            //return RoundomPassword.ToString();
             const string valid = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
             StringBuilder res = new StringBuilder();
             Random rnd = new Random();
@@ -103,7 +97,9 @@ namespace DMS_API.Services
             return res.ToString();
 
         }
-        #region Password    
+        #endregion
+
+        #region Test Password    
         //public static string PasswordEnecrypt1(string pass)
         //{
         //    byte[] bytes = Encoding.UTF8.GetBytes(pass);

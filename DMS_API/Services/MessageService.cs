@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace DMS_API.Services
+﻿namespace DMS_API.Services
 {
     public static class MessageService
     {
@@ -11,46 +6,6 @@ namespace DMS_API.Services
         //var msgA = MessageService.MsgDictionary["Ar"][MessageService.InvalidUsername];
         //var msgE = MessageService.MsgDictionary["En"][MessageService.InvalidUsername];
         #endregion
-
-        //enum EnglishKey
-        //{
-        //    InvalidEmail,
-        //    InvalidUsername,
-        //    InvalidPassword,
-        //    UsernameOrPasswordNotCorrect,
-        //    Password8Characters,
-        //    PasswordIsStrength,
-        //    PasswordNotStrength,
-        //    PasswordMustEnter,
-        //    UsernameMustEnter,
-        //    NotPermission, // You do not have permission to do this
-        //    Forbidden, // You are Forbidden to do this
-        //    Unauthorized, // You do not have authoriz to do this
-        //    ExpiredToken, // The access token expired
-        //    ChangePasswordSuccess,
-        //    ChangePasswordFaild,
-        //    SaveSuccess,
-        //    SaveFaild,
-        //    EditSuccess,
-        //    EditFaild,
-        //    UserNotActive,
-        //    LoginFaild,
-        //    InsertFaild,
-        //    UpdateFaild,
-        //    GetSuccess,
-        //    GetFaild,
-        //    InsertSuccess,
-        //    UpdateSuccess,
-        //    Active,
-        //    NotActive,
-        //    IsEmpty,
-        //    IsInt,
-        //    IsDate,
-        //    NoData,
-        //    IsExist,
-        //    IsNotExist,
-        //    MustFillInformation,
-        //}
 
         public static readonly string InvalidEmail = "InvalidEmail";
         public static readonly string InvalidUsername = "InvalidUsername";
@@ -97,6 +52,8 @@ namespace DMS_API.Services
         public static readonly string EmailIncorrect = "EmailIncorrect";
         public static readonly string FSTname = "FSTname";
         public static readonly string IsReset = "IsReset";
+        public static readonly string OldPasswordNotCorrect = "OldPasswordNotCorrect";
+
 
 
 
@@ -114,7 +71,7 @@ namespace DMS_API.Services
         public static readonly string UserIsDeleted = "UserIsDeleted";
 
 
-        public static readonly string OldPasswordNotCorrect = "OldPasswordNotCorrect";
+       
         public static readonly string VerificationCodeNotCorrect = "VerificationCodeNotCorrect";
         public static readonly string UsernameOrEmailAlreadyExist = "UsernameOrEmailAlreadyExist";
         public static readonly string EmailOrVerificationCodeNotCorrect = "EmailOrVerificationCodeNotCorrect";
@@ -182,24 +139,7 @@ namespace DMS_API.Services
                     { InvalidUsername, "اسم مستخدم غير صالح" },
                     { InvalidPassword, "كلمة المرور غير صالحة" },
                     { InvalidEmail, "" },
-                    { PasswordIsStrength, "كلمة المرور قوية" },
-                    { PasswordNotStrength, "كلمة المرور ضعيفة" },
-                    { UsernameOrPasswordNotCorrect, "" },
 
-                    { RegisterFaild, "" },
-                    { UserIsDeleted, "" },
-                    { UsernameOrEmailAlreadyExist, "" },
-
-                    { VerificationFaild, "" },
-                    { InvalidVerificationCode, "" },
-                    { EmailOrVerificationCodeNotCorrect, "" },
-                    { InvalidIdentity, "" },
-                    { UserNotExist, "" },
-                    { ForgetPasswordFaild, "" },
-                    { FindUserProfileFaild, "" },
-                    { ChangePasswordFaild, "" },
-                    
-                     { VerificationCodeNotCorrect, "" }
 
                 }
             },
@@ -257,22 +197,7 @@ namespace DMS_API.Services
                     { InvalidUsername, "Invalid Username" },
                     { InvalidPassword, "Invalid Password" },
                     { InvalidEmail, "" },
-                    { PasswordIsStrength, "Password is strong" },
-                    { PasswordNotStrength, "Password is weak" },
-                    { UsernameOrPasswordNotCorrect, "" },
-                    { RegisterFaild, "" },
-                    { UserIsDeleted, "" },
-                    { UsernameOrEmailAlreadyExist, "" },
-                    { VerificationFaild, "" },
-                    { InvalidVerificationCode, "" },
-                    { EmailOrVerificationCodeNotCorrect, "" },
-                    { InvalidIdentity, "" },
-                    { UserNotExist, "" },
-                    { ForgetPasswordFaild, "" },
-                    { FindUserProfileFaild, "" },
-                    { ChangePasswordFaild, "" },
-                   
-                    { VerificationCodeNotCorrect, "" }
+
 
                 }
             }

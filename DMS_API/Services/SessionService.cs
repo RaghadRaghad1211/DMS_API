@@ -1,10 +1,8 @@
 ﻿using ArchiveAPI.Services;
 using DMS_API.Models;
 using DMS_API.ModelsView;
-using System.Collections.Generic;
 using System.Data;
 using System.Net;
-
 namespace DMS_API.Services
 {
     public class SessionService
@@ -23,7 +21,7 @@ namespace DMS_API.Services
         }
         #endregion
 
-        #region CURD Functions 
+        #region Functions 
         public async Task<ResponseModelView> CheckAuthorizationResponse(RequestHeaderModelView RequestHeader)
         {
             try
@@ -76,17 +74,17 @@ namespace DMS_API.Services
                                 };
                                 return Response_MV;
                             }
-                            
-                            //else if (Session_M.IsAdministrator == false)
-                            //{
-                            //    Response_MV = new ResponseModelView
-                            //    {
-                            //        Success = false,
-                            //        Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.Forbidden],
-                            //        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
-                            //    };
-                            //    return Response_MV;
-                            //}
+
+                            else if (Session_M.IsOrgAdmin == false)
+                            {
+                                Response_MV = new ResponseModelView
+                                {
+                                    Success = false,
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.Forbidden],
+                                    Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                                };
+                                return Response_MV;
+                            }
                             else
                             {
                                 Response_MV = new ResponseModelView

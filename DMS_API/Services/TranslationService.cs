@@ -1,10 +1,8 @@
 ﻿using ArchiveAPI.Services;
 using DMS_API.Models;
 using DMS_API.ModelsView;
-using Microsoft.AspNetCore.Http.Headers;
 using System.Data;
 using System.Net;
-
 namespace DMS_API.Services
 {
     public class TranslationService
@@ -25,7 +23,7 @@ namespace DMS_API.Services
         }
         #endregion
 
-        #region CURD Functions        
+        #region Functions        
         public async Task<ResponseModelView> GetTranslationList(PaginationModelView Pagination_MV, RequestHeaderModelView RequestHeader)
         {
             try

@@ -1,22 +1,16 @@
-﻿using Microsoft.AspNetCore.Components;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
+﻿using System.Globalization;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-
 namespace DMS_API.Services
 {
     public static class ValidationService
     {
+        #region Functions
         public static bool IsEmpty(this string str)
         {
             str = str == null ? "" : str;
             return string.IsNullOrEmpty(str.Trim());
         }
-
         public static string IsEmptyList(this object ObjClass)
         {
             var obj = ObjClass.GetType();
@@ -35,18 +29,15 @@ namespace DMS_API.Services
             }
             return msg;
         }
-
         public static bool IsInt(this string num)
         {
             return int.TryParse(num.Trim(), out int value);
         }
-
         public static bool IsDate(this string date)
         {
             return DateTime.TryParseExact(date.Trim(), new string[] { "dd/MM/yyyy", "MM/dd/yyyy" },
                                           CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime value);
         }
-
         public static bool IsPhoneNumber(this string phoneNumber)
         {
             int count = phoneNumber.Length;
@@ -56,15 +47,11 @@ namespace DMS_API.Services
             }
             return false;
         }
-
         public static bool IsEmail(this string email)
         {
             int count = email.Count(x => x == '@');
             return count == 1 ? true : false;
-
-            //return email.Contains('@');
         }
-
         public static string IsPasswordStrength(this string TxtPassword)
         {
             string[] Strength = { "يجب ادخال 8 احرف", "ضعيف", "متوسط", "قوي", "قوي جداً" };
@@ -116,7 +103,6 @@ namespace DMS_API.Services
                 }
             }
         }
-
         public static bool IsPasswordStrength1(this string pass)
         {
             if (string.IsNullOrWhiteSpace(pass) ||
@@ -129,5 +115,6 @@ namespace DMS_API.Services
 
             return true;
         }
+        #endregion
     }
 }

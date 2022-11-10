@@ -1,24 +1,26 @@
-﻿using DMS_API.Models;
-using DMS_API.ModelsView;
+﻿using DMS_API.ModelsView;
 using DMS_API.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-
 namespace DMS_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
     {
+        #region Properteis
         private UserService User_S;
         private ResponseModelView Response_MV { get; set; }
+        #endregion
 
+        #region Constructor
         public UserController()
         {
             User_S = new UserService();
         }
+        #endregion
 
+        #region Actions
         [AllowAnonymous]
         [HttpPost]
         [Route("Login")]
@@ -99,15 +101,14 @@ namespace DMS_API.Controllers
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
-
-
         [AllowAnonymous]
         [HttpGet]
-        [Route("GetOrgs")]
-        public async Task<IActionResult> GetOrgsChildByParentID([FromHeader] RequestHeaderModelView RequestHeader)
+        [Route("GetOrgsParentWithChilds")]
+        public async Task<IActionResult> GetOrgsParentWithChilds([FromHeader] RequestHeaderModelView RequestHeader)
         {
-            Response_MV = await User_S.GetOrgsChildByParentID(RequestHeader);
+            Response_MV = await User_S.GetOrgsParentWithChilds(RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
+        #endregion
     }
 }

@@ -7,5 +7,16 @@ namespace DMS_API.Controllers
     [ApiController]
     public class DocumentController : ControllerBase
     {
+        #region Properteis
+
+        #endregion
+
+        #region Constructor
+
+        #endregion
+
+        #region Actions
+
+        #endregion
     }
 }

@@ -1,7 +1,4 @@
-﻿
-using System.Text.Json.Serialization;
-
-namespace DMS_API.Models
+﻿namespace DMS_API.Models
 {
     public class UserModel
     {
@@ -12,8 +9,6 @@ namespace DMS_API.Models
         public string LastName { get; set; }
         public string FullName { get; set; }
         public string UserName { get; set; }
-        //[JsonIgnore(Condition = JsonIgnoreCondition.Always)]
-        //public string Password { get; set; }
         public string Role { get; set; }
         public bool IsOrgAdmin { get; set; } = false;
         public string PhoneNo { get; set; }

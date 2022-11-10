@@ -1115,3 +1115,70 @@
 2022-11-10 14:35:18.491 +03:00 [INF] Executed action DMS_API.Controllers.UserController.GetOrgsChildByParentID (DMS_API) in 229.8485ms
 2022-11-10 14:35:18.493 +03:00 [INF] Executed endpoint 'DMS_API.Controllers.UserController.GetOrgsChildByParentID (DMS_API)'
 2022-11-10 14:35:18.494 +03:00 [INF] Request finished HTTP/1.1 GET https://localhost:7040/api/User/GetOrgs - - - 200 - application/json;+charset=utf-8 323.5282ms
+2022-11-10 08:47:08.528 -08:00 [INF] User profile is available. Using 'C:\Users\PC\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2022-11-10 08:47:35.341 -08:00 [INF] Now listening on: https://localhost:7040
+2022-11-10 08:47:35.341 -08:00 [INF] Now listening on: http://localhost:5041
+2022-11-10 08:47:35.350 -08:00 [INF] Application started. Press Ctrl+C to shut down.
+2022-11-10 08:47:35.351 -08:00 [INF] Hosting environment: Development
+2022-11-10 08:47:35.351 -08:00 [INF] Content root path: D:\DMS_API\DMS_API\
+2022-11-10 08:48:47.517 -08:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/index.html - -
+2022-11-10 08:49:08.945 -08:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/index.html - - - 200 - text/html;charset=utf-8 21129.4132ms
+2022-11-10 08:49:50.261 -08:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - -
+2022-11-10 08:49:50.521 -08:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - - - 200 11984 application/javascript;+charset=utf-8 260.0546ms
+2022-11-10 08:50:09.499 -08:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - -
+2022-11-10 08:50:11.005 -08:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - - - 200 - application/json;charset=utf-8 1507.3333ms
+2022-11-10 08:51:09.725 -08:00 [INF] Request starting HTTP/2 GET https://localhost:7040/api/Translation/GetTranslationByID/4 - -
+2022-11-10 08:51:34.029 -08:00 [INF] Executing endpoint 'DMS_API.Controllers.TranslationController.GetTranslationByID (DMS_API)'
+2022-11-10 08:51:34.416 -08:00 [INF] Route matched with {action = "GetTranslationByID", controller = "Translation"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetTranslationByID(Int32, DMS_API.ModelsView.RequestHeaderModelView) on controller DMS_API.Controllers.TranslationController (DMS_API).
+2022-11-10 08:51:43.588 -08:00 [INF] Executing ObjectResult, writing value of type 'DMS_API.ModelsView.ResponseModelView'.
+2022-11-10 08:51:43.867 -08:00 [INF] Executed action DMS_API.Controllers.TranslationController.GetTranslationByID (DMS_API) in 9356.3104ms
+2022-11-10 08:51:43.874 -08:00 [INF] Executed endpoint 'DMS_API.Controllers.TranslationController.GetTranslationByID (DMS_API)'
+2022-11-10 08:51:43.875 -08:00 [INF] Request finished HTTP/2 GET https://localhost:7040/api/Translation/GetTranslationByID/4 - - - 400 - application/json;+charset=utf-8 34149.3466ms
+2022-11-10 08:58:02.900 -08:00 [INF] Request starting HTTP/2 POST https://localhost:7040/api/User/Login application/json 60
+2022-11-10 08:58:02.955 -08:00 [INF] CORS policy execution successful.
+2022-11-10 08:58:02.995 -08:00 [INF] Executing endpoint 'DMS_API.Controllers.UserController.Login (DMS_API)'
+2022-11-10 08:58:03.038 -08:00 [INF] Route matched with {action = "Login", controller = "User"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(DMS_API.ModelsView.LoginModelView, System.String) on controller DMS_API.Controllers.UserController (DMS_API).
+2022-11-10 09:00:47.378 -08:00 [INF] Executing ObjectResult, writing value of type 'DMS_API.ModelsView.ResponseModelView'.
+2022-11-10 09:00:47.389 -08:00 [INF] Executed action DMS_API.Controllers.UserController.Login (DMS_API) in 164351.1102ms
+2022-11-10 09:00:47.392 -08:00 [INF] Executed endpoint 'DMS_API.Controllers.UserController.Login (DMS_API)'
+2022-11-10 09:00:47.396 -08:00 [INF] Request finished HTTP/2 POST https://localhost:7040/api/User/Login application/json 60 - 417 - application/json;+charset=utf-8 164495.5299ms
+2022-11-10 09:02:03.897 -08:00 [INF] Request starting HTTP/2 POST https://localhost:7040/api/User/Login application/json 60
+2022-11-10 09:02:03.937 -08:00 [INF] CORS policy execution successful.
+2022-11-10 09:02:04.005 -08:00 [INF] Executing endpoint 'DMS_API.Controllers.UserController.Login (DMS_API)'
+2022-11-10 09:02:04.006 -08:00 [INF] Route matched with {action = "Login", controller = "User"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(DMS_API.ModelsView.LoginModelView, System.String) on controller DMS_API.Controllers.UserController (DMS_API).
+2022-11-10 09:03:21.192 -08:00 [INF] Executing ObjectResult, writing value of type 'DMS_API.ModelsView.ResponseModelView'.
+2022-11-10 09:03:21.192 -08:00 [INF] Executed action DMS_API.Controllers.UserController.Login (DMS_API) in 77186.4403ms
+2022-11-10 09:03:21.192 -08:00 [INF] Executed endpoint 'DMS_API.Controllers.UserController.Login (DMS_API)'
+2022-11-10 09:03:21.193 -08:00 [INF] Request finished HTTP/2 POST https://localhost:7040/api/User/Login application/json 60 - 417 - application/json;+charset=utf-8 77296.2959ms
+2022-11-10 09:04:02.012 -08:00 [INF] Request starting HTTP/2 POST https://localhost:7040/api/User/Login application/json 60
+2022-11-10 09:04:02.013 -08:00 [INF] CORS policy execution successful.
+2022-11-10 09:04:02.014 -08:00 [INF] Executing endpoint 'DMS_API.Controllers.UserController.Login (DMS_API)'
+2022-11-10 09:04:02.016 -08:00 [INF] Route matched with {action = "Login", controller = "User"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(DMS_API.ModelsView.LoginModelView, System.String) on controller DMS_API.Controllers.UserController (DMS_API).
+2022-11-10 09:05:44.150 -08:00 [INF] Executing ObjectResult, writing value of type 'DMS_API.ModelsView.ResponseModelView'.
+2022-11-10 09:05:44.153 -08:00 [INF] Executed action DMS_API.Controllers.UserController.Login (DMS_API) in 102135.258ms
+2022-11-10 09:05:44.153 -08:00 [INF] Executed endpoint 'DMS_API.Controllers.UserController.Login (DMS_API)'
+2022-11-10 09:05:44.161 -08:00 [INF] Request finished HTTP/2 POST https://localhost:7040/api/User/Login application/json 60 - 417 - application/json;+charset=utf-8 102150.3234ms
+2022-11-10 09:05:57.941 -08:00 [INF] Request starting HTTP/2 POST https://localhost:7040/api/User/Login application/json 60
+2022-11-10 09:05:57.941 -08:00 [INF] CORS policy execution successful.
+2022-11-10 09:05:57.941 -08:00 [INF] Executing endpoint 'DMS_API.Controllers.UserController.Login (DMS_API)'
+2022-11-10 09:05:57.941 -08:00 [INF] Route matched with {action = "Login", controller = "User"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(DMS_API.ModelsView.LoginModelView, System.String) on controller DMS_API.Controllers.UserController (DMS_API).
+2022-11-10 09:07:58.380 -08:00 [INF] Executing ObjectResult, writing value of type 'DMS_API.ModelsView.ResponseModelView'.
+2022-11-10 09:07:58.380 -08:00 [INF] Executed action DMS_API.Controllers.UserController.Login (DMS_API) in 120438.6522ms
+2022-11-10 09:07:58.381 -08:00 [INF] Executed endpoint 'DMS_API.Controllers.UserController.Login (DMS_API)'
+2022-11-10 09:07:58.390 -08:00 [INF] Request finished HTTP/2 POST https://localhost:7040/api/User/Login application/json 60 - 417 - application/json;+charset=utf-8 120446.9760ms
+2022-11-10 09:20:57.356 -08:00 [INF] User profile is available. Using 'C:\Users\PC\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2022-11-10 09:21:02.227 -08:00 [INF] Now listening on: https://localhost:7040
+2022-11-10 09:21:02.228 -08:00 [INF] Now listening on: http://localhost:5041
+2022-11-10 09:21:02.237 -08:00 [INF] Application started. Press Ctrl+C to shut down.
+2022-11-10 09:21:02.237 -08:00 [INF] Hosting environment: Development
+2022-11-10 09:21:02.237 -08:00 [INF] Content root path: D:\DMS_API\DMS_API\
+2022-11-10 09:21:32.854 -08:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/index.html - -
+2022-11-10 09:21:48.527 -08:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/index.html - - - 200 - text/html;charset=utf-8 15198.9657ms
+2022-11-10 09:21:57.984 -08:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - -
+2022-11-10 09:21:58.189 -08:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - - - 200 11984 application/javascript;+charset=utf-8 205.1702ms
+2022-11-10 09:22:24.845 -08:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - -
+2022-11-10 09:22:26.867 -08:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - - - 200 - application/json;charset=utf-8 2023.0310ms
+2022-11-10 09:22:49.419 -08:00 [INF] Request starting HTTP/2 POST https://localhost:7040/api/User/Login application/json 60
+2022-11-10 09:22:49.612 -08:00 [INF] CORS policy execution successful.
+2022-11-10 09:22:58.223 -08:00 [INF] Executing endpoint 'DMS_API.Controllers.UserController.Login (DMS_API)'
+2022-11-10 09:22:59.234 -08:00 [INF] Route matched with {action = "Login", controller = "User"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(DMS_API.ModelsView.LoginModelView, System.String) on controller DMS_API.Controllers.UserController (DMS_API).

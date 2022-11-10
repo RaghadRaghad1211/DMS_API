@@ -1,6 +1,4 @@
-﻿using System.ComponentModel;
-
-namespace DMS_API.ModelsView
+﻿namespace DMS_API.ModelsView
 {
     public class SearchUserModelView
     {

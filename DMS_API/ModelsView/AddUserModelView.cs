@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace DMS_API.ModelsView
+﻿namespace DMS_API.ModelsView
 {
     public class AddUserModelView
     {

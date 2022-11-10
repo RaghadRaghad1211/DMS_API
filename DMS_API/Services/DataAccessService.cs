@@ -370,8 +370,9 @@ namespace ArchiveAPI.Services
                 this.CON.Close();
                 return dt;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                var uu = ex;
                 return null;
             }
         }

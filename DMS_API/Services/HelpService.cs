@@ -1,14 +1,17 @@
 ﻿using ArchiveAPI.Services;
 using DMS_API.Models;
 using DMS_API.ModelsView;
-using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Data;
 using System.Reflection;
-
 namespace DMS_API.Services
 {
     public static class HelpService
     {
+        #region Properteis
+        private static DataAccessService dam = new DataAccessService(SecurityService.ConnectionString);
+        #endregion
+
+        #region Functions
         public static string GetMessageColumn(string Lang)
         {
             string Mlang = "MesArName";
@@ -103,9 +106,41 @@ namespace DMS_API.Services
                 return false;
             }
         }
-        public static async Task<List<OrgModel>> GetChildByParentID(int OrgId)
+        public static async Task<List<OrgModel>> GetOrgsParentWithChildsByUserLoginID(int userLoginID)
         {
-            DataAccessService dam = new DataAccessService(SecurityService.ConnectionString);
+
+            int OrgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {userLoginID} "));
+            string getOrgInfo = $"SELECT TOP 1 OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName FROM [User].[GetOrgsbyUserId]({userLoginID}) ";
+            DataTable dt = new DataTable();
+            dt = await Task.Run(() => dam.FireDataTable(getOrgInfo));
+            if (dt == null)
+            {
+                return null;
+            }
+            OrgModel Org_M = new OrgModel();
+            List<OrgModel> Org_Mlist = new List<OrgModel>();
+            if (dt.Rows.Count > 0)
+            {
+                Org_M = new OrgModel
+                {
+                    OrgId = Convert.ToInt32(dt.Rows[0]["OrgId"].ToString()),
+                    OrgUp = Convert.ToInt32(dt.Rows[0]["OrgUp"].ToString()),
+                    OrgLevel = Convert.ToInt32(dt.Rows[0]["OrgLevel"].ToString()),
+                    OrgArName = dt.Rows[0]["OrgArName"].ToString(),
+                    OrgEnName = dt.Rows[0]["OrgEnName"].ToString(),
+                    OrgKuName = dt.Rows[0]["OrgKuName"].ToString(),
+                    OrgChild = await HelpService.GetOrgsChilds(Convert.ToInt32(dt.Rows[0]["OrgId"].ToString()))
+                };
+                Org_Mlist.Add(Org_M);
+                return Org_Mlist;
+            }
+            else
+            {
+                return null;
+            }
+        }
+        private static async Task<List<OrgModel>> GetOrgsChilds(int OrgId)
+        {
             string getOrgInfo = $"SELECT OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName   FROM [User].[GetOrgschildsByParentId]({OrgId})";
             DataTable dtChild = new DataTable();
             dtChild = await Task.Run(() => dam.FireDataTable(getOrgInfo));
@@ -123,14 +158,14 @@ namespace DMS_API.Services
                         OrgArName = dtChild.Rows[i]["OrgArName"].ToString(),
                         OrgEnName = dtChild.Rows[i]["OrgEnName"].ToString(),
                         OrgKuName = dtChild.Rows[i]["OrgKuName"].ToString(),
-                        OrgChild = await GetChildByParentID(Convert.ToInt32(dtChild.Rows[i]["OrgId"].ToString()))
+                        OrgChild = await GetOrgsChilds(Convert.ToInt32(dtChild.Rows[i]["OrgId"].ToString()))
                     };
-
-
                     Org_Mlist1.Add(Org_M1);
                 }
             }
             return Org_Mlist1;
         }
+
+        #endregion
     }
 }
