@@ -1,5 +1,8 @@
-﻿using DMS_API.ModelsView;
+﻿using ArchiveAPI.Services;
+using DMS_API.Models;
+using DMS_API.ModelsView;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using System.Data;
 using System.Reflection;
 
 namespace DMS_API.Services
@@ -99,6 +102,35 @@ namespace DMS_API.Services
             {
                 return false;
             }
+        }
+        public static async Task<List<OrgModel>> GetChildByParentID(int OrgId)
+        {
+            DataAccessService dam = new DataAccessService(SecurityService.ConnectionString);
+            string getOrgInfo = $"SELECT OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName   FROM [User].[GetOrgschildsByParentId]({OrgId})";
+            DataTable dtChild = new DataTable();
+            dtChild = await Task.Run(() => dam.FireDataTable(getOrgInfo));
+            OrgModel Org_M1 = new OrgModel();
+            List<OrgModel> Org_Mlist1 = new List<OrgModel>();
+            if (dtChild.Rows.Count > 0)
+            {
+                for (int i = 0; i < dtChild.Rows.Count; i++)
+                {
+                    Org_M1 = new OrgModel
+                    {
+                        OrgId = Convert.ToInt32(dtChild.Rows[i]["OrgId"].ToString()),
+                        OrgUp = Convert.ToInt32(dtChild.Rows[i]["OrgUp"].ToString()),
+                        OrgLevel = Convert.ToInt32(dtChild.Rows[i]["OrgLevel"].ToString()),
+                        OrgArName = dtChild.Rows[i]["OrgArName"].ToString(),
+                        OrgEnName = dtChild.Rows[i]["OrgEnName"].ToString(),
+                        OrgKuName = dtChild.Rows[i]["OrgKuName"].ToString(),
+                        OrgChild = await GetChildByParentID(Convert.ToInt32(dtChild.Rows[i]["OrgId"].ToString()))
+                    };
+
+
+                    Org_Mlist1.Add(Org_M1);
+                }
+            }
+            return Org_Mlist1;
         }
     }
 }

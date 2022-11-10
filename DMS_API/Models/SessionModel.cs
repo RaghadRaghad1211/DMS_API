@@ -4,6 +4,7 @@
     {
         public int UserID { get; set; }
         public bool IsAdministrator { get; set; }
+        public bool IsOrgAdmin { get; set; }
         public bool IsExpairy { get; set; }
     }
 }

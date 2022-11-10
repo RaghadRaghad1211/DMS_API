@@ -76,15 +76,7 @@ namespace DMS_API.Services
                                 };
                                 return Response_MV;
                             }
-                            else
-                            {
-                                Response_MV = new ResponseModelView
-                                {
-                                    Success = true,
-                                    Data = Session_M.UserID
-                                };
-                                return Response_MV;
-                            }
+                            
                             //else if (Session_M.IsAdministrator == false)
                             //{
                             //    Response_MV = new ResponseModelView
@@ -95,6 +87,15 @@ namespace DMS_API.Services
                             //    };
                             //    return Response_MV;
                             //}
+                            else
+                            {
+                                Response_MV = new ResponseModelView
+                                {
+                                    Success = true,
+                                    Data = Session_M
+                                };
+                                return Response_MV;
+                            }
                         }
                     }
                 }
@@ -114,7 +115,7 @@ namespace DMS_API.Services
         {
             try
             {
-                string get = "SELECT   UserID, IsAdministrator, IsExpairy " +
+                string get = "SELECT   UserID, IsAdministrator, IsOrgAdmin, IsExpairy " +
                                  "FROM     Security.V_Session " +
                                 $"WHERE Token='{UserToken}' ";
                 Dt = new DataTable();
@@ -133,6 +134,7 @@ namespace DMS_API.Services
                     {
                         UserID = Convert.ToInt32(Dt.Rows[0]["UserID"].ToString()),
                         IsAdministrator = Convert.ToBoolean(Dt.Rows[0]["IsAdministrator"].ToString()), // Forbidden
+                        IsOrgAdmin = Convert.ToBoolean(Dt.Rows[0]["IsOrgAdmin"].ToString()), // Forbidden
                         IsExpairy = Convert.ToBoolean(Dt.Rows[0]["IsExpairy"].ToString()) // ExpiredToken
                     };
                     return Session_M;

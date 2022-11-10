@@ -5,7 +5,9 @@ using Microsoft.AspNetCore.Http.Headers;
 using Microsoft.VisualBasic;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Net;
+using System.Security.Cryptography;
 using System.Xml.Linq;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -82,7 +84,7 @@ namespace DMS_API.Services
                     }
                     else
                     { // $ystemAdm!n 
-                        string getUserInfo = "SELECT  UserID, FullName, UsUserName,  Role, IsOrgAdmin, UserIsActive, UsPhoneNo, " +
+                        string getUserInfo = "SELECT  UserID,UsFirstName,UsSecondName,UsThirdName,UsLastName, FullName, UsUserName,  Role, IsOrgAdmin, UserIsActive, UsPhoneNo, " +
                                             "         UsEmail, UsUserEmpNo, UsUserIdintNo, UsIsOnLine, OrgArName, OrgEnName, OrgKuName, Note " +
                                             "FROM     [User].V_Users " +
                                            $"WHERE    [UsUserName] = '{User_MV.Username}' AND UsPassword = '{SecurityService.PasswordEnecrypt(User_MV.Password)}' ";
@@ -116,6 +118,10 @@ namespace DMS_API.Services
                                 User_M = new UserModel
                                 {
                                     UserID = Convert.ToInt32(dt.Rows[0]["UserID"].ToString()),
+                                    FirstName = dt.Rows[0]["UsFirstName"].ToString(),
+                                    SecondName = dt.Rows[0]["UsSecondName"].ToString(),
+                                    ThirdName = dt.Rows[0]["UsThirdName"].ToString(),
+                                    LastName = dt.Rows[0]["UsLastName"].ToString(),
                                     FullName = dt.Rows[0]["FullName"].ToString(),
                                     UserName = dt.Rows[0]["UsUserName"].ToString(),
                                     Role = dt.Rows[0]["Role"].ToString(),
@@ -305,13 +311,14 @@ namespace DMS_API.Services
                 }
                 else
                 {
-                    int OrgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {ResponseSession.Data} "));
+                    //int OrgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {((SessionModel)ResponseSession.Data).UserID} AND [USERID] !=1 "));
                     int _PageNumber = Pagination_MV.PageNumber == 0 ? 1 : Pagination_MV.PageNumber;
                     int _PageRows = Pagination_MV.PageRows == 0 ? 1 : Pagination_MV.PageRows;
                     int CurrentPage = _PageNumber;
 
+                    int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
                     var MaxTotal = dam.FireDataTable($"SELECT COUNT(*) AS TotalRows, CEILING(COUNT(*) / CAST({_PageRows} AS FLOAT)) AS MaxPage " +
-                                                     $"FROM [User].V_Users  WHERE [OrgOwner] IN (SELECT [OrgId] FROM [User].[GetOrgsKids]({OrgOwnerID})) ");
+                                                     $"FROM [User].V_Users  WHERE [OrgOwner] IN (SELECT [OrgId] FROM [User].[GetOrgsbyUserId]({userLoginID})) AND [USERID] !={userLoginID} ");
                     if (MaxTotal == null)
                     {
                         Response_MV = new ResponseModelView
@@ -336,10 +343,10 @@ namespace DMS_API.Services
                         }
                         else
                         {
-                            string getUserInfo = "SELECT      UserID, FullName, UsUserName, Role, IsOrgAdmin, UserIsActive, UsPhoneNo, UsEmail, " +
+                            string getUserInfo = "SELECT      UserID, UsFirstName, UsSecondName, UsThirdName, UsLastName, FullName, UsUserName, Role, IsOrgAdmin, UserIsActive, UsPhoneNo, UsEmail, " +
                                                  "            UsUserEmpNo, UsUserIdintNo, UsIsOnLine, OrgArName, OrgEnName, OrgKuName, Note " +
                                                  "FROM        [User].V_Users " +
-                                                $"WHERE [OrgOwner] IN (SELECT [OrgId] FROM [User].[GetOrgsKids]({OrgOwnerID})) " +
+                                                $"WHERE [OrgOwner] IN (SELECT [OrgId] FROM [User].GetOrgsbyUserId({userLoginID})) " +
                                                  "ORDER BY UserID " +
                                                 $"OFFSET      ({_PageNumber}-1)*{_PageRows} ROWS " +
                                                 $"FETCH NEXT   {_PageRows} ROWS ONLY ";
@@ -364,6 +371,10 @@ namespace DMS_API.Services
                                     User_M = new UserModel
                                     {
                                         UserID = Convert.ToInt32(dt.Rows[i]["UserID"].ToString()),
+                                        FirstName = dt.Rows[i]["UsFirstName"].ToString(),
+                                        SecondName = dt.Rows[i]["UsSecondName"].ToString(),
+                                        ThirdName = dt.Rows[i]["UsThirdName"].ToString(),
+                                        LastName = dt.Rows[i]["UsLastName"].ToString(),
                                         FullName = dt.Rows[i]["FullName"].ToString(),
                                         UserName = dt.Rows[i]["UsUserName"].ToString(),
                                         Role = dt.Rows[i]["Role"].ToString(),
@@ -427,10 +438,11 @@ namespace DMS_API.Services
                 }
                 else
                 {
-                    int OrgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {ResponseSession.Data} "));
-                    string getUserInfo = "SELECT   UserID, FullName, UsUserName, Role, IsOrgAdmin, UserIsActive, UsPhoneNo, UsEmail, " +
+                    //int OrgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {ResponseSession.Data} "));
+                    int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
+                    string getUserInfo = "SELECT   UserID, UsFirstName, UsSecondName, UsThirdName, UsLastName, FullName, UsUserName, Role, IsOrgAdmin, UserIsActive, UsPhoneNo, UsEmail, " +
                                          "         UsUserEmpNo, UsUserIdintNo, UsIsOnLine, OrgArName, OrgEnName, OrgKuName, Note " +
-                                        $"FROM     [User].V_Users WHERE UserID={id} AND [OrgOwner] IN (SELECT [OrgId] FROM [User].[GetOrgsKids]({OrgOwnerID})) ";
+                                        $"FROM     [User].V_Users WHERE UserID={id} AND [OrgOwner] IN (SELECT [OrgId] FROM [User].[GetOrgsbyUserId]({userLoginID})) AND [USERID] !={userLoginID} ";
 
                     dt = new DataTable();
                     dt = await Task.Run(() => dam.FireDataTable(getUserInfo));
@@ -450,6 +462,10 @@ namespace DMS_API.Services
                         User_M = new UserModel
                         {
                             UserID = Convert.ToInt32(dt.Rows[0]["UserID"].ToString()),
+                            FirstName = dt.Rows[0]["UsFirstName"].ToString(),
+                            SecondName = dt.Rows[0]["UsSecondName"].ToString(),
+                            ThirdName = dt.Rows[0]["UsThirdName"].ToString(),
+                            LastName = dt.Rows[0]["UsLastName"].ToString(),
                             FullName = dt.Rows[0]["FullName"].ToString(),
                             UserName = dt.Rows[0]["UsUserName"].ToString(),
                             Role = dt.Rows[0]["Role"].ToString(),
@@ -799,10 +815,11 @@ namespace DMS_API.Services
                     }
                     else
                     {
-                        int OrgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {ResponseSession.Data} "));
-                        string getUserInfo = "SELECT   UserID, FullName, UsUserName, Role, IsOrgAdmin, UserIsActive, UsPhoneNo, UsEmail, " +
+                        //int OrgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {ResponseSession.Data} "));
+                        int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
+                        string getUserInfo = "SELECT   UserID, UsFirstName, UsSecondName, UsThirdName, UsLastName, FullName, UsUserName, Role, IsOrgAdmin, UserIsActive, UsPhoneNo, UsEmail, " +
                                              "         UsUserEmpNo, UsUserIdintNo, UsIsOnLine, OrgArName, OrgEnName, OrgKuName, Note " +
-                                            $"FROM     [User].V_Users WHERE UsUserName LIKE '{username}%' AND [OrgOwner] IN (SELECT [OrgId] FROM [User].[GetOrgsKids]({OrgOwnerID})) ";
+                                            $"FROM     [User].V_Users WHERE UsUserName LIKE '{username}%' AND [OrgOwner] IN (SELECT [OrgId] FROM [User].[GetOrgsbyUserId]({userLoginID})) AND [USERID] !={userLoginID} ";
 
                         dt = new DataTable();
                         dt = await Task.Run(() => dam.FireDataTable(getUserInfo));
@@ -824,6 +841,10 @@ namespace DMS_API.Services
                                 User_M = new UserModel
                                 {
                                     UserID = Convert.ToInt32(dt.Rows[i]["UserID"].ToString()),
+                                    FirstName = dt.Rows[i]["UsFirstName"].ToString(),
+                                    SecondName = dt.Rows[i]["UsSecondName"].ToString(),
+                                    ThirdName = dt.Rows[i]["UsThirdName"].ToString(),
+                                    LastName = dt.Rows[i]["UsLastName"].ToString(),
                                     FullName = dt.Rows[i]["FullName"].ToString(),
                                     UserName = dt.Rows[i]["UsUserName"].ToString(),
                                     Role = dt.Rows[i]["Role"].ToString(),
@@ -889,12 +910,14 @@ namespace DMS_API.Services
                     int _PageNumber = SearchUser_MV.PageNumber == 0 ? 1 : SearchUser_MV.PageNumber;
                     int _PageRows = SearchUser_MV.PageRows == 0 ? 1 : SearchUser_MV.PageRows;
                     int CurrentPage = _PageNumber;
-                    int OrgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {ResponseSession.Data} "));
+                    int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
+
+                    //int OrgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {ResponseSession.Data} "));
 
                     string where = HelpService.GetUserSearchColumn(SearchUser_MV);
 
                     var MaxTotal = dam.FireDataTable($"SELECT COUNT(*) AS TotalRows, CEILING(COUNT(*) / CAST({_PageRows} AS FLOAT)) AS MaxPage " +
-                                                      $"FROM [User].V_Users {where}  AND [OrgOwner] IN (SELECT [OrgId] FROM [User].[GetOrgsKids]({OrgOwnerID})) "); // AND [OrgOwner] IN (SELECT [OrgId] FROM [User].[GetOrgsKids]({OrgOwnerID}))
+                                                      $"FROM [User].V_Users {where}  AND [OrgOwner] IN (SELECT [OrgId] FROM [User].[GetOrgsbyUserId]({userLoginID})) AND [USERID] !={userLoginID} ");
                     if (MaxTotal == null)
                     {
                         Response_MV = new ResponseModelView
@@ -919,12 +942,12 @@ namespace DMS_API.Services
                         }
                         else
                         {
-                            string getUserInfo = "SELECT * FROM (SELECT   UserID, FullName, UsUserName, Role, IsOrgAdmin, UserIsActive, UsPhoneNo, UsEmail, " +
+                            string getUserInfo = "SELECT * FROM (SELECT   UserID,UsFirstName,UsSecondName,UsThirdName,UsLastName, FullName, UsUserName, Role, IsOrgAdmin, UserIsActive, UsPhoneNo, UsEmail, " +
                                              "         UsUserEmpNo, UsUserIdintNo, UsIsOnLine, OrgArName, OrgEnName, OrgKuName, Note " +
                                             $"FROM     [User].V_Users  " +
-                                            $"{where}  AND [OrgOwner] IN (SELECT [OrgId] FROM [User].[GetOrgsKids]({OrgOwnerID})) ) AS TAB  ORDER BY UserID " +
+                                            $"{where}  AND [OrgOwner] IN (SELECT [OrgId] FROM [User].[GetOrgsbyUserId]({userLoginID})) AND [USERID] !={userLoginID} ) AS TAB  ORDER BY UserID " +
                                             $"OFFSET      ({_PageNumber}-1)*{_PageRows} ROWS " +
-                                            $"FETCH NEXT   {_PageRows} ROWS ONLY "; // AND [OrgOwner] IN (SELECT [OrgId] FROM [User].[GetOrgsKids]({OrgOwnerID}))
+                                            $"FETCH NEXT   {_PageRows} ROWS ONLY ";
 
                             dt = new DataTable();
                             dt = await Task.Run(() => dam.FireDataTable(getUserInfo));
@@ -946,6 +969,11 @@ namespace DMS_API.Services
                                     User_M = new UserModel
                                     {
                                         UserID = Convert.ToInt32(dt.Rows[i]["UserID"].ToString()),
+                                        FirstName = dt.Rows[i]["UsFirstName"].ToString(),
+                                        SecondName = dt.Rows[i]["UsSecondName"].ToString(),
+                                        ThirdName = dt.Rows[i]["UsThirdName"].ToString(),
+                                        LastName = dt.Rows[i]["UsLastName"].ToString(),
+
                                         FullName = dt.Rows[i]["FullName"].ToString(),
                                         UserName = dt.Rows[i]["UsUserName"].ToString(),
                                         Role = dt.Rows[i]["Role"].ToString(),
@@ -998,8 +1026,108 @@ namespace DMS_API.Services
             }
         }
 
+        public async Task<ResponseModelView> GetOrgsChildByParentID(RequestHeaderModelView RequestHeader)
+        {
+            Session_S = new SessionService();
+            var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
+            if (ResponseSession.Success == false)
+            {
+                return ResponseSession;
+            }
+            else
+            {
+                int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
+                int OrgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {userLoginID} "));
+                //string getOrgInfo = $"SELECT OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName   FROM [User].[Orgs] WHERE OrgId ={OrgOwnerID} ";
+                string getOrgInfo = $"SELECT TOP 1 OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName FROM [User].[GetOrgsbyUserId]({userLoginID}) ";
+
+                dt = new DataTable(); 
+                dt = await Task.Run(() => dam.FireDataTable(getOrgInfo));
+                if (dt == null)
+                {
+                    Response_MV = new ResponseModelView
+                    {
+                        Success = false,
+                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
+                        Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                    };
+                    return Response_MV;
+                }
+                OrgModel Org_M = new OrgModel();
+                List<OrgModel> Org_Mlist = new List<OrgModel>();
+                if (dt.Rows.Count > 0)
+                {
+                        Org_M = new OrgModel
+                        {
+                            OrgId = Convert.ToInt32(dt.Rows[0]["OrgId"].ToString()),
+                            OrgUp = Convert.ToInt32(dt.Rows[0]["OrgUp"].ToString()),
+                            OrgLevel = Convert.ToInt32(dt.Rows[0]["OrgLevel"].ToString()),
+                            OrgArName = dt.Rows[0]["OrgArName"].ToString(),
+                            OrgEnName = dt.Rows[0]["OrgEnName"].ToString(),
+                            OrgKuName = dt.Rows[0]["OrgKuName"].ToString(),
+                            OrgChild = await HelpService.GetChildByParentID(Convert.ToInt32(dt.Rows[0]["OrgId"].ToString()))
+
+                        };
+
+
+                        Org_Mlist.Add(Org_M);
+                    Response_MV = new ResponseModelView
+                    {
+                        Success = true,
+                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
+                        Data = Org_Mlist 
+                    };
+                    return Response_MV;
+                }
+                else
+                {
+                    Response_MV = new ResponseModelView
+                    {
+                        Success = false,
+                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoData],
+                        Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                    };
+                    return Response_MV;
+                }
+
+
+
+            }
+
+
+
+        }
+
 
         #endregion
 
+        //public async Task<List<OrgModel>> GetChildByParentID(int OrgId)
+        //{
+        //    string getOrgInfo = $"SELECT OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName   FROM [User].[GetOrgschildsByParentId]({OrgId})";
+        //    DataTable dtChild = new DataTable();
+        //    dtChild = await Task.Run(() => dam.FireDataTable(getOrgInfo));
+        //    OrgModel Org_M1 = new OrgModel();
+        //    List<OrgModel> Org_Mlist1 = new List<OrgModel>();
+        //    if (dtChild.Rows.Count > 0)
+        //    {
+        //        for (int i = 0; i < dtChild.Rows.Count; i++)
+        //        {
+        //            Org_M1 = new OrgModel
+        //            {
+        //                OrgId = Convert.ToInt32(dtChild.Rows[i]["OrgId"].ToString()),
+        //                OrgUp = Convert.ToInt32(dtChild.Rows[i]["OrgUp"].ToString()),
+        //                OrgLevel = Convert.ToInt32(dtChild.Rows[i]["OrgLevel"].ToString()),
+        //                OrgArName = dtChild.Rows[i]["OrgArName"].ToString(),
+        //                OrgEnName = dtChild.Rows[i]["OrgEnName"].ToString(),
+        //                OrgKuName = dtChild.Rows[i]["OrgKuName"].ToString(),
+        //                OrgChild = await GetChild(Convert.ToInt32(dtChild.Rows[i]["OrgId"].ToString()))
+        //            };
+
+
+        //            Org_Mlist1.Add(Org_M1);
+        //        }
+        //    }
+        //    return Org_Mlist1;
+        //}
     }
 }

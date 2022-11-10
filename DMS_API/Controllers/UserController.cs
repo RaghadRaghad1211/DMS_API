@@ -98,5 +98,16 @@ namespace DMS_API.Controllers
             Response_MV = await User_S.SearchUsersAdvance(SearchUser_MV, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
+
+
+
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("GetOrgs")]
+        public async Task<IActionResult> GetOrgsChildByParentID([FromHeader] RequestHeaderModelView RequestHeader)
+        {
+            Response_MV = await User_S.GetOrgsChildByParentID(RequestHeader);
+            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
+        }
     }
 }
