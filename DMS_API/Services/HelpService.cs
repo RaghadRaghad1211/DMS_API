@@ -94,76 +94,79 @@ namespace DMS_API.Services
             string query = where.Remove(where.Length - 4, 4);
             return query;
         }
-        public static bool CheckDate(string date)
+        public static async Task<List<OrgModel>> GetOrgsParentWithChildsByUserLoginID(int userLoginID)
         {
             try
             {
-                DateTime.ParseExact(date, "dd/MM/yyyy", null);
-                return true;
+                int OrgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {userLoginID} "));
+                string whereField = OrgOwnerID == 0 ? "OrgUp" : "OrgId";
+                string getOrgInfo = $"SELECT OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName FROM [User].[Orgs]  WHERE {whereField}= {OrgOwnerID} ";
+                //string getOrgInfo = $"SELECT TOP 1 OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName FROM [User].[GetOrgsbyUserId]({userLoginID}) ";
+                DataTable dt = new DataTable();
+                dt = await Task.Run(() => dam.FireDataTable(getOrgInfo));
+                if (dt == null)
+                {
+                    return null;
+                }
+                OrgModel Org_M = new OrgModel();
+                List<OrgModel> Org_Mlist = new List<OrgModel>();
+                if (dt.Rows.Count > 0)
+                {
+                    Org_M = new OrgModel
+                    {
+                        OrgId = Convert.ToInt32(dt.Rows[0]["OrgId"].ToString()),
+                        OrgUp = Convert.ToInt32(dt.Rows[0]["OrgUp"].ToString()),
+                        OrgLevel = Convert.ToInt32(dt.Rows[0]["OrgLevel"].ToString()),
+                        OrgArName = dt.Rows[0]["OrgArName"].ToString(),
+                        OrgEnName = dt.Rows[0]["OrgEnName"].ToString(),
+                        OrgKuName = dt.Rows[0]["OrgKuName"].ToString(),
+                        OrgChild = await HelpService.GetOrgsChilds(Convert.ToInt32(dt.Rows[0]["OrgId"].ToString()))
+                    };
+                    Org_Mlist.Add(Org_M);
+                    return Org_Mlist;
+                }
+                else
+                {
+                    return null;
+                }
             }
             catch (Exception)
-            {
-                return false;
-            }
-        }
-        public static async Task<List<OrgModel>> GetOrgsParentWithChildsByUserLoginID(int userLoginID)
-        {
-
-            int OrgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {userLoginID} "));
-            string getOrgInfo = $"SELECT TOP 1 OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName FROM [User].[GetOrgsbyUserId]({userLoginID}) ";
-            DataTable dt = new DataTable();
-            dt = await Task.Run(() => dam.FireDataTable(getOrgInfo));
-            if (dt == null)
-            {
-                return null;
-            }
-            OrgModel Org_M = new OrgModel();
-            List<OrgModel> Org_Mlist = new List<OrgModel>();
-            if (dt.Rows.Count > 0)
-            {
-                Org_M = new OrgModel
-                {
-                    OrgId = Convert.ToInt32(dt.Rows[0]["OrgId"].ToString()),
-                    OrgUp = Convert.ToInt32(dt.Rows[0]["OrgUp"].ToString()),
-                    OrgLevel = Convert.ToInt32(dt.Rows[0]["OrgLevel"].ToString()),
-                    OrgArName = dt.Rows[0]["OrgArName"].ToString(),
-                    OrgEnName = dt.Rows[0]["OrgEnName"].ToString(),
-                    OrgKuName = dt.Rows[0]["OrgKuName"].ToString(),
-                    OrgChild = await HelpService.GetOrgsChilds(Convert.ToInt32(dt.Rows[0]["OrgId"].ToString()))
-                };
-                Org_Mlist.Add(Org_M);
-                return Org_Mlist;
-            }
-            else
             {
                 return null;
             }
         }
         private static async Task<List<OrgModel>> GetOrgsChilds(int OrgId)
         {
-            string getOrgInfo = $"SELECT OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName   FROM [User].[GetOrgschildsByParentId]({OrgId})";
-            DataTable dtChild = new DataTable();
-            dtChild = await Task.Run(() => dam.FireDataTable(getOrgInfo));
-            OrgModel Org_M1 = new OrgModel();
-            List<OrgModel> Org_Mlist1 = new List<OrgModel>();
-            if (dtChild.Rows.Count > 0)
+            try
             {
-                for (int i = 0; i < dtChild.Rows.Count; i++)
+                string getOrgInfo = $"SELECT OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName   FROM [User].[GetOrgsChildsByParentId]({OrgId})";
+                DataTable dtChild = new DataTable();
+                dtChild = await Task.Run(() => dam.FireDataTable(getOrgInfo));
+                OrgModel Org_M1 = new OrgModel();
+                List<OrgModel> Org_Mlist1 = new List<OrgModel>();
+                if (dtChild.Rows.Count > 0)
                 {
-                    Org_M1 = new OrgModel
+                    for (int i = 0; i < dtChild.Rows.Count; i++)
                     {
-                        OrgId = Convert.ToInt32(dtChild.Rows[i]["OrgId"].ToString()),
-                        OrgUp = Convert.ToInt32(dtChild.Rows[i]["OrgUp"].ToString()),
-                        OrgLevel = Convert.ToInt32(dtChild.Rows[i]["OrgLevel"].ToString()),
-                        OrgArName = dtChild.Rows[i]["OrgArName"].ToString(),
-                        OrgEnName = dtChild.Rows[i]["OrgEnName"].ToString(),
-                        OrgKuName = dtChild.Rows[i]["OrgKuName"].ToString(),
-                        OrgChild = await GetOrgsChilds(Convert.ToInt32(dtChild.Rows[i]["OrgId"].ToString()))
-                    };
-                    Org_Mlist1.Add(Org_M1);
+                        Org_M1 = new OrgModel
+                        {
+                            OrgId = Convert.ToInt32(dtChild.Rows[i]["OrgId"].ToString()),
+                            OrgUp = Convert.ToInt32(dtChild.Rows[i]["OrgUp"].ToString()),
+                            OrgLevel = Convert.ToInt32(dtChild.Rows[i]["OrgLevel"].ToString()),
+                            OrgArName = dtChild.Rows[i]["OrgArName"].ToString(),
+                            OrgEnName = dtChild.Rows[i]["OrgEnName"].ToString(),
+                            OrgKuName = dtChild.Rows[i]["OrgKuName"].ToString(),
+                            OrgChild = await GetOrgsChilds(Convert.ToInt32(dtChild.Rows[i]["OrgId"].ToString()))
+                        };
+                        Org_Mlist1.Add(Org_M1);
+                    }
                 }
+                return Org_Mlist1;
             }
-            return Org_Mlist1;
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         #endregion

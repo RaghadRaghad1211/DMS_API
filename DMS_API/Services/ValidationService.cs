@@ -38,6 +38,18 @@ namespace DMS_API.Services
             return DateTime.TryParseExact(date.Trim(), new string[] { "dd/MM/yyyy", "MM/dd/yyyy" },
                                           CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime value);
         }
+        public static bool CheckDate(string date)
+        {
+            try
+            {
+                DateTime.ParseExact(date, "dd/MM/yyyy", null);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
         public static bool IsPhoneNumber(this string phoneNumber)
         {
             int count = phoneNumber.Length;

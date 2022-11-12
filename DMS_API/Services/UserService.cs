@@ -903,11 +903,7 @@ namespace DMS_API.Services
                     int _PageRows = SearchUser_MV.PageRows == 0 ? 1 : SearchUser_MV.PageRows;
                     int CurrentPage = _PageNumber;
                     int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
-
-                    //int OrgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {ResponseSession.Data} "));
-
                     string where = HelpService.GetUserSearchColumn(SearchUser_MV);
-
                     var MaxTotal = dam.FireDataTable($"SELECT COUNT(*) AS TotalRows, CEILING(COUNT(*) / CAST({_PageRows} AS FLOAT)) AS MaxPage " +
                                                       $"FROM [User].V_Users {where}  AND [OrgOwner] IN (SELECT [OrgId] FROM [User].[GetOrgsbyUserId]({userLoginID})) AND [USERID] !={userLoginID} ");
                     if (MaxTotal == null)
@@ -1019,37 +1015,50 @@ namespace DMS_API.Services
         }
         public async Task<ResponseModelView> GetOrgsParentWithChilds(RequestHeaderModelView RequestHeader)
         {
-            Session_S = new SessionService();
-            var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
-            if (ResponseSession.Success == false)
+            try
             {
-                return ResponseSession;
-            }
-            else
-            {
-                int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
-                List<OrgModel> Org_Mlist = new List<OrgModel>();
-                Org_Mlist= await HelpService.GetOrgsParentWithChildsByUserLoginID(userLoginID);
-                if (Org_Mlist == null)
+                Session_S = new SessionService();
+                var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
+                if (ResponseSession.Success == false)
                 {
-                    Response_MV = new ResponseModelView
-                    {
-                        Success = false,
-                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
-                        Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
-                    };
-                    return Response_MV;
+                    return ResponseSession;
                 }
                 else
                 {
-                    Response_MV = new ResponseModelView
+                    int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
+                    List<OrgModel> Org_Mlist = new List<OrgModel>();
+                    Org_Mlist = await HelpService.GetOrgsParentWithChildsByUserLoginID(userLoginID);
+                    if (Org_Mlist == null)
                     {
-                        Success = true,
-                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
-                        Data = Org_Mlist
-                    };
-                    return Response_MV;
+                        Response_MV = new ResponseModelView
+                        {
+                            Success = false,
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
+                            Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                        };
+                        return Response_MV;
+                    }
+                    else
+                    {
+                        Response_MV = new ResponseModelView
+                        {
+                            Success = true,
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
+                            Data = Org_Mlist
+                        };
+                        return Response_MV;
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Response_MV = new ResponseModelView
+                {
+                    Success = false,
+                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError] + " - " + ex.Message,
+                    Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                };
+                return Response_MV;
             }
         }
 
@@ -1124,7 +1133,7 @@ namespace DMS_API.Services
 
         //public async Task<List<OrgModel>> GetChildByParentID(int OrgId)
         //{
-        //    string getOrgInfo = $"SELECT OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName   FROM [User].[GetOrgschildsByParentId]({OrgId})";
+        //    string getOrgInfo = $"SELECT OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName   FROM [User].[GetOrgsChildsByParentId]({OrgId})";
         //    DataTable dtChild = new DataTable();
         //    dtChild = await Task.Run(() => dam.FireDataTable(getOrgInfo));
         //    OrgModel Org_M1 = new OrgModel();
