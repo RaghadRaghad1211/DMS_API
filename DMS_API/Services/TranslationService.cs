@@ -51,7 +51,7 @@ namespace DMS_API.Services
                         string ColLang = HelpService.GetMessageColumn(RequestHeader.Lang);
                         int _PageNumber = Pagination_MV.PageNumber == 0 ? 1 : Pagination_MV.PageNumber;
                         int _PageRows = Pagination_MV.PageRows == 0 ? 1 : Pagination_MV.PageRows;
-                        int CurrentPage = _PageNumber;
+                        int CurrentPage = _PageNumber; int PageRows = _PageRows;
                         var MaxTotal = dam.FireDataTable($"SELECT COUNT(*) AS TotalRows, CEILING(COUNT(*) / CAST({_PageRows} AS FLOAT)) AS MaxPage FROM Main.Translation");
                         if (MaxTotal == null)
                         {
@@ -113,7 +113,7 @@ namespace DMS_API.Services
                                     {
                                         Success = true,
                                         Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
-                                        Data = new { TotalRows = MaxTotal.Rows[0]["TotalRows"], MaxPage = MaxTotal.Rows[0]["MaxPage"], CurrentPage, data = Translation_Mlist }
+                                        Data = new { TotalRows = MaxTotal.Rows[0]["TotalRows"], MaxPage = MaxTotal.Rows[0]["MaxPage"], CurrentPage, PageRows, data = Translation_Mlist }
                                     };
                                     return Response_MV;
                                 }
@@ -268,7 +268,7 @@ namespace DMS_API.Services
                             Response_MV = new ResponseModelView
                             {
                                 Success = false,
-                                Message = Translation_M.TrKey.ToString() + " " + MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsExist],
+                                Message = Translation_M.TrKey.ToString() + " " + MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.DeblicateKey],
                                 Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
                             };
                             return Response_MV;
@@ -391,7 +391,7 @@ namespace DMS_API.Services
                             string ColumnSearch = HelpService.GetTranslationSearchColumn(SearchTranslation_MV.KeySearch);
                             int _PageNumber = SearchTranslation_MV.PageNumber == 0 ? 1 : SearchTranslation_MV.PageNumber;
                             int _PageRows = SearchTranslation_MV.PageRows == 0 ? 1 : SearchTranslation_MV.PageRows;
-                            int CurrentPage = _PageNumber;
+                            int CurrentPage = _PageNumber; int PageRows = _PageRows;
                             var MaxTotal = dam.FireDataTable($"SELECT COUNT(*) AS TotalRows, CEILING(COUNT(*) / CAST({_PageRows} AS FLOAT)) AS MaxPage " +
                                                              $"FROM Main.Translation WHERE {ColumnSearch} = '{SearchTranslation_MV.WordSearch}' ");
                             if (MaxTotal == null)
@@ -419,7 +419,7 @@ namespace DMS_API.Services
                                 else
                                 {
                                     string get = $"SELECT Trid, TrKey, TrArName, TrEnName, TrKrName FROM Main.Translation " +
-                                                                 $"WHERE {ColumnSearch} = '{SearchTranslation_MV.WordSearch}' ORDER BY TrId " +
+                                                                 $"WHERE {ColumnSearch} LIKE '{SearchTranslation_MV.WordSearch}%' ORDER BY TrId " +
                                                                  $"OFFSET ({_PageNumber}-1)*{_PageRows} ROWS " +
                                                                  $"FETCH NEXT {_PageRows} ROWS ONLY ";
                                     Dt = new DataTable();
@@ -453,7 +453,7 @@ namespace DMS_API.Services
                                         {
                                             Success = true,
                                             Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
-                                            Data = new { TotalRows = MaxTotal.Rows[0]["TotalRows"], MaxPage = MaxTotal.Rows[0]["MaxPage"], CurrentPage, data = Translation_Mlist }
+                                            Data = new { TotalRows = MaxTotal.Rows[0]["TotalRows"], MaxPage = MaxTotal.Rows[0]["MaxPage"], CurrentPage, PageRows, data = Translation_Mlist }
                                         };
                                         return Response_MV;
                                     }

@@ -306,7 +306,7 @@ namespace DMS_API.Services
                     //int OrgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {((SessionModel)ResponseSession.Data).UserID} AND [USERID] !=1 "));
                     int _PageNumber = Pagination_MV.PageNumber == 0 ? 1 : Pagination_MV.PageNumber;
                     int _PageRows = Pagination_MV.PageRows == 0 ? 1 : Pagination_MV.PageRows;
-                    int CurrentPage = _PageNumber;
+                    int CurrentPage = _PageNumber; int PageRows = _PageRows;
 
                     int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
                     var MaxTotal = dam.FireDataTable($"SELECT COUNT(*) AS TotalRows, CEILING(COUNT(*) / CAST({_PageRows} AS FLOAT)) AS MaxPage " +
@@ -389,7 +389,7 @@ namespace DMS_API.Services
                                 {
                                     Success = true,
                                     Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
-                                    Data = new { TotalRows = MaxTotal.Rows[0]["TotalRows"], MaxPage = MaxTotal.Rows[0]["MaxPage"], CurrentPage, data = User_Mlist }
+                                    Data = new { TotalRows = MaxTotal.Rows[0]["TotalRows"], MaxPage = MaxTotal.Rows[0]["MaxPage"], CurrentPage, PageRows, data = User_Mlist }
                                 };
                                 return Response_MV;
                             }
@@ -901,7 +901,7 @@ namespace DMS_API.Services
                 {
                     int _PageNumber = SearchUser_MV.PageNumber == 0 ? 1 : SearchUser_MV.PageNumber;
                     int _PageRows = SearchUser_MV.PageRows == 0 ? 1 : SearchUser_MV.PageRows;
-                    int CurrentPage = _PageNumber;
+                    int CurrentPage = _PageNumber; int PageRows = _PageRows;
                     int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
                     string where = HelpService.GetUserSearchColumn(SearchUser_MV);
                     var MaxTotal = dam.FireDataTable($"SELECT COUNT(*) AS TotalRows, CEILING(COUNT(*) / CAST({_PageRows} AS FLOAT)) AS MaxPage " +
@@ -984,7 +984,7 @@ namespace DMS_API.Services
                                 {
                                     Success = true,
                                     Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
-                                    Data = new { TotalRows = MaxTotal.Rows[0]["TotalRows"], MaxPage = MaxTotal.Rows[0]["MaxPage"], CurrentPage, data = User_Mlist }
+                                    Data = new { TotalRows = MaxTotal.Rows[0]["TotalRows"], MaxPage = MaxTotal.Rows[0]["MaxPage"], CurrentPage, PageRows, data = User_Mlist }
                                 };
                                 return Response_MV;
                             }

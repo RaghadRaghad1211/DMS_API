@@ -53,6 +53,7 @@
         public static readonly string FSTname = "FSTname";
         public static readonly string IsReset = "IsReset";
         public static readonly string OldPasswordNotCorrect = "OldPasswordNotCorrect";
+        public static readonly string DeblicateKey = "DeblicateKey";
 
 
 
@@ -127,6 +128,7 @@
                      {IsReset ,"تم اعادة تعيين كلمة المرور"},
                      {OldPasswordNotCorrect ,"كلمة المرور القديمة غير صحيحة"},
                      {ChangePasswordSuccess ,"تم تغيير كلمة المرور"},
+                     {DeblicateKey ,"الكلمة المفتاحية موجودة في قاعدة البيانات"},
 
 
 
@@ -180,6 +182,7 @@
                      {IsReset ,"Password is reset"},
                      {OldPasswordNotCorrect ,"The old password is incorrectly"},
                      {ChangePasswordSuccess ,"Password changed"},
+                     {DeblicateKey ,"The keyword ss exist in database"},
 
 
 
