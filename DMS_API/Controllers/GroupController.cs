@@ -40,6 +40,33 @@ namespace DMS_API.Controllers
             Response_MV = await Group_S.GetGroupsByID(id, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
+
+        [AllowAnonymous]
+        [HttpPost]
+        [Route("AddGroup")]
+        public async Task<IActionResult> AddGroup([FromBody] GroupOrFolderModelView Group_MV, [FromHeader] RequestHeaderModelView RequestHeader)
+        {
+            Response_MV = await Group_S.AddGroup(Group_MV, RequestHeader);
+            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
+        }
+
+        [AllowAnonymous]
+        [HttpPut]
+        [Route("EditGroup")]
+        public async Task<IActionResult> EditGroup([FromBody] GroupOrFolderModelView Group_MV, [FromHeader] RequestHeaderModelView RequestHeader)
+        {
+            Response_MV = await Group_S.EditGroup(Group_MV, RequestHeader);
+            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("SearchGroupByName/{Name}")]
+        public async Task<IActionResult> SearchGroupByName([FromRoute] string Name, [FromHeader] RequestHeaderModelView RequestHeader)
+        {
+            Response_MV = await Group_S.SearchGroupByName(Name, RequestHeader);
+            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
+        }
         #endregion
     }
 }

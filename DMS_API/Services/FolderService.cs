@@ -7,27 +7,27 @@ using System.Text.RegularExpressions;
 
 namespace DMS_API.Services
 {
-    public class GroupService
+    public class FolderService
     {
         #region Properteis
         private readonly DataAccessService dam;
         private SessionService Session_S { get; set; }
         private DataTable dt { get; set; }
-        private GroupOrFolderModel Group_M { get; set; }
-        private List<GroupOrFolderModel> Group_Mlist { get; set; }
+        private GroupOrFolderModel Folder_M { get; set; }
+        private List<GroupOrFolderModel> Folder_Mlist { get; set; }
         private ResponseModelView Response_MV { get; set; }
-        private const int ClassID = 2; // Group
+        private const int ClassID = 4; // Folder
         #endregion
 
         #region Constructor        
-        public GroupService()
+        public FolderService()
         {
             dam = new DataAccessService(SecurityService.ConnectionString);
         }
         #endregion
 
         #region CURD Functions
-        public async Task<ResponseModelView> GetGroupsList(PaginationModelView Pagination_MV, RequestHeaderModelView RequestHeader)
+        public async Task<ResponseModelView> GetFoldersList(PaginationModelView Pagination_MV, RequestHeaderModelView RequestHeader)
         {
             try
             {
@@ -73,7 +73,7 @@ namespace DMS_API.Services
 
                         else
                         {
-                            string getGroupInfo = "SELECT  ObjId, ObjTitle, ObjClsId, ClsName, ObjIsActive, ObjCreationDate, ObjIsDesktopFolder, ObjDescription, UserOwnerID, " +
+                            string getFolderInfo = "SELECT  ObjId, ObjTitle, ObjClsId, ClsName, ObjIsActive, ObjCreationDate, ObjIsDesktopFolder, ObjDescription, UserOwnerID, " +
                                                  "            OwnerFullName, OwnerUserName, OrgOwner, OrgEnName,OrgArName , OrgKuName " +
                                                  "FROM            [User].V_GroupsFolders " +
                                                 $"WHERE [OrgOwner] IN (SELECT {whereField} FROM [User].GetOrgsbyUserId({userLoginID})) AND ObjClsId ={ClassID} " +
@@ -82,7 +82,7 @@ namespace DMS_API.Services
                                                 $"FETCH NEXT   {_PageRows} ROWS ONLY ";
 
                             dt = new DataTable();
-                            dt = await Task.Run(() => dam.FireDataTable(getGroupInfo));
+                            dt = await Task.Run(() => dam.FireDataTable(getFolderInfo));
                             if (dt == null)
                             {
                                 Response_MV = new ResponseModelView
@@ -93,12 +93,12 @@ namespace DMS_API.Services
                                 };
                                 return Response_MV;
                             }
-                            Group_Mlist = new List<GroupOrFolderModel>();
+                            Folder_Mlist = new List<GroupOrFolderModel>();
                             if (dt.Rows.Count > 0)
                             {
                                 for (int i = 0; i < dt.Rows.Count; i++)
                                 {
-                                    Group_M = new GroupOrFolderModel
+                                    Folder_M = new GroupOrFolderModel
                                     {
                                         ObjId = Convert.ToInt32(dt.Rows[i]["ObjId"].ToString()),
                                         ObjTitle = dt.Rows[i]["ObjTitle"].ToString(),
@@ -117,14 +117,14 @@ namespace DMS_API.Services
                                         OrgKuName = dt.Rows[i]["OrgKuName"].ToString(),
 
                                     };
-                                    Group_Mlist.Add(Group_M);
+                                    Folder_Mlist.Add(Folder_M);
                                 }
 
                                 Response_MV = new ResponseModelView
                                 {
                                     Success = true,
                                     Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
-                                    Data = new { TotalRows = MaxTotal.Rows[0]["TotalRows"], MaxPage = MaxTotal.Rows[0]["MaxPage"], CurrentPage, data = Group_Mlist }
+                                    Data = new { TotalRows = MaxTotal.Rows[0]["TotalRows"], MaxPage = MaxTotal.Rows[0]["MaxPage"], CurrentPage, data = Folder_Mlist }
                                 };
                                 return Response_MV;
                             }
@@ -153,7 +153,7 @@ namespace DMS_API.Services
                 return Response_MV;
             }
         }
-        public async Task<ResponseModelView> GetGroupsByID(int id, RequestHeaderModelView RequestHeader)
+        public async Task<ResponseModelView> GetFoldersByID(int id, RequestHeaderModelView RequestHeader)
         {
             try
             {
@@ -168,14 +168,14 @@ namespace DMS_API.Services
                     int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
                     int orgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {userLoginID} "));
                     string whereField = orgOwnerID == 0 ? "OrgUp" : "OrgId";
-                    string getGroupInfo = "SELECT  ObjId, ObjTitle, ObjClsId, ClsName, ObjIsActive, ObjCreationDate, ObjIsDesktopFolder, ObjDescription, UserOwnerID, " +
+                    string getFolderInfo = "SELECT  ObjId, ObjTitle, ObjClsId, ClsName, ObjIsActive, ObjCreationDate, ObjIsDesktopFolder, ObjDescription, UserOwnerID, " +
                                                      "            OwnerFullName, OwnerUserName, OrgOwner, OrgEnName,OrgArName , OrgKuName " +
                                                      "FROM            [User].V_GroupsFolders " +
                                                     $"WHERE ObjId={id} AND [OrgOwner] IN (SELECT {whereField} FROM [User].GetOrgsbyUserId({userLoginID})) AND ObjClsId ={ClassID} ";
 
 
                     dt = new DataTable();
-                    dt = await Task.Run(() => dam.FireDataTable(getGroupInfo));
+                    dt = await Task.Run(() => dam.FireDataTable(getFolderInfo));
                     if (dt == null)
                     {
                         Response_MV = new ResponseModelView
@@ -186,10 +186,10 @@ namespace DMS_API.Services
                         };
                         return Response_MV;
                     }
-                    Group_Mlist = new List<GroupOrFolderModel>();
+                    Folder_Mlist = new List<GroupOrFolderModel>();
                     if (dt.Rows.Count > 0)
                     {
-                        Group_M = new GroupOrFolderModel
+                        Folder_M = new GroupOrFolderModel
                         {
                             ObjId = Convert.ToInt32(dt.Rows[0]["ObjId"].ToString()),
                             ObjTitle = dt.Rows[0]["ObjTitle"].ToString(),
@@ -211,7 +211,7 @@ namespace DMS_API.Services
                         {
                             Success = true,
                             Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
-                            Data = Group_M
+                            Data = Folder_M
                         };
                         return Response_MV;
                     }
@@ -238,7 +238,7 @@ namespace DMS_API.Services
                 return Response_MV;
             }
         }        
-        public async Task<ResponseModelView> AddGroup(GroupOrFolderModelView Group_MV, RequestHeaderModelView RequestHeader)
+        public async Task<ResponseModelView> AddFolder(GroupOrFolderModelView Folder_MV, RequestHeaderModelView RequestHeader)
         {
             try
             {
@@ -250,7 +250,7 @@ namespace DMS_API.Services
                 }
                 else
                 {
-                    if (ValidationService.IsEmpty(Group_MV.ObjTitle) == true)
+                    if (ValidationService.IsEmpty(Folder_MV.ObjTitle) == true)
                     {
                         Response_MV = new ResponseModelView
                         {
@@ -265,11 +265,11 @@ namespace DMS_API.Services
                         int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
                         int orgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {userLoginID} "));
                         string whereField = orgOwnerID == 0 ? "OrgUp" : "OrgId";
-                        int checkDeblicate = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) FROM [Main].[Objects] WHERE ObjTitle = '{Group_MV.ObjTitle}' AND " +
+                        int checkDeblicate = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) FROM [Main].[Objects] WHERE ObjTitle = '{Folder_MV.ObjTitle}' AND " +
                                                                          $"[ObjOrgOwner] IN (SELECT {whereField} FROM [User].GetOrgsbyUserId({userLoginID})) AND ObjClsId ={ClassID} "));
                         if (checkDeblicate == 0)
                         {
-                            string exeut = $"EXEC [User].[AddGroupOrFolderPro] '{ClassID}','{Group_MV.ObjTitle}', '{userLoginID}', '{orgOwnerID}','{Group_MV.ObjIsActive}', '{Group_MV.ObjDescription}' ";
+                            string exeut = $"EXEC [User].[AddGroupOrFolderPro] '{ClassID}','{Folder_MV.ObjTitle}', '{userLoginID}', '{orgOwnerID}','{Folder_MV.ObjIsActive}', '{Folder_MV.ObjDescription}' ";
                             var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
 
                             if (outValue == null || outValue.Trim() == "")
@@ -311,7 +311,7 @@ namespace DMS_API.Services
                             Response_MV = new ResponseModelView
                             {
                                 Success = false,
-                                Message = Group_MV.ObjTitle + " " + MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsExist],
+                                Message = Folder_MV.ObjTitle + " " + MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsExist],
                                 Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
                             };
                             return Response_MV;
@@ -332,7 +332,7 @@ namespace DMS_API.Services
 
             }
         }
-        public async Task<ResponseModelView> EditGroup(GroupOrFolderModelView Group_MV, RequestHeaderModelView RequestHeader)
+        public async Task<ResponseModelView> EditFolder(GroupOrFolderModelView Folder_MV, RequestHeaderModelView RequestHeader)
         {
             try
             {
@@ -344,7 +344,7 @@ namespace DMS_API.Services
                 }
                 else
                 {
-                    if (ValidationService.IsEmpty(Group_MV.ObjTitle) == true)
+                    if (ValidationService.IsEmpty(Folder_MV.ObjTitle) == true)
                     {
                         Response_MV = new ResponseModelView
                         {
@@ -359,11 +359,11 @@ namespace DMS_API.Services
                         int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
                         int orgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {userLoginID} "));
                         string whereField = orgOwnerID == 0 ? "OrgUp" : "OrgId";
-                        int checkDeblicate = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) FROM [Main].[Objects] WHERE ObjTitle = '{Group_MV.ObjTitle}' AND " +
+                        int checkDeblicate = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) FROM [Main].[Objects] WHERE ObjTitle = '{Folder_MV.ObjTitle}' AND " +
                                                                          $"[ObjOrgOwner] IN (SELECT {whereField} FROM [User].GetOrgsbyUserId({userLoginID})) AND ObjClsId ={ClassID} "));
                         if (checkDeblicate == 0)
                         {
-                            string exeut = $"EXEC [User].[UpdateGroupOrFolderPro] '{Group_MV.ObjId}','{Group_MV.ObjTitle}', '{Group_MV.ObjIsActive}','{Group_MV.ObjDescription}' ";
+                            string exeut = $"EXEC [User].[UpdateGroupOrFolderPro] '{Folder_MV.ObjId}','{Folder_MV.ObjTitle}', '{Folder_MV.ObjIsActive}','{Folder_MV.ObjDescription}' ";
                             var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
 
                             if (outValue == null || outValue.Trim() == "")
@@ -405,7 +405,7 @@ namespace DMS_API.Services
                             Response_MV = new ResponseModelView
                             {
                                 Success = false,
-                                Message = Group_MV.ObjTitle + " " + MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsExist],
+                                Message = Folder_MV.ObjTitle + " " + MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsExist],
                                 Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
                             };
                             return Response_MV;
@@ -425,7 +425,7 @@ namespace DMS_API.Services
 
             }
         }
-        public async Task<ResponseModelView> SearchGroupByName(string Name, RequestHeaderModelView RequestHeader)
+        public async Task<ResponseModelView> SearchFolderByName(string Name, RequestHeaderModelView RequestHeader)
         {
             try
             {
@@ -470,12 +470,12 @@ namespace DMS_API.Services
                             };
                             return Response_MV;
                         }
-                        Group_Mlist = new List<GroupOrFolderModel>();
+                        Folder_Mlist = new List<GroupOrFolderModel>();
                         if (dt.Rows.Count > 0)
                         {
                             for (int i = 0; i < dt.Rows.Count; i++)
                             {
-                                Group_M = new GroupOrFolderModel
+                                Folder_M = new GroupOrFolderModel
                                 {
                                     ObjId = Convert.ToInt32(dt.Rows[0]["ObjId"].ToString()),
                                     ObjTitle = dt.Rows[0]["ObjTitle"].ToString(),
@@ -493,14 +493,14 @@ namespace DMS_API.Services
                                     OrgArName = dt.Rows[0]["OrgArName"].ToString(),
                                     OrgKuName = dt.Rows[0]["OrgKuName"].ToString(),
                                 };
-                                Group_Mlist.Add(Group_M);
+                                Folder_Mlist.Add(Folder_M);
                             }
 
                             Response_MV = new ResponseModelView
                             {
                                 Success = true,
                                 Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
-                                Data = Group_Mlist
+                                Data = Folder_Mlist
                             };
                             return Response_MV;
                         }
