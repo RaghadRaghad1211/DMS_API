@@ -933,7 +933,7 @@ namespace DMS_API.Services
                             string getUserInfo = "SELECT * FROM (SELECT   UserID,UsFirstName,UsSecondName,UsThirdName,UsLastName, FullName, UsUserName, Role, IsOrgAdmin, UserIsActive, UsPhoneNo, UsEmail, " +
                                              "         UsUserEmpNo, UsUserIdintNo, UsIsOnLine, OrgArName, OrgEnName, OrgKuName, Note " +
                                             $"FROM     [User].V_Users  " +
-                                            $"{where}  AND [OrgOwner] IN (SELECT [OrgId] FROM [User].[GetOrgsbyUserId]({userLoginID})) AND [USERID] !={userLoginID} ) AS TAB  ORDER BY UserID " +
+                                            $"{where}  AND [OrgOwner] IN (SELECT [OrgId] FROM [User].[GetOrgsbyUserId]({userLoginID})) AND [USERID] !={userLoginID}) AS TAB  ORDER BY UserID " +
                                             $"OFFSET      ({_PageNumber}-1)*{_PageRows} ROWS " +
                                             $"FETCH NEXT   {_PageRows} ROWS ONLY ";
 
@@ -1061,9 +1061,6 @@ namespace DMS_API.Services
                 return Response_MV;
             }
         }
-
-
-
         #endregion
 
         #region My Test Region

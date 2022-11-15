@@ -54,6 +54,7 @@
         public static readonly string IsReset = "IsReset";
         public static readonly string OldPasswordNotCorrect = "OldPasswordNotCorrect";
         public static readonly string DeblicateKey = "DeblicateKey";
+        public static readonly string GroupNameMustEnter = "GroupNameMustEnter";
 
 
 
@@ -129,6 +130,7 @@
                      {OldPasswordNotCorrect ,"كلمة المرور القديمة غير صحيحة"},
                      {ChangePasswordSuccess ,"تم تغيير كلمة المرور"},
                      {DeblicateKey ,"الكلمة المفتاحية موجودة في قاعدة البيانات"},
+                     {GroupNameMustEnter ,"يجب ادخال اسم المجموعة"},
 
 
 
@@ -183,6 +185,8 @@
                      {OldPasswordNotCorrect ,"The old password is incorrectly"},
                      {ChangePasswordSuccess ,"Password changed"},
                      {DeblicateKey ,"The keyword ss exist in database"},
+                     {GroupNameMustEnter ,"Group Name Must Enter"},
+
 
 
 
