@@ -17,6 +17,8 @@ namespace DMS_API.Services
         private List<GroupOrFolderModel> Group_Mlist { get; set; }
         private ResponseModelView Response_MV { get; set; }
         private const int ClassID = 2; // Group
+        private const int IsDesktopFolder = 0;
+
         #endregion
 
         #region Constructor        
@@ -238,7 +240,7 @@ namespace DMS_API.Services
                 return Response_MV;
             }
         }        
-        public async Task<ResponseModelView> AddGroup(GroupOrFolderModelView Group_MV, RequestHeaderModelView RequestHeader)
+        public async Task<ResponseModelView> AddGroup(GroupModelView Group_MV, RequestHeaderModelView RequestHeader)
         {
             try
             {
@@ -250,7 +252,7 @@ namespace DMS_API.Services
                 }
                 else
                 {
-                    if (ValidationService.IsEmpty(Group_MV.ObjTitle) == true)
+                    if (ValidationService.IsEmpty(Group_MV.GroupTitle) == true)
                     {
                         Response_MV = new ResponseModelView
                         {
@@ -265,11 +267,11 @@ namespace DMS_API.Services
                         int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
                         int orgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {userLoginID} "));
                         string whereField = orgOwnerID == 0 ? "OrgUp" : "OrgId";
-                        int checkDeblicate = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) FROM [Main].[Objects] WHERE ObjTitle = '{Group_MV.ObjTitle}' AND " +
+                        int checkDeblicate = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) FROM [Main].[Objects] WHERE ObjTitle = '{Group_MV.GroupTitle}' AND " +
                                                                          $"[ObjOrgOwner] IN (SELECT {whereField} FROM [User].GetOrgsbyUserId({userLoginID})) AND ObjClsId ={ClassID} "));
                         if (checkDeblicate == 0)
                         {
-                            string exeut = $"EXEC [User].[AddGroupOrFolderPro] '{ClassID}','{Group_MV.ObjTitle}', '{userLoginID}', '{orgOwnerID}','{Group_MV.ObjIsActive}', '{Group_MV.ObjDescription}' ";
+                            string exeut = $"EXEC [User].[AddGroupOrFolderPro] '{ClassID}','{Group_MV.GroupTitle}', '{userLoginID}', '{orgOwnerID}', '{IsDesktopFolder}', '{Group_MV.GroupDescription}' ";
                             var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
 
                             if (outValue == null || outValue.Trim() == "")
@@ -311,7 +313,7 @@ namespace DMS_API.Services
                             Response_MV = new ResponseModelView
                             {
                                 Success = false,
-                                Message = Group_MV.ObjTitle + " " + MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsExist],
+                                Message = Group_MV.GroupTitle + " " + MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsExist],
                                 Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
                             };
                             return Response_MV;
@@ -332,7 +334,7 @@ namespace DMS_API.Services
 
             }
         }
-        public async Task<ResponseModelView> EditGroup(GroupOrFolderModelView Group_MV, RequestHeaderModelView RequestHeader)
+        public async Task<ResponseModelView> EditGroup(GroupModelView Group_MV, RequestHeaderModelView RequestHeader)
         {
             try
             {
@@ -344,7 +346,7 @@ namespace DMS_API.Services
                 }
                 else
                 {
-                    if (ValidationService.IsEmpty(Group_MV.ObjTitle) == true)
+                    if (ValidationService.IsEmpty(Group_MV.GroupTitle) == true)
                     {
                         Response_MV = new ResponseModelView
                         {
@@ -356,14 +358,18 @@ namespace DMS_API.Services
                     }
                     else
                     {
-                        int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
-                        int orgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {userLoginID} "));
-                        string whereField = orgOwnerID == 0 ? "OrgUp" : "OrgId";
-                        int checkDeblicate = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) FROM [Main].[Objects] WHERE ObjTitle = '{Group_MV.ObjTitle}' AND " +
-                                                                         $"[ObjOrgOwner] IN (SELECT {whereField} FROM [User].GetOrgsbyUserId({userLoginID})) AND ObjClsId ={ClassID} "));
-                        if (checkDeblicate == 0)
+                        //int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
+                        //int orgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {userLoginID} "));
+                        //string whereField = orgOwnerID == 0 ? "OrgUp" : "OrgId";
+
+                        //int checkDeblicate = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) FROM [Main].[Objects] WHERE ObjTitle = '{Group_MV.GroupTitle}' AND " +
+                        //                                                 $"[ObjOrgOwner] IN (SELECT {whereField} FROM [User].GetOrgsbyUserId({userLoginID})) AND ObjClsId ={ClassID} "));
+
+                        int checkDeblicate = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) FROM [User].[V_GroupsFolders] WHERE ObjId = {Group_MV.GroupId} AND " +
+                                                                         $"ObjClsId = {ClassID} "));
+                        if (checkDeblicate > 0)
                         {
-                            string exeut = $"EXEC [User].[UpdateGroupOrFolderPro] '{Group_MV.ObjId}','{Group_MV.ObjTitle}', '{Group_MV.ObjIsActive}','{Group_MV.ObjDescription}' ";
+                            string exeut = $"EXEC [User].[UpdateGroupOrFolderPro] '{Group_MV.GroupId}','{Group_MV.GroupTitle}', '{Group_MV.GroupIsActive}', '{IsDesktopFolder}','{Group_MV.GroupDescription}' ";
                             var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
 
                             if (outValue == null || outValue.Trim() == "")
@@ -405,7 +411,7 @@ namespace DMS_API.Services
                             Response_MV = new ResponseModelView
                             {
                                 Success = false,
-                                Message = Group_MV.ObjTitle + " " + MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsExist],
+                                Message = Group_MV.GroupTitle + " " + MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsExist],
                                 Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
                             };
                             return Response_MV;

@@ -44,7 +44,7 @@ namespace DMS_API.Controllers
         [AllowAnonymous]
         [HttpPost]
         [Route("AddGroup")]
-        public async Task<IActionResult> AddGroup([FromBody] GroupOrFolderModelView Group_MV, [FromHeader] RequestHeaderModelView RequestHeader)
+        public async Task<IActionResult> AddGroup([FromBody] GroupModelView Group_MV, [FromHeader] RequestHeaderModelView RequestHeader)
         {
             Response_MV = await Group_S.AddGroup(Group_MV, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
@@ -53,7 +53,7 @@ namespace DMS_API.Controllers
         [AllowAnonymous]
         [HttpPut]
         [Route("EditGroup")]
-        public async Task<IActionResult> EditGroup([FromBody] GroupOrFolderModelView Group_MV, [FromHeader] RequestHeaderModelView RequestHeader)
+        public async Task<IActionResult> EditGroup([FromBody] GroupModelView Group_MV, [FromHeader] RequestHeaderModelView RequestHeader)
         {
             Response_MV = await Group_S.EditGroup(Group_MV, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);

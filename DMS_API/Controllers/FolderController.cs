@@ -44,7 +44,7 @@ namespace DMS_API.Controllers
         [AllowAnonymous]
         [HttpPost]
         [Route("AddFolder")]
-        public async Task<IActionResult> AddFolder([FromBody] GroupOrFolderModelView Folder_MV, [FromHeader] RequestHeaderModelView RequestHeader)
+        public async Task<IActionResult> AddFolder([FromBody] FolderModelView Folder_MV, [FromHeader] RequestHeaderModelView RequestHeader)
         {
             Response_MV = await Folder_S.AddFolder(Folder_MV, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
@@ -53,7 +53,7 @@ namespace DMS_API.Controllers
         [AllowAnonymous]
         [HttpPut]
         [Route("EditFolder")]
-        public async Task<IActionResult> EditGroup([FromBody] GroupOrFolderModelView Folder_MV, [FromHeader] RequestHeaderModelView RequestHeader)
+        public async Task<IActionResult> EditGroup([FromBody] FolderModelView Folder_MV, [FromHeader] RequestHeaderModelView RequestHeader)
         {
             Response_MV = await Folder_S.EditFolder(Folder_MV, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);

@@ -55,6 +55,7 @@
         public static readonly string OldPasswordNotCorrect = "OldPasswordNotCorrect";
         public static readonly string DeblicateKey = "DeblicateKey";
         public static readonly string GroupNameMustEnter = "GroupNameMustEnter";
+        public static readonly string FolderNameMustEnter = "FolderNameMustEnter";
 
 
 
@@ -131,6 +132,7 @@
                      {ChangePasswordSuccess ,"تم تغيير كلمة المرور"},
                      {DeblicateKey ,"الكلمة المفتاحية موجودة في قاعدة البيانات"},
                      {GroupNameMustEnter ,"يجب ادخال اسم المجموعة"},
+                     {FolderNameMustEnter ,"يجب ادخال اسم الفايل"},
 
 
 
@@ -186,6 +188,7 @@
                      {ChangePasswordSuccess ,"Password changed"},
                      {DeblicateKey ,"The keyword ss exist in database"},
                      {GroupNameMustEnter ,"Group Name Must Enter"},
+                     {FolderNameMustEnter ,"Folder Name Must Enter"},
 
 
 
