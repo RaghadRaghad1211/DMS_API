@@ -1013,54 +1013,57 @@ namespace DMS_API.Services
                 return Response_MV;
             }
         }
-        public async Task<ResponseModelView> GetOrgsParentWithChilds(RequestHeaderModelView RequestHeader)
-        {
-            try
-            {
-                Session_S = new SessionService();
-                var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
-                if (ResponseSession.Success == false)
-                {
-                    return ResponseSession;
-                }
-                else
-                {
-                    int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
-                    List<OrgModel> Org_Mlist = new List<OrgModel>();
-                    Org_Mlist = await HelpService.GetOrgsParentWithChildsByUserLoginID(userLoginID);
-                    if (Org_Mlist == null)
-                    {
-                        Response_MV = new ResponseModelView
-                        {
-                            Success = false,
-                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
-                            Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
-                        };
-                        return Response_MV;
-                    }
-                    else
-                    {
-                        Response_MV = new ResponseModelView
-                        {
-                            Success = true,
-                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
-                            Data = Org_Mlist
-                        };
-                        return Response_MV;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Response_MV = new ResponseModelView
-                {
-                    Success = false,
-                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError] + " - " + ex.Message,
-                    Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
-                };
-                return Response_MV;
-            }
-        }
+
+        #region Test
+        //public async Task<ResponseModelView> GetOrgsParentWithChilds(RequestHeaderModelView RequestHeader)
+        //{
+        //    try
+        //    {
+        //        Session_S = new SessionService();
+        //        var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
+        //        if (ResponseSession.Success == false)
+        //        {
+        //            return ResponseSession;
+        //        }
+        //        else
+        //        {
+        //            int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
+        //            List<OrgModel> Org_Mlist = new List<OrgModel>();
+        //            Org_Mlist = await HelpService.GetOrgsParentWithChildsByUserLoginID(userLoginID);
+        //            if (Org_Mlist == null)
+        //            {
+        //                Response_MV = new ResponseModelView
+        //                {
+        //                    Success = false,
+        //                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
+        //                    Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+        //                };
+        //                return Response_MV;
+        //            }
+        //            else
+        //            {
+        //                Response_MV = new ResponseModelView
+        //                {
+        //                    Success = true,
+        //                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
+        //                    Data = Org_Mlist
+        //                };
+        //                return Response_MV;
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Response_MV = new ResponseModelView
+        //        {
+        //            Success = false,
+        //            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError] + " - " + ex.Message,
+        //            Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+        //        };
+        //        return Response_MV;
+        //    }
+        //}
+        #endregion
         #endregion
 
         #region My Test Region

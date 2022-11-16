@@ -75,16 +75,16 @@ namespace DMS_API.Services
                                 return Response_MV;
                             }
 
-                            else if (Session_M.IsOrgAdmin == false)
-                            {
-                                Response_MV = new ResponseModelView
-                                {
-                                    Success = false,
-                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.Forbidden],
-                                    Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
-                                };
-                                return Response_MV;
-                            }
+                            //else if (Session_M.IsOrgAdmin == false)
+                            //{
+                            //    Response_MV = new ResponseModelView
+                            //    {
+                            //        Success = false,
+                            //        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.Forbidden],
+                            //        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                            //    };
+                            //    return Response_MV;
+                            //}
                             else
                             {
                                 Response_MV = new ResponseModelView

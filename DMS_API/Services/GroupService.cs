@@ -271,7 +271,7 @@ namespace DMS_API.Services
                                                                          $"[ObjOrgOwner] IN (SELECT {whereField} FROM [User].GetOrgsbyUserId({userLoginID})) AND ObjClsId ={ClassID} "));
                         if (checkDeblicate == 0)
                         {
-                            string exeut = $"EXEC [User].[AddGroupOrFolderPro] '{ClassID}','{Group_MV.GroupTitle}', '{userLoginID}', '{orgOwnerID}', '{IsDesktopFolder}', '{Group_MV.GroupDescription}' ";
+                            string exeut = $"EXEC [User].[AddGroupOrFolderPro] '{ClassID}','{Group_MV.GroupTitle}', '{userLoginID}', '{Group_MV.GroupOrgOwnerID}', '{IsDesktopFolder}', '{Group_MV.GroupDescription}' ";
                             var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
 
                             if (outValue == null || outValue.Trim() == "")
@@ -534,6 +534,57 @@ namespace DMS_API.Services
                 return Response_MV;
             }
         }
+
+        #region Test
+        //public async Task<ResponseModelView> GetOrgsParentWithChilds(RequestHeaderModelView RequestHeader)
+        //{
+        //    try
+        //    {
+        //        Session_S = new SessionService();
+        //        var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
+        //        if (ResponseSession.Success == false)
+        //        {
+        //            return ResponseSession;
+        //        }
+        //        else
+        //        {
+        //            int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
+        //            List<OrgModel> Org_Mlist = new List<OrgModel>();
+        //            Org_Mlist = await HelpService.GetOrgsParentWithChildsByUserLoginID(userLoginID);
+        //            if (Org_Mlist == null)
+        //            {
+        //                Response_MV = new ResponseModelView
+        //                {
+        //                    Success = false,
+        //                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
+        //                    Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+        //                };
+        //                return Response_MV;
+        //            }
+        //            else
+        //            {
+        //                Response_MV = new ResponseModelView
+        //                {
+        //                    Success = true,
+        //                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
+        //                    Data = Org_Mlist
+        //                };
+        //                return Response_MV;
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Response_MV = new ResponseModelView
+        //        {
+        //            Success = false,
+        //            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError] + " - " + ex.Message,
+        //            Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+        //        };
+        //        return Response_MV;
+        //    }
+        //}
+        #endregion
         #endregion
 
     }

@@ -101,14 +101,14 @@ namespace DMS_API.Controllers
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
-        [AllowAnonymous]
-        [HttpGet]
-        [Route("GetOrgsParentWithChilds")]
-        public async Task<IActionResult> GetOrgsParentWithChilds([FromHeader] RequestHeaderModelView RequestHeader)
-        {
-            Response_MV = await User_S.GetOrgsParentWithChilds(RequestHeader);
-            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
-        }
+        //[AllowAnonymous]
+        //[HttpGet]
+        //[Route("GetOrgsParentWithChilds")]
+        //public async Task<IActionResult> GetOrgsParentWithChilds([FromHeader] RequestHeaderModelView RequestHeader)
+        //{
+        //    Response_MV = await User_S.GetOrgsParentWithChilds(RequestHeader);
+        //    return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
+        //}
         #endregion
     }
 }

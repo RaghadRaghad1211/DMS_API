@@ -6,7 +6,7 @@
         //public int ObjClsId { get; set; }
         public string GroupTitle { get; set; }
         //public int ObjUserOwnerID { get; set; }
-        //public int ObjOrgOwnerID { get; set; }
+        public int GroupOrgOwnerID { get; set; }
         public bool GroupIsActive { get; set; }
         public string GroupDescription { get; set; }
     }
