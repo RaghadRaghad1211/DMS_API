@@ -94,13 +94,13 @@ namespace DMS_API.Services
             string query = where.Remove(where.Length - 4, 4);
             return query;
         }
-        public static async Task<List<OrgModel>> GetOrgsParentWithChildsByUserLoginID(int userLoginID)
+        public static async Task<List<OrgModel>> GetOrgsParentWithChildsByUserLoginID(int userLoginID, bool IsOrgAdmin=false)
         {
             try
             {
                 int OrgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {userLoginID} "));
                 string whereField = OrgOwnerID == 0 ? "OrgUp" : "OrgId";
-                string getOrgInfo = $"SELECT OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName FROM [User].[Orgs]  WHERE {whereField}= {OrgOwnerID} ";
+                string getOrgInfo = $"SELECT OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName, OrgIsActive FROM [User].[V_Org]  WHERE {whereField}= {OrgOwnerID} ";
                 //string getOrgInfo = $"SELECT TOP 1 OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName FROM [User].[GetOrgsbyUserId]({userLoginID}) ";
                 DataTable dt = new DataTable();
                 dt = await Task.Run(() => dam.FireDataTable(getOrgInfo));
@@ -120,7 +120,8 @@ namespace DMS_API.Services
                         OrgArName = dt.Rows[0]["OrgArName"].ToString(),
                         OrgEnName = dt.Rows[0]["OrgEnName"].ToString(),
                         OrgKuName = dt.Rows[0]["OrgKuName"].ToString(),
-                        OrgChild = await HelpService.GetOrgsChilds(Convert.ToInt32(dt.Rows[0]["OrgId"].ToString()))
+                        OrgIsActive = bool.Parse(dt.Rows[0]["OrgIsActive"].ToString()),
+                        OrgChild = await HelpService.GetOrgsChilds(Convert.ToInt32(dt.Rows[0]["OrgId"].ToString()), IsOrgAdmin)
                     };
                     Org_Mlist.Add(Org_M);
                     return Org_Mlist;
@@ -135,11 +136,11 @@ namespace DMS_API.Services
                 return null;
             }
         }
-        private static async Task<List<OrgModel>> GetOrgsChilds(int OrgId)
+        private static async Task<List<OrgModel>> GetOrgsChilds(int OrgId, bool IsOrgAdmin)
         {
             try
             {
-                string getOrgInfo = $"SELECT OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName   FROM [User].[GetOrgsChildsByParentId]({OrgId})";
+                string getOrgInfo = $"SELECT OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName, OrgIsActive   FROM [User].[GetOrgsChildsByParentId]({OrgId}) "; // WHERE AND OrgIsActive='{JustActive}'
                 DataTable dtChild = new DataTable();
                 dtChild = await Task.Run(() => dam.FireDataTable(getOrgInfo));
                 OrgModel Org_M1 = new OrgModel();
@@ -156,9 +157,22 @@ namespace DMS_API.Services
                             OrgArName = dtChild.Rows[i]["OrgArName"].ToString(),
                             OrgEnName = dtChild.Rows[i]["OrgEnName"].ToString(),
                             OrgKuName = dtChild.Rows[i]["OrgKuName"].ToString(),
-                            OrgChild = await GetOrgsChilds(Convert.ToInt32(dtChild.Rows[i]["OrgId"].ToString()))
+                            OrgIsActive = bool.Parse(dtChild.Rows[i]["OrgIsActive"].ToString()),
+                            OrgChild = await GetOrgsChilds(Convert.ToInt32(dtChild.Rows[i]["OrgId"].ToString()), IsOrgAdmin)
                         };
-                        Org_Mlist1.Add(Org_M1);
+                        if (IsOrgAdmin==false)
+                        {
+                            if (Org_M1.OrgIsActive == true)
+                            {
+                                Org_Mlist1.Add(Org_M1);
+                            }
+                        }
+                        else
+                        {
+                            Org_Mlist1.Add(Org_M1);
+                        }
+                        
+                        //Org_Mlist1.Add(Org_M1);
                     }
                 }
                 return Org_Mlist1;
@@ -168,7 +182,6 @@ namespace DMS_API.Services
                 throw;
             }
         }
-
         #endregion
     }
 }

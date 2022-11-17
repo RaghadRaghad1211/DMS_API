@@ -16,6 +16,7 @@
         public string UserEmpNo { get; set; }
         public string UserIdintNo { get; set; }
         public bool IsOnLine { get; set; }
+        public int OrgOwnerID { get; set; }
         public string OrgArName { get; set; }
         public string OrgEnName { get; set; }
         public string OrgKuName { get; set; }

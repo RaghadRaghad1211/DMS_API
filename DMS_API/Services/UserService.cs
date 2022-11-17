@@ -336,7 +336,7 @@ namespace DMS_API.Services
                         else
                         {
                             string getUserInfo = "SELECT      UserID, UsFirstName, UsSecondName, UsThirdName, UsLastName, FullName, UsUserName, Role, IsOrgAdmin, UserIsActive, UsPhoneNo, UsEmail, " +
-                                                 "            UsUserEmpNo, UsUserIdintNo, UsIsOnLine, OrgArName, OrgEnName, OrgKuName, Note " +
+                                                 "            UsUserEmpNo, UsUserIdintNo, UsIsOnLine, OrgOwner, OrgArName, OrgEnName, OrgKuName, Note " +
                                                  "FROM        [User].V_Users " +
                                                 $"WHERE [OrgOwner] IN (SELECT [OrgId] FROM [User].GetOrgsbyUserId({userLoginID})) " +
                                                  "ORDER BY UserID " +
@@ -377,6 +377,7 @@ namespace DMS_API.Services
                                         UserEmpNo = dt.Rows[i]["UsUserEmpNo"].ToString(),
                                         UserIdintNo = dt.Rows[i]["UsUserIdintNo"].ToString(),
                                         IsOnLine = bool.Parse(dt.Rows[i]["UsIsOnLine"].ToString()),
+                                        OrgOwnerID = Convert.ToInt32(dt.Rows[i]["OrgOwner"].ToString()),
                                         OrgArName = dt.Rows[i]["OrgArName"].ToString(),
                                         OrgEnName = dt.Rows[i]["OrgEnName"].ToString(),
                                         OrgKuName = dt.Rows[i]["OrgKuName"].ToString(),
@@ -430,10 +431,9 @@ namespace DMS_API.Services
                 }
                 else
                 {
-                    //int OrgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {ResponseSession.Data} "));
                     int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
                     string getUserInfo = "SELECT   UserID, UsFirstName, UsSecondName, UsThirdName, UsLastName, FullName, UsUserName, Role, IsOrgAdmin, UserIsActive, UsPhoneNo, UsEmail, " +
-                                         "         UsUserEmpNo, UsUserIdintNo, UsIsOnLine, OrgArName, OrgEnName, OrgKuName, Note " +
+                                         "         UsUserEmpNo, UsUserIdintNo, UsIsOnLine, OrgOwner, OrgArName, OrgEnName, OrgKuName, Note " +
                                         $"FROM     [User].V_Users WHERE UserID={id} AND [OrgOwner] IN (SELECT [OrgId] FROM [User].[GetOrgsbyUserId]({userLoginID})) AND [USERID] !={userLoginID} ";
 
                     dt = new DataTable();
@@ -468,6 +468,7 @@ namespace DMS_API.Services
                             UserEmpNo = dt.Rows[0]["UsUserEmpNo"].ToString(),
                             UserIdintNo = dt.Rows[0]["UsUserIdintNo"].ToString(),
                             IsOnLine = bool.Parse(dt.Rows[0]["UsIsOnLine"].ToString()),
+                            OrgOwnerID = Convert.ToInt32(dt.Rows[0]["OrgOwner"].ToString()),
                             OrgArName = dt.Rows[0]["OrgArName"].ToString(),
                             OrgEnName = dt.Rows[0]["OrgEnName"].ToString(),
                             OrgKuName = dt.Rows[0]["OrgKuName"].ToString(),

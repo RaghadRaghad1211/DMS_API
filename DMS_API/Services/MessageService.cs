@@ -56,6 +56,8 @@
         public static readonly string DeblicateKey = "DeblicateKey";
         public static readonly string GroupNameMustEnter = "GroupNameMustEnter";
         public static readonly string FolderNameMustEnter = "FolderNameMustEnter";
+        public static readonly string TitelArIsEmpty = "TitelArIsEmpty";
+        public static readonly string TitelEnIsEmpty = "TitelEnIsEmpty";
 
 
 
@@ -133,6 +135,8 @@
                      {DeblicateKey ,"الكلمة المفتاحية موجودة في قاعدة البيانات"},
                      {GroupNameMustEnter ,"يجب ادخال اسم المجموعة"},
                      {FolderNameMustEnter ,"يجب ادخال اسم الفايل"},
+                     {TitelArIsEmpty ,"يجب ادخال العنوان العربي"},
+                     {TitelEnIsEmpty ,"يجب ادخال العنوان الانكليزي"},
 
 
 
@@ -189,6 +193,8 @@
                      {DeblicateKey ,"The keyword ss exist in database"},
                      {GroupNameMustEnter ,"Group Name Must Enter"},
                      {FolderNameMustEnter ,"Folder Name Must Enter"},
+                     {TitelArIsEmpty ,"The Arabic titel must be entered"},
+                     {TitelEnIsEmpty ,"The English titel must be entered"},
 
 
 

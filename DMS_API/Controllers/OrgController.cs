@@ -32,5 +32,23 @@ namespace DMS_API.Controllers
             Response_MV = await Org_S.GetOrgsParentWithChilds(RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
+
+        [AllowAnonymous]
+        [HttpPost]
+        [Route("AddOrg")]
+        public async Task<IActionResult> AddOrg([FromBody] AddOrgModelView AddOrg_MV, [FromHeader] RequestHeaderModelView RequestHeader)
+        {
+            Response_MV = await Org_S.AddOrg(AddOrg_MV, RequestHeader);
+            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
+        }
+
+        [AllowAnonymous]
+        [HttpPut]
+        [Route("EditUser")]
+        public async Task<IActionResult> EditOrg([FromBody] EditOrgModelView EditOrg_MV, [FromHeader] RequestHeaderModelView RequestHeader)
+        {
+            Response_MV = await Org_S.EditOrg(EditOrg_MV, RequestHeader);
+            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
+        }
     }
 }
