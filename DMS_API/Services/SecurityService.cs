@@ -5,6 +5,9 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Security.Cryptography;
+using System.Net.Mail;
+using System.Net;
+
 namespace DMS_API.Services
 {
     /// <summary>
@@ -67,7 +70,33 @@ namespace DMS_API.Services
             return TokenInfo;
             // return TokenID;
         }
-
+        public static bool SendEmail(string EmailTo, string Subject, string Body)
+        {
+            try
+            {
+                using (MailMessage mail = new MailMessage())
+                {
+                    mail.From = new MailAddress("haelrox1989@gmail.com", "NDC-DMS");
+                    mail.To.Add(EmailTo);
+                    mail.Subject = Subject;
+                    mail.Body = Body;
+                    mail.IsBodyHtml = true;
+                    //mail.Attachments.Add(new Attachment("D:\\TestFile.txt"));//--Uncomment this to send any attachment  
+                    using (SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587)) // SmtpHost = "smtp.gmail.com"; PortNumber = 587 for Google
+                    {
+                        smtp.UseDefaultCredentials = false;
+                        smtp.Credentials = new NetworkCredential("haelrox1989@gmail.com", "rfguirfrmutcmbyp");
+                        smtp.EnableSsl = true;
+                        smtp.Send(mail);
+                    }
+                }
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
         public static string PasswordEnecrypt(string pass)
         {
             byte[] bytes = Encoding.UTF8.GetBytes(pass);//Encoding.UTF8.GetBytes
@@ -84,10 +113,10 @@ namespace DMS_API.Services
             }
             return hashString;
         }
-
-        public static string RoundomPassword(int length)
+        public static string RoundomPassword()
         {
             const string valid = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+            int length = 8;
             StringBuilder res = new StringBuilder();
             Random rnd = new Random();
             while (0 < length--)

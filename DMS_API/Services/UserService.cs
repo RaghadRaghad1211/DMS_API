@@ -192,19 +192,37 @@ namespace DMS_API.Services
                 }
                 else
                 {
-                    int checkExist = Convert.ToInt16(dam.FireSQL($"SELECT COUNT(*) FROM [User].Users WHERE UsId ={id} "));
-                    if (checkExist != 0)
+                    //int checkExist = Convert.ToInt16(dam.FireSQL($"SELECT COUNT(*) FROM [User].Users WHERE UsId ={id} "));
+                    DataTable dtEmail = new DataTable();
+                    dtEmail = await Task.Run(() => dam.FireDataTable($"SELECT UsEmail FROM [User].Users WHERE UsId ={id} "));
+                    if (dtEmail.Rows.Count > 0)
                     {
-                        string RounPass = SecurityService.RoundomPassword(8);
-                        string reset = $"UPDATE [User].Users SET UsPassword='{SecurityService.PasswordEnecrypt(RounPass)}' WHERE UsId ={id} ";
-                        await Task.Run(() => dam.DoQuery(reset));
-                        Response_MV = new ResponseModelView
+                        string RounPass = SecurityService.RoundomPassword();
+                        bool isReset = SecurityService.SendEmail(dtEmail.Rows[0][0].ToString(),
+                             MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.EmailSubjectPasswordIsReset],
+                             MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.EmailBodyPasswordIsReset] + RounPass);
+                        if (isReset == true)
                         {
-                            Success = true,
-                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsReset] + " " + RounPass,
-                            Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
-                        };
-                        return Response_MV;
+                            string reset = $"UPDATE [User].Users SET UsPassword='{SecurityService.PasswordEnecrypt(RounPass)}' WHERE UsId ={id} ";
+                            await Task.Run(() => dam.DoQuery(reset));
+                            Response_MV = new ResponseModelView
+                            {
+                                Success = true,
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsReset],
+                                Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
+                            };
+                            return Response_MV;
+                        }
+                        else
+                        {
+                            Response_MV = new ResponseModelView
+                            {
+                                Success = false,
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
+                                Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                            };
+                            return Response_MV;
+                        }
                     }
                     else
                     {
@@ -251,13 +269,34 @@ namespace DMS_API.Services
                             Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
                         };
                         return Response_MV;
+                    }                    
+                    else if (ChangePassword_MV.NewPassword.Length < 8)
+                    {
+                        Response_MV = new ResponseModelView
+                        {
+                            Success = false,
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.Password8Characters],
+                            Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                        };
+                        return Response_MV;
+                    }
+                    else if (ChangePassword_MV.NewPasswordConfirm.Trim() != ChangePassword_MV.NewPassword.Trim())
+                    {
+                        Response_MV = new ResponseModelView
+                        {
+                            Success = false,
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ConfirmPasswordIsIncorrect],
+                            Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                        };
+                        return Response_MV;
                     }
                     else
                     {
-                        int checkExist = Convert.ToInt16(dam.FireSQL($"SELECT COUNT(*) FROM [User].Users WHERE UsId ={ChangePassword_MV.UserID} AND  UsPassword ='{SecurityService.PasswordEnecrypt(ChangePassword_MV.OldPassword)}' "));
+                        int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
+                        int checkExist = Convert.ToInt16(dam.FireSQL($"SELECT COUNT(*) FROM [User].Users WHERE UsId ={userLoginID} AND  UsPassword ='{SecurityService.PasswordEnecrypt(ChangePassword_MV.OldPassword)}' "));
                         if (checkExist > 0)
                         {
-                            string change = $"UPDATE [User].Users SET UsPassword='{SecurityService.PasswordEnecrypt(ChangePassword_MV.NewPassword)}' WHERE UsId ={ChangePassword_MV.UserID} ";
+                            string change = $"UPDATE [User].Users SET UsPassword='{SecurityService.PasswordEnecrypt(ChangePassword_MV.NewPassword)}' WHERE UsId ={userLoginID} ";
                             await Task.Run(() => dam.DoQuery(change));
                             Response_MV = new ResponseModelView
                             {
@@ -587,7 +626,7 @@ namespace DMS_API.Services
                         };
                         return Response_MV;
                     }
-                    else if (AddUser_MV.PasswordConfirm.Trim() != AddUser_MV.PasswordConfirm.Trim())
+                    else if (AddUser_MV.PasswordConfirm.Trim() != AddUser_MV.Password.Trim())
                     {
                         Response_MV = new ResponseModelView
                         {
@@ -999,6 +1038,92 @@ namespace DMS_API.Services
                                 };
                                 return Response_MV;
                             }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Response_MV = new ResponseModelView
+                {
+                    Success = false,
+                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError] + " - " + ex.Message,
+                    Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                };
+                return Response_MV;
+            }
+        }
+        public async Task<ResponseModelView> EditContact(EditMyContactModelView EditMyContact_MV, RequestHeaderModelView RequestHeader)
+        {
+            try
+            {
+                Session_S = new SessionService();
+                var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
+                if (ResponseSession.Success == false)
+                {
+                    return ResponseSession;
+                }
+                else
+                {
+                    string validation = ValidationService.IsEmptyList(EditMyContact_MV);
+                    if (ValidationService.IsEmpty(validation) == false)
+                    {
+                        Response_MV = new ResponseModelView
+                        {
+                            Success = false,
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.MustFillInformation] + "  " + $"({validation})",
+                            Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                        };
+                        return Response_MV;
+                    }
+                    else
+                    {
+                        int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
+                        int checkExist = Convert.ToInt16(dam.FireSQL($"SELECT COUNT(*) FROM [User].Users WHERE UsId ={userLoginID} "));
+                        if (checkExist > 0)
+                        {
+                            if (ValidationService.IsPhoneNumber(EditMyContact_MV.MyPhoneNo) == false)
+                            {
+                                Response_MV = new ResponseModelView
+                                {
+                                    Success = false,
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.PhoneIncorrect],
+                                    Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                                };
+                                return Response_MV;
+                            }
+                            else if (ValidationService.IsEmail(EditMyContact_MV.MyEmail) == false)
+                            {
+                                Response_MV = new ResponseModelView
+                                {
+                                    Success = false,
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.EmailIncorrect],
+                                    Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                                };
+                                return Response_MV;
+                            }
+                            else
+                            {
+                                string edit = $"UPDATE [User].Users SET UsEmail='{EditMyContact_MV.MyEmail}', UsPhoneNo='{EditMyContact_MV.MyPhoneNo}' WHERE UsId ={userLoginID} ";
+                                await Task.Run(() => dam.DoQuery(edit));
+                                Response_MV = new ResponseModelView
+                                {
+                                    Success = true,
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.EditSuccess],
+                                    Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
+                                };
+                                return Response_MV;
+                            }
+                        }
+                        else
+                        {
+                            Response_MV = new ResponseModelView
+                            {
+                                Success = false,
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.EditFaild],
+                                Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                            };
+                            return Response_MV;
                         }
                     }
                 }

@@ -41,10 +41,19 @@ namespace DMS_API.Controllers
 
         [AllowAnonymous]
         [HttpPost]
-        [Route("ChangePassword")]
-        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordModelView ChangePassword_MV, [FromHeader] RequestHeaderModelView RequestHeader)
+        [Route("ChangeMyPassword")]
+        public async Task<IActionResult> ChangeMyPassword([FromBody] ChangePasswordModelView ChangePassword_MV, [FromHeader] RequestHeaderModelView RequestHeader)
         {
             Response_MV = await User_S.ChangePassword(ChangePassword_MV, RequestHeader);
+            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        [Route("EditMyContact")]
+        public async Task<IActionResult> EditMyContact([FromBody] EditMyContactModelView EditMyContact_MV, [FromHeader] RequestHeaderModelView RequestHeader)
+        {
+            Response_MV = await User_S.EditContact(EditMyContact_MV, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
@@ -100,15 +109,7 @@ namespace DMS_API.Controllers
             Response_MV = await User_S.SearchUsersAdvance(SearchUser_MV, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
-
-        //[AllowAnonymous]
-        //[HttpGet]
-        //[Route("GetOrgsParentWithChilds")]
-        //public async Task<IActionResult> GetOrgsParentWithChilds([FromHeader] RequestHeaderModelView RequestHeader)
-        //{
-        //    Response_MV = await User_S.GetOrgsParentWithChilds(RequestHeader);
-        //    return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
-        //}
+       
         #endregion
     }
 }

@@ -52,6 +52,8 @@
         public static readonly string EmailIncorrect = "EmailIncorrect";
         public static readonly string FSTname = "FSTname";
         public static readonly string IsReset = "IsReset";
+        public static readonly string EmailSubjectPasswordIsReset = "EmailSubjectPasswordIsReset";
+        public static readonly string EmailBodyPasswordIsReset = "EmailBodyPasswordIsReset";
         public static readonly string OldPasswordNotCorrect = "OldPasswordNotCorrect";
         public static readonly string DeblicateKey = "DeblicateKey";
         public static readonly string GroupNameMustEnter = "GroupNameMustEnter";
@@ -130,6 +132,8 @@
                      {EmailIncorrect ,"تنسيق البريد الالكتروني غير صحيح"},
                      {FSTname ,"يجب ملئ على الاقل الاسم الثلاثي للمستخدم"},
                      {IsReset ,"تم اعادة تعيين كلمة المرور"},
+                     {EmailSubjectPasswordIsReset, "إعادة تعيين كلمة المرور" },//
+                     {EmailBodyPasswordIsReset ,"تم إعادة تعيين كلمة المرور .. كلمة المرور الجديدة : "},//
                      {OldPasswordNotCorrect ,"كلمة المرور القديمة غير صحيحة"},
                      {ChangePasswordSuccess ,"تم تغيير كلمة المرور"},
                      {DeblicateKey ,"الكلمة المفتاحية موجودة في قاعدة البيانات"},
@@ -188,6 +192,8 @@
                      {EmailIncorrect ,"The email is formatted incorrectly"},
                      {FSTname ,"You must fill in at least the full name of the user"},
                      {IsReset ,"Password is reset"},
+                     {EmailSubjectPasswordIsReset ,"Password Reset"},//
+                     {EmailBodyPasswordIsReset ,"The password has been reset.. The new password: "},//
                      {OldPasswordNotCorrect ,"The old password is incorrectly"},
                      {ChangePasswordSuccess ,"Password changed"},
                      {DeblicateKey ,"The keyword ss exist in database"},

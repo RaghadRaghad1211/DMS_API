@@ -12,13 +12,20 @@ namespace DMS_API.Controllers
     {
         #region Properteis
         private GroupService Group_S;
+        private LinkParentChildService LinkParentChild_S;
         private ResponseModelView Response_MV { get; set; }
+        enum ParentClass
+        {
+            Group = 2,
+            Folder = 4
+        }
         #endregion
 
         #region Constructor
         public GroupController()
         {
             Group_S = new GroupService();
+            LinkParentChild_S = new LinkParentChildService();
         }
         #endregion
 
@@ -65,6 +72,15 @@ namespace DMS_API.Controllers
         public async Task<IActionResult> SearchGroupByName([FromRoute] string Name, [FromHeader] RequestHeaderModelView RequestHeader)
         {
             Response_MV = await Group_S.SearchGroupByName(Name, RequestHeader);
+            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("GetChildLinkParentByID/{id}")]
+        public async Task<IActionResult> GetChildLinkParentByID([FromRoute] int id, [FromHeader] RequestHeaderModelView RequestHeader)
+        {
+            Response_MV = await LinkParentChild_S.GetChildLinkParentByID((int)ParentClass.Group, id, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
         #endregion
