@@ -60,6 +60,7 @@
         public static readonly string FolderNameMustEnter = "FolderNameMustEnter";
         public static readonly string TitelArIsEmpty = "TitelArIsEmpty";
         public static readonly string TitelEnIsEmpty = "TitelEnIsEmpty";
+        public static readonly string MustSelectedObjects = "MustSelectedObjects";
 
 
 
@@ -141,6 +142,7 @@
                      {FolderNameMustEnter ,"يجب ادخال اسم الفايل"},
                      {TitelArIsEmpty ,"يجب ادخال العنوان العربي"},
                      {TitelEnIsEmpty ,"يجب ادخال العنوان الانكليزي"},
+                     {MustSelectedObjects ,"يجب اختيار عناصر"},
 
 
 
@@ -201,6 +203,7 @@
                      {FolderNameMustEnter ,"Folder Name Must Enter"},
                      {TitelArIsEmpty ,"The Arabic titel must be entered"},
                      {TitelEnIsEmpty ,"The English titel must be entered"},
+                     {MustSelectedObjects ,"Must Select Objects"},
 
 
 

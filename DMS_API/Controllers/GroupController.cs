@@ -82,9 +82,18 @@ namespace DMS_API.Controllers
         [AllowAnonymous]
         [HttpPost]
         [Route("AddChildsIntoGroup")]
-        public async Task<IActionResult> AddChildsIntoGroupByID([FromBody] int GroupId,[FromBody] List<int> ChildIds, [FromHeader] RequestHeaderModelView RequestHeader)
+        public async Task<IActionResult> AddChildsIntoGroup([FromBody] LinkParentChildModelView LinkParentChild_MV, [FromHeader] RequestHeaderModelView RequestHeader)
         {
-            Response_MV = await LinkParentChild_S.AddChildIntoParent((int)HelpService.ParentClass.Group, GroupId, ChildIds, RequestHeader);
+            Response_MV = await LinkParentChild_S.AddChildIntoParent((int)HelpService.ParentClass.Group, LinkParentChild_MV, RequestHeader);
+            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
+        }
+
+        [AllowAnonymous]
+        [HttpPut]
+        [Route("RemoveChildsFromGroup")]
+        public async Task<IActionResult> RemoveChildsFromGroup([FromBody] LinkParentChildModelView LinkParentChild_MV, [FromHeader] RequestHeaderModelView RequestHeader)
+        {
+            Response_MV = await LinkParentChild_S.RemoveChildFromParent((int)HelpService.ParentClass.Group, LinkParentChild_MV, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
         #endregion

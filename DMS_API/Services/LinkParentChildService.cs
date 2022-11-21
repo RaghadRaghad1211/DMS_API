@@ -44,11 +44,16 @@ namespace DMS_API.Services
                     int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
                     int orgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {userLoginID} "));
                     string whereField = orgOwnerID == 0 ? "OrgUp" : "OrgId";
+                    //string getParentChildInfo = "SELECT  LcId,ParentUserOwnerId,ParentOrgOwnerId, LcParentObjId, ObjTitle, LcParentClsId,  " +
+                    //                            "        ParentClassType, LcChildObjId, ChildTitle, LcChildClsId, ChildClassType, LcIsActive " +
+                    //                            "FROM    [User].V_Links " +
+                    //                           $"WHERE   [ParentOrgOwnerId] IN (SELECT {whereField} FROM [User].GetOrgsbyUserId({userLoginID})) " +
+                    //                           $"        AND LcParentObjId={ParentID} AND LcParentClsId ={ParentClassID} AND LcIsActive=1";
+
                     string getParentChildInfo = "SELECT  LcId,ParentUserOwnerId,ParentOrgOwnerId, LcParentObjId, ObjTitle, LcParentClsId,  " +
                                                 "        ParentClassType, LcChildObjId, ChildTitle, LcChildClsId, ChildClassType, LcIsActive " +
                                                 "FROM    [User].V_Links " +
-                                               $"WHERE   [ParentOrgOwnerId] IN (SELECT {whereField} FROM [User].GetOrgsbyUserId({userLoginID})) " +
-                                               $"        AND LcParentObjId={ParentID} AND LcParentClsId ={ParentClassID} AND LcIsActive=1";
+                                               $"WHERE   LcParentObjId={ParentID} AND LcParentClsId ={ParentClassID} AND LcIsActive=1";
 
                     dt = new DataTable();
                     dt = await Task.Run(() => dam.FireDataTable(getParentChildInfo));
@@ -116,7 +121,7 @@ namespace DMS_API.Services
             }
         }
 
-        public async Task<ResponseModelView> AddChildIntoParent(int ParentClassID, int ParentID, List<int> ChildIDs, RequestHeaderModelView RequestHeader)
+        public async Task<ResponseModelView> AddChildIntoParent(int ParentClassID, LinkParentChildModelView LinkParentChild_MV, RequestHeaderModelView RequestHeader)
         {
             try
             {
@@ -128,7 +133,38 @@ namespace DMS_API.Services
                 }
                 else
                 {
-
+                    if (LinkParentChild_MV.ChildIds.Count == 0)
+                    {
+                        Response_MV = new ResponseModelView
+                        {
+                            Success = false,
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.MustSelectedObjects],
+                            Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                        };
+                        return Response_MV;
+                    }
+                    for (int i = 0; i < LinkParentChild_MV.ChildIds.Count; i++)
+                    {
+                        string exeut = $"EXEC [Main].[AddLinksPro]  '{LinkParentChild_MV.ParentId}', '{ParentClassID}','{LinkParentChild_MV.ChildIds[i]}',{1} ";
+                        var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
+                        if (outValue == 0.ToString() || (outValue == null || outValue.Trim() == ""))
+                        {
+                            Response_MV = new ResponseModelView
+                            {
+                                Success = false,
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.InsertFaild],
+                                Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                            };
+                            return Response_MV;
+                        }
+                    }
+                    Response_MV = new ResponseModelView
+                    {
+                        Success = true,
+                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.InsertSuccess],
+                        Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
+                    };
+                    return Response_MV;
                 }
             }
             catch (Exception ex)
@@ -142,6 +178,68 @@ namespace DMS_API.Services
                 return Response_MV;
             }
         }
+
+        public async Task<ResponseModelView> RemoveChildFromParent(int ParentClassID, LinkParentChildModelView LinkParentChild_MV, RequestHeaderModelView RequestHeader)
+        {
+            try
+            {
+                Session_S = new SessionService();
+                var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
+                if (ResponseSession.Success == false)
+                {
+                    return ResponseSession;
+                }
+                else
+                {
+                    if (LinkParentChild_MV.ChildIds.Count == 0)
+                    {
+                        Response_MV = new ResponseModelView
+                        {
+                            Success = false,
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.MustSelectedObjects],
+                            Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                        };
+                        return Response_MV;
+                    }
+                    for (int i = 0; i < LinkParentChild_MV.ChildIds.Count; i++)
+                    {
+                        string exeut = $"EXEC [Main].[UpdateLinksPro]  '{LinkParentChild_MV.ParentId}', '{ParentClassID}','{LinkParentChild_MV.ChildIds[i]}',{1} ";
+                        // (@LcId int,@LcIsActive bit)
+                        var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
+                        if (outValue == 0.ToString() || (outValue == null || outValue.Trim() == ""))
+                        {
+                            Response_MV = new ResponseModelView
+                            {
+                                Success = false,
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.InsertFaild],
+                                Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                            };
+                            return Response_MV;
+                        }
+                    }
+                    Response_MV = new ResponseModelView
+                    {
+                        Success = true,
+                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.InsertSuccess],
+                        Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
+                    };
+                    return Response_MV;
+                }
+            }
+            catch (Exception ex)
+            {
+                Response_MV = new ResponseModelView
+                {
+                    Success = false,
+                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError] + " - " + ex.Message,
+                    Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                };
+                return Response_MV;
+            }
+        }
+
+
+
 
 
         #region Test
