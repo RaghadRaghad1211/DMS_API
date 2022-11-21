@@ -203,15 +203,14 @@ namespace DMS_API.Services
                     }
                     for (int i = 0; i < LinkParentChild_MV.ChildIds.Count; i++)
                     {
-                        string exeut = $"EXEC [Main].[UpdateLinksPro]  '{LinkParentChild_MV.ParentId}', '{ParentClassID}','{LinkParentChild_MV.ChildIds[i]}',{1} ";
-                        // (@LcId int,@LcIsActive bit)
+                        string exeut = $"EXEC [Main].[UpdateLinksPro]  '{LinkParentChild_MV.ParentId}','{LinkParentChild_MV.ChildIds[i]}',{0} ";                        
                         var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
                         if (outValue == 0.ToString() || (outValue == null || outValue.Trim() == ""))
                         {
                             Response_MV = new ResponseModelView
                             {
                                 Success = false,
-                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.InsertFaild],
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.DeleteFaild],
                                 Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
                             };
                             return Response_MV;
@@ -220,7 +219,7 @@ namespace DMS_API.Services
                     Response_MV = new ResponseModelView
                     {
                         Success = true,
-                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.InsertSuccess],
+                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.DeleteSuccess],
                         Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
                     };
                     return Response_MV;

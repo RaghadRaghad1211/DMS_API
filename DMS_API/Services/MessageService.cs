@@ -24,6 +24,8 @@
         public static readonly string ChangePasswordFaild = "ChangePasswordFaild";
         public static readonly string SaveSuccess = "SaveSuccess";
         public static readonly string SaveFaild = "SaveFaild";
+        public static readonly string DeleteSuccess = "DeleteSuccess";
+        public static readonly string DeleteFaild = "DeleteFaild";
         public static readonly string EditSuccess = "EditSuccess";
         public static readonly string EditFaild = "EditFaild";
         public static readonly string UserNotActive = "UserNotActive";
@@ -91,7 +93,6 @@
         public static readonly string ForgetPasswordFaild = "ForgetPasswordFaild";
         public static readonly string FindUserProfileFaild = "FindUserProfileFaild";
         public static readonly string GetUserAccountsFaild = "GetUserAccountsFaild";
-        public static readonly string DeleteFaild = "DeleteFaild";
         public static readonly string UndoDeleteFaild = "UndoDeleteFaild";
         public static readonly string PermanentlyDeleteFaild = "PermanentlyDeleteFaild";
 
@@ -143,6 +144,8 @@
                      {TitelArIsEmpty ,"يجب ادخال العنوان العربي"},
                      {TitelEnIsEmpty ,"يجب ادخال العنوان الانكليزي"},
                      {MustSelectedObjects ,"يجب اختيار عناصر"},
+                     {DeleteSuccess, "تمت عملية الحذف" },
+                     {DeleteFaild, "فشل بعملية الحذف" },
 
 
 
@@ -204,6 +207,8 @@
                      {TitelArIsEmpty ,"The Arabic titel must be entered"},
                      {TitelEnIsEmpty ,"The English titel must be entered"},
                      {MustSelectedObjects ,"Must Select Objects"},
+                     {DeleteSuccess, "Delete Success" },
+                     {DeleteFaild, "Delete Faild" },
 
 
 
