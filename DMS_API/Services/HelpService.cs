@@ -9,6 +9,12 @@ namespace DMS_API.Services
     {
         #region Properteis
         private static DataAccessService dam = new DataAccessService(SecurityService.ConnectionString);
+        public enum ParentClass
+        {
+            Group = 2,
+            Folder = 4,
+            Document = 5
+        }
         #endregion
 
         #region Functions

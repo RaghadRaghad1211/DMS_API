@@ -12,6 +12,7 @@ namespace DMS_API.Controllers
     {
         #region Properteis
         private FolderService Folder_S;
+        private LinkParentChildService LinkParentChild_S;
         private ResponseModelView Response_MV { get; set; }
         #endregion
 
@@ -19,6 +20,7 @@ namespace DMS_API.Controllers
         public FolderController()
         {
             Folder_S = new FolderService();
+            LinkParentChild_S = new LinkParentChildService();
         }
         #endregion
 
@@ -65,6 +67,15 @@ namespace DMS_API.Controllers
         public async Task<IActionResult> SearchFolderByName([FromRoute] string Name, [FromHeader] RequestHeaderModelView RequestHeader)
         {
             Response_MV = await Folder_S.SearchFolderByName(Name, RequestHeader);
+            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("GetChildsLinkFolderByID/{FolderId}")]
+        public async Task<IActionResult> GetChildsLinkFolderByID([FromRoute] int FolderId, [FromHeader] RequestHeaderModelView RequestHeader)
+        {
+            Response_MV = await LinkParentChild_S.GetChildLinkParentByID((int)HelpService.ParentClass.Folder, FolderId, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
         #endregion

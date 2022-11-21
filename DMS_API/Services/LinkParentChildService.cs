@@ -18,7 +18,7 @@ namespace DMS_API.Services
         private LinkParentChildModel LinkParentChild_M { get; set; }
         private List<LinkParentChildModel> LinkParentChild_Mlist { get; set; }
         private ResponseModelView Response_MV { get; set; }
-        // 2 Group , 4 Folder 
+        // 2 Group , 4 Folder  , 5 Document
         #endregion
 
         #region Constructor        
@@ -116,10 +116,32 @@ namespace DMS_API.Services
             }
         }
 
-        //public async Task<ResponseModelView> AddChildIntoParent(LinkParentChildModelView LinkParentChild_MV, RequestHeaderModelView RequestHeader)
-        //{
+        public async Task<ResponseModelView> AddChildIntoParent(int ParentClassID, int ParentID, List<int> ChildIDs, RequestHeaderModelView RequestHeader)
+        {
+            try
+            {
+                Session_S = new SessionService();
+                var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
+                if (ResponseSession.Success == false)
+                {
+                    return ResponseSession;
+                }
+                else
+                {
 
-        //}
+                }
+            }
+            catch (Exception ex)
+            {
+                Response_MV = new ResponseModelView
+                {
+                    Success = false,
+                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError] + " - " + ex.Message,
+                    Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                };
+                return Response_MV;
+            }
+        }
 
 
         #region Test

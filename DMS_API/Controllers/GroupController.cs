@@ -14,11 +14,6 @@ namespace DMS_API.Controllers
         private GroupService Group_S;
         private LinkParentChildService LinkParentChild_S;
         private ResponseModelView Response_MV { get; set; }
-        enum ParentClass
-        {
-            Group = 2,
-            Folder = 4
-        }
         #endregion
 
         #region Constructor
@@ -77,10 +72,19 @@ namespace DMS_API.Controllers
 
         [AllowAnonymous]
         [HttpGet]
-        [Route("GetChildLinkParentByID/{id}")]
-        public async Task<IActionResult> GetChildLinkParentByID([FromRoute] int id, [FromHeader] RequestHeaderModelView RequestHeader)
+        [Route("GetChildsLinkGroupByID/{GroupId}")]
+        public async Task<IActionResult> GetChildsLinkGroupByID([FromRoute] int GroupId, [FromHeader] RequestHeaderModelView RequestHeader)
         {
-            Response_MV = await LinkParentChild_S.GetChildLinkParentByID((int)ParentClass.Group, id, RequestHeader);
+            Response_MV = await LinkParentChild_S.GetChildLinkParentByID((int)HelpService.ParentClass.Group, GroupId, RequestHeader);
+            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        [Route("AddChildsIntoGroup")]
+        public async Task<IActionResult> AddChildsIntoGroupByID([FromBody] int GroupId,[FromBody] List<int> ChildIds, [FromHeader] RequestHeaderModelView RequestHeader)
+        {
+            Response_MV = await LinkParentChild_S.AddChildIntoParent((int)HelpService.ParentClass.Group, GroupId, ChildIds, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
         #endregion
