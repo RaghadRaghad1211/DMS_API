@@ -130,17 +130,17 @@ namespace DMS_API.Services
         {
             try
             {
-                string getOrgInfo = $"SELECT OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName, OrgIsActive FROM [User].[V_Org]  WHERE OrgId= {OrgID} ";
+                string getOrgInfo = $"SELECT OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName, OrgArNameUp, OrgEnNameUp, OrgKuNameUp  FROM [User].[V_OrgTable]  WHERE OrgId= {OrgID} ";
                 DataTable dt = new DataTable();
                 dt = await Task.Run(() => dam.FireDataTable(getOrgInfo));
                 if (dt == null)
                 {
                     return null;
                 }
-                OrgModel Org_M = new OrgModel();
+                OrgTableModel OrgTable_M = new OrgTableModel();
                 if (dt.Rows.Count > 0)
                 {
-                    Org_M = new OrgModel
+                    OrgTable_M = new OrgTableModel
                     {
                         OrgId = Convert.ToInt32(dt.Rows[0]["OrgId"].ToString()),
                         OrgUp = Convert.ToInt32(dt.Rows[0]["OrgUp"].ToString()),
@@ -148,13 +148,15 @@ namespace DMS_API.Services
                         OrgArName = dt.Rows[0]["OrgArName"].ToString(),
                         OrgEnName = dt.Rows[0]["OrgEnName"].ToString(),
                         OrgKuName = dt.Rows[0]["OrgKuName"].ToString(),
-                        OrgIsActive = bool.Parse(dt.Rows[0]["OrgIsActive"].ToString()),
+                        OrgArNameUp = dt.Rows[0]["OrgArNameUp"].ToString(),
+                        OrgEnNameUp = dt.Rows[0]["OrgEnNameUp"].ToString(),
+                        OrgKuNameUp = dt.Rows[0]["OrgKuNameUp"].ToString()
                     };
                     Response_MV = new ResponseModelView
                     {
                         Success = true,
                         Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
-                        Data = Org_M
+                        Data = OrgTable_M
                     };
                     return Response_MV;
                 }
