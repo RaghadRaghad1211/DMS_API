@@ -16,6 +16,7 @@ namespace DMS_API.Services
         private DataTable dt { get; set; }
         private OrgModel Org_M { get; set; }
         private List<OrgModel> Org_Mlist { get; set; }
+        private List<OrgTableModel> OrgTable_Mlist { get; set; }
         private ResponseModelView Response_MV { get; set; }
         #endregion
 
@@ -60,6 +61,55 @@ namespace DMS_API.Services
                             Success = true,
                             Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
                             Data = Org_Mlist
+                        };
+                        return Response_MV;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Response_MV = new ResponseModelView
+                {
+                    Success = false,
+                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError] + " - " + ex.Message,
+                    Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                };
+                return Response_MV;
+            }
+        }
+        public async Task<ResponseModelView> GetOrgsParentWithChilds_Table(RequestHeaderModelView RequestHeader)
+        {
+            try
+            {
+                Session_S = new SessionService();
+                var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
+                if (ResponseSession.Success == false)
+                {
+                    return ResponseSession;
+                }
+                else
+                {
+                    int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
+                    List<OrgTableModel> OrgTable_Mlist = new List<OrgTableModel>();
+                    OrgTable_Mlist = await HelpService.GetOrgsParentWithChildsByUserLoginID_Table(userLoginID, ((SessionModel)ResponseSession.Data).IsOrgAdmin);
+
+                    if (OrgTable_Mlist == null)
+                    {
+                        Response_MV = new ResponseModelView
+                        {
+                            Success = false,
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
+                            Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                        };
+                        return Response_MV;
+                    }
+                    else
+                    {
+                        Response_MV = new ResponseModelView
+                        {
+                            Success = true,
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
+                            Data = new { Parent = OrgTable_Mlist[0], Child = OrgTable_Mlist.Where(x=>x.OrgId != OrgTable_Mlist[0].OrgId) }
                         };
                         return Response_MV;
                     }
@@ -279,8 +329,6 @@ namespace DMS_API.Services
                 return Response_MV;
             }
         }
-
-
         #endregion
 
     }

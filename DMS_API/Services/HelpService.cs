@@ -100,7 +100,7 @@ namespace DMS_API.Services
             string query = where.Remove(where.Length - 4, 4);
             return query;
         }
-        public static async Task<List<OrgModel>> GetOrgsParentWithChildsByUserLoginID(int userLoginID, bool IsOrgAdmin=false)
+        public static async Task<List<OrgModel>> GetOrgsParentWithChildsByUserLoginID(int userLoginID, bool IsOrgAdmin = false)
         {
             try
             {
@@ -166,7 +166,7 @@ namespace DMS_API.Services
                             OrgIsActive = bool.Parse(dtChild.Rows[i]["OrgIsActive"].ToString()),
                             OrgChild = await GetOrgsChilds(Convert.ToInt32(dtChild.Rows[i]["OrgId"].ToString()), IsOrgAdmin)
                         };
-                        if (IsOrgAdmin==false)
+                        if (IsOrgAdmin == false)
                         {
                             if (Org_M1.OrgIsActive == true)
                             {
@@ -177,7 +177,7 @@ namespace DMS_API.Services
                         {
                             Org_Mlist1.Add(Org_M1);
                         }
-                        
+
                         //Org_Mlist1.Add(Org_M1);
                     }
                 }
@@ -186,6 +186,54 @@ namespace DMS_API.Services
             catch (Exception)
             {
                 throw;
+            }
+        }
+        public static async Task<List<OrgTableModel>> GetOrgsParentWithChildsByUserLoginID_Table(int userLoginID, bool IsOrgAdmin = false)
+        {
+            try
+            {
+                int OrgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {userLoginID} "));
+                string whereField = OrgOwnerID == 0 ? "OrgUp" : "OrgId";
+                string getOrgInfo = $"SELECT OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName , OrgArNameUp, OrgEnNameUp, OrgKuNameUp FROM [User].[GetOrgsbyUserIdTable]({userLoginID}) ORDER BY OrgId "; // WHERE {whereField} !={OrgOwnerID}
+                DataTable dt = new DataTable();
+                dt = await Task.Run(() => dam.FireDataTable(getOrgInfo));
+                if (dt == null)
+                {
+                    return null;
+                }
+                List<OrgTableModel> OrgTable_Mlist = new List<OrgTableModel>();
+                OrgTableModel OrgTable_M = new OrgTableModel();
+
+
+                if (dt.Rows.Count > 0)
+                {
+                    for (int i = 0; i < dt.Rows.Count; i++)
+                    {
+                        OrgTable_M = new OrgTableModel
+                        {
+                            OrgId = Convert.ToInt32(dt.Rows[i]["OrgId"].ToString()),
+                            OrgUp = Convert.ToInt32(dt.Rows[i]["OrgUp"].ToString()),
+                            OrgLevel = Convert.ToInt32(dt.Rows[i]["OrgLevel"].ToString()),
+                            OrgArName = dt.Rows[i]["OrgArName"].ToString(),
+                            OrgEnName = dt.Rows[i]["OrgEnName"].ToString(),
+                            OrgKuName = dt.Rows[i]["OrgKuName"].ToString(),
+                            OrgArNameUp = dt.Rows[i]["OrgArNameUp"].ToString(),
+                            OrgEnNameUp = dt.Rows[i]["OrgEnNameUp"].ToString(),
+                            OrgKuNameUp = dt.Rows[i]["OrgKuNameUp"].ToString(),
+                        };
+                        OrgTable_Mlist.Add(OrgTable_M);
+                    }
+
+                    return OrgTable_Mlist;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (Exception)
+            {
+                return null;
             }
         }
         #endregion

@@ -34,6 +34,15 @@ namespace DMS_API.Controllers
         }
 
         [AllowAnonymous]
+        [HttpGet]
+        [Route("GetOrgsParentWithChilds_Table")]
+        public async Task<IActionResult> GetOrgsParentWithChilds_Table([FromHeader] RequestHeaderModelView RequestHeader)
+        {
+            Response_MV = await Org_S.GetOrgsParentWithChilds_Table(RequestHeader);
+            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
+        }
+
+        [AllowAnonymous]
         [HttpPost]
         [Route("AddOrg")]
         public async Task<IActionResult> AddOrg([FromBody] AddOrgModelView AddOrg_MV, [FromHeader] RequestHeaderModelView RequestHeader)
