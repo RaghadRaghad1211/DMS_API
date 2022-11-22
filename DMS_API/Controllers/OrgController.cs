@@ -43,6 +43,24 @@ namespace DMS_API.Controllers
         }
 
         [AllowAnonymous]
+        [HttpGet]
+        [Route("GetOrgByID/{OrgID}")]
+        public async Task<IActionResult> GetOrgByID([FromRoute] int OrgID, [FromHeader] RequestHeaderModelView RequestHeader)
+        {
+            Response_MV = await Org_S.GetOrgByID(OrgID,RequestHeader);
+            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("SearchOrgsByArName/{OrgArName}")]
+        public async Task<IActionResult> SearchOrgsByArName([FromRoute] string OrgArName, [FromHeader] RequestHeaderModelView RequestHeader)
+        {
+            Response_MV = await Org_S.SearchOrgsByArName(OrgArName, RequestHeader);
+            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
+        }
+
+        [AllowAnonymous]
         [HttpPost]
         [Route("AddOrg")]
         public async Task<IActionResult> AddOrg([FromBody] AddOrgModelView AddOrg_MV, [FromHeader] RequestHeaderModelView RequestHeader)
@@ -53,7 +71,7 @@ namespace DMS_API.Controllers
 
         [AllowAnonymous]
         [HttpPut]
-        [Route("EditUser")]
+        [Route("EditOrg")]
         public async Task<IActionResult> EditOrg([FromBody] EditOrgModelView EditOrg_MV, [FromHeader] RequestHeaderModelView RequestHeader)
         {
             Response_MV = await Org_S.EditOrg(EditOrg_MV, RequestHeader);

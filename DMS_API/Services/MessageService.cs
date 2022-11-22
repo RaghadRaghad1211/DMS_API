@@ -63,7 +63,7 @@
         public static readonly string TitelArIsEmpty = "TitelArIsEmpty";
         public static readonly string TitelEnIsEmpty = "TitelEnIsEmpty";
         public static readonly string MustSelectedObjects = "MustSelectedObjects";
-
+        public static readonly string OrgNameMustEnter = "OrgNameMustEnter";
 
 
 
@@ -145,8 +145,8 @@
                      {TitelEnIsEmpty ,"يجب ادخال العنوان الانكليزي"},
                      {MustSelectedObjects ,"يجب اختيار عناصر"},
                      {DeleteSuccess, "تمت عملية الحذف" },
-                     {DeleteFaild, "فشل بعملية الحذف" },
-
+                     {DeleteFaild, "فشل بعملية الحذف" },//OrgNameMustEnter
+                      {OrgNameMustEnter, "يجب اضافة اسم الموؤسسة" },
 
 
 
@@ -209,7 +209,7 @@
                      {MustSelectedObjects ,"Must Select Objects"},
                      {DeleteSuccess, "Delete Success" },
                      {DeleteFaild, "Delete Faild" },
-
+                       {OrgNameMustEnter, "OrgName Must Enter" },
 
 
 

@@ -91,7 +91,7 @@ namespace DMS_API.Services
                 {
                     int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
                     List<OrgTableModel> OrgTable_Mlist = new List<OrgTableModel>();
-                    OrgTable_Mlist = await HelpService.GetOrgsParentWithChildsByUserLoginID_Table(userLoginID, ((SessionModel)ResponseSession.Data).IsOrgAdmin);
+                    OrgTable_Mlist = await HelpService.GetOrgsParentWithChildsByUserLoginID_Table(userLoginID);
 
                     if (OrgTable_Mlist == null)
                     {
@@ -109,7 +109,110 @@ namespace DMS_API.Services
                         {
                             Success = true,
                             Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
-                            Data = new { Parent = OrgTable_Mlist[0], Child = OrgTable_Mlist.Where(x=>x.OrgId != OrgTable_Mlist[0].OrgId) }
+                            Data = new { Parent = OrgTable_Mlist[0], Child = OrgTable_Mlist.Where(x => x.OrgId != OrgTable_Mlist[0].OrgId) }
+                        };
+                        return Response_MV;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Response_MV = new ResponseModelView
+                {
+                    Success = false,
+                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError] + " - " + ex.Message,
+                    Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                };
+                return Response_MV;
+            }
+        }
+        public async Task<ResponseModelView> GetOrgByID(int OrgID, RequestHeaderModelView RequestHeader)
+        {
+            try
+            {
+                string getOrgInfo = $"SELECT OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName, OrgIsActive FROM [User].[V_Org]  WHERE OrgId= {OrgID} ";
+                DataTable dt = new DataTable();
+                dt = await Task.Run(() => dam.FireDataTable(getOrgInfo));
+                if (dt == null)
+                {
+                    return null;
+                }
+                OrgModel Org_M = new OrgModel();
+                if (dt.Rows.Count > 0)
+                {
+                    Org_M = new OrgModel
+                    {
+                        OrgId = Convert.ToInt32(dt.Rows[0]["OrgId"].ToString()),
+                        OrgUp = Convert.ToInt32(dt.Rows[0]["OrgUp"].ToString()),
+                        OrgLevel = Convert.ToInt32(dt.Rows[0]["OrgLevel"].ToString()),
+                        OrgArName = dt.Rows[0]["OrgArName"].ToString(),
+                        OrgEnName = dt.Rows[0]["OrgEnName"].ToString(),
+                        OrgKuName = dt.Rows[0]["OrgKuName"].ToString(),
+                        OrgIsActive = bool.Parse(dt.Rows[0]["OrgIsActive"].ToString()),
+                    };
+                    Response_MV = new ResponseModelView
+                    {
+                        Success = true,
+                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
+                        Data = Org_M
+                    };
+                    return Response_MV;
+                }
+                else
+                {
+                    Response_MV = new ResponseModelView
+                    {
+                        Success = false,
+                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoData],
+                        Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                    };
+                    return Response_MV;
+                }
+            }
+            catch (Exception ex)
+            {
+                Response_MV = new ResponseModelView
+                {
+                    Success = false,
+                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError] + " - " + ex.Message,
+                    Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                };
+                return Response_MV;
+            }
+        }
+        public async Task<ResponseModelView> SearchOrgsByArName(string ArName, RequestHeaderModelView RequestHeader)
+        {
+            try
+            {
+                Session_S = new SessionService();
+                var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
+                if (ResponseSession.Success == false)
+                {
+                    return ResponseSession;
+                }
+                else
+                {
+                    int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
+                    List<OrgTableModel> OrgTable_Mlist = new List<OrgTableModel>();
+                    OrgTable_Mlist = await HelpService.GetOrgsParentWithChildsByUserLoginID_Table(userLoginID);
+
+                    if (OrgTable_Mlist == null)
+                    {
+                        Response_MV = new ResponseModelView
+                        {
+                            Success = false,
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
+                            Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                        };
+                        return Response_MV;
+                    }
+                    else
+                    {
+                        Response_MV = new ResponseModelView
+                        {
+                            Success = true,
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
+                            Data = new { Org = OrgTable_Mlist.Where(x => x.OrgArName.Contains(ArName)) }
                         };
                         return Response_MV;
                     }
@@ -329,6 +432,7 @@ namespace DMS_API.Services
                 return Response_MV;
             }
         }
+
         #endregion
 
     }

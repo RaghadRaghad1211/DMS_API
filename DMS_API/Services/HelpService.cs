@@ -188,7 +188,7 @@ namespace DMS_API.Services
                 throw;
             }
         }
-        public static async Task<List<OrgTableModel>> GetOrgsParentWithChildsByUserLoginID_Table(int userLoginID, bool IsOrgAdmin = false)
+        public static async Task<List<OrgTableModel>> GetOrgsParentWithChildsByUserLoginID_Table(int userLoginID)
         {
             try
             {
