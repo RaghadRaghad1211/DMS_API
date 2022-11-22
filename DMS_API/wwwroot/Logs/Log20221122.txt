@@ -622,3 +622,31 @@ Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException: IDX10223: Lifetime
 2022-11-22 14:10:39.084 +03:00 [INF] Executed action DMS_API.Controllers.OrgController.SearchOrgsByArName (DMS_API) in 3623.105ms
 2022-11-22 14:10:39.084 +03:00 [INF] Executed endpoint 'DMS_API.Controllers.OrgController.SearchOrgsByArName (DMS_API)'
 2022-11-22 14:10:39.084 +03:00 [INF] Request finished HTTP/1.1 GET https://localhost:7040/api/Org/SearchOrgsByArName/السلطة  - - - 200 - application/json;+charset=utf-8 3626.4131ms
+2022-11-22 14:54:31.995 +03:00 [INF] User profile is available. Using 'C:\Users\pc\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2022-11-22 14:54:32.177 +03:00 [INF] Now listening on: https://localhost:7040
+2022-11-22 14:54:32.178 +03:00 [INF] Now listening on: http://localhost:5041
+2022-11-22 14:54:32.179 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2022-11-22 14:54:32.179 +03:00 [INF] Hosting environment: Development
+2022-11-22 14:54:32.179 +03:00 [INF] Content root path: F:\TestProjects\DMS_API\DMS_API\
+2022-11-22 14:54:32.554 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/index.html - -
+2022-11-22 14:54:32.739 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - -
+2022-11-22 14:54:32.740 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_vs/browserLink - -
+2022-11-22 14:54:32.746 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - - - 200 11984 application/javascript;+charset=utf-8 4.6420ms
+2022-11-22 14:54:32.746 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/index.html - - - 200 - text/html;charset=utf-8 194.7867ms
+2022-11-22 14:54:32.771 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_vs/browserLink - - - 200 - text/javascript;+charset=UTF-8 30.5143ms
+2022-11-22 14:54:32.822 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - -
+2022-11-22 14:54:32.916 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - - - 200 - application/json;charset=utf-8 93.8936ms
+2022-11-22 14:54:51.917 +03:00 [INF] Request starting HTTP/1.1 GET https://localhost:7040/api/Org/SearchOrgsByArName/السلطة - -
+2022-11-22 14:54:51.993 +03:00 [INF] Executing endpoint 'DMS_API.Controllers.OrgController.SearchOrgsByArName (DMS_API)'
+2022-11-22 14:54:52.013 +03:00 [INF] Route matched with {action = "SearchOrgsByArName", controller = "Org"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] SearchOrgsByArName(System.String, DMS_API.ModelsView.RequestHeaderModelView) on controller DMS_API.Controllers.OrgController (DMS_API).
+2022-11-22 14:55:23.049 +03:00 [INF] Executing ObjectResult, writing value of type 'DMS_API.ModelsView.ResponseModelView'.
+2022-11-22 14:55:23.062 +03:00 [INF] Executed action DMS_API.Controllers.OrgController.SearchOrgsByArName (DMS_API) in 31045.8037ms
+2022-11-22 14:55:23.064 +03:00 [INF] Executed endpoint 'DMS_API.Controllers.OrgController.SearchOrgsByArName (DMS_API)'
+2022-11-22 14:55:23.066 +03:00 [INF] Request finished HTTP/1.1 GET https://localhost:7040/api/Org/SearchOrgsByArName/السلطة - - - 417 - application/json;+charset=utf-8 31148.2899ms
+2022-11-22 14:55:26.002 +03:00 [INF] Request starting HTTP/1.1 GET https://localhost:7040/api/Org/SearchOrgsByArName/السلطة - -
+2022-11-22 14:55:26.004 +03:00 [INF] Executing endpoint 'DMS_API.Controllers.OrgController.SearchOrgsByArName (DMS_API)'
+2022-11-22 14:55:26.004 +03:00 [INF] Route matched with {action = "SearchOrgsByArName", controller = "Org"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] SearchOrgsByArName(System.String, DMS_API.ModelsView.RequestHeaderModelView) on controller DMS_API.Controllers.OrgController (DMS_API).
+2022-11-22 14:58:34.962 +03:00 [INF] Executing OkObjectResult, writing value of type 'DMS_API.ModelsView.ResponseModelView'.
+2022-11-22 14:58:34.965 +03:00 [INF] Executed action DMS_API.Controllers.OrgController.SearchOrgsByArName (DMS_API) in 188960.5594ms
+2022-11-22 14:58:34.965 +03:00 [INF] Executed endpoint 'DMS_API.Controllers.OrgController.SearchOrgsByArName (DMS_API)'
+2022-11-22 14:58:34.965 +03:00 [INF] Request finished HTTP/1.1 GET https://localhost:7040/api/Org/SearchOrgsByArName/السلطة - - - 200 - application/json;+charset=utf-8 188963.4086ms
