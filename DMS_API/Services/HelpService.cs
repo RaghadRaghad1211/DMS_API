@@ -194,7 +194,7 @@ namespace DMS_API.Services
             {
                 int OrgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {userLoginID} "));
                 string whereField = OrgOwnerID == 0 ? "OrgUp" : "OrgId";
-                string getOrgInfo = $"SELECT OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName , OrgArNameUp, OrgEnNameUp, OrgKuNameUp FROM [User].[GetOrgsbyUserIdTable]({userLoginID}) ORDER BY OrgId "; // WHERE {whereField} !={OrgOwnerID}
+                string getOrgInfo = $"SELECT OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName , OrgArNameUp, OrgEnNameUp, OrgKuNameUp, OrgIsActive  FROM [User].[GetOrgsbyUserIdTable]({userLoginID}) ORDER BY OrgId "; // WHERE {whereField} !={OrgOwnerID}
                 DataTable dt = new DataTable();
                 dt = await Task.Run(() => dam.FireDataTable(getOrgInfo));
                 if (dt == null)
@@ -220,6 +220,7 @@ namespace DMS_API.Services
                             OrgArNameUp = dt.Rows[i]["OrgArNameUp"].ToString(),
                             OrgEnNameUp = dt.Rows[i]["OrgEnNameUp"].ToString(),
                             OrgKuNameUp = dt.Rows[i]["OrgKuNameUp"].ToString(),
+                            OrgIsActive = bool.Parse(dt.Rows[0]["OrgIsActive"].ToString())
                         };
                         OrgTable_Mlist.Add(OrgTable_M);
                     }

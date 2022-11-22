@@ -130,7 +130,7 @@ namespace DMS_API.Services
         {
             try
             {
-                string getOrgInfo = $"SELECT OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName, OrgArNameUp, OrgEnNameUp, OrgKuNameUp  FROM [User].[V_OrgTable]  WHERE OrgId= {OrgID} ";
+                string getOrgInfo = $"SELECT OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName, OrgArNameUp, OrgEnNameUp, OrgKuNameUp, OrgIsActive  FROM [User].[V_OrgTable]  WHERE OrgId= {OrgID} ";
                 DataTable dt = new DataTable();
                 dt = await Task.Run(() => dam.FireDataTable(getOrgInfo));
                 if (dt == null)
@@ -150,7 +150,8 @@ namespace DMS_API.Services
                         OrgKuName = dt.Rows[0]["OrgKuName"].ToString(),
                         OrgArNameUp = dt.Rows[0]["OrgArNameUp"].ToString(),
                         OrgEnNameUp = dt.Rows[0]["OrgEnNameUp"].ToString(),
-                        OrgKuNameUp = dt.Rows[0]["OrgKuNameUp"].ToString()
+                        OrgKuNameUp = dt.Rows[0]["OrgKuNameUp"].ToString(),
+                        OrgIsActive = bool.Parse(dt.Rows[0]["OrgIsActive"].ToString())
                     };
                     Response_MV = new ResponseModelView
                     {
