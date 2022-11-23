@@ -106,7 +106,7 @@ namespace DMS_API.Services
             {
                 int OrgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {userLoginID} "));
                 string whereField = OrgOwnerID == 0 ? "OrgUp" : "OrgId";
-                string getOrgInfo = $"SELECT OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName, OrgIsActive FROM [User].[V_Org]  WHERE {whereField}= {OrgOwnerID} ";
+                string getOrgInfo = $"SELECT OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName, OrgIsActive FROM [User].[V_Org]  WHERE {whereField}= {OrgOwnerID} AND OrgIsActive=1";
                 //string getOrgInfo = $"SELECT TOP 1 OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName FROM [User].[GetOrgsbyUserId]({userLoginID}) ";
                 DataTable dt = new DataTable();
                 dt = await Task.Run(() => dam.FireDataTable(getOrgInfo));
@@ -146,7 +146,7 @@ namespace DMS_API.Services
         {
             try
             {
-                string getOrgInfo = $"SELECT OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName, OrgIsActive   FROM [User].[GetOrgsChildsByParentId]({OrgId}) "; // WHERE AND OrgIsActive='{JustActive}'
+                string getOrgInfo = $"SELECT OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName, OrgIsActive   FROM [User].[GetOrgsChildsByParentId]({OrgId}) AND OrgIsActive=1"; // WHERE AND OrgIsActive='{JustActive}'
                 DataTable dtChild = new DataTable();
                 dtChild = await Task.Run(() => dam.FireDataTable(getOrgInfo));
                 OrgModel Org_M1 = new OrgModel();
@@ -166,19 +166,19 @@ namespace DMS_API.Services
                             OrgIsActive = bool.Parse(dtChild.Rows[i]["OrgIsActive"].ToString()),
                             OrgChild = await GetOrgsChilds(Convert.ToInt32(dtChild.Rows[i]["OrgId"].ToString()), IsOrgAdmin)
                         };
-                        if (IsOrgAdmin == false)
-                        {
-                            if (Org_M1.OrgIsActive == true)
-                            {
-                                Org_Mlist1.Add(Org_M1);
-                            }
-                        }
-                        else
-                        {
-                            Org_Mlist1.Add(Org_M1);
-                        }
+                        Org_Mlist1.Add(Org_M1);
 
-                        //Org_Mlist1.Add(Org_M1);
+                        //if (IsOrgAdmin == false)
+                        //{
+                        //    if (Org_M1.OrgIsActive == true)
+                        //    {
+                        //        Org_Mlist1.Add(Org_M1);
+                        //    }
+                        //}
+                        //else
+                        //{
+                        //    Org_Mlist1.Add(Org_M1);
+                        //}
                     }
                 }
                 return Org_Mlist1;
@@ -192,8 +192,8 @@ namespace DMS_API.Services
         {
             try
             {
-                int OrgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {userLoginID} "));
-                string whereField = OrgOwnerID == 0 ? "OrgUp" : "OrgId";
+                //int OrgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {userLoginID} "));
+                //string whereField = OrgOwnerID == 0 ? "OrgUp" : "OrgId";
                 string getOrgInfo = $"SELECT OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName , OrgArNameUp, OrgEnNameUp, OrgKuNameUp, OrgIsActive  FROM [User].[GetOrgsbyUserIdTable]({userLoginID}) ORDER BY OrgId "; // WHERE {whereField} !={OrgOwnerID}
                 DataTable dt = new DataTable();
                 dt = await Task.Run(() => dam.FireDataTable(getOrgInfo));

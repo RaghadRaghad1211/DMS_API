@@ -75,7 +75,7 @@ namespace DMS_API.Controllers
         [Route("GetChildsLinkFolderByID/{FolderId}")]
         public async Task<IActionResult> GetChildsLinkFolderByID([FromRoute] int FolderId, [FromHeader] RequestHeaderModelView RequestHeader)
         {
-            Response_MV = await LinkParentChild_S.GetChildLinkParentByID((int)HelpService.ParentClass.Folder, FolderId, RequestHeader);
+            Response_MV = await LinkParentChild_S.GetChildIntoParentByID((int)HelpService.ParentClass.Folder, FolderId, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
         #endregion

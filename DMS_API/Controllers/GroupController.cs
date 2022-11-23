@@ -72,10 +72,19 @@ namespace DMS_API.Controllers
 
         [AllowAnonymous]
         [HttpGet]
-        [Route("GetChildsLinkGroupByID/{GroupId}")]
-        public async Task<IActionResult> GetChildsLinkGroupByID([FromRoute] int GroupId, [FromHeader] RequestHeaderModelView RequestHeader)
+        [Route("GetChildsIntoGroupByID/{GroupId}")]
+        public async Task<IActionResult> GetChildsIntoGroupByID([FromRoute] int GroupId, [FromHeader] RequestHeaderModelView RequestHeader)
         {
-            Response_MV = await LinkParentChild_S.GetChildLinkParentByID((int)HelpService.ParentClass.Group, GroupId, RequestHeader);
+            Response_MV = await LinkParentChild_S.GetChildIntoParentByID((int)HelpService.ParentClass.Group, GroupId, RequestHeader);
+            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("GetChildsNotInGroupByID/{GroupId}")]
+        public async Task<IActionResult> GetChildsNotInGroupByID([FromRoute] int GroupId, [FromHeader] RequestHeaderModelView RequestHeader)
+        {
+            Response_MV = await LinkParentChild_S.GetChildNotInParentByID((int)HelpService.ParentClass.Group, GroupId, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 

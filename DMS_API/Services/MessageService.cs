@@ -201,7 +201,7 @@
                      {EmailBodyPasswordIsReset ,"The password has been reset.. The new password: "},//
                      {OldPasswordNotCorrect ,"The old password is incorrectly"},
                      {ChangePasswordSuccess ,"Password changed"},
-                     {DeblicateKey ,"The keyword ss exist in database"},
+                     {DeblicateKey ,"The keyword is exist in database"},
                      {GroupNameMustEnter ,"Group Name Must Enter"},
                      {FolderNameMustEnter ,"Folder Name Must Enter"},
                      {TitelArIsEmpty ,"The Arabic titel must be entered"},

@@ -45,9 +45,9 @@ namespace DMS_API.Services
 
                     int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
                     int orgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {userLoginID} "));
-                    string whereField = orgOwnerID == 0 ? "OrgUp" : "OrgId";
+                    string whereField = orgOwnerID == 0 ? "SELECT '0' as OrgId UNION SELECT OrgId" : "SELECT OrgId";
                     var MaxTotal = dam.FireDataTable($"SELECT COUNT(*) AS TotalRows, CEILING(COUNT(*) / CAST({_PageRows} AS FLOAT)) AS MaxPage " +
-                                             $"FROM [User].V_GroupsFolders  WHERE [OrgOwner] IN (SELECT {whereField} FROM [User].[GetOrgsbyUserId]({userLoginID})) AND ObjClsId ={ClassID} ");
+                                             $"FROM [User].V_GroupsFolders  WHERE [OrgOwner] IN ({whereField} FROM [User].[GetOrgsbyUserId]({userLoginID})) AND ObjClsId ={ClassID} ");
                     if (MaxTotal == null)
                     {
                         Response_MV = new ResponseModelView
@@ -76,7 +76,7 @@ namespace DMS_API.Services
                             string getFolderInfo = "SELECT  ObjId, ObjTitle, ObjClsId, ClsName, ObjIsActive, ObjCreationDate, ObjIsDesktopFolder, ObjDescription, UserOwnerID, " +
                                                  "            OwnerFullName, OwnerUserName, OrgOwner, OrgEnName,OrgArName , OrgKuName " +
                                                  "FROM            [User].V_GroupsFolders " +
-                                                $"WHERE [OrgOwner] IN (SELECT {whereField} FROM [User].GetOrgsbyUserId({userLoginID})) AND ObjClsId ={ClassID} " +
+                                                $"WHERE [OrgOwner] IN ({whereField} FROM [User].GetOrgsbyUserId({userLoginID})) AND ObjClsId ={ClassID} " +
                                                  "ORDER BY ObjId " +
                                                 $"OFFSET      ({_PageNumber}-1)*{_PageRows} ROWS " +
                                                 $"FETCH NEXT   {_PageRows} ROWS ONLY ";
@@ -167,11 +167,12 @@ namespace DMS_API.Services
                 {
                     int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
                     int orgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {userLoginID} "));
-                    string whereField = orgOwnerID == 0 ? "OrgUp" : "OrgId";
+                    //string whereField = orgOwnerID == 0 ? "OrgUp" : "OrgId";
+                    string whereField = orgOwnerID == 0 ? "SELECT '0' as OrgId UNION SELECT OrgId" : "SELECT OrgId";
                     string getFolderInfo = "SELECT  ObjId, ObjTitle, ObjClsId, ClsName, ObjIsActive, ObjCreationDate, ObjIsDesktopFolder, ObjDescription, UserOwnerID, " +
                                                      "            OwnerFullName, OwnerUserName, OrgOwner, OrgEnName,OrgArName , OrgKuName " +
                                                      "FROM            [User].V_GroupsFolders " +
-                                                    $"WHERE ObjId={id} AND [OrgOwner] IN (SELECT {whereField} FROM [User].GetOrgsbyUserId({userLoginID})) AND ObjClsId ={ClassID} ";
+                                                    $"WHERE ObjId={id} AND [OrgOwner] IN ({whereField} FROM [User].GetOrgsbyUserId({userLoginID})) AND ObjClsId ={ClassID} ";
 
 
                     dt = new DataTable();
@@ -264,9 +265,9 @@ namespace DMS_API.Services
                     {
                         int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
                         int orgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {userLoginID} "));
-                        string whereField = orgOwnerID == 0 ? "OrgUp" : "OrgId";
+                        string whereField = orgOwnerID == 0 ? "SELECT '0' as OrgId UNION SELECT OrgId" : "SELECT OrgId";
                         int checkDeblicate = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) FROM [Main].[Objects] WHERE ObjTitle = '{Folder_MV.FolderTitle}' AND " +
-                                                                         $"[ObjOrgOwner] IN (SELECT {whereField} FROM [User].GetOrgsbyUserId({userLoginID})) AND ObjClsId ={ClassID} "));
+                                                                         $"[ObjOrgOwner] IN ({whereField} FROM [User].GetOrgsbyUserId({userLoginID})) AND ObjClsId ={ClassID} "));
                         if (checkDeblicate == 0)
                         {
                             string exeut = $"EXEC [User].[AddGroupOrFolderPro] '{ClassID}','{Folder_MV.FolderTitle}', '{userLoginID}', '{Folder_MV.FolderOrgOwnerID}','{Folder_MV.IsDesktopFolder}', '{Folder_MV.FolderDescription}' ";
@@ -455,11 +456,11 @@ namespace DMS_API.Services
                     {
                         int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
                         int orgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {userLoginID} "));
-                        string whereField = orgOwnerID == 0 ? "OrgUp" : "OrgId";
+                        string whereField = orgOwnerID == 0 ? "SELECT '0' as OrgId UNION SELECT OrgId" : "SELECT OrgId";
                         string getfolderInfo = "SELECT  ObjId, ObjTitle, ObjClsId, ClsName, ObjIsActive, ObjCreationDate, ObjIsDesktopFolder, ObjDescription, UserOwnerID, " +
                                                      "            OwnerFullName, OwnerUserName, OrgOwner, OrgEnName,OrgArName , OrgKuName " +
                                                      "FROM            [User].V_GroupsFolders " +
-                                                  $"WHERE  ObjTitle LIKE '{Name}%' AND [OrgOwner] IN (SELECT {whereField} FROM [User].GetOrgsbyUserId({userLoginID})) AND ObjClsId ={ClassID} ";
+                                                  $"WHERE  ObjTitle LIKE '{Name}%' AND [OrgOwner] IN ({whereField} FROM [User].GetOrgsbyUserId({userLoginID})) AND ObjClsId ={ClassID} ";
 
 
                         dt = new DataTable();
