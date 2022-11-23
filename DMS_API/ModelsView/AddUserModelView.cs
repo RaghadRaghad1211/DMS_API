@@ -16,7 +16,7 @@
         public string Email { get; set; }
         public string UserEmpNo { get; set; }
         public string UserIdintNo { get; set; }
-        public int UserOwner { get; set; }
+        //public int UserOwner { get; set; }
         public int OrgOwner { get; set; }
         public bool IsActive { get; set; }
         public string Note { get; set; }

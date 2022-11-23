@@ -269,7 +269,7 @@ namespace DMS_API.Services
                                                                          $"[ObjOrgOwner] IN (SELECT {whereField} FROM [User].GetOrgsbyUserId({userLoginID})) AND ObjClsId ={ClassID} "));
                         if (checkDeblicate == 0)
                         {
-                            string exeut = $"EXEC [User].[AddGroupOrFolderPro] '{ClassID}','{Folder_MV.FolderTitle}', '{userLoginID}', '{orgOwnerID}','{Folder_MV.IsDesktopFolder}', '{Folder_MV.FolderDescription}' ";
+                            string exeut = $"EXEC [User].[AddGroupOrFolderPro] '{ClassID}','{Folder_MV.FolderTitle}', '{userLoginID}', '{Folder_MV.FolderOrgOwnerID}','{Folder_MV.IsDesktopFolder}', '{Folder_MV.FolderDescription}' ";
                             var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
 
                             if (outValue == null || outValue.Trim() == "")

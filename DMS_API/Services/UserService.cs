@@ -596,7 +596,7 @@ namespace DMS_API.Services
                         };
                         return Response_MV;
                     }
-                    else if (AddUser_MV.OrgOwner == 0 || AddUser_MV.UserOwner == 0)
+                    else if (AddUser_MV.OrgOwner == 0 ) // (AddUser_MV.OrgOwner == 0 || AddUser_MV.UserOwner == 0)
                     {
                         Response_MV = new ResponseModelView
                         {
@@ -639,10 +639,11 @@ namespace DMS_API.Services
 
                     else
                     {
+                        int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
                         int checkDeblicate = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) FROM [User].Users WHERE UsUserName = '{AddUser_MV.UserName}' "));
                         if (checkDeblicate == 0)
                         {
-                            string exeut = $"EXEC [User].[AddUserPro] '{AddUser_MV.UserName}', '{AddUser_MV.UserOwner}', '{AddUser_MV.OrgOwner}', '{AddUser_MV.Note}', '{AddUser_MV.FirstName}',  '{AddUser_MV.SecondName}', '{AddUser_MV.ThirdName}', '{AddUser_MV.LastName}', '{SecurityService.PasswordEnecrypt(AddUser_MV.Password)}', '{AddUser_MV.PhoneNo}', '{AddUser_MV.Email}', '{AddUser_MV.IsActive}', '{AddUser_MV.UserEmpNo}', '{AddUser_MV.UserIdintNo}', '{AddUser_MV.IsOrgAdmin}' ";
+                            string exeut = $"EXEC [User].[AddUserPro] '{AddUser_MV.UserName}', '{userLoginID}', '{AddUser_MV.OrgOwner}', '{AddUser_MV.Note}', '{AddUser_MV.FirstName}',  '{AddUser_MV.SecondName}', '{AddUser_MV.ThirdName}', '{AddUser_MV.LastName}', '{SecurityService.PasswordEnecrypt(AddUser_MV.Password)}', '{AddUser_MV.PhoneNo}', '{AddUser_MV.Email}', '{AddUser_MV.IsActive}', '{AddUser_MV.UserEmpNo}', '{AddUser_MV.UserIdintNo}', '{AddUser_MV.IsOrgAdmin}' ";
                             var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
 
                             if (outValue == null || outValue.Trim() == "")
