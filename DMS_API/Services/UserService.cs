@@ -107,6 +107,26 @@ namespace DMS_API.Services
                             }
                             else
                             {
+                                DataTable dtGetGroup = new DataTable();
+                                dtGetGroup = await Task.Run(() => dam.FireDataTable("SELECT  [LcParentObjId] AS GroupId,[ObjTitle] AS GroupName " +
+                                                                                    "FROM    [DMS_DB].[User].[V_Links]  " +
+                                                                                    "WHERE   [LcParentClsId]=2 AND [LcIsActive]=1 AND [LcChildClsId]=1 " +
+                                                                                   $"AND [LcChildObjId]={Convert.ToInt32(dt.Rows[0]["UserID"].ToString())} "));
+                                MyGroup myGroup = new MyGroup();
+                                List<MyGroup> myGroup_List = new List<MyGroup>();
+                                if (dtGetGroup.Rows.Count > 0)
+                                {
+                                    for (int i = 0; i < dtGetGroup.Rows.Count; i++)
+                                    {
+                                        myGroup = new MyGroup
+                                        {
+                                            GroupId = Convert.ToInt32(dtGetGroup.Rows[i]["GroupId"].ToString()),
+                                            GroupName = dtGetGroup.Rows[i]["GroupName"].ToString()
+                                        };
+                                        myGroup_List.Add(myGroup);  
+                                    }
+                                }
+
                                 User_M = new UserModel
                                 {
                                     UserID = Convert.ToInt32(dt.Rows[0]["UserID"].ToString()),
@@ -127,7 +147,8 @@ namespace DMS_API.Services
                                     OrgArName = dt.Rows[0]["OrgArName"].ToString(),
                                     OrgEnName = dt.Rows[0]["OrgEnName"].ToString(),
                                     OrgKuName = dt.Rows[0]["OrgKuName"].ToString(),
-                                    Note = dt.Rows[0]["Note"].ToString()
+                                    Note = dt.Rows[0]["Note"].ToString(),
+                                    MyGroups = myGroup_List
                                 };
                                 var JWTtoken = SecurityService.GeneratTokenAuthenticate(User_M);
                                 SessionService Session_S = new SessionService();
@@ -269,7 +290,7 @@ namespace DMS_API.Services
                             Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
                         };
                         return Response_MV;
-                    }                    
+                    }
                     else if (ChangePassword_MV.NewPassword.Length < 8)
                     {
                         Response_MV = new ResponseModelView
@@ -596,7 +617,7 @@ namespace DMS_API.Services
                         };
                         return Response_MV;
                     }
-                    else if (AddUser_MV.OrgOwner == 0 ) // (AddUser_MV.OrgOwner == 0 || AddUser_MV.UserOwner == 0)
+                    else if (AddUser_MV.OrgOwner == 0) // (AddUser_MV.OrgOwner == 0 || AddUser_MV.UserOwner == 0)
                     {
                         Response_MV = new ResponseModelView
                         {

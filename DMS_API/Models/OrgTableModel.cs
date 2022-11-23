@@ -12,5 +12,6 @@
         public string OrgEnNameUp { get; set; }
         public string OrgKuNameUp { get; set; }
         public bool OrgIsActive { get; set; }
+        public string Note { get; set; }
     }
 }

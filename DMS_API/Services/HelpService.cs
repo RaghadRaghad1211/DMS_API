@@ -146,7 +146,7 @@ namespace DMS_API.Services
         {
             try
             {
-                string getOrgInfo = $"SELECT OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName, OrgIsActive   FROM [User].[GetOrgsChildsByParentId]({OrgId}) AND OrgIsActive=1"; // WHERE AND OrgIsActive='{JustActive}'
+                string getOrgInfo = $"SELECT OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName, OrgIsActive   FROM [User].[GetOrgsChildsByParentId]({OrgId}) WHERE OrgIsActive=1"; // WHERE AND OrgIsActive='{JustActive}'
                 DataTable dtChild = new DataTable();
                 dtChild = await Task.Run(() => dam.FireDataTable(getOrgInfo));
                 OrgModel Org_M1 = new OrgModel();
@@ -237,6 +237,7 @@ namespace DMS_API.Services
                 return null;
             }
         }
+        
         #endregion
     }
 }

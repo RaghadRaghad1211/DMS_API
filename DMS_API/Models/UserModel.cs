@@ -22,5 +22,11 @@
         public string OrgKuName { get; set; }
         public bool IsActive { get; set; }
         public string Note { get; set; }
+        public List<MyGroup> MyGroups { get; set; }
+    }
+    public class MyGroup
+    {
+        public int GroupId { get; set; }
+        public string GroupName { get; set; }
     }
 }
