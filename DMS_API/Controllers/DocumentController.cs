@@ -11,18 +11,27 @@ namespace DMS_API.Controllers
     public class DocumentController : ControllerBase
     {
         #region Properteis
-        //private UserService User_S;
+        private DocumentService Document_S;
         private ResponseModelView Response_MV { get; set; }
         #endregion
 
         #region Constructor
         public DocumentController()
         {
-            //User_S = new UserService();
+            Document_S = new DocumentService();
         }
         #endregion
 
         #region Actions
+
+
+
+
+
+
+
+
+
         [AllowAnonymous]
         [HttpGet]
         [Route("GeneralSearchByTitle/{title}")]

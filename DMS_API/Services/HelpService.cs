@@ -15,6 +15,8 @@ namespace DMS_API.Services
         private static DataAccessService dam = new DataAccessService(SecurityService.ConnectionString);
         private static SessionService Session_S { get; set; }
         private static DataTable dt { get; set; }
+        private static GeneralSerarchModel GeneralSerarch_M { get; set; }  
+        private static List<GeneralSerarchModel> GeneralSerarch_Mlist { get; set; }
         private static ResponseModelView Response_MV { get; set; }
         public enum ParentClass
         {
@@ -287,8 +289,8 @@ namespace DMS_API.Services
                             };
                             return Response_MV;
                         }
-                        List<GeneralSerarchModel> GeneralSerarch_Mlist = new List<GeneralSerarchModel>();
-                        GeneralSerarchModel GeneralSerarch_M = new GeneralSerarchModel();
+                        GeneralSerarch_Mlist = new List<GeneralSerarchModel>();
+                        GeneralSerarch_M = new GeneralSerarchModel();
                         if (dt.Rows.Count > 0)
                         {
                             for (int i = 0; i < dt.Rows.Count; i++)

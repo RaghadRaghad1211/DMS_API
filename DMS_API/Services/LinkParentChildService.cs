@@ -31,7 +31,7 @@ namespace DMS_API.Services
         #endregion
 
         #region Functions
-        public async Task<ResponseModelView> GetChildIntoParentByID(int ParentClassID, int ParentID, RequestHeaderModelView RequestHeader)
+        public async Task<ResponseModelView> GetChildInParentByID(int ParentClassID, int ParentID, RequestHeaderModelView RequestHeader)
         {
             try
             {
