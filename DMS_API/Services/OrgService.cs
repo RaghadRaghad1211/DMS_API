@@ -374,7 +374,6 @@ namespace DMS_API.Services
                         if (checkDeblicate > 0)
                         {
                             string exeut = $"EXEC [User].[UpdateOrgPro]  '{EditOrg_MV.OrgId}', '{EditOrg_MV.OrgArName}', '{userLoginID}', '{orgOwnerID}','{EditOrg_MV.IsActive}',  '{EditOrg_MV.Note}', '{EditOrg_MV.OrgUp}', '{EditOrg_MV.OrgEnName}', '{EditOrg_MV.OrgKuName}'";
-
                             var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
 
                             if (outValue == null || outValue.Trim() == "")

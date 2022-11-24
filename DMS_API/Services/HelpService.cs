@@ -1,14 +1,21 @@
 ﻿using ArchiveAPI.Services;
 using DMS_API.Models;
 using DMS_API.ModelsView;
+using System.Collections.Generic;
 using System.Data;
+using System.Net;
 using System.Reflection;
+using System.Security.Cryptography;
+
 namespace DMS_API.Services
 {
     public static class HelpService
     {
         #region Properteis
         private static DataAccessService dam = new DataAccessService(SecurityService.ConnectionString);
+        private static SessionService Session_S { get; set; }
+        private static DataTable dt { get; set; }
+        private static ResponseModelView Response_MV { get; set; }
         public enum ParentClass
         {
             Group = 2,
@@ -237,7 +244,98 @@ namespace DMS_API.Services
                 return null;
             }
         }
-        
+        public static async Task<ResponseModelView> GeneralSearchByTitle(string title, RequestHeaderModelView RequestHeader)
+        {
+            try
+            {
+                Session_S = new SessionService();
+                var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
+                if (ResponseSession.Success == false)
+                {
+                    return ResponseSession;
+                }
+                else
+                {
+                    if (ValidationService.IsEmpty(title) == true)
+                    {
+                        Response_MV = new ResponseModelView
+                        {
+                            Success = false,
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.UsernameMustEnter],
+                            Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                        };
+                        return Response_MV;
+                    }
+                    else
+                    {
+                        int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
+                        int orgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {userLoginID} "));
+                        string whereField = orgOwnerID == 0 ? "SELECT '0' as OrgId UNION SELECT OrgId" : "SELECT OrgId";
+
+                        string getResult = "SELECT [ObjId], [ObjTitle], [ObjClsId], [ClsName] " +
+                                           "FROM   [Main].[V_Objects] " +
+                                          $"WHERE  [ObjOrgOwner] IN ({whereField} FROM [User].GetOrgsbyUserId({userLoginID})) AND ObjTitle LIKE '{title}%' ";
+                        dt = new DataTable();
+                        dt = await Task.Run(() => dam.FireDataTable(getResult));
+                        if (dt == null)
+                        {
+                            Response_MV = new ResponseModelView
+                            {
+                                Success = false,
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
+                                Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                            };
+                            return Response_MV;
+                        }
+                        List<GeneralSerarchModel> GeneralSerarch_Mlist = new List<GeneralSerarchModel>();
+                        GeneralSerarchModel GeneralSerarch_M = new GeneralSerarchModel();
+                        if (dt.Rows.Count > 0)
+                        {
+                            for (int i = 0; i < dt.Rows.Count; i++)
+                            {
+                                GeneralSerarch_M = new GeneralSerarchModel
+                                {
+                                    Id = Convert.ToInt32(dt.Rows[i]["ObjId"].ToString()),
+                                    Title = dt.Rows[i]["ObjTitle"].ToString(),
+                                    IdType = Convert.ToInt32(dt.Rows[i]["ObjClsId"].ToString()),
+                                    Type = dt.Rows[i]["ClsName"].ToString()
+                                };
+                                GeneralSerarch_Mlist.Add(GeneralSerarch_M);
+                            }
+                            Response_MV = new ResponseModelView
+                            {
+                                Success = true,
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
+                                Data = GeneralSerarch_Mlist
+                            };
+                            return Response_MV;
+                        }
+                        else
+                        {
+                            Response_MV = new ResponseModelView
+                            {
+                                Success = false,
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoData],
+                                Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                            };
+                            return Response_MV;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Response_MV = new ResponseModelView
+                {
+                    Success = false,
+                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError] + " - " + ex.Message,
+                    Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                };
+                return Response_MV;
+            }
+        }
+
+
         #endregion
     }
 }
