@@ -42,7 +42,6 @@ namespace DMS_API.Services
                     int _PageNumber = Pagination_MV.PageNumber == 0 ? 1 : Pagination_MV.PageNumber;
                     int _PageRows = Pagination_MV.PageRows == 0 ? 1 : Pagination_MV.PageRows;
                     int CurrentPage = _PageNumber;
-
                     int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
                     int orgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {userLoginID} "));
                     string whereField = orgOwnerID == 0 ? "SELECT '0' as OrgId UNION SELECT OrgId" : "SELECT OrgId";

@@ -17,6 +17,8 @@ namespace DMS_API.Services
         private static DataTable dt { get; set; }
         private static GeneralSerarchModel GeneralSerarch_M { get; set; }  
         private static List<GeneralSerarchModel> GeneralSerarch_Mlist { get; set; }
+        private static DesktopFolderModel DesktopFolder_M { get; set; }
+        private static List<DesktopFolderModel> DesktopFolder_Mlist { get; set; }
         private static ResponseModelView Response_MV { get; set; }
         public enum ParentClass
         {
@@ -136,7 +138,7 @@ namespace DMS_API.Services
                         OrgEnName = dt.Rows[0]["OrgEnName"].ToString(),
                         OrgKuName = dt.Rows[0]["OrgKuName"].ToString(),
                         OrgIsActive = bool.Parse(dt.Rows[0]["OrgIsActive"].ToString()),
-                        OrgChild = await HelpService.GetOrgsChilds(Convert.ToInt32(dt.Rows[0]["OrgId"].ToString()), IsOrgAdmin)
+                        OrgChild = await HelpService.GetOrgsChilds(Convert.ToInt32(dt.Rows[0]["OrgId"].ToString()))
                     };
                     Org_Mlist.Add(Org_M);
                     return Org_Mlist;
@@ -151,7 +153,7 @@ namespace DMS_API.Services
                 return null;
             }
         }
-        private static async Task<List<OrgModel>> GetOrgsChilds(int OrgId, bool IsOrgAdmin)
+        private static async Task<List<OrgModel>> GetOrgsChilds(int OrgId)
         {
             try
             {
@@ -173,7 +175,7 @@ namespace DMS_API.Services
                             OrgEnName = dtChild.Rows[i]["OrgEnName"].ToString(),
                             OrgKuName = dtChild.Rows[i]["OrgKuName"].ToString(),
                             OrgIsActive = bool.Parse(dtChild.Rows[i]["OrgIsActive"].ToString()),
-                            OrgChild = await GetOrgsChilds(Convert.ToInt32(dtChild.Rows[i]["OrgId"].ToString()), IsOrgAdmin)
+                            OrgChild = await GetOrgsChilds(Convert.ToInt32(dtChild.Rows[i]["OrgId"].ToString()))
                         };
                         Org_Mlist1.Add(Org_M1);
 
@@ -324,6 +326,78 @@ namespace DMS_API.Services
                         }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                Response_MV = new ResponseModelView
+                {
+                    Success = false,
+                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError] + " - " + ex.Message,
+                    Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                };
+                return Response_MV;
+            }
+        }
+        public static async Task<ResponseModelView> GetDesktopFolderByUserLoginID(int UserId, RequestHeaderModelView RequestHeader)
+        {
+            try
+            {
+                Session_S = new SessionService();
+                var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
+                if (ResponseSession.Success == false)
+                {
+                    return ResponseSession;
+                }
+                else
+                {
+                    string GetDesktopFolderInFo = "SELECT [FolderId],[FolderTitle] " +
+                                                          $"FROM   [User].[GetFolderDesktopByUserId]({UserId})";
+
+                    dt = new DataTable();
+                    dt = await Task.Run(() => dam.FireDataTable(GetDesktopFolderInFo));
+                    if (dt == null)
+                    {
+                        Response_MV = new ResponseModelView
+                        {
+                            Success = false,
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
+                            Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                        };
+                        return Response_MV;
+                    }
+                    DesktopFolder_Mlist = new List<DesktopFolderModel>();
+                    DesktopFolder_M = new DesktopFolderModel();
+                    if (dt.Rows.Count > 0)
+                    {
+                        for (int i = 0; i < dt.Rows.Count; i++)
+                        {
+                            DesktopFolder_M = new DesktopFolderModel
+                            {
+                                FolderDesktopId = Convert.ToInt32(dt.Rows[i]["FolderId"].ToString()),
+                                FolderDesktopName = dt.Rows[i]["FolderTitle"].ToString(),
+                            };
+                            DesktopFolder_Mlist.Add(DesktopFolder_M);
+                        }
+                        Response_MV = new ResponseModelView
+                        {
+                            Success = true,
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
+                            Data = DesktopFolder_Mlist
+                        };
+                        return Response_MV;
+                    }
+                    else
+                    {
+                        Response_MV = new ResponseModelView
+                        {
+                            Success = false,
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoData],
+                            Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                        };
+                        return Response_MV;
+                    }
+                }
+
             }
             catch (Exception ex)
             {
