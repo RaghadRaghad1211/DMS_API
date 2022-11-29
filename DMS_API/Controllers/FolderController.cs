@@ -81,7 +81,7 @@ namespace DMS_API.Controllers
 
         [AllowAnonymous]
         [HttpGet]
-        [Route("GetDesktopFolderByUserLoginID/{Id}")]
+        [Route("GetDesktopFolderByUserLoginID/{UserId}")]
         public async Task<IActionResult> GetDesktopFolderByUserLoginID([FromRoute] int UserId, [FromHeader] RequestHeaderModelView RequestHeader)
         {
             Response_MV = await HelpService.GetDesktopFolderByUserLoginID(UserId, RequestHeader);

@@ -231,7 +231,7 @@ namespace DMS_API.Services
                             OrgArNameUp = dt.Rows[i]["OrgArNameUp"].ToString(),
                             OrgEnNameUp = dt.Rows[i]["OrgEnNameUp"].ToString(),
                             OrgKuNameUp = dt.Rows[i]["OrgKuNameUp"].ToString(),
-                            OrgIsActive = bool.Parse(dt.Rows[0]["OrgIsActive"].ToString())
+                            OrgIsActive = bool.Parse(dt.Rows[i]["OrgIsActive"].ToString())
                         };
                         OrgTable_Mlist.Add(OrgTable_M);
                     }

@@ -393,7 +393,7 @@ namespace DMS_API.Services
                             int _PageRows = SearchTranslation_MV.PageRows == 0 ? 1 : SearchTranslation_MV.PageRows;
                             int CurrentPage = _PageNumber; int PageRows = _PageRows;
                             var MaxTotal = dam.FireDataTable($"SELECT COUNT(*) AS TotalRows, CEILING(COUNT(*) / CAST({_PageRows} AS FLOAT)) AS MaxPage " +
-                                                             $"FROM Main.Translation WHERE {ColumnSearch} = '{SearchTranslation_MV.WordSearch}' ");
+                                                             $"FROM Main.Translation WHERE {ColumnSearch} LIKE '{SearchTranslation_MV.WordSearch}%' ");
                             if (MaxTotal == null)
                             {
                                 Response_MV = new ResponseModelView
