@@ -62,11 +62,11 @@ namespace DMS_API.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet]
+        [HttpPost]
         [Route("SearchGroupByName/{Name}")]
-        public async Task<IActionResult> SearchGroupByName([FromRoute] string Name, [FromHeader] RequestHeaderModelView RequestHeader)
+        public async Task<IActionResult> SearchGroupByName([FromRoute] string Name, [FromBody] PaginationModelView Pagination_MV, [FromHeader] RequestHeaderModelView RequestHeader)
         {
-            Response_MV = await Group_S.SearchGroupByName(Name, RequestHeader);
+            Response_MV = await Group_S.SearchGroupByName(Name, Pagination_MV, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 

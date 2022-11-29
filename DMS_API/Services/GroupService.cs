@@ -239,7 +239,7 @@ namespace DMS_API.Services
                 };
                 return Response_MV;
             }
-        }        
+        }
         public async Task<ResponseModelView> AddGroup(GroupModelView Group_MV, RequestHeaderModelView RequestHeader)
         {
             try
@@ -431,7 +431,7 @@ namespace DMS_API.Services
 
             }
         }
-        public async Task<ResponseModelView> SearchGroupByName(string Name, RequestHeaderModelView RequestHeader)
+        public async Task<ResponseModelView> SearchGroupByName(string Name, PaginationModelView Pagination_MV, RequestHeaderModelView RequestHeader)
         {
             try
             {
@@ -455,13 +455,25 @@ namespace DMS_API.Services
                     }
                     else
                     {
+                        int _PageNumber = Pagination_MV.PageNumber == 0 ? 1 : Pagination_MV.PageNumber;
+                        int _PageRows = Pagination_MV.PageRows == 0 ? 1 : Pagination_MV.PageRows;
+                        int CurrentPage = _PageNumber; int PageRows = _PageRows;
+
                         int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
                         int orgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {userLoginID} "));
                         string whereField = orgOwnerID == 0 ? "SELECT '0' as OrgId UNION SELECT OrgId" : "SELECT OrgId";
-                        string getgroupInfo = "SELECT  ObjId, ObjTitle, ObjClsId, ClsName, ObjIsActive, ObjCreationDate, ObjIsDesktopFolder, ObjDescription, UserOwnerID, " +
-                                                     "            OwnerFullName, OwnerUserName, OrgOwner, OrgEnName,OrgArName , OrgKuName " +
-                                                     "FROM            [User].V_GroupsFolders " +
-                                                  $"WHERE  ObjTitle LIKE '{Name}%' AND [OrgOwner] IN ({whereField} FROM [User].GetOrgsbyUserId({userLoginID})) AND ObjClsId ={ClassID} ";
+                        var MaxTotal = dam.FireDataTable($"SELECT COUNT(*) AS TotalRows, CEILING(COUNT(*) / CAST({_PageRows} AS FLOAT)) AS MaxPage " +
+                                                     $"FROM [User].V_GroupsFolders  WHERE ObjTitle LIKE '{Name}%' AND [OrgOwner] IN ({whereField} FROM [User].GetOrgsbyUserId({userLoginID})) AND ObjClsId ={ClassID} ");
+
+
+                        
+                        string getgroupInfo = "SELECT    ObjId, ObjTitle, ObjClsId, ClsName, ObjIsActive, ObjCreationDate, ObjIsDesktopFolder, ObjDescription, " +
+                                              "          UserOwnerID, OwnerFullName, OwnerUserName, OrgOwner, OrgEnName,OrgArName , OrgKuName " +
+                                              "FROM     [User].V_GroupsFolders " +
+                                             $"WHERE    ObjTitle LIKE '{Name}%' AND [OrgOwner] IN ({whereField} FROM [User].GetOrgsbyUserId({userLoginID})) AND ObjClsId ={ClassID} " +
+                                              "ORDER BY ObjId " +
+                                             $"OFFSET      ({_PageNumber}-1)*{_PageRows} ROWS " +
+                                             $"FETCH NEXT   {_PageRows} ROWS ONLY ";
 
 
                         dt = new DataTable();
@@ -506,7 +518,7 @@ namespace DMS_API.Services
                             {
                                 Success = true,
                                 Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
-                                Data = Group_Mlist
+                                Data = new { TotalRows = MaxTotal.Rows[0]["TotalRows"], MaxPage = MaxTotal.Rows[0]["MaxPage"], CurrentPage, PageRows, data = Group_Mlist }
                             };
                             return Response_MV;
                         }

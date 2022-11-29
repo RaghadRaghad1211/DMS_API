@@ -108,10 +108,8 @@ namespace DMS_API.Services
                             else
                             {
                                 DataTable dtGetGroup = new DataTable();
-                                dtGetGroup = await Task.Run(() => dam.FireDataTable("SELECT  [LcParentObjId] AS GroupId,[ObjTitle] AS GroupName " +
-                                                                                    "FROM    [DMS_DB].[User].[V_Links]  " +
-                                                                                    "WHERE   [LcParentClsId]=2 AND [LcIsActive]=1 AND [LcChildClsId]=1 " +
-                                                                                   $"AND [LcChildObjId]={Convert.ToInt32(dt.Rows[0]["UserID"].ToString())} "));
+                                dtGetGroup = await Task.Run(() => dam.FireDataTable("SELECT  GroupId, GroupName " +
+                                                                                   $"FROM    [User].[GetMyGroupsbyUserId]({Convert.ToInt32(dt.Rows[0]["UserID"].ToString())}) "));
                                 MyGroup myGroup = new MyGroup();
                                 List<MyGroup> myGroup_List = new List<MyGroup>();
                                 if (dtGetGroup.Rows.Count > 0)
@@ -123,7 +121,7 @@ namespace DMS_API.Services
                                             GroupId = Convert.ToInt32(dtGetGroup.Rows[i]["GroupId"].ToString()),
                                             GroupName = dtGetGroup.Rows[i]["GroupName"].ToString()
                                         };
-                                        myGroup_List.Add(myGroup);  
+                                        myGroup_List.Add(myGroup);
                                     }
                                 }
 
