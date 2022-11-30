@@ -15,10 +15,8 @@ namespace DMS_API.Services
         private static DataAccessService dam = new DataAccessService(SecurityService.ConnectionString);
         private static SessionService Session_S { get; set; }
         private static DataTable dt { get; set; }
-        private static GeneralSerarchModel GeneralSerarch_M { get; set; }  
-        private static List<GeneralSerarchModel> GeneralSerarch_Mlist { get; set; }
-        private static DesktopFolderModel DesktopFolder_M { get; set; }
-        private static List<DesktopFolderModel> DesktopFolder_Mlist { get; set; }
+        private static GeneralSerarchModel GeneralSerarch_M { get; set; }
+        private static HomeModel Home_M { get; set; }
         private static ResponseModelView Response_MV { get; set; }
         public enum ParentClass
         {
@@ -291,7 +289,7 @@ namespace DMS_API.Services
                             };
                             return Response_MV;
                         }
-                        GeneralSerarch_Mlist = new List<GeneralSerarchModel>();
+                        List<GeneralSerarchModel> GeneralSerarch_Mlist = new List<GeneralSerarchModel>();
                         GeneralSerarch_M = new GeneralSerarchModel();
                         if (dt.Rows.Count > 0)
                         {
@@ -338,7 +336,7 @@ namespace DMS_API.Services
                 return Response_MV;
             }
         }
-        public static async Task<ResponseModelView> GetDesktopFolderByUserLoginID(int UserId, RequestHeaderModelView RequestHeader)
+        public static async Task<ResponseModelView> GetHomeData(RequestHeaderModelView RequestHeader)
         {
             try
             {
@@ -350,54 +348,79 @@ namespace DMS_API.Services
                 }
                 else
                 {
-                    string GetDesktopFolderInFo = "SELECT [FolderId],[FolderTitle] " +
-                                                          $"FROM   [User].[GetFolderDesktopByUserId]({UserId})";
+                    int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
 
-                    dt = new DataTable();
-                    dt = await Task.Run(() => dam.FireDataTable(GetDesktopFolderInFo));
-                    if (dt == null)
+                    #region MyDesktopFolder
+                    DataTable dtGetDisktopFolder = new DataTable();
+                    dtGetDisktopFolder = await Task.Run(() => dam.FireDataTable($"SELECT FolderId, FolderTitle   FROM   [User].[GetFolderDesktopByUserId]({userLoginID})"));
+                    MyDesktopFolder MyDesktopFolder = new MyDesktopFolder();
+                    List<MyDesktopFolder> MyDesktopFolder_List = new List<MyDesktopFolder>();
+                    if (dtGetDisktopFolder.Rows.Count > 0)
                     {
-                        Response_MV = new ResponseModelView
+                        for (int i = 0; i < dtGetDisktopFolder.Rows.Count; i++)
                         {
-                            Success = false,
-                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
-                            Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
-                        };
-                        return Response_MV;
-                    }
-                    DesktopFolder_Mlist = new List<DesktopFolderModel>();
-                    DesktopFolder_M = new DesktopFolderModel();
-                    if (dt.Rows.Count > 0)
-                    {
-                        for (int i = 0; i < dt.Rows.Count; i++)
-                        {
-                            DesktopFolder_M = new DesktopFolderModel
+                            MyDesktopFolder = new MyDesktopFolder
                             {
-                                FolderDesktopId = Convert.ToInt32(dt.Rows[i]["FolderId"].ToString()),
-                                FolderDesktopName = dt.Rows[i]["FolderTitle"].ToString(),
+                                FolderDesktopId = Convert.ToInt32(dtGetDisktopFolder.Rows[i]["FolderId"].ToString()),
+                                FolderDesktopName = dtGetDisktopFolder.Rows[i]["FolderTitle"].ToString()
                             };
-                            DesktopFolder_Mlist.Add(DesktopFolder_M);
+                            MyDesktopFolder_List.Add(MyDesktopFolder);
                         }
-                        Response_MV = new ResponseModelView
-                        {
-                            Success = true,
-                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
-                            Data = DesktopFolder_Mlist
-                        };
-                        return Response_MV;
                     }
-                    else
-                    {
-                        Response_MV = new ResponseModelView
-                        {
-                            Success = false,
-                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoData],
-                            Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
-                        };
-                        return Response_MV;
-                    }
-                }
+                    #endregion
 
+                    #region MyFavorite
+                    //DataTable dtGetFavorite = new DataTable();
+                    //dtGetFavorite = await Task.Run(() => dam.FireDataTable($"SELECT FavoriteId, FolderTitle   FROM   [User].[GetFolderDesktopByUserId]({userLoginID})"));
+                    //MyFavorite MyFavorite = new MyFavorite();
+                    //List<MyFavorite> MyFavorite_List = new List<MyFavorite>();
+                    //if (dtGetFavorite.Rows.Count > 0)
+                    //{
+                    //    for (int i = 0; i < dtGetFavorite.Rows.Count; i++)
+                    //    {
+                    //        MyFavorite = new MyFavorite
+                    //        {
+                    //            FavoriteId = Convert.ToInt32(dtGetFavorite.Rows[i]["FavoriteId"].ToString()),
+                    //            FavoriteName = dtGetFavorite.Rows[i]["FolderTitle"].ToString()
+                    //        };
+                    //        MyFavorite_List.Add(MyFavorite);
+                    //    }
+                    //}
+                    #endregion
+
+                    #region MyGroup
+                    DataTable dtGetGroup = new DataTable();
+                    dtGetGroup = await Task.Run(() => dam.FireDataTable($"SELECT  GroupId, GroupName   FROM    [User].[GetMyGroupsbyUserId]({userLoginID}) "));
+                    MyGroup MyGroup = new MyGroup();
+                    List<MyGroup> MyGroup_List = new List<MyGroup>();
+                    if (dtGetGroup.Rows.Count > 0)
+                    {
+                        for (int i = 0; i < dtGetGroup.Rows.Count; i++)
+                        {
+                            MyGroup = new MyGroup
+                            {
+                                GroupId = Convert.ToInt32(dtGetGroup.Rows[i]["GroupId"].ToString()),
+                                GroupName = dtGetGroup.Rows[i]["GroupName"].ToString()
+                            };
+                            MyGroup_List.Add(MyGroup);
+                        }
+                    }
+                    #endregion
+
+                    Home_M = new HomeModel
+                    {
+                        MyDesktopFolder = MyDesktopFolder_List,
+                        MyFavorites = new List<MyFavorite>(),
+                        MyGroups = MyGroup_List
+                    };
+                    Response_MV = new ResponseModelView
+                    {
+                        Success = true,
+                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
+                        Data = Home_M
+                    };
+                    return Response_MV;
+                }
             }
             catch (Exception ex)
             {
@@ -410,8 +433,6 @@ namespace DMS_API.Services
                 return Response_MV;
             }
         }
-
-
         #endregion
     }
 }

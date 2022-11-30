@@ -107,24 +107,6 @@ namespace DMS_API.Services
                             }
                             else
                             {
-                                DataTable dtGetGroup = new DataTable();
-                                dtGetGroup = await Task.Run(() => dam.FireDataTable("SELECT  GroupId, GroupName " +
-                                                                                   $"FROM    [User].[GetMyGroupsbyUserId]({Convert.ToInt32(dt.Rows[0]["UserID"].ToString())}) "));
-                                MyGroup myGroup = new MyGroup();
-                                List<MyGroup> myGroup_List = new List<MyGroup>();
-                                if (dtGetGroup.Rows.Count > 0)
-                                {
-                                    for (int i = 0; i < dtGetGroup.Rows.Count; i++)
-                                    {
-                                        myGroup = new MyGroup
-                                        {
-                                            GroupId = Convert.ToInt32(dtGetGroup.Rows[i]["GroupId"].ToString()),
-                                            GroupName = dtGetGroup.Rows[i]["GroupName"].ToString()
-                                        };
-                                        myGroup_List.Add(myGroup);
-                                    }
-                                }
-
                                 User_M = new UserModel
                                 {
                                     UserID = Convert.ToInt32(dt.Rows[0]["UserID"].ToString()),
@@ -146,7 +128,6 @@ namespace DMS_API.Services
                                     OrgEnName = dt.Rows[0]["OrgEnName"].ToString(),
                                     OrgKuName = dt.Rows[0]["OrgKuName"].ToString(),
                                     Note = dt.Rows[0]["Note"].ToString(),
-                                    MyGroups = myGroup_List
                                 };
                                 var JWTtoken = SecurityService.GeneratTokenAuthenticate(User_M);
                                 SessionService Session_S = new SessionService();

@@ -11,8 +11,8 @@ namespace DMS_API.Controllers
     public class FolderController : ControllerBase
     {
         #region Properteis
-        private FolderService Folder_S;
-        private LinkParentChildService LinkParentChild_S;
+        private readonly FolderService Folder_S;
+        private readonly LinkParentChildService LinkParentChild_S;
         private ResponseModelView Response_MV { get; set; }
         #endregion
 
@@ -79,14 +79,14 @@ namespace DMS_API.Controllers
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
-        [AllowAnonymous]
-        [HttpGet]
-        [Route("GetDesktopFolderByUserLoginID/{UserId}")]
-        public async Task<IActionResult> GetDesktopFolderByUserLoginID([FromRoute] int UserId, [FromHeader] RequestHeaderModelView RequestHeader)
-        {
-            Response_MV = await HelpService.GetDesktopFolderByUserLoginID(UserId, RequestHeader);
-            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
-        }
+        //[AllowAnonymous]
+        //[HttpGet]
+        //[Route("GetDesktopFolderByUserLoginID")]
+        //public async Task<IActionResult> GetDesktopFolderByUserLoginID([FromHeader] RequestHeaderModelView RequestHeader)
+        //{
+        //    Response_MV = await HelpService.GetDesktopFolderByUserLoginID(RequestHeader);
+        //    return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
+        //}
         #endregion
     }
 }

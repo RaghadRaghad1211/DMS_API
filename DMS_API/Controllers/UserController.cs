@@ -33,9 +33,9 @@ namespace DMS_API.Controllers
         [AllowAnonymous]
         [HttpGet]
         [Route("ResetPassword/{id}")]
-        public async Task<IActionResult> ResetPassword([FromRoute] int id, [FromHeader] RequestHeaderModelView RequestHeader)
+        public async Task<IActionResult> ResetPassword([FromRoute] int UserId, [FromHeader] RequestHeaderModelView RequestHeader)
         {
-            Response_MV = await User_S.ResetPassword(id, RequestHeader);
+            Response_MV = await User_S.ResetPassword(UserId, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
@@ -69,9 +69,9 @@ namespace DMS_API.Controllers
         [AllowAnonymous]
         [HttpGet]
         [Route("GetUsersByID/{id}")]
-        public async Task<IActionResult> GetUsersByID([FromRoute] int id, [FromHeader] RequestHeaderModelView RequestHeader)
+        public async Task<IActionResult> GetUsersByID([FromRoute] int UserId, [FromHeader] RequestHeaderModelView RequestHeader)
         {
-            Response_MV = await User_S.GetUsersByID(id, RequestHeader);
+            Response_MV = await User_S.GetUsersByID(UserId, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
