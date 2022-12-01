@@ -7,6 +7,6 @@
         public int FolderOrgOwnerID { get; set; }
         public bool FolderIsActive { get; set; }
         public string FolderDescription { get; set; }
-        public bool IsDesktopFolder { get; set; }
+        public bool IsFavoriteFolder { get; set; }
     }
 }

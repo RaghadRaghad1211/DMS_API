@@ -269,7 +269,7 @@ namespace DMS_API.Services
                                                                          $"[ObjOrgOwner] IN ({whereField} FROM [User].GetOrgsbyUserId({userLoginID})) AND ObjClsId ={ClassID} "));
                         if (checkDeblicate == 0)
                         {
-                            string exeut = $"EXEC [User].[AddGroupOrFolderPro] '{ClassID}','{Folder_MV.FolderTitle}', '{userLoginID}', '{Folder_MV.FolderOrgOwnerID}','{Folder_MV.IsDesktopFolder}', '{Folder_MV.FolderDescription}' ";
+                            string exeut = $"EXEC [User].[AddGroupOrFolderPro] '{ClassID}','{Folder_MV.FolderTitle}', '{userLoginID}', '{Folder_MV.FolderOrgOwnerID}', '{Folder_MV.FolderDescription}' ";
                             var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
 
                             if (outValue == null || outValue.Trim() == "")
@@ -367,7 +367,7 @@ namespace DMS_API.Services
 
                         if (checkDeblicate > 0)
                         {
-                            string exeut = $"EXEC [User].[UpdateGroupOrFolderPro] '{Folder_MV.FolderId}','{Folder_MV.FolderTitle}', '{Folder_MV.FolderIsActive}', '{Folder_MV.IsDesktopFolder}','{Folder_MV.FolderDescription}' ";
+                            string exeut = $"EXEC [User].[UpdateGroupOrFolderPro] '{Folder_MV.FolderId}','{Folder_MV.FolderTitle}', '{Folder_MV.FolderIsActive}', '{Folder_MV.IsFavoriteFolder}','{Folder_MV.FolderDescription}' ";
                             var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
 
                             if (outValue == null || outValue.Trim() == "")

@@ -77,7 +77,7 @@ namespace DMS_API.Services
                 return Response_MV;
             }
         }
-        public async Task<ResponseModelView> GetOrgsParentWithChilds_Table(RequestHeaderModelView RequestHeader)
+        public async Task<ResponseModelView> GetOrgsParentWithChilds_Table(PaginationModelView Pagination_MV, RequestHeaderModelView RequestHeader)
         {
             try
             {
@@ -89,6 +89,10 @@ namespace DMS_API.Services
                 }
                 else
                 {
+                    int _PageNumber = Pagination_MV.PageNumber == 0 ? 1 : Pagination_MV.PageNumber;
+                    int _PageRows = Pagination_MV.PageRows == 0 ? 1 : Pagination_MV.PageRows;
+                    int CurrentPage = _PageNumber; int PageRows = _PageRows;
+
                     int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
                     List<OrgTableModel> OrgTable_Mlist = new List<OrgTableModel>();
                     OrgTable_Mlist = await HelpService.GetOrgsParentWithChildsByUserLoginID_Table(userLoginID);

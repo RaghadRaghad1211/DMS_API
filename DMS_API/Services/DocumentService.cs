@@ -13,6 +13,8 @@ namespace DMS_API.Services
         private readonly DataAccessService dam;
         private SessionService Session_S { get; set; }
         private DataTable dt { get; set; }
+        private DocumentModel Document_M { get; set; }
+        private List<DocumentModel> Document_Mlist { get; set; }
         private ResponseModelView Response_MV { get; set; }
         #endregion
 
@@ -24,7 +26,21 @@ namespace DMS_API.Services
         #endregion
 
         #region Functions
-     
+        
         #endregion
     }
 }
+
+
+
+
+
+// get permession when user click on write or manage or QR...
+        // SELECT SourObjId, SourName, SourClsId, SourClsType, DestObjId, DestName, DestClsId, DestClsType, PerRead, PerWrite, PerManage, PerQR
+        // FROM [Document].[GetPermissionsOnObject](UserId,@ObjectId )
+        // WHERE SourObjId =ObjClicked AND PerManage =1
+
+
+
+        // to open folder get chilid where user have permession...
+        // SELECT DISTINCT OpenObject.SourObjId, OpenObject.SourName, OpenObject.SourClsId, OpenObject.SourClsType FROM (SELECT * FROM [Document].[GetPermissionsOnObject](41,6 )) OpenObject

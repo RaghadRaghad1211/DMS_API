@@ -17,7 +17,7 @@ namespace DMS_API.Services
         private List<GroupOrFolderModel> Group_Mlist { get; set; }
         private ResponseModelView Response_MV { get; set; }
         private const int ClassID = 2; // Group
-        private const int IsDesktopFolder = 0;
+      //  private const int IsDesktopFolder = 0;
 
         #endregion
 
@@ -271,7 +271,7 @@ namespace DMS_API.Services
                                                                          $"[ObjOrgOwner] IN ({whereField} FROM [User].GetOrgsbyUserId({userLoginID})) AND ObjClsId ={ClassID} "));
                         if (checkDeblicate == 0)
                         {
-                            string exeut = $"EXEC [User].[AddGroupOrFolderPro] '{ClassID}','{Group_MV.GroupTitle}', '{userLoginID}', '{Group_MV.GroupOrgOwnerID}', '{IsDesktopFolder}', '{Group_MV.GroupDescription}' ";
+                            string exeut = $"EXEC [User].[AddGroupOrFolderPro] '{ClassID}','{Group_MV.GroupTitle}', '{userLoginID}', '{Group_MV.GroupOrgOwnerID}', '{Group_MV.GroupDescription}' ";
                             var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
 
                             if (outValue == null || outValue.Trim() == "")
@@ -369,7 +369,7 @@ namespace DMS_API.Services
                                                                          $"ObjClsId = {ClassID} "));
                         if (checkDeblicate > 0)
                         {
-                            string exeut = $"EXEC [User].[UpdateGroupOrFolderPro] '{Group_MV.GroupId}','{Group_MV.GroupTitle}', '{Group_MV.GroupIsActive}', '{IsDesktopFolder}','{Group_MV.GroupDescription}' ";
+                            string exeut = $"EXEC [User].[UpdateGroupOrFolderPro] '{Group_MV.GroupId}','{Group_MV.GroupTitle}', '{Group_MV.GroupIsActive}', '{0}','{Group_MV.GroupDescription}' ";
                             var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
 
                             if (outValue == null || outValue.Trim() == "")

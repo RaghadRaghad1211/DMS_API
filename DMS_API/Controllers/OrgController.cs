@@ -36,9 +36,9 @@ namespace DMS_API.Controllers
         [AllowAnonymous]
         [HttpGet]
         [Route("GetOrgsParentWithChilds_Table")]
-        public async Task<IActionResult> GetOrgsParentWithChilds_Table([FromHeader] RequestHeaderModelView RequestHeader)
+        public async Task<IActionResult> GetOrgsParentWithChilds_Table([FromBody] PaginationModelView Pagination_MV, [FromHeader] RequestHeaderModelView RequestHeader)
         {
-            Response_MV = await Org_S.GetOrgsParentWithChilds_Table(RequestHeader);
+            Response_MV = await Org_S.GetOrgsParentWithChilds_Table(Pagination_MV,RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
