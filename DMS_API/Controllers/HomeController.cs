@@ -23,11 +23,11 @@ namespace DMS_API.Controllers
         #region Actions
 
         [AllowAnonymous]
-        [HttpGet]
+        [HttpPost]
         [Route("GetHomeData")]
-        public async Task<IActionResult> GetHomeData([FromHeader] RequestHeaderModelView RequestHeader)
+        public async Task<IActionResult> GetHomeData([FromBody]PaginationModelView Pagination_MV, [FromHeader] RequestHeaderModelView RequestHeader)
         {
-            Response_MV = await HelpService.GetHomeData(RequestHeader);
+            Response_MV = await HelpService.GetHomeData(Pagination_MV,RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 

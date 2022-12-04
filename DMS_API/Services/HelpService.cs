@@ -203,7 +203,9 @@ namespace DMS_API.Services
             {
                 //int OrgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {userLoginID} "));
                 //string whereField = OrgOwnerID == 0 ? "OrgUp" : "OrgId";
-                string getOrgInfo = $"SELECT OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName , OrgArNameUp, OrgEnNameUp, OrgKuNameUp, OrgIsActive  FROM [User].[GetOrgsbyUserIdTable]({userLoginID}) ORDER BY OrgId "; // WHERE {whereField} !={OrgOwnerID}
+                
+                string getOrgInfo = "SELECT OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName , OrgArNameUp, OrgEnNameUp, OrgKuNameUp, OrgIsActive  " +
+                                   $"FROM [User].[GetOrgsbyUserIdTable]({userLoginID}) ORDER BY OrgId "; // WHERE {whereField} !={OrgOwnerID}
                 DataTable dt = new DataTable();
                 dt = await Task.Run(() => dam.FireDataTable(getOrgInfo));
                 if (dt == null)
@@ -336,7 +338,7 @@ namespace DMS_API.Services
                 return Response_MV;
             }
         }
-        public static async Task<ResponseModelView> GetHomeData(RequestHeaderModelView RequestHeader)
+        public static async Task<ResponseModelView> GetHomeData(PaginationModelView Pagination_MV, RequestHeaderModelView RequestHeader)
         {
             try
             {
@@ -348,6 +350,9 @@ namespace DMS_API.Services
                 }
                 else
                 {
+                    int _PageNumber = Pagination_MV.PageNumber == 0 ? 1 : Pagination_MV.PageNumber;
+                    int _PageRows = Pagination_MV.PageRows == 0 ? 1 : Pagination_MV.PageRows;
+                    int CurrentPage = _PageNumber; int PageRows = _PageRows;
                     int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
 
                     #region MyDesktopFolder
@@ -370,27 +375,36 @@ namespace DMS_API.Services
                     #endregion
 
                     #region MyFavorite
-                    //DataTable dtGetFavorite = new DataTable();
-                    //dtGetFavorite = await Task.Run(() => dam.FireDataTable($"SELECT FavoriteId, FolderTitle   FROM   [User].[GetFolderDesktopByUserId]({userLoginID})"));
-                    //MyFavorite MyFavorite = new MyFavorite();
-                    //List<MyFavorite> MyFavorite_List = new List<MyFavorite>();
-                    //if (dtGetFavorite.Rows.Count > 0)
-                    //{
-                    //    for (int i = 0; i < dtGetFavorite.Rows.Count; i++)
-                    //    {
-                    //        MyFavorite = new MyFavorite
-                    //        {
-                    //            FavoriteId = Convert.ToInt32(dtGetFavorite.Rows[i]["FavoriteId"].ToString()),
-                    //            FavoriteName = dtGetFavorite.Rows[i]["FolderTitle"].ToString()
-                    //        };
-                    //        MyFavorite_List.Add(MyFavorite);
-                    //    }
-                    //}
+                    DataTable dtGetFavorite = new DataTable();
+                    dtGetFavorite = await Task.Run(() => dam.FireDataTable("SELECT ObjFavId AS 'FavoriteId', ObjTitle AS 'FavoriteTitle', ObjClsId AS 'FavTypeId', ClsName AS 'FavTypeName'  " +
+                                                                          $"FROM   [User].[V_Favourites] WHERE [ObjUserId] = {userLoginID} AND [IsActive] = 1 " +
+                                                                           "ORDER BY    FavoriteId " +
+                                                                          $"OFFSET      ({_PageNumber}-1)*{_PageRows} ROWS " +
+                                                                          $"FETCH NEXT   {_PageRows} ROWS ONLY "));
+                    MyFavorite MyFavorite = new MyFavorite();
+                    List<MyFavorite> MyFavorite_List = new List<MyFavorite>();
+                    if (dtGetFavorite.Rows.Count > 0)
+                    {
+                        for (int i = 0; i < dtGetFavorite.Rows.Count; i++)
+                        {
+                            MyFavorite = new MyFavorite
+                            {
+                                FavoriteId = Convert.ToInt32(dtGetFavorite.Rows[i]["FavoriteId"].ToString()),
+                                FavoriteName = dtGetFavorite.Rows[i]["FavoriteTitle"].ToString(),
+                                FavTypeId = Convert.ToInt32(dtGetFavorite.Rows[i]["FavTypeId"].ToString()),
+                                FavTypeName = dtGetFavorite.Rows[i]["FavTypeName"].ToString()
+                            };
+                            MyFavorite_List.Add(MyFavorite);
+                        }
+                    }
                     #endregion
 
                     #region MyGroup
                     DataTable dtGetGroup = new DataTable();
-                    dtGetGroup = await Task.Run(() => dam.FireDataTable($"SELECT  GroupId, GroupName   FROM    [User].[GetMyGroupsbyUserId]({userLoginID}) "));
+                    dtGetGroup = await Task.Run(() => dam.FireDataTable($"SELECT      GroupId, GroupName   FROM    [User].[GetMyGroupsbyUserId]({userLoginID}) " +
+                                                                        $"ORDER BY    GroupId " +
+                                                                        $"OFFSET      ({_PageNumber}-1)*{_PageRows} ROWS " +
+                                                                        $"FETCH NEXT   {_PageRows} ROWS ONLY "));
                     MyGroup MyGroup = new MyGroup();
                     List<MyGroup> MyGroup_List = new List<MyGroup>();
                     if (dtGetGroup.Rows.Count > 0)
@@ -410,7 +424,7 @@ namespace DMS_API.Services
                     Home_M = new HomeModel
                     {
                         MyDesktopFolder = MyDesktopFolder_List,
-                        MyFavorites = new List<MyFavorite>(),
+                        MyFavorites = MyFavorite_List,
                         MyGroups = MyGroup_List
                     };
                     Response_MV = new ResponseModelView

@@ -15,6 +15,8 @@
     {
         public int FavoriteId { get; set; }
         public string FavoriteName { get; set; }
+        public int FavTypeId { get; set; }
+        public string FavTypeName { get; set; }
     }
     public class MyDesktopFolder
     {

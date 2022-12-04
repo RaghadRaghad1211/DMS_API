@@ -32,7 +32,7 @@ namespace DMS_API.Controllers
 
         [AllowAnonymous]
         [HttpGet]
-        [Route("ResetPassword/{id}")]
+        [Route("ResetPassword/{UserId}")]
         public async Task<IActionResult> ResetPassword([FromRoute] int UserId, [FromHeader] RequestHeaderModelView RequestHeader)
         {
             Response_MV = await User_S.ResetPassword(UserId, RequestHeader);
@@ -68,7 +68,7 @@ namespace DMS_API.Controllers
 
         [AllowAnonymous]
         [HttpGet]
-        [Route("GetUsersByID/{id}")]
+        [Route("GetUsersByID/{UserId}")]
         public async Task<IActionResult> GetUsersByID([FromRoute] int UserId, [FromHeader] RequestHeaderModelView RequestHeader)
         {
             Response_MV = await User_S.GetUsersByID(UserId, RequestHeader);

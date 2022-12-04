@@ -36,10 +36,10 @@ namespace DMS_API.Controllers
 
         [AllowAnonymous]
         [HttpGet]
-        [Route("GetFoldersByID/{id}")]
-        public async Task<IActionResult> GetFoldersByID([FromRoute] int id, [FromHeader] RequestHeaderModelView RequestHeader)
+        [Route("GetFoldersByID/{FolderId}")]
+        public async Task<IActionResult> GetFoldersByID([FromRoute] int FolderId, [FromHeader] RequestHeaderModelView RequestHeader)
         {
-            Response_MV = await Folder_S.GetFoldersByID(id, RequestHeader);
+            Response_MV = await Folder_S.GetFoldersByID(FolderId, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 

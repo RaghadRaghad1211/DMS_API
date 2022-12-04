@@ -34,7 +34,7 @@ namespace DMS_API.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet]
+        [HttpPost]
         [Route("GetOrgsParentWithChilds_Table")]
         public async Task<IActionResult> GetOrgsParentWithChilds_Table([FromBody] PaginationModelView Pagination_MV, [FromHeader] RequestHeaderModelView RequestHeader)
         {

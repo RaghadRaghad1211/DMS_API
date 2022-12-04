@@ -36,7 +36,7 @@ namespace DMS_API.Controllers
 
         [AllowAnonymous]
         [HttpGet]
-        [Route("GetGroupsByID/{id}")]
+        [Route("GetGroupsByID/{GroupId}")]
         public async Task<IActionResult> GetGroupsByID([FromRoute] int GroupId, [FromHeader] RequestHeaderModelView RequestHeader)
         {
             Response_MV = await Group_S.GetGroupsByID(GroupId, RequestHeader);

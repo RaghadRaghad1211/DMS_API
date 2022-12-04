@@ -113,7 +113,12 @@ namespace DMS_API.Services
                         {
                             Success = true,
                             Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
-                            Data = new { Parent = OrgTable_Mlist[0], Child = OrgTable_Mlist.Where(x => x.OrgId != OrgTable_Mlist[0].OrgId) }
+                            Data = new
+                            {
+                                Parent = OrgTable_Mlist[0],
+                                Child = OrgTable_Mlist.Where(x => x.OrgId != OrgTable_Mlist[0].OrgId)
+                                                      .Skip((_PageNumber - 1) * _PageRows).Take(_PageRows)
+                            }
                         };
                         return Response_MV;
                     }
