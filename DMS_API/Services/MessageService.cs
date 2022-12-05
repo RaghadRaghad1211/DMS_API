@@ -44,6 +44,7 @@
         public static readonly string IsDate = "IsInt";
         public static readonly string NoData = "NoData";
         public static readonly string IsExist = "IsExist";
+        public static readonly string UsernameIsExist = "UsernameIsExist";
         public static readonly string IsNotExist = "IsNotExist";
         public static readonly string MustFillInformation = "MustFillInformation";
         public static readonly string ServerError = "Server Error";
@@ -56,6 +57,7 @@
         public static readonly string IsReset = "IsReset";
         public static readonly string EmailSubjectPasswordIsReset = "EmailSubjectPasswordIsReset";
         public static readonly string EmailBodyPasswordIsReset = "EmailBodyPasswordIsReset";
+        public static readonly string PhonePasswordIsReset = "PhonePasswordIsReset";
         public static readonly string OldPasswordNotCorrect = "OldPasswordNotCorrect";
         public static readonly string DeblicateKey = "DeblicateKey";
         public static readonly string GroupNameMustEnter = "GroupNameMustEnter";
@@ -81,7 +83,7 @@
         public static readonly string UserIsDeleted = "UserIsDeleted";
 
 
-       
+
         public static readonly string VerificationCodeNotCorrect = "VerificationCodeNotCorrect";
         public static readonly string UsernameOrEmailAlreadyExist = "UsernameOrEmailAlreadyExist";
         public static readonly string EmailOrVerificationCodeNotCorrect = "EmailOrVerificationCodeNotCorrect";
@@ -136,6 +138,7 @@
                      {IsReset ,"تم اعادة تعيين كلمة المرور"},
                      {EmailSubjectPasswordIsReset, "إعادة تعيين كلمة المرور" },//
                      {EmailBodyPasswordIsReset ,"تم إعادة تعيين كلمة المرور .. كلمة المرور الجديدة : "},//
+                     {PhonePasswordIsReset ,"تم إعادة تعيين كلمة المرور : "},//
                      {OldPasswordNotCorrect ,"كلمة المرور القديمة غير صحيحة"},
                      {ChangePasswordSuccess ,"تم تغيير كلمة المرور"},
                      {DeblicateKey ,"الكلمة المفتاحية موجودة في قاعدة البيانات"},
@@ -146,7 +149,8 @@
                      {MustSelectedObjects ,"يجب اختيار عناصر"},
                      {DeleteSuccess, "تمت عملية الحذف" },
                      {DeleteFaild, "فشل بعملية الحذف" },//OrgNameMustEnter
-                      {OrgNameMustEnter, "يجب اضافة اسم الموؤسسة" },
+                     {OrgNameMustEnter, "يجب اضافة اسم الموؤسسة" },
+                     { UsernameIsExist, "أسم المستخدم موجود" },
 
 
 
@@ -199,6 +203,7 @@
                      {IsReset ,"Password is reset"},
                      {EmailSubjectPasswordIsReset ,"Password Reset"},//
                      {EmailBodyPasswordIsReset ,"The password has been reset.. The new password: "},//
+                     {PhonePasswordIsReset ,"The password has been reset: "},//
                      {OldPasswordNotCorrect ,"The old password is incorrectly"},
                      {ChangePasswordSuccess ,"Password changed"},
                      {DeblicateKey ,"The keyword is exist in database"},
@@ -209,7 +214,8 @@
                      {MustSelectedObjects ,"Must Select Objects"},
                      {DeleteSuccess, "Delete Success" },
                      {DeleteFaild, "Delete Faild" },
-                       {OrgNameMustEnter, "OrgName Must Enter" },
+                     {OrgNameMustEnter, "OrgName Must Enter" },
+                     {UsernameIsExist, "Username is exist" },
 
 
 

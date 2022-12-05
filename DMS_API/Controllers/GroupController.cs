@@ -75,7 +75,16 @@ namespace DMS_API.Controllers
         [Route("GetChildsInGroupByID/{GroupId}")]
         public async Task<IActionResult> GetChildsInGroupByID([FromRoute] int GroupId, [FromHeader] RequestHeaderModelView RequestHeader)
         {
-            Response_MV = await LinkParentChild_S.GetChildInParentByID((int)HelpService.ParentClass.Group, GroupId, RequestHeader);
+            Response_MV = await LinkParentChild_S.GetChildInParentByID((int)HelpService.ClassType.Group, GroupId, RequestHeader);
+            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        [Route("GetChildsInGroupByID_Search")]
+        public async Task<IActionResult> GetChildsInGroupByID_Search([FromBody] SearchChildGroupModelView SearchChildGroup_MV, [FromHeader] RequestHeaderModelView RequestHeader)
+        {
+            Response_MV = await LinkParentChild_S.GetChildInParentByID_Search(SearchChildGroup_MV, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
@@ -84,7 +93,16 @@ namespace DMS_API.Controllers
         [Route("GetChildsNotInGroupByID/{GroupId}")]
         public async Task<IActionResult> GetChildsNotInGroupByID([FromRoute] int GroupId, [FromHeader] RequestHeaderModelView RequestHeader)
         {
-            Response_MV = await LinkParentChild_S.GetChildNotInParentByID((int)HelpService.ParentClass.Group, GroupId, RequestHeader);
+            Response_MV = await LinkParentChild_S.GetChildNotInParentByID(GroupId, RequestHeader);
+            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        [Route("GetChildsNotInGroupByID_Search")]
+        public async Task<IActionResult> GetChildsNotInGroupByID_Search([FromBody] SearchChildGroupModelView SearchChildGroup_MV, [FromHeader] RequestHeaderModelView RequestHeader)
+        {
+            Response_MV = await LinkParentChild_S.GetChildNotInParentByID_Search(SearchChildGroup_MV, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
@@ -93,7 +111,7 @@ namespace DMS_API.Controllers
         [Route("AddChildsIntoGroup")]
         public async Task<IActionResult> AddChildsIntoGroup([FromBody] LinkParentChildModelView LinkParentChild_MV, [FromHeader] RequestHeaderModelView RequestHeader)
         {
-            Response_MV = await LinkParentChild_S.AddChildIntoParent((int)HelpService.ParentClass.Group, LinkParentChild_MV, RequestHeader);
+            Response_MV = await LinkParentChild_S.AddChildIntoParent((int)HelpService.ClassType.Group, LinkParentChild_MV, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
@@ -102,7 +120,7 @@ namespace DMS_API.Controllers
         [Route("RemoveChildsFromGroup")]
         public async Task<IActionResult> RemoveChildsFromGroup([FromBody] LinkParentChildModelView LinkParentChild_MV, [FromHeader] RequestHeaderModelView RequestHeader)
         {
-            Response_MV = await LinkParentChild_S.RemoveChildFromParent((int)HelpService.ParentClass.Group, LinkParentChild_MV, RequestHeader);
+            Response_MV = await LinkParentChild_S.RemoveChildFromParent((int)HelpService.ClassType.Group, LinkParentChild_MV, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
         #endregion

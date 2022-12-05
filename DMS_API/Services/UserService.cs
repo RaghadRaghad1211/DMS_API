@@ -194,14 +194,15 @@ namespace DMS_API.Services
                 {
                     //int checkExist = Convert.ToInt16(dam.FireSQL($"SELECT COUNT(*) FROM [User].Users WHERE UsId ={id} "));
                     DataTable dtEmail = new DataTable();
-                    dtEmail = await Task.Run(() => dam.FireDataTable($"SELECT UsEmail FROM [User].Users WHERE UsId ={id} "));
+                    dtEmail = await Task.Run(() => dam.FireDataTable($"SELECT UsPhoneNo, UsEmail FROM [User].Users WHERE UsId ={id} "));
                     if (dtEmail.Rows.Count > 0)
                     {
                         string RounPass = SecurityService.RoundomPassword();
-                        bool isReset = SecurityService.SendEmail(dtEmail.Rows[0][0].ToString(),
+                        bool isResetEmail = SecurityService.SendEmail(dtEmail.Rows[0]["UsEmail"].ToString(),
                              MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.EmailSubjectPasswordIsReset],
                              MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.EmailBodyPasswordIsReset] + RounPass);
-                        if (isReset == true)
+                        bool isResetOTP = await SecurityService.SendOTP(dtEmail.Rows[0]["UsPhoneNo"].ToString(), MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.PhonePasswordIsReset] + RounPass);
+                        if (isResetEmail == true && isResetOTP == true)
                         {
                             string reset = $"UPDATE [User].Users SET UsPassword='{SecurityService.PasswordEnecrypt(RounPass)}' WHERE UsId ={id} ";
                             await Task.Run(() => dam.DoQuery(reset));
@@ -685,7 +686,7 @@ namespace DMS_API.Services
                             Response_MV = new ResponseModelView
                             {
                                 Success = false,
-                                Message = AddUser_MV.UserName + " " + MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsExist],
+                                Message = AddUser_MV.UserName + " " + MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.UsernameIsExist],
                                 Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
                             };
                             return Response_MV;

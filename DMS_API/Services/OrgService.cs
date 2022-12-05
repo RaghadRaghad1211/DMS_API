@@ -109,15 +109,23 @@ namespace DMS_API.Services
                     }
                     else
                     {
+                        var gf = Math.Ceiling(OrgTable_Mlist.Count / (float)_PageRows);
                         Response_MV = new ResponseModelView
                         {
                             Success = true,
                             Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
                             Data = new
                             {
-                                Parent = OrgTable_Mlist[0],
-                                Child = OrgTable_Mlist.Where(x => x.OrgId != OrgTable_Mlist[0].OrgId)
+                                TotalRows = OrgTable_Mlist.Count,
+                                MaxPage = Math.Ceiling(OrgTable_Mlist.Count / (float)_PageRows),
+                                CurrentPage = _PageNumber,
+                                PageRows = _PageRows,
+                                data = new
+                                {
+                                    Parent = OrgTable_Mlist[0],
+                                    Child = OrgTable_Mlist.Where(x => x.OrgId != OrgTable_Mlist[0].OrgId)
                                                       .Skip((_PageNumber - 1) * _PageRows).Take(_PageRows)
+                                }
                             }
                         };
                         return Response_MV;

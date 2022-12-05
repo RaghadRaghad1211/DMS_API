@@ -45,17 +45,15 @@ namespace DMS_API.Services
                 {
                     int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
                     int orgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {userLoginID} "));
-                    //string whereField = orgOwnerID == 0 ? "OrgUp" : "OrgId";
+
                     //string getParentChildInfo = "SELECT  LcId,ParentUserOwnerId,ParentOrgOwnerId, LcParentObjId, ObjTitle, LcParentClsId,  " +
                     //                            "        ParentClassType, LcChildObjId, ChildTitle, LcChildClsId, ChildClassType, LcIsActive " +
                     //                            "FROM    [User].V_Links " +
-                    //                           $"WHERE   [ParentOrgOwnerId] IN (SELECT {whereField} FROM [User].GetOrgsbyUserId({userLoginID})) " +
-                    //                           $"        AND LcParentObjId={ParentID} AND LcParentClsId ={ParentClassID} AND LcIsActive=1";
+                    //                           $"WHERE   LcParentObjId={ParentID} AND LcParentClsId ={ParentClassID} AND LcIsActive=1"; GetChildsInGroup
 
-                    string getParentChildInfo = "SELECT  LcId,ParentUserOwnerId,ParentOrgOwnerId, LcParentObjId, ObjTitle, LcParentClsId,  " +
-                                                "        ParentClassType, LcChildObjId, ChildTitle, LcChildClsId, ChildClassType, LcIsActive " +
-                                                "FROM    [User].V_Links " +
-                                               $"WHERE   LcParentObjId={ParentID} AND LcParentClsId ={ParentClassID} AND LcIsActive=1";
+                    string getParentChildInfo = $"SELECT LcId,ParentUserOwnerId,ParentOrgOwnerId, LcParentObjId, ObjTitle, LcParentClsId," +
+                                                 "       ParentClassType, LcChildObjId, ChildTitle, LcChildClsId, ChildClassType, LcIsActive " +
+                                                $" FROM  [User].[GetChildsInGroup]({ ParentID})";
 
                     dt = new DataTable();
                     dt = await Task.Run(() => dam.FireDataTable(getParentChildInfo));
@@ -123,7 +121,96 @@ namespace DMS_API.Services
             }
         }
 
-        public async Task<ResponseModelView> GetChildNotInParentByID(int ParentClassID, int ParentID, RequestHeaderModelView RequestHeader)
+        public async Task<ResponseModelView> GetChildInParentByID_Search(SearchChildGroupModelView SearchChildGroup_MV, RequestHeaderModelView RequestHeader)
+        {
+            try
+            {
+                Session_S = new SessionService();
+                var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
+                if (ResponseSession.Success == false)
+                {
+                    return ResponseSession;
+                }
+                else
+                {
+                    int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
+                    int orgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {userLoginID} "));
+
+                    //string getParentChildInfo = $"SELECT LcId,ParentUserOwnerId,ParentOrgOwnerId, LcParentObjId, ObjTitle, LcParentClsId," +
+                    //                             "       ParentClassType, LcChildObjId, ChildTitle, LcChildClsId, ChildClassType, LcIsActive " +
+                    //                            $" FROM  [User].[GetChildsInGroup]({ParentID})";
+
+                    string getParentChildInfo_Search = $"SELECT LcId,ParentUserOwnerId,ParentOrgOwnerId, LcParentObjId, ObjTitle, LcParentClsId," +
+                                                 "       ParentClassType, LcChildObjId, ChildTitle, LcChildClsId, ChildClassType, LcIsActive " +
+                                                $" FROM  [User].[GetChildsInGroup_Search]({SearchChildGroup_MV.GroupId} , {SearchChildGroup_MV.ChildTypeId},'{SearchChildGroup_MV.TitleSearch}')";
+
+                    dt = new DataTable();
+                    dt = await Task.Run(() => dam.FireDataTable(getParentChildInfo_Search));
+                    if (dt == null)
+                    {
+                        Response_MV = new ResponseModelView
+                        {
+                            Success = false,
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
+                            Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                        };
+                        return Response_MV;
+                    }
+                    LinkParentChild_Mlist = new List<LinkParentChildModel>();
+                    if (dt.Rows.Count > 0)
+                    {
+                        for (int i = 0; i < dt.Rows.Count; i++)
+                        {
+                            LinkParentChild_M = new LinkParentChildModel
+                            {
+                                LcId = Convert.ToInt32(dt.Rows[i]["LcId"].ToString()),
+                                ParentUserOwnerId = Convert.ToInt32(dt.Rows[i]["ParentUserOwnerId"].ToString()),
+                                ParentOrgOwnerId = Convert.ToInt32(dt.Rows[i]["ParentOrgOwnerId"].ToString()),
+                                ParentId = Convert.ToInt32(dt.Rows[i]["LcParentObjId"].ToString()),
+                                ParentTitle = dt.Rows[i]["ObjTitle"].ToString(),
+                                ParentClsId = Convert.ToInt32(dt.Rows[i]["LcParentClsId"].ToString()),
+                                ParentClassType = dt.Rows[i]["ParentClassType"].ToString(),
+                                ChildId = Convert.ToInt32(dt.Rows[i]["LcChildObjId"].ToString()),
+                                ChildTitle = dt.Rows[i]["ChildTitle"].ToString(),
+                                ChildClsId = Convert.ToInt32(dt.Rows[i]["LcChildClsId"].ToString()),
+                                ChildClassType = dt.Rows[i]["ChildClassType"].ToString(),
+                                LcIsActive = bool.Parse(dt.Rows[i]["LcIsActive"].ToString()),
+                            };
+                            LinkParentChild_Mlist.Add(LinkParentChild_M);
+                        }
+                        Response_MV = new ResponseModelView
+                        {
+                            Success = true,
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
+                            Data = LinkParentChild_Mlist
+                        };
+                        return Response_MV;
+                    }
+                    else
+                    {
+                        Response_MV = new ResponseModelView
+                        {
+                            Success = true,
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoData],
+                            Data = LinkParentChild_Mlist
+                        };
+                        return Response_MV;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Response_MV = new ResponseModelView
+                {
+                    Success = false,
+                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError] + " - " + ex.Message,
+                    Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                };
+                return Response_MV;
+            }
+        }
+
+        public async Task<ResponseModelView> GetChildNotInParentByID(int ParentID, RequestHeaderModelView RequestHeader)
         {
             try
             {
@@ -146,6 +233,80 @@ namespace DMS_API.Services
 
                     dt = new DataTable();
                     dt = await Task.Run(() => dam.FireDataTable(getChildNotinGroup));
+                    if (dt == null)
+                    {
+                        Response_MV = new ResponseModelView
+                        {
+                            Success = false,
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
+                            Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                        };
+                        return Response_MV;
+                    }
+                    ChildNotInParent_MVlist = new List<GetChildNotInParentModelView>();
+                    if (dt.Rows.Count > 0)
+                    {
+                        for (int i = 0; i < dt.Rows.Count; i++)
+                        {
+                            ChildNotInParent_M = new GetChildNotInParentModelView
+                            {
+                                ID = Convert.ToInt32(dt.Rows[i]["ID"].ToString()),
+                                Title = dt.Rows[i]["Title"].ToString(),
+                                Type = dt.Rows[i]["Type"].ToString(),
+                                IsActive = bool.Parse(dt.Rows[i]["IsActive"].ToString()),
+                            };
+                            ChildNotInParent_MVlist.Add(ChildNotInParent_M);
+                        }
+                        Response_MV = new ResponseModelView
+                        {
+                            Success = true,
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
+                            Data = ChildNotInParent_MVlist
+                        };
+                        return Response_MV;
+                    }
+                    else
+                    {
+                        Response_MV = new ResponseModelView
+                        {
+                            Success = true,
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoData],
+                            Data = ChildNotInParent_MVlist
+                        };
+                        return Response_MV;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Response_MV = new ResponseModelView
+                {
+                    Success = false,
+                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError] + " - " + ex.Message,
+                    Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                };
+                return Response_MV;
+            }
+        }
+
+        public async Task<ResponseModelView> GetChildNotInParentByID_Search(SearchChildGroupModelView SearchChildGroup_MV, RequestHeaderModelView RequestHeader)
+        {
+            try                                                             //@GroupId INT,@UserId int,@Type int,@Title
+            {
+                Session_S = new SessionService();
+                var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
+                if (ResponseSession.Success == false)
+                {
+                    return ResponseSession;
+                }
+                else
+                {
+                    int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
+
+                    string GetChildsNotInGroup_Search = $"SELECT ID, Title, IsActive, Type FROM [User].[GetChildsNotInGroup_Search] ({SearchChildGroup_MV.GroupId} ,{userLoginID}, {SearchChildGroup_MV.ChildTypeId},'{SearchChildGroup_MV.TitleSearch}')";
+
+                    dt = new DataTable();
+                    dt = await Task.Run(() => dam.FireDataTable(GetChildsNotInGroup_Search));
                     if (dt == null)
                     {
                         Response_MV = new ResponseModelView
@@ -284,7 +445,7 @@ namespace DMS_API.Services
                     }
                     for (int i = 0; i < LinkParentChild_MV.ChildIds.Count; i++)
                     {
-                        string exeut = $"EXEC [Main].[UpdateLinksPro]  '{LinkParentChild_MV.ParentId}','{LinkParentChild_MV.ChildIds[i]}',{0} ";                        
+                        string exeut = $"EXEC [Main].[UpdateLinksPro]  '{LinkParentChild_MV.ParentId}','{LinkParentChild_MV.ChildIds[i]}',{0} ";
                         var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
                         if (outValue == 0.ToString() || (outValue == null || outValue.Trim() == ""))
                         {
@@ -317,8 +478,6 @@ namespace DMS_API.Services
                 return Response_MV;
             }
         }
-
-
 
 
 

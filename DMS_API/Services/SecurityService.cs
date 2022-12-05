@@ -18,16 +18,20 @@ namespace DMS_API.Services
         #region Properteis
         public static readonly string ConnectionString =
             "Server=10.55.101.20,1433;Database=DMS_DB;Integrated Security=false;User ID=dms; Password=dms;Connection Timeout=60";
-
         public static readonly string PasswordSaltKey =
             "MSSH24919831610";
-
         public static readonly string JwtKey =
             "Qig5PmxqgqBbVDtVYRorpC55wm8w3ZrL";
         public static readonly string JwtIssuer =
             "APIsecurity";
         public static readonly string JwtAudience =
             "APIsecurity";
+        private static readonly string Url =
+            "http://109.224.32.124:8003/api/client/mobile_message/send/basic";
+        private static readonly string Username =
+            "21";
+        private static readonly string Password =
+            "T8rJnTtmVctNmqZRZOdBFBluu52Ozj6ubd8v28Ni";
         #endregion
 
         #region Functions
@@ -90,6 +94,28 @@ namespace DMS_API.Services
                         smtp.Send(mail);
                     }
                 }
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+        public static async Task<bool> SendOTP(string PhoneNumber, string Message, bool Reliable = false)
+        {
+            try
+            {
+                using var client = new HttpClient();
+                client.DefaultRequestHeaders.Add("Authorization", $"Basic {Convert.ToBase64String(Encoding.UTF8.GetBytes($"{Username}:{Password}"))}");
+                var request = new Dictionary<string, string>
+            {
+                {"content", Message},
+                {"phone_num", PhoneNumber},
+                {"reliable", Convert.ToInt16(Reliable).ToString()}
+            };
+                var response = await client.PostAsync(Url, new FormUrlEncodedContent(request));
+                var content = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject(content);
                 return true;
             }
             catch (Exception)

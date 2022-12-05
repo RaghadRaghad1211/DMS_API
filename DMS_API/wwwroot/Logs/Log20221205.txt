@@ -1,0 +1,694 @@
+2022-12-05 09:35:38.287 +03:00 [INF] User profile is available. Using 'C:\Users\pc\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2022-12-05 09:35:38.477 +03:00 [INF] Now listening on: https://localhost:7040
+2022-12-05 09:35:38.477 +03:00 [INF] Now listening on: http://localhost:5041
+2022-12-05 09:35:38.479 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2022-12-05 09:35:38.479 +03:00 [INF] Hosting environment: Development
+2022-12-05 09:35:38.479 +03:00 [INF] Content root path: F:\TestProjects\DMS_API\DMS_API\
+2022-12-05 09:35:39.268 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/index.html - -
+2022-12-05 09:35:39.498 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_vs/browserLink - -
+2022-12-05 09:35:39.498 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - -
+2022-12-05 09:35:39.502 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/index.html - - - 200 - text/html;charset=utf-8 235.4175ms
+2022-12-05 09:35:39.505 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - - - 200 11984 application/javascript;+charset=utf-8 6.9121ms
+2022-12-05 09:35:39.553 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_vs/browserLink - - - 200 - text/javascript;+charset=UTF-8 55.1228ms
+2022-12-05 09:35:39.654 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - -
+2022-12-05 09:35:39.750 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - - - 200 - application/json;charset=utf-8 95.6286ms
+2022-12-05 09:37:52.846 +03:00 [INF] User profile is available. Using 'C:\Users\pc\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2022-12-05 09:37:53.027 +03:00 [INF] Now listening on: https://localhost:7040
+2022-12-05 09:37:53.027 +03:00 [INF] Now listening on: http://localhost:5041
+2022-12-05 09:37:53.029 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2022-12-05 09:37:53.029 +03:00 [INF] Hosting environment: Development
+2022-12-05 09:37:53.029 +03:00 [INF] Content root path: F:\TestProjects\DMS_API\DMS_API\
+2022-12-05 09:37:53.475 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/index.html - -
+2022-12-05 09:37:53.667 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - -
+2022-12-05 09:37:53.667 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_vs/browserLink - -
+2022-12-05 09:37:53.673 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/index.html - - - 200 - text/html;charset=utf-8 197.1126ms
+2022-12-05 09:37:53.673 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - - - 200 11984 application/javascript;+charset=utf-8 6.4043ms
+2022-12-05 09:37:53.697 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_vs/browserLink - - - 200 - text/javascript;+charset=UTF-8 30.2418ms
+2022-12-05 09:37:53.746 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - -
+2022-12-05 09:37:53.843 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - - - 200 - application/json;charset=utf-8 96.1127ms
+2022-12-05 09:38:05.390 +03:00 [INF] Request starting HTTP/1.1 POST https://localhost:7040/api/Org/GetOrgsParentWithChilds_Table application/json 43
+2022-12-05 09:38:05.460 +03:00 [INF] Executing endpoint 'DMS_API.Controllers.OrgController.GetOrgsParentWithChilds_Table (DMS_API)'
+2022-12-05 09:38:05.484 +03:00 [INF] Route matched with {action = "GetOrgsParentWithChilds_Table", controller = "Org"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetOrgsParentWithChilds_Table(DMS_API.ModelsView.PaginationModelView, DMS_API.ModelsView.RequestHeaderModelView) on controller DMS_API.Controllers.OrgController (DMS_API).
+2022-12-05 09:38:06.595 +03:00 [INF] Executing OkObjectResult, writing value of type 'DMS_API.ModelsView.ResponseModelView'.
+2022-12-05 09:38:06.614 +03:00 [INF] Executed action DMS_API.Controllers.OrgController.GetOrgsParentWithChilds_Table (DMS_API) in 1125.1042ms
+2022-12-05 09:38:06.616 +03:00 [INF] Executed endpoint 'DMS_API.Controllers.OrgController.GetOrgsParentWithChilds_Table (DMS_API)'
+2022-12-05 09:38:06.618 +03:00 [INF] Request finished HTTP/1.1 POST https://localhost:7040/api/Org/GetOrgsParentWithChilds_Table application/json 43 - 200 - application/json;+charset=utf-8 1227.6996ms
+2022-12-05 09:39:19.695 +03:00 [INF] Request starting HTTP/1.1 POST https://localhost:7040/api/Org/GetOrgsParentWithChilds_Table application/json 42
+2022-12-05 09:39:19.699 +03:00 [INF] Executing endpoint 'DMS_API.Controllers.OrgController.GetOrgsParentWithChilds_Table (DMS_API)'
+2022-12-05 09:39:19.701 +03:00 [INF] Route matched with {action = "GetOrgsParentWithChilds_Table", controller = "Org"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetOrgsParentWithChilds_Table(DMS_API.ModelsView.PaginationModelView, DMS_API.ModelsView.RequestHeaderModelView) on controller DMS_API.Controllers.OrgController (DMS_API).
+2022-12-05 09:39:19.808 +03:00 [INF] Executing OkObjectResult, writing value of type 'DMS_API.ModelsView.ResponseModelView'.
+2022-12-05 09:39:19.808 +03:00 [INF] Executed action DMS_API.Controllers.OrgController.GetOrgsParentWithChilds_Table (DMS_API) in 106.9846ms
+2022-12-05 09:39:19.808 +03:00 [INF] Executed endpoint 'DMS_API.Controllers.OrgController.GetOrgsParentWithChilds_Table (DMS_API)'
+2022-12-05 09:39:19.808 +03:00 [INF] Request finished HTTP/1.1 POST https://localhost:7040/api/Org/GetOrgsParentWithChilds_Table application/json 42 - 200 - application/json;+charset=utf-8 113.6596ms
+2022-12-05 09:41:28.262 +03:00 [INF] User profile is available. Using 'C:\Users\pc\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2022-12-05 09:41:28.458 +03:00 [INF] Now listening on: https://localhost:7040
+2022-12-05 09:41:28.458 +03:00 [INF] Now listening on: http://localhost:5041
+2022-12-05 09:41:28.460 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2022-12-05 09:41:28.460 +03:00 [INF] Hosting environment: Development
+2022-12-05 09:41:28.460 +03:00 [INF] Content root path: F:\TestProjects\DMS_API\DMS_API\
+2022-12-05 09:41:29.095 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/index.html - -
+2022-12-05 09:41:29.278 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/index.html - - - 200 - text/html;charset=utf-8 185.1415ms
+2022-12-05 09:41:29.284 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - -
+2022-12-05 09:41:29.284 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_vs/browserLink - -
+2022-12-05 09:41:29.290 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - - - 200 11984 application/javascript;+charset=utf-8 6.2551ms
+2022-12-05 09:41:29.313 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_vs/browserLink - - - 200 - text/javascript;+charset=UTF-8 29.3967ms
+2022-12-05 09:41:29.359 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - -
+2022-12-05 09:41:29.458 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - - - 200 - application/json;charset=utf-8 99.3705ms
+2022-12-05 09:41:34.370 +03:00 [INF] Request starting HTTP/1.1 POST https://localhost:7040/api/Org/GetOrgsParentWithChilds_Table application/json 42
+2022-12-05 09:41:34.435 +03:00 [INF] Executing endpoint 'DMS_API.Controllers.OrgController.GetOrgsParentWithChilds_Table (DMS_API)'
+2022-12-05 09:41:34.457 +03:00 [INF] Route matched with {action = "GetOrgsParentWithChilds_Table", controller = "Org"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetOrgsParentWithChilds_Table(DMS_API.ModelsView.PaginationModelView, DMS_API.ModelsView.RequestHeaderModelView) on controller DMS_API.Controllers.OrgController (DMS_API).
+2022-12-05 09:41:34.702 +03:00 [INF] Executing OkObjectResult, writing value of type 'DMS_API.ModelsView.ResponseModelView'.
+2022-12-05 09:41:34.712 +03:00 [INF] Executed action DMS_API.Controllers.OrgController.GetOrgsParentWithChilds_Table (DMS_API) in 251.0314ms
+2022-12-05 09:41:34.714 +03:00 [INF] Executed endpoint 'DMS_API.Controllers.OrgController.GetOrgsParentWithChilds_Table (DMS_API)'
+2022-12-05 09:41:34.716 +03:00 [INF] Request finished HTTP/1.1 POST https://localhost:7040/api/Org/GetOrgsParentWithChilds_Table application/json 42 - 200 - application/json;+charset=utf-8 345.7213ms
+2022-12-05 09:42:19.960 +03:00 [INF] User profile is available. Using 'C:\Users\pc\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2022-12-05 09:42:20.131 +03:00 [INF] Now listening on: https://localhost:7040
+2022-12-05 09:42:20.131 +03:00 [INF] Now listening on: http://localhost:5041
+2022-12-05 09:42:20.133 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2022-12-05 09:42:20.133 +03:00 [INF] Hosting environment: Development
+2022-12-05 09:42:20.133 +03:00 [INF] Content root path: F:\TestProjects\DMS_API\DMS_API\
+2022-12-05 09:42:20.452 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/index.html - -
+2022-12-05 09:42:20.628 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_vs/browserLink - -
+2022-12-05 09:42:20.628 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - -
+2022-12-05 09:42:20.636 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - - - 200 11984 application/javascript;+charset=utf-8 5.3878ms
+2022-12-05 09:42:20.636 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/index.html - - - 200 - text/html;charset=utf-8 183.6702ms
+2022-12-05 09:42:20.660 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_vs/browserLink - - - 200 - text/javascript;+charset=UTF-8 31.6508ms
+2022-12-05 09:42:20.707 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - -
+2022-12-05 09:42:20.800 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - - - 200 - application/json;charset=utf-8 93.6867ms
+2022-12-05 09:42:23.135 +03:00 [INF] Request starting HTTP/1.1 POST https://localhost:7040/api/Org/GetOrgsParentWithChilds_Table application/json 42
+2022-12-05 09:42:23.205 +03:00 [INF] Executing endpoint 'DMS_API.Controllers.OrgController.GetOrgsParentWithChilds_Table (DMS_API)'
+2022-12-05 09:42:23.228 +03:00 [INF] Route matched with {action = "GetOrgsParentWithChilds_Table", controller = "Org"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetOrgsParentWithChilds_Table(DMS_API.ModelsView.PaginationModelView, DMS_API.ModelsView.RequestHeaderModelView) on controller DMS_API.Controllers.OrgController (DMS_API).
+2022-12-05 09:42:23.499 +03:00 [INF] Executing OkObjectResult, writing value of type 'DMS_API.ModelsView.ResponseModelView'.
+2022-12-05 09:42:23.514 +03:00 [INF] Executed action DMS_API.Controllers.OrgController.GetOrgsParentWithChilds_Table (DMS_API) in 282.3439ms
+2022-12-05 09:42:23.516 +03:00 [INF] Executed endpoint 'DMS_API.Controllers.OrgController.GetOrgsParentWithChilds_Table (DMS_API)'
+2022-12-05 09:42:23.517 +03:00 [INF] Request finished HTTP/1.1 POST https://localhost:7040/api/Org/GetOrgsParentWithChilds_Table application/json 42 - 200 - application/json;+charset=utf-8 381.6161ms
+2022-12-05 09:42:58.111 +03:00 [INF] Request starting HTTP/1.1 POST https://localhost:7040/api/Org/GetOrgsParentWithChilds_Table application/json 42
+2022-12-05 09:42:58.114 +03:00 [INF] Executing endpoint 'DMS_API.Controllers.OrgController.GetOrgsParentWithChilds_Table (DMS_API)'
+2022-12-05 09:42:58.115 +03:00 [INF] Route matched with {action = "GetOrgsParentWithChilds_Table", controller = "Org"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetOrgsParentWithChilds_Table(DMS_API.ModelsView.PaginationModelView, DMS_API.ModelsView.RequestHeaderModelView) on controller DMS_API.Controllers.OrgController (DMS_API).
+2022-12-05 09:42:58.124 +03:00 [INF] Executing OkObjectResult, writing value of type 'DMS_API.ModelsView.ResponseModelView'.
+2022-12-05 09:42:58.125 +03:00 [INF] Executed action DMS_API.Controllers.OrgController.GetOrgsParentWithChilds_Table (DMS_API) in 9.8814ms
+2022-12-05 09:42:58.125 +03:00 [INF] Executed endpoint 'DMS_API.Controllers.OrgController.GetOrgsParentWithChilds_Table (DMS_API)'
+2022-12-05 09:42:58.125 +03:00 [INF] Request finished HTTP/1.1 POST https://localhost:7040/api/Org/GetOrgsParentWithChilds_Table application/json 42 - 200 - application/json;+charset=utf-8 13.6415ms
+2022-12-05 09:43:11.448 +03:00 [INF] User profile is available. Using 'C:\Users\pc\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2022-12-05 09:43:11.618 +03:00 [INF] Now listening on: https://localhost:7040
+2022-12-05 09:43:11.618 +03:00 [INF] Now listening on: http://localhost:5041
+2022-12-05 09:43:11.619 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2022-12-05 09:43:11.619 +03:00 [INF] Hosting environment: Development
+2022-12-05 09:43:11.619 +03:00 [INF] Content root path: F:\TestProjects\DMS_API\DMS_API\
+2022-12-05 09:43:12.371 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/index.html - -
+2022-12-05 09:43:12.553 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/index.html - - - 200 - text/html;charset=utf-8 184.1511ms
+2022-12-05 09:43:12.560 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_vs/browserLink - -
+2022-12-05 09:43:12.560 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - -
+2022-12-05 09:43:12.566 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - - - 200 11984 application/javascript;+charset=utf-8 5.9564ms
+2022-12-05 09:43:12.587 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_vs/browserLink - - - 200 - text/javascript;+charset=UTF-8 26.9728ms
+2022-12-05 09:43:12.640 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - -
+2022-12-05 09:43:12.738 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - - - 200 - application/json;charset=utf-8 98.1453ms
+2022-12-05 09:43:14.302 +03:00 [INF] Request starting HTTP/1.1 POST https://localhost:7040/api/Org/GetOrgsParentWithChilds_Table application/json 42
+2022-12-05 09:43:14.380 +03:00 [INF] Executing endpoint 'DMS_API.Controllers.OrgController.GetOrgsParentWithChilds_Table (DMS_API)'
+2022-12-05 09:43:14.400 +03:00 [INF] Route matched with {action = "GetOrgsParentWithChilds_Table", controller = "Org"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetOrgsParentWithChilds_Table(DMS_API.ModelsView.PaginationModelView, DMS_API.ModelsView.RequestHeaderModelView) on controller DMS_API.Controllers.OrgController (DMS_API).
+2022-12-05 09:44:43.993 +03:00 [INF] User profile is available. Using 'C:\Users\pc\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2022-12-05 09:44:44.212 +03:00 [INF] Now listening on: https://localhost:7040
+2022-12-05 09:44:44.212 +03:00 [INF] Now listening on: http://localhost:5041
+2022-12-05 09:44:44.214 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2022-12-05 09:44:44.214 +03:00 [INF] Hosting environment: Development
+2022-12-05 09:44:44.214 +03:00 [INF] Content root path: F:\TestProjects\DMS_API\DMS_API\
+2022-12-05 09:44:44.976 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/index.html - -
+2022-12-05 09:44:45.155 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_vs/browserLink - -
+2022-12-05 09:44:45.155 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - -
+2022-12-05 09:44:45.157 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/index.html - - - 200 - text/html;charset=utf-8 183.1114ms
+2022-12-05 09:44:45.163 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - - - 200 11984 application/javascript;+charset=utf-8 8.5698ms
+2022-12-05 09:44:45.185 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_vs/browserLink - - - 200 - text/javascript;+charset=UTF-8 30.6681ms
+2022-12-05 09:44:45.234 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - -
+2022-12-05 09:44:45.339 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - - - 200 - application/json;charset=utf-8 105.0584ms
+2022-12-05 09:46:39.843 +03:00 [INF] User profile is available. Using 'C:\Users\pc\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2022-12-05 09:46:40.032 +03:00 [INF] Now listening on: https://localhost:7040
+2022-12-05 09:46:40.033 +03:00 [INF] Now listening on: http://localhost:5041
+2022-12-05 09:46:40.034 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2022-12-05 09:46:40.034 +03:00 [INF] Hosting environment: Development
+2022-12-05 09:46:40.034 +03:00 [INF] Content root path: F:\TestProjects\DMS_API\DMS_API\
+2022-12-05 09:46:40.270 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/index.html - -
+2022-12-05 09:46:40.451 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_vs/browserLink - -
+2022-12-05 09:46:40.451 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - -
+2022-12-05 09:46:40.453 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/index.html - - - 200 - text/html;charset=utf-8 184.5782ms
+2022-12-05 09:46:40.459 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - - - 200 11984 application/javascript;+charset=utf-8 7.8146ms
+2022-12-05 09:46:40.480 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_vs/browserLink - - - 200 - text/javascript;+charset=UTF-8 29.1350ms
+2022-12-05 09:46:40.529 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - -
+2022-12-05 09:46:40.625 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - - - 200 - application/json;charset=utf-8 95.6791ms
+2022-12-05 09:46:45.807 +03:00 [INF] Request starting HTTP/1.1 POST https://localhost:7040/api/Org/GetOrgsParentWithChilds_Table application/json 42
+2022-12-05 09:46:45.873 +03:00 [INF] Executing endpoint 'DMS_API.Controllers.OrgController.GetOrgsParentWithChilds_Table (DMS_API)'
+2022-12-05 09:46:45.893 +03:00 [INF] Route matched with {action = "GetOrgsParentWithChilds_Table", controller = "Org"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetOrgsParentWithChilds_Table(DMS_API.ModelsView.PaginationModelView, DMS_API.ModelsView.RequestHeaderModelView) on controller DMS_API.Controllers.OrgController (DMS_API).
+2022-12-05 09:47:27.185 +03:00 [INF] User profile is available. Using 'C:\Users\pc\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2022-12-05 09:47:27.356 +03:00 [INF] Now listening on: https://localhost:7040
+2022-12-05 09:47:27.356 +03:00 [INF] Now listening on: http://localhost:5041
+2022-12-05 09:47:27.358 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2022-12-05 09:47:27.358 +03:00 [INF] Hosting environment: Development
+2022-12-05 09:47:27.358 +03:00 [INF] Content root path: F:\TestProjects\DMS_API\DMS_API\
+2022-12-05 09:47:27.724 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/index.html - -
+2022-12-05 09:47:27.905 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/index.html - - - 200 - text/html;charset=utf-8 183.5172ms
+2022-12-05 09:47:27.911 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - -
+2022-12-05 09:47:27.911 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_vs/browserLink - -
+2022-12-05 09:47:27.917 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - - - 200 11984 application/javascript;+charset=utf-8 6.1406ms
+2022-12-05 09:47:27.939 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_vs/browserLink - - - 200 - text/javascript;+charset=UTF-8 28.4016ms
+2022-12-05 09:47:27.993 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - -
+2022-12-05 09:47:28.087 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - - - 200 - application/json;charset=utf-8 93.4068ms
+2022-12-05 09:47:30.797 +03:00 [INF] Request starting HTTP/1.1 POST https://localhost:7040/api/Org/GetOrgsParentWithChilds_Table application/json 42
+2022-12-05 09:47:30.864 +03:00 [INF] Executing endpoint 'DMS_API.Controllers.OrgController.GetOrgsParentWithChilds_Table (DMS_API)'
+2022-12-05 09:47:30.885 +03:00 [INF] Route matched with {action = "GetOrgsParentWithChilds_Table", controller = "Org"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetOrgsParentWithChilds_Table(DMS_API.ModelsView.PaginationModelView, DMS_API.ModelsView.RequestHeaderModelView) on controller DMS_API.Controllers.OrgController (DMS_API).
+2022-12-05 09:48:51.684 +03:00 [INF] User profile is available. Using 'C:\Users\pc\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2022-12-05 09:48:51.859 +03:00 [INF] Now listening on: https://localhost:7040
+2022-12-05 09:48:51.859 +03:00 [INF] Now listening on: http://localhost:5041
+2022-12-05 09:48:51.861 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2022-12-05 09:48:51.861 +03:00 [INF] Hosting environment: Development
+2022-12-05 09:48:51.861 +03:00 [INF] Content root path: F:\TestProjects\DMS_API\DMS_API\
+2022-12-05 09:48:52.189 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/index.html - -
+2022-12-05 09:48:52.372 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/index.html - - - 200 - text/html;charset=utf-8 185.4443ms
+2022-12-05 09:48:52.377 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - -
+2022-12-05 09:48:52.377 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_vs/browserLink - -
+2022-12-05 09:48:52.381 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - - - 200 11984 application/javascript;+charset=utf-8 3.7880ms
+2022-12-05 09:48:52.402 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_vs/browserLink - - - 200 - text/javascript;+charset=UTF-8 25.1628ms
+2022-12-05 09:48:52.455 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - -
+2022-12-05 09:48:52.550 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - - - 200 - application/json;charset=utf-8 94.7770ms
+2022-12-05 09:48:57.786 +03:00 [INF] Request starting HTTP/1.1 POST https://localhost:7040/api/Org/GetOrgsParentWithChilds_Table application/json 42
+2022-12-05 09:48:57.853 +03:00 [INF] Executing endpoint 'DMS_API.Controllers.OrgController.GetOrgsParentWithChilds_Table (DMS_API)'
+2022-12-05 09:48:57.875 +03:00 [INF] Route matched with {action = "GetOrgsParentWithChilds_Table", controller = "Org"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetOrgsParentWithChilds_Table(DMS_API.ModelsView.PaginationModelView, DMS_API.ModelsView.RequestHeaderModelView) on controller DMS_API.Controllers.OrgController (DMS_API).
+2022-12-05 09:48:58.093 +03:00 [INF] Executing OkObjectResult, writing value of type 'DMS_API.ModelsView.ResponseModelView'.
+2022-12-05 09:48:58.103 +03:00 [INF] Executed action DMS_API.Controllers.OrgController.GetOrgsParentWithChilds_Table (DMS_API) in 224.9027ms
+2022-12-05 09:48:58.105 +03:00 [INF] Executed endpoint 'DMS_API.Controllers.OrgController.GetOrgsParentWithChilds_Table (DMS_API)'
+2022-12-05 09:48:58.107 +03:00 [INF] Request finished HTTP/1.1 POST https://localhost:7040/api/Org/GetOrgsParentWithChilds_Table application/json 42 - 200 - application/json;+charset=utf-8 321.0616ms
+2022-12-05 09:49:20.218 +03:00 [INF] Request starting HTTP/1.1 POST https://localhost:7040/api/Org/GetOrgsParentWithChilds_Table application/json 42
+2022-12-05 09:49:20.220 +03:00 [INF] Executing endpoint 'DMS_API.Controllers.OrgController.GetOrgsParentWithChilds_Table (DMS_API)'
+2022-12-05 09:49:20.221 +03:00 [INF] Route matched with {action = "GetOrgsParentWithChilds_Table", controller = "Org"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetOrgsParentWithChilds_Table(DMS_API.ModelsView.PaginationModelView, DMS_API.ModelsView.RequestHeaderModelView) on controller DMS_API.Controllers.OrgController (DMS_API).
+2022-12-05 09:49:20.228 +03:00 [INF] Executing OkObjectResult, writing value of type 'DMS_API.ModelsView.ResponseModelView'.
+2022-12-05 09:49:20.229 +03:00 [INF] Executed action DMS_API.Controllers.OrgController.GetOrgsParentWithChilds_Table (DMS_API) in 7.9508ms
+2022-12-05 09:49:20.229 +03:00 [INF] Executed endpoint 'DMS_API.Controllers.OrgController.GetOrgsParentWithChilds_Table (DMS_API)'
+2022-12-05 09:49:20.229 +03:00 [INF] Request finished HTTP/1.1 POST https://localhost:7040/api/Org/GetOrgsParentWithChilds_Table application/json 42 - 200 - application/json;+charset=utf-8 10.7804ms
+2022-12-05 09:49:29.338 +03:00 [INF] Request starting HTTP/1.1 POST https://localhost:7040/api/Org/GetOrgsParentWithChilds_Table application/json 42
+2022-12-05 09:49:29.341 +03:00 [INF] Executing endpoint 'DMS_API.Controllers.OrgController.GetOrgsParentWithChilds_Table (DMS_API)'
+2022-12-05 09:49:29.341 +03:00 [INF] Route matched with {action = "GetOrgsParentWithChilds_Table", controller = "Org"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetOrgsParentWithChilds_Table(DMS_API.ModelsView.PaginationModelView, DMS_API.ModelsView.RequestHeaderModelView) on controller DMS_API.Controllers.OrgController (DMS_API).
+2022-12-05 09:49:29.346 +03:00 [INF] Executing OkObjectResult, writing value of type 'DMS_API.ModelsView.ResponseModelView'.
+2022-12-05 09:49:29.346 +03:00 [INF] Executed action DMS_API.Controllers.OrgController.GetOrgsParentWithChilds_Table (DMS_API) in 4.3833ms
+2022-12-05 09:49:29.346 +03:00 [INF] Executed endpoint 'DMS_API.Controllers.OrgController.GetOrgsParentWithChilds_Table (DMS_API)'
+2022-12-05 09:49:29.346 +03:00 [INF] Request finished HTTP/1.1 POST https://localhost:7040/api/Org/GetOrgsParentWithChilds_Table application/json 42 - 200 - application/json;+charset=utf-8 7.4639ms
+2022-12-05 09:49:38.273 +03:00 [INF] Request starting HTTP/1.1 POST https://localhost:7040/api/Org/GetOrgsParentWithChilds_Table application/json 41
+2022-12-05 09:49:38.273 +03:00 [INF] Executing endpoint 'DMS_API.Controllers.OrgController.GetOrgsParentWithChilds_Table (DMS_API)'
+2022-12-05 09:49:38.273 +03:00 [INF] Route matched with {action = "GetOrgsParentWithChilds_Table", controller = "Org"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetOrgsParentWithChilds_Table(DMS_API.ModelsView.PaginationModelView, DMS_API.ModelsView.RequestHeaderModelView) on controller DMS_API.Controllers.OrgController (DMS_API).
+2022-12-05 09:49:38.278 +03:00 [INF] Executing OkObjectResult, writing value of type 'DMS_API.ModelsView.ResponseModelView'.
+2022-12-05 09:49:38.278 +03:00 [INF] Executed action DMS_API.Controllers.OrgController.GetOrgsParentWithChilds_Table (DMS_API) in 4.8355ms
+2022-12-05 09:49:38.278 +03:00 [INF] Executed endpoint 'DMS_API.Controllers.OrgController.GetOrgsParentWithChilds_Table (DMS_API)'
+2022-12-05 09:49:38.278 +03:00 [INF] Request finished HTTP/1.1 POST https://localhost:7040/api/Org/GetOrgsParentWithChilds_Table application/json 41 - 200 - application/json;+charset=utf-8 5.2056ms
+2022-12-05 10:35:49.729 +03:00 [INF] User profile is available. Using 'C:\Users\pc\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2022-12-05 10:35:49.898 +03:00 [INF] Now listening on: https://localhost:7040
+2022-12-05 10:35:49.898 +03:00 [INF] Now listening on: http://localhost:5041
+2022-12-05 10:35:49.900 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2022-12-05 10:35:49.900 +03:00 [INF] Hosting environment: Development
+2022-12-05 10:35:49.900 +03:00 [INF] Content root path: F:\TestProjects\DMS_API\DMS_API\
+2022-12-05 10:35:50.694 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/index.html - -
+2022-12-05 10:35:50.875 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - -
+2022-12-05 10:35:50.876 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/index.html - - - 200 - text/html;charset=utf-8 183.8055ms
+2022-12-05 10:35:50.881 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_vs/browserLink - -
+2022-12-05 10:35:50.883 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - - - 200 11984 application/javascript;+charset=utf-8 8.3121ms
+2022-12-05 10:35:50.910 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_vs/browserLink - - - 200 - text/javascript;+charset=UTF-8 28.9660ms
+2022-12-05 10:35:50.960 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - -
+2022-12-05 10:35:51.060 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - - - 200 - application/json;charset=utf-8 99.4067ms
+2022-12-05 10:35:56.389 +03:00 [INF] Request starting HTTP/1.1 POST https://localhost:7040/api/Home/GetHomeData application/json 43
+2022-12-05 10:35:56.456 +03:00 [INF] Executing endpoint 'DMS_API.Controllers.HomeController.GetHomeData (DMS_API)'
+2022-12-05 10:35:56.477 +03:00 [INF] Route matched with {action = "GetHomeData", controller = "Home"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetHomeData(DMS_API.ModelsView.PaginationModelView, DMS_API.ModelsView.RequestHeaderModelView) on controller DMS_API.Controllers.HomeController (DMS_API).
+2022-12-05 10:35:56.697 +03:00 [INF] Executing OkObjectResult, writing value of type 'DMS_API.ModelsView.ResponseModelView'.
+2022-12-05 10:35:56.707 +03:00 [INF] Executed action DMS_API.Controllers.HomeController.GetHomeData (DMS_API) in 226.9125ms
+2022-12-05 10:35:56.709 +03:00 [INF] Executed endpoint 'DMS_API.Controllers.HomeController.GetHomeData (DMS_API)'
+2022-12-05 10:35:56.710 +03:00 [INF] Request finished HTTP/1.1 POST https://localhost:7040/api/Home/GetHomeData application/json 43 - 200 - application/json;+charset=utf-8 321.3918ms
+2022-12-05 10:43:30.549 +03:00 [INF] User profile is available. Using 'C:\Users\pc\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2022-12-05 10:43:30.755 +03:00 [INF] Now listening on: https://localhost:7040
+2022-12-05 10:43:30.755 +03:00 [INF] Now listening on: http://localhost:5041
+2022-12-05 10:43:30.757 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2022-12-05 10:43:30.757 +03:00 [INF] Hosting environment: Development
+2022-12-05 10:43:30.757 +03:00 [INF] Content root path: F:\TestProjects\DMS_API\DMS_API\
+2022-12-05 10:43:31.031 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/index.html - -
+2022-12-05 10:43:31.216 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/index.html - - - 200 - text/html;charset=utf-8 187.1862ms
+2022-12-05 10:43:31.224 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_vs/browserLink - -
+2022-12-05 10:43:31.224 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - -
+2022-12-05 10:43:31.229 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - - - 200 11984 application/javascript;+charset=utf-8 4.7894ms
+2022-12-05 10:43:31.251 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_vs/browserLink - - - 200 - text/javascript;+charset=UTF-8 27.2224ms
+2022-12-05 10:43:31.307 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - -
+2022-12-05 10:43:31.404 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - - - 200 - application/json;charset=utf-8 96.8550ms
+2022-12-05 10:43:41.598 +03:00 [INF] Request starting HTTP/1.1 POST https://localhost:7040/api/Home/GetHomeData application/json 43
+2022-12-05 10:43:41.666 +03:00 [INF] Executing endpoint 'DMS_API.Controllers.HomeController.GetHomeData (DMS_API)'
+2022-12-05 10:43:41.688 +03:00 [INF] Route matched with {action = "GetHomeData", controller = "Home"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetHomeData(DMS_API.ModelsView.PaginationModelView, DMS_API.ModelsView.RequestHeaderModelView) on controller DMS_API.Controllers.HomeController (DMS_API).
+2022-12-05 10:43:41.976 +03:00 [INF] Executing OkObjectResult, writing value of type 'DMS_API.ModelsView.ResponseModelView'.
+2022-12-05 10:43:41.985 +03:00 [INF] Executed action DMS_API.Controllers.HomeController.GetHomeData (DMS_API) in 293.4666ms
+2022-12-05 10:43:41.987 +03:00 [INF] Executed endpoint 'DMS_API.Controllers.HomeController.GetHomeData (DMS_API)'
+2022-12-05 10:43:41.988 +03:00 [INF] Request finished HTTP/1.1 POST https://localhost:7040/api/Home/GetHomeData application/json 43 - 200 - application/json;+charset=utf-8 390.4809ms
+2022-12-05 11:32:48.042 +03:00 [INF] User profile is available. Using 'C:\Users\pc\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2022-12-05 11:32:48.213 +03:00 [INF] Now listening on: https://localhost:7040
+2022-12-05 11:32:48.213 +03:00 [INF] Now listening on: http://localhost:5041
+2022-12-05 11:32:48.215 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2022-12-05 11:32:48.215 +03:00 [INF] Hosting environment: Development
+2022-12-05 11:32:48.215 +03:00 [INF] Content root path: F:\TestProjects\DMS_API\DMS_API\
+2022-12-05 11:32:48.605 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/index.html - -
+2022-12-05 11:32:48.785 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/index.html - - - 200 - text/html;charset=utf-8 181.8034ms
+2022-12-05 11:32:48.790 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - -
+2022-12-05 11:32:48.790 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_vs/browserLink - -
+2022-12-05 11:32:48.796 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - - - 200 11984 application/javascript;+charset=utf-8 5.3875ms
+2022-12-05 11:32:48.818 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_vs/browserLink - - - 200 - text/javascript;+charset=UTF-8 27.3913ms
+2022-12-05 11:32:48.867 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - -
+2022-12-05 11:32:48.965 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - - - 200 - application/json;charset=utf-8 97.1607ms
+2022-12-05 11:33:00.408 +03:00 [INF] Request starting HTTP/2 POST https://localhost:7040/api/Home/GetHomeData application/json 38
+2022-12-05 11:33:00.428 +03:00 [INF] CORS policy execution successful.
+2022-12-05 11:33:00.477 +03:00 [INF] Executing endpoint 'DMS_API.Controllers.HomeController.GetHomeData (DMS_API)'
+2022-12-05 11:33:00.497 +03:00 [INF] Route matched with {action = "GetHomeData", controller = "Home"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetHomeData(DMS_API.ModelsView.PaginationModelView, DMS_API.ModelsView.RequestHeaderModelView) on controller DMS_API.Controllers.HomeController (DMS_API).
+2022-12-05 11:33:00.557 +03:00 [INF] Executing ObjectResult, writing value of type 'DMS_API.ModelsView.ResponseModelView'.
+2022-12-05 11:33:00.568 +03:00 [INF] Executed action DMS_API.Controllers.HomeController.GetHomeData (DMS_API) in 67.8664ms
+2022-12-05 11:33:00.570 +03:00 [INF] Executed endpoint 'DMS_API.Controllers.HomeController.GetHomeData (DMS_API)'
+2022-12-05 11:33:00.570 +03:00 [INF] Request finished HTTP/2 POST https://localhost:7040/api/Home/GetHomeData application/json 38 - 400 - application/json;+charset=utf-8 161.4635ms
+2022-12-05 11:33:39.598 +03:00 [INF] Request starting HTTP/1.1 POST https://localhost:7040/api/User/Login application/json 54
+2022-12-05 11:33:39.600 +03:00 [INF] Executing endpoint 'DMS_API.Controllers.UserController.Login (DMS_API)'
+2022-12-05 11:33:39.603 +03:00 [INF] Route matched with {action = "Login", controller = "User"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(DMS_API.ModelsView.LoginModelView, System.String) on controller DMS_API.Controllers.UserController (DMS_API).
+2022-12-05 11:33:39.951 +03:00 [INF] Executing OkObjectResult, writing value of type 'DMS_API.ModelsView.ResponseModelView'.
+2022-12-05 11:33:39.956 +03:00 [INF] Executed action DMS_API.Controllers.UserController.Login (DMS_API) in 352.9225ms
+2022-12-05 11:33:39.957 +03:00 [INF] Executed endpoint 'DMS_API.Controllers.UserController.Login (DMS_API)'
+2022-12-05 11:33:39.958 +03:00 [INF] Request finished HTTP/1.1 POST https://localhost:7040/api/User/Login application/json 54 - 200 - application/json;+charset=utf-8 359.6650ms
+2022-12-05 11:37:24.604 +03:00 [INF] User profile is available. Using 'C:\Users\pc\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2022-12-05 11:37:24.806 +03:00 [INF] Now listening on: https://localhost:7040
+2022-12-05 11:37:24.806 +03:00 [INF] Now listening on: http://localhost:5041
+2022-12-05 11:37:24.808 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2022-12-05 11:37:24.808 +03:00 [INF] Hosting environment: Development
+2022-12-05 11:37:24.808 +03:00 [INF] Content root path: F:\TestProjects\DMS_API\DMS_API\
+2022-12-05 11:37:25.337 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/index.html - -
+2022-12-05 11:37:25.527 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/index.html - - - 200 - text/html;charset=utf-8 192.8936ms
+2022-12-05 11:37:25.535 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_vs/browserLink - -
+2022-12-05 11:37:25.535 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - -
+2022-12-05 11:37:25.541 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - - - 200 11984 application/javascript;+charset=utf-8 5.3225ms
+2022-12-05 11:37:25.562 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_vs/browserLink - - - 200 - text/javascript;+charset=UTF-8 26.7283ms
+2022-12-05 11:37:25.606 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - -
+2022-12-05 11:37:25.704 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - - - 200 - application/json;charset=utf-8 98.0156ms
+2022-12-05 11:39:22.730 +03:00 [INF] User profile is available. Using 'C:\Users\pc\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2022-12-05 11:39:22.906 +03:00 [INF] Now listening on: https://localhost:7040
+2022-12-05 11:39:22.906 +03:00 [INF] Now listening on: http://localhost:5041
+2022-12-05 11:39:22.907 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2022-12-05 11:39:22.908 +03:00 [INF] Hosting environment: Development
+2022-12-05 11:39:22.908 +03:00 [INF] Content root path: F:\TestProjects\DMS_API\DMS_API\
+2022-12-05 11:39:23.340 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/index.html - -
+2022-12-05 11:39:23.553 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/index.html - - - 200 - text/html;charset=utf-8 214.6755ms
+2022-12-05 11:39:23.561 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_vs/browserLink - -
+2022-12-05 11:39:23.561 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - -
+2022-12-05 11:39:23.565 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - - - 200 11984 application/javascript;+charset=utf-8 3.9244ms
+2022-12-05 11:39:23.587 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_vs/browserLink - - - 200 - text/javascript;+charset=UTF-8 25.9570ms
+2022-12-05 11:39:23.630 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - -
+2022-12-05 11:39:23.725 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - - - 200 - application/json;charset=utf-8 95.0701ms
+2022-12-05 11:50:37.711 +03:00 [INF] User profile is available. Using 'C:\Users\pc\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2022-12-05 11:50:37.880 +03:00 [INF] Now listening on: https://localhost:7040
+2022-12-05 11:50:37.880 +03:00 [INF] Now listening on: http://localhost:5041
+2022-12-05 11:50:37.881 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2022-12-05 11:50:37.881 +03:00 [INF] Hosting environment: Development
+2022-12-05 11:50:37.881 +03:00 [INF] Content root path: F:\TestProjects\DMS_API\DMS_API\
+2022-12-05 11:50:38.095 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/index.html - -
+2022-12-05 11:50:38.277 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - -
+2022-12-05 11:50:38.277 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_vs/browserLink - -
+2022-12-05 11:50:38.278 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/index.html - - - 200 - text/html;charset=utf-8 185.6501ms
+2022-12-05 11:50:38.285 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - - - 200 11984 application/javascript;+charset=utf-8 8.2139ms
+2022-12-05 11:50:38.308 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_vs/browserLink - - - 200 - text/javascript;+charset=UTF-8 30.8309ms
+2022-12-05 11:50:38.363 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - -
+2022-12-05 11:50:38.469 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - - - 200 - application/json;charset=utf-8 105.8579ms
+2022-12-05 11:50:47.217 +03:00 [INF] Request starting HTTP/1.1 POST https://localhost:7040/api/Group/GetGroupsList application/json 42
+2022-12-05 11:50:47.283 +03:00 [INF] Executing endpoint 'DMS_API.Controllers.GroupController.GetGroupsList (DMS_API)'
+2022-12-05 11:50:47.305 +03:00 [INF] Route matched with {action = "GetGroupsList", controller = "Group"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetGroupsList(DMS_API.ModelsView.PaginationModelView, DMS_API.ModelsView.RequestHeaderModelView) on controller DMS_API.Controllers.GroupController (DMS_API).
+2022-12-05 11:50:47.559 +03:00 [INF] Executing ObjectResult, writing value of type 'DMS_API.ModelsView.ResponseModelView'.
+2022-12-05 11:50:47.577 +03:00 [INF] Executed action DMS_API.Controllers.GroupController.GetGroupsList (DMS_API) in 268.6115ms
+2022-12-05 11:50:47.579 +03:00 [INF] Executed endpoint 'DMS_API.Controllers.GroupController.GetGroupsList (DMS_API)'
+2022-12-05 11:50:47.580 +03:00 [INF] Request finished HTTP/1.1 POST https://localhost:7040/api/Group/GetGroupsList application/json 42 - 417 - application/json;+charset=utf-8 362.7015ms
+2022-12-05 11:51:16.897 +03:00 [INF] Request starting HTTP/1.1 POST https://localhost:7040/api/Group/GetGroupsList application/json 42
+2022-12-05 11:51:16.910 +03:00 [INF] Executing endpoint 'DMS_API.Controllers.GroupController.GetGroupsList (DMS_API)'
+2022-12-05 11:51:16.912 +03:00 [INF] Route matched with {action = "GetGroupsList", controller = "Group"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetGroupsList(DMS_API.ModelsView.PaginationModelView, DMS_API.ModelsView.RequestHeaderModelView) on controller DMS_API.Controllers.GroupController (DMS_API).
+2022-12-05 11:54:48.676 +03:00 [INF] User profile is available. Using 'C:\Users\pc\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2022-12-05 11:54:48.865 +03:00 [INF] Now listening on: https://localhost:7040
+2022-12-05 11:54:48.865 +03:00 [INF] Now listening on: http://localhost:5041
+2022-12-05 11:54:48.867 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2022-12-05 11:54:48.867 +03:00 [INF] Hosting environment: Development
+2022-12-05 11:54:48.867 +03:00 [INF] Content root path: F:\TestProjects\DMS_API\DMS_API\
+2022-12-05 11:54:49.390 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/index.html - -
+2022-12-05 11:54:49.609 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - -
+2022-12-05 11:54:49.609 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_vs/browserLink - -
+2022-12-05 11:54:49.612 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/index.html - - - 200 - text/html;charset=utf-8 224.7924ms
+2022-12-05 11:54:49.623 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - - - 200 11984 application/javascript;+charset=utf-8 14.3170ms
+2022-12-05 11:54:49.646 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_vs/browserLink - - - 200 - text/javascript;+charset=UTF-8 36.9677ms
+2022-12-05 11:54:49.702 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - -
+2022-12-05 11:54:49.798 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - - - 200 - application/json;charset=utf-8 96.4142ms
+2022-12-05 12:15:45.973 +03:00 [INF] User profile is available. Using 'C:\Users\pc\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2022-12-05 12:15:46.145 +03:00 [INF] Now listening on: https://localhost:7040
+2022-12-05 12:15:46.145 +03:00 [INF] Now listening on: http://localhost:5041
+2022-12-05 12:15:46.147 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2022-12-05 12:15:46.147 +03:00 [INF] Hosting environment: Development
+2022-12-05 12:15:46.147 +03:00 [INF] Content root path: F:\TestProjects\DMS_API\DMS_API\
+2022-12-05 12:15:46.379 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/index.html - -
+2022-12-05 12:15:46.561 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/index.html - - - 200 - text/html;charset=utf-8 183.7938ms
+2022-12-05 12:15:46.562 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - -
+2022-12-05 12:15:46.562 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_vs/browserLink - -
+2022-12-05 12:15:46.571 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - - - 200 11984 application/javascript;+charset=utf-8 9.5115ms
+2022-12-05 12:15:46.592 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_vs/browserLink - - - 200 - text/javascript;+charset=UTF-8 30.5284ms
+2022-12-05 12:15:46.647 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - -
+2022-12-05 12:15:46.741 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - - - 200 - application/json;charset=utf-8 93.6031ms
+2022-12-05 12:17:50.148 +03:00 [INF] Request starting HTTP/1.1 POST https://localhost:7040/api/Group/GetChildsNotInGroupByID_Search application/json 64
+2022-12-05 12:17:50.215 +03:00 [INF] Executing endpoint 'DMS_API.Controllers.GroupController.GetChildsNotInGroupByID_Search (DMS_API)'
+2022-12-05 12:17:50.236 +03:00 [INF] Route matched with {action = "GetChildsNotInGroupByID_Search", controller = "Group"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetChildsNotInGroupByID_Search(DMS_API.ModelsView.SearchChildGroupModelView, DMS_API.ModelsView.RequestHeaderModelView) on controller DMS_API.Controllers.GroupController (DMS_API).
+2022-12-05 12:17:50.457 +03:00 [INF] Executing ObjectResult, writing value of type 'DMS_API.ModelsView.ResponseModelView'.
+2022-12-05 12:17:50.471 +03:00 [INF] Executed action DMS_API.Controllers.GroupController.GetChildsNotInGroupByID_Search (DMS_API) in 231.2222ms
+2022-12-05 12:17:50.473 +03:00 [INF] Executed endpoint 'DMS_API.Controllers.GroupController.GetChildsNotInGroupByID_Search (DMS_API)'
+2022-12-05 12:17:50.475 +03:00 [INF] Request finished HTTP/1.1 POST https://localhost:7040/api/Group/GetChildsNotInGroupByID_Search application/json 64 - 400 - application/json;+charset=utf-8 326.6168ms
+2022-12-05 12:19:00.787 +03:00 [INF] Request starting HTTP/1.1 POST https://localhost:7040/api/Group/GetChildsNotInGroupByID_Search application/json 64
+2022-12-05 12:19:00.793 +03:00 [INF] Executing endpoint 'DMS_API.Controllers.GroupController.GetChildsNotInGroupByID_Search (DMS_API)'
+2022-12-05 12:19:00.796 +03:00 [INF] Route matched with {action = "GetChildsNotInGroupByID_Search", controller = "Group"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetChildsNotInGroupByID_Search(DMS_API.ModelsView.SearchChildGroupModelView, DMS_API.ModelsView.RequestHeaderModelView) on controller DMS_API.Controllers.GroupController (DMS_API).
+2022-12-05 12:19:00.832 +03:00 [INF] Executing ObjectResult, writing value of type 'DMS_API.ModelsView.ResponseModelView'.
+2022-12-05 12:19:00.833 +03:00 [INF] Executed action DMS_API.Controllers.GroupController.GetChildsNotInGroupByID_Search (DMS_API) in 36.3532ms
+2022-12-05 12:19:00.833 +03:00 [INF] Executed endpoint 'DMS_API.Controllers.GroupController.GetChildsNotInGroupByID_Search (DMS_API)'
+2022-12-05 12:19:00.833 +03:00 [INF] Request finished HTTP/1.1 POST https://localhost:7040/api/Group/GetChildsNotInGroupByID_Search application/json 64 - 417 - application/json;+charset=utf-8 46.1179ms
+2022-12-05 12:19:16.270 +03:00 [INF] Request starting HTTP/1.1 POST https://localhost:7040/api/Group/GetChildsNotInGroupByID_Search application/json 64
+2022-12-05 12:19:16.272 +03:00 [INF] Executing endpoint 'DMS_API.Controllers.GroupController.GetChildsNotInGroupByID_Search (DMS_API)'
+2022-12-05 12:19:16.272 +03:00 [INF] Route matched with {action = "GetChildsNotInGroupByID_Search", controller = "Group"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetChildsNotInGroupByID_Search(DMS_API.ModelsView.SearchChildGroupModelView, DMS_API.ModelsView.RequestHeaderModelView) on controller DMS_API.Controllers.GroupController (DMS_API).
+2022-12-05 12:20:55.918 +03:00 [INF] User profile is available. Using 'C:\Users\pc\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2022-12-05 12:20:56.104 +03:00 [INF] Now listening on: https://localhost:7040
+2022-12-05 12:20:56.105 +03:00 [INF] Now listening on: http://localhost:5041
+2022-12-05 12:20:56.106 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2022-12-05 12:20:56.106 +03:00 [INF] Hosting environment: Development
+2022-12-05 12:20:56.106 +03:00 [INF] Content root path: F:\TestProjects\DMS_API\DMS_API\
+2022-12-05 12:20:56.360 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/index.html - -
+2022-12-05 12:20:56.542 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_vs/browserLink - -
+2022-12-05 12:20:56.542 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - -
+2022-12-05 12:20:56.544 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/index.html - - - 200 - text/html;charset=utf-8 185.0705ms
+2022-12-05 12:20:56.551 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - - - 200 11984 application/javascript;+charset=utf-8 8.6106ms
+2022-12-05 12:20:56.572 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_vs/browserLink - - - 200 - text/javascript;+charset=UTF-8 29.6573ms
+2022-12-05 12:20:56.625 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - -
+2022-12-05 12:20:56.723 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - - - 200 - application/json;charset=utf-8 97.0509ms
+2022-12-05 12:20:59.945 +03:00 [INF] Request starting HTTP/1.1 POST https://localhost:7040/api/Group/GetChildsNotInGroupByID_Search application/json 64
+2022-12-05 12:21:00.011 +03:00 [INF] Executing endpoint 'DMS_API.Controllers.GroupController.GetChildsNotInGroupByID_Search (DMS_API)'
+2022-12-05 12:21:00.033 +03:00 [INF] Route matched with {action = "GetChildsNotInGroupByID_Search", controller = "Group"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetChildsNotInGroupByID_Search(DMS_API.ModelsView.SearchChildGroupModelView, DMS_API.ModelsView.RequestHeaderModelView) on controller DMS_API.Controllers.GroupController (DMS_API).
+2022-12-05 12:21:05.264 +03:00 [INF] Executing OkObjectResult, writing value of type 'DMS_API.ModelsView.ResponseModelView'.
+2022-12-05 12:21:05.272 +03:00 [INF] Executed action DMS_API.Controllers.GroupController.GetChildsNotInGroupByID_Search (DMS_API) in 5234.8859ms
+2022-12-05 12:21:05.273 +03:00 [INF] Executed endpoint 'DMS_API.Controllers.GroupController.GetChildsNotInGroupByID_Search (DMS_API)'
+2022-12-05 12:21:05.275 +03:00 [INF] Request finished HTTP/1.1 POST https://localhost:7040/api/Group/GetChildsNotInGroupByID_Search application/json 64 - 200 - application/json;+charset=utf-8 5329.7353ms
+2022-12-05 12:21:29.577 +03:00 [INF] Request starting HTTP/1.1 POST https://localhost:7040/api/Group/GetChildsNotInGroupByID_Search application/json 64
+2022-12-05 12:21:29.580 +03:00 [INF] Executing endpoint 'DMS_API.Controllers.GroupController.GetChildsNotInGroupByID_Search (DMS_API)'
+2022-12-05 12:21:29.580 +03:00 [INF] Route matched with {action = "GetChildsNotInGroupByID_Search", controller = "Group"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetChildsNotInGroupByID_Search(DMS_API.ModelsView.SearchChildGroupModelView, DMS_API.ModelsView.RequestHeaderModelView) on controller DMS_API.Controllers.GroupController (DMS_API).
+2022-12-05 12:21:29.591 +03:00 [INF] Executing OkObjectResult, writing value of type 'DMS_API.ModelsView.ResponseModelView'.
+2022-12-05 12:21:29.591 +03:00 [INF] Executed action DMS_API.Controllers.GroupController.GetChildsNotInGroupByID_Search (DMS_API) in 10.5767ms
+2022-12-05 12:21:29.591 +03:00 [INF] Executed endpoint 'DMS_API.Controllers.GroupController.GetChildsNotInGroupByID_Search (DMS_API)'
+2022-12-05 12:21:29.591 +03:00 [INF] Request finished HTTP/1.1 POST https://localhost:7040/api/Group/GetChildsNotInGroupByID_Search application/json 64 - 200 - application/json;+charset=utf-8 14.2227ms
+2022-12-05 12:21:43.602 +03:00 [INF] Request starting HTTP/1.1 POST https://localhost:7040/api/Group/GetChildsNotInGroupByID_Search application/json 64
+2022-12-05 12:21:43.604 +03:00 [INF] Executing endpoint 'DMS_API.Controllers.GroupController.GetChildsNotInGroupByID_Search (DMS_API)'
+2022-12-05 12:21:43.604 +03:00 [INF] Route matched with {action = "GetChildsNotInGroupByID_Search", controller = "Group"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetChildsNotInGroupByID_Search(DMS_API.ModelsView.SearchChildGroupModelView, DMS_API.ModelsView.RequestHeaderModelView) on controller DMS_API.Controllers.GroupController (DMS_API).
+2022-12-05 12:21:43.611 +03:00 [INF] Executing OkObjectResult, writing value of type 'DMS_API.ModelsView.ResponseModelView'.
+2022-12-05 12:21:43.611 +03:00 [INF] Executed action DMS_API.Controllers.GroupController.GetChildsNotInGroupByID_Search (DMS_API) in 7.3606ms
+2022-12-05 12:21:43.612 +03:00 [INF] Executed endpoint 'DMS_API.Controllers.GroupController.GetChildsNotInGroupByID_Search (DMS_API)'
+2022-12-05 12:21:43.612 +03:00 [INF] Request finished HTTP/1.1 POST https://localhost:7040/api/Group/GetChildsNotInGroupByID_Search application/json 64 - 200 - application/json;+charset=utf-8 9.2348ms
+2022-12-05 12:21:54.722 +03:00 [INF] Request starting HTTP/1.1 POST https://localhost:7040/api/Group/GetChildsNotInGroupByID_Search application/json 66
+2022-12-05 12:21:54.722 +03:00 [INF] Executing endpoint 'DMS_API.Controllers.GroupController.GetChildsNotInGroupByID_Search (DMS_API)'
+2022-12-05 12:21:54.722 +03:00 [INF] Route matched with {action = "GetChildsNotInGroupByID_Search", controller = "Group"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetChildsNotInGroupByID_Search(DMS_API.ModelsView.SearchChildGroupModelView, DMS_API.ModelsView.RequestHeaderModelView) on controller DMS_API.Controllers.GroupController (DMS_API).
+2022-12-05 12:21:54.730 +03:00 [INF] Executing OkObjectResult, writing value of type 'DMS_API.ModelsView.ResponseModelView'.
+2022-12-05 12:21:54.730 +03:00 [INF] Executed action DMS_API.Controllers.GroupController.GetChildsNotInGroupByID_Search (DMS_API) in 8.3309ms
+2022-12-05 12:21:54.730 +03:00 [INF] Executed endpoint 'DMS_API.Controllers.GroupController.GetChildsNotInGroupByID_Search (DMS_API)'
+2022-12-05 12:21:54.730 +03:00 [INF] Request finished HTTP/1.1 POST https://localhost:7040/api/Group/GetChildsNotInGroupByID_Search application/json 66 - 200 - application/json;+charset=utf-8 8.6940ms
+2022-12-05 12:21:59.551 +03:00 [INF] Request starting HTTP/1.1 POST https://localhost:7040/api/Group/GetChildsNotInGroupByID_Search application/json 66
+2022-12-05 12:21:59.551 +03:00 [INF] Executing endpoint 'DMS_API.Controllers.GroupController.GetChildsNotInGroupByID_Search (DMS_API)'
+2022-12-05 12:21:59.551 +03:00 [INF] Route matched with {action = "GetChildsNotInGroupByID_Search", controller = "Group"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetChildsNotInGroupByID_Search(DMS_API.ModelsView.SearchChildGroupModelView, DMS_API.ModelsView.RequestHeaderModelView) on controller DMS_API.Controllers.GroupController (DMS_API).
+2022-12-05 12:21:59.559 +03:00 [INF] Executing OkObjectResult, writing value of type 'DMS_API.ModelsView.ResponseModelView'.
+2022-12-05 12:21:59.559 +03:00 [INF] Executed action DMS_API.Controllers.GroupController.GetChildsNotInGroupByID_Search (DMS_API) in 7.8487ms
+2022-12-05 12:21:59.559 +03:00 [INF] Executed endpoint 'DMS_API.Controllers.GroupController.GetChildsNotInGroupByID_Search (DMS_API)'
+2022-12-05 12:21:59.559 +03:00 [INF] Request finished HTTP/1.1 POST https://localhost:7040/api/Group/GetChildsNotInGroupByID_Search application/json 66 - 200 - application/json;+charset=utf-8 8.1670ms
+2022-12-05 12:26:58.750 +03:00 [INF] User profile is available. Using 'C:\Users\pc\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2022-12-05 12:26:58.920 +03:00 [INF] Now listening on: https://localhost:7040
+2022-12-05 12:26:58.920 +03:00 [INF] Now listening on: http://localhost:5041
+2022-12-05 12:26:58.922 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2022-12-05 12:26:58.922 +03:00 [INF] Hosting environment: Development
+2022-12-05 12:26:58.922 +03:00 [INF] Content root path: F:\TestProjects\DMS_API\DMS_API\
+2022-12-05 12:26:59.109 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/index.html - -
+2022-12-05 12:26:59.292 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_vs/browserLink - -
+2022-12-05 12:26:59.292 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - -
+2022-12-05 12:26:59.292 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/index.html - - - 200 - text/html;charset=utf-8 185.3456ms
+2022-12-05 12:26:59.299 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - - - 200 11984 application/javascript;+charset=utf-8 7.3065ms
+2022-12-05 12:26:59.324 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_vs/browserLink - - - 200 - text/javascript;+charset=UTF-8 31.7483ms
+2022-12-05 12:26:59.390 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - -
+2022-12-05 12:26:59.484 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - - - 200 - application/json;charset=utf-8 93.6949ms
+2022-12-05 12:28:10.514 +03:00 [INF] Request starting HTTP/1.1 GET https://localhost:7040/api/Group/GetChildsInGroupByID/72 - -
+2022-12-05 12:28:10.602 +03:00 [INF] Executing endpoint 'DMS_API.Controllers.GroupController.GetChildsInGroupByID (DMS_API)'
+2022-12-05 12:28:10.628 +03:00 [INF] Route matched with {action = "GetChildsInGroupByID", controller = "Group"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetChildsInGroupByID(Int32, DMS_API.ModelsView.RequestHeaderModelView) on controller DMS_API.Controllers.GroupController (DMS_API).
+2022-12-05 12:28:10.842 +03:00 [INF] Executing ObjectResult, writing value of type 'DMS_API.ModelsView.ResponseModelView'.
+2022-12-05 12:28:10.855 +03:00 [INF] Executed action DMS_API.Controllers.GroupController.GetChildsInGroupByID (DMS_API) in 223.6271ms
+2022-12-05 12:28:10.857 +03:00 [INF] Executed endpoint 'DMS_API.Controllers.GroupController.GetChildsInGroupByID (DMS_API)'
+2022-12-05 12:28:10.858 +03:00 [INF] Request finished HTTP/1.1 GET https://localhost:7040/api/Group/GetChildsInGroupByID/72 - - - 400 - application/json;+charset=utf-8 344.3104ms
+2022-12-05 12:28:16.134 +03:00 [INF] Request starting HTTP/1.1 GET https://localhost:7040/api/Group/GetChildsInGroupByID/72 - -
+2022-12-05 12:28:16.137 +03:00 [INF] Executing endpoint 'DMS_API.Controllers.GroupController.GetChildsInGroupByID (DMS_API)'
+2022-12-05 12:28:16.137 +03:00 [INF] Route matched with {action = "GetChildsInGroupByID", controller = "Group"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetChildsInGroupByID(Int32, DMS_API.ModelsView.RequestHeaderModelView) on controller DMS_API.Controllers.GroupController (DMS_API).
+2022-12-05 12:28:16.182 +03:00 [INF] Executing ObjectResult, writing value of type 'DMS_API.ModelsView.ResponseModelView'.
+2022-12-05 12:28:16.182 +03:00 [INF] Executed action DMS_API.Controllers.GroupController.GetChildsInGroupByID (DMS_API) in 44.5315ms
+2022-12-05 12:28:16.182 +03:00 [INF] Executed endpoint 'DMS_API.Controllers.GroupController.GetChildsInGroupByID (DMS_API)'
+2022-12-05 12:28:16.182 +03:00 [INF] Request finished HTTP/1.1 GET https://localhost:7040/api/Group/GetChildsInGroupByID/72 - - - 417 - application/json;+charset=utf-8 47.8999ms
+2022-12-05 12:28:26.659 +03:00 [INF] Request starting HTTP/1.1 GET https://localhost:7040/api/Group/GetChildsInGroupByID/72 - -
+2022-12-05 12:28:26.661 +03:00 [INF] Executing endpoint 'DMS_API.Controllers.GroupController.GetChildsInGroupByID (DMS_API)'
+2022-12-05 12:28:26.661 +03:00 [INF] Route matched with {action = "GetChildsInGroupByID", controller = "Group"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetChildsInGroupByID(Int32, DMS_API.ModelsView.RequestHeaderModelView) on controller DMS_API.Controllers.GroupController (DMS_API).
+2022-12-05 12:30:28.261 +03:00 [INF] User profile is available. Using 'C:\Users\pc\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2022-12-05 12:30:28.429 +03:00 [INF] Now listening on: https://localhost:7040
+2022-12-05 12:30:28.429 +03:00 [INF] Now listening on: http://localhost:5041
+2022-12-05 12:30:28.430 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2022-12-05 12:30:28.431 +03:00 [INF] Hosting environment: Development
+2022-12-05 12:30:28.431 +03:00 [INF] Content root path: F:\TestProjects\DMS_API\DMS_API\
+2022-12-05 12:30:29.070 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/index.html - -
+2022-12-05 12:30:29.253 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/index.html - - - 200 - text/html;charset=utf-8 185.2106ms
+2022-12-05 12:30:29.261 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_vs/browserLink - -
+2022-12-05 12:30:29.261 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - -
+2022-12-05 12:30:29.267 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - - - 200 11984 application/javascript;+charset=utf-8 5.6144ms
+2022-12-05 12:30:29.292 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_vs/browserLink - - - 200 - text/javascript;+charset=UTF-8 31.1055ms
+2022-12-05 12:30:29.336 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - -
+2022-12-05 12:30:29.432 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - - - 200 - application/json;charset=utf-8 96.5904ms
+2022-12-05 12:30:39.424 +03:00 [INF] Request starting HTTP/1.1 GET https://localhost:7040/api/Group/GetChildsInGroupByID/72 - -
+2022-12-05 12:30:39.490 +03:00 [INF] Executing endpoint 'DMS_API.Controllers.GroupController.GetChildsInGroupByID (DMS_API)'
+2022-12-05 12:30:39.511 +03:00 [INF] Route matched with {action = "GetChildsInGroupByID", controller = "Group"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetChildsInGroupByID(Int32, DMS_API.ModelsView.RequestHeaderModelView) on controller DMS_API.Controllers.GroupController (DMS_API).
+2022-12-05 12:30:43.623 +03:00 [INF] Executing OkObjectResult, writing value of type 'DMS_API.ModelsView.ResponseModelView'.
+2022-12-05 12:30:43.631 +03:00 [INF] Executed action DMS_API.Controllers.GroupController.GetChildsInGroupByID (DMS_API) in 4116.1025ms
+2022-12-05 12:30:43.633 +03:00 [INF] Executed endpoint 'DMS_API.Controllers.GroupController.GetChildsInGroupByID (DMS_API)'
+2022-12-05 12:30:43.634 +03:00 [INF] Request finished HTTP/1.1 GET https://localhost:7040/api/Group/GetChildsInGroupByID/72 - - - 200 - application/json;+charset=utf-8 4210.8432ms
+2022-12-05 14:20:03.577 +03:00 [INF] User profile is available. Using 'C:\Users\pc\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2022-12-05 14:20:03.749 +03:00 [INF] Now listening on: https://localhost:7040
+2022-12-05 14:20:03.749 +03:00 [INF] Now listening on: http://localhost:5041
+2022-12-05 14:20:03.751 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2022-12-05 14:20:03.751 +03:00 [INF] Hosting environment: Development
+2022-12-05 14:20:03.751 +03:00 [INF] Content root path: F:\TestProjects\DMS_API\DMS_API\
+2022-12-05 14:20:04.045 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/index.html - -
+2022-12-05 14:20:04.240 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - -
+2022-12-05 14:20:04.240 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_vs/browserLink - -
+2022-12-05 14:20:04.240 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/index.html - - - 200 - text/html;charset=utf-8 197.5191ms
+2022-12-05 14:20:04.248 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - - - 200 11984 application/javascript;+charset=utf-8 7.4220ms
+2022-12-05 14:20:04.270 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_vs/browserLink - - - 200 - text/javascript;+charset=UTF-8 30.2932ms
+2022-12-05 14:20:04.317 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - -
+2022-12-05 14:20:04.414 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - - - 200 - application/json;charset=utf-8 97.0074ms
+2022-12-05 14:20:32.623 +03:00 [INF] Request starting HTTP/1.1 POST https://localhost:7040/api/Org/GetOrgsParentWithChilds_Table application/json 41
+2022-12-05 14:20:32.691 +03:00 [INF] Executing endpoint 'DMS_API.Controllers.OrgController.GetOrgsParentWithChilds_Table (DMS_API)'
+2022-12-05 14:20:32.712 +03:00 [INF] Route matched with {action = "GetOrgsParentWithChilds_Table", controller = "Org"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetOrgsParentWithChilds_Table(DMS_API.ModelsView.PaginationModelView, DMS_API.ModelsView.RequestHeaderModelView) on controller DMS_API.Controllers.OrgController (DMS_API).
+2022-12-05 14:20:32.937 +03:00 [INF] Executing ObjectResult, writing value of type 'DMS_API.ModelsView.ResponseModelView'.
+2022-12-05 14:20:32.949 +03:00 [INF] Executed action DMS_API.Controllers.OrgController.GetOrgsParentWithChilds_Table (DMS_API) in 233.1857ms
+2022-12-05 14:20:32.951 +03:00 [INF] Executed endpoint 'DMS_API.Controllers.OrgController.GetOrgsParentWithChilds_Table (DMS_API)'
+2022-12-05 14:20:32.952 +03:00 [INF] Request finished HTTP/1.1 POST https://localhost:7040/api/Org/GetOrgsParentWithChilds_Table application/json 41 - 400 - application/json;+charset=utf-8 328.9655ms
+2022-12-05 14:20:37.428 +03:00 [INF] Request starting HTTP/1.1 POST https://localhost:7040/api/Org/GetOrgsParentWithChilds_Table application/json 41
+2022-12-05 14:20:37.430 +03:00 [INF] Executing endpoint 'DMS_API.Controllers.OrgController.GetOrgsParentWithChilds_Table (DMS_API)'
+2022-12-05 14:20:37.430 +03:00 [INF] Route matched with {action = "GetOrgsParentWithChilds_Table", controller = "Org"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetOrgsParentWithChilds_Table(DMS_API.ModelsView.PaginationModelView, DMS_API.ModelsView.RequestHeaderModelView) on controller DMS_API.Controllers.OrgController (DMS_API).
+2022-12-05 14:20:37.497 +03:00 [INF] Executing OkObjectResult, writing value of type 'DMS_API.ModelsView.ResponseModelView'.
+2022-12-05 14:20:37.501 +03:00 [INF] Executed action DMS_API.Controllers.OrgController.GetOrgsParentWithChilds_Table (DMS_API) in 71.1183ms
+2022-12-05 14:20:37.501 +03:00 [INF] Executed endpoint 'DMS_API.Controllers.OrgController.GetOrgsParentWithChilds_Table (DMS_API)'
+2022-12-05 14:20:37.501 +03:00 [INF] Request finished HTTP/1.1 POST https://localhost:7040/api/Org/GetOrgsParentWithChilds_Table application/json 41 - 200 - application/json;+charset=utf-8 73.8976ms
+2022-12-05 14:20:45.526 +03:00 [INF] Request starting HTTP/1.1 POST https://localhost:7040/api/Org/GetOrgsParentWithChilds_Table application/json 43
+2022-12-05 14:20:45.528 +03:00 [INF] Executing endpoint 'DMS_API.Controllers.OrgController.GetOrgsParentWithChilds_Table (DMS_API)'
+2022-12-05 14:20:45.528 +03:00 [INF] Route matched with {action = "GetOrgsParentWithChilds_Table", controller = "Org"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetOrgsParentWithChilds_Table(DMS_API.ModelsView.PaginationModelView, DMS_API.ModelsView.RequestHeaderModelView) on controller DMS_API.Controllers.OrgController (DMS_API).
+2022-12-05 14:20:45.535 +03:00 [INF] Executing OkObjectResult, writing value of type 'DMS_API.ModelsView.ResponseModelView'.
+2022-12-05 14:20:45.535 +03:00 [INF] Executed action DMS_API.Controllers.OrgController.GetOrgsParentWithChilds_Table (DMS_API) in 7.0489ms
+2022-12-05 14:20:45.535 +03:00 [INF] Executed endpoint 'DMS_API.Controllers.OrgController.GetOrgsParentWithChilds_Table (DMS_API)'
+2022-12-05 14:20:45.535 +03:00 [INF] Request finished HTTP/1.1 POST https://localhost:7040/api/Org/GetOrgsParentWithChilds_Table application/json 43 - 200 - application/json;+charset=utf-8 9.6586ms
+2022-12-05 14:22:55.145 +03:00 [INF] User profile is available. Using 'C:\Users\pc\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2022-12-05 14:22:55.313 +03:00 [INF] Now listening on: https://localhost:7040
+2022-12-05 14:22:55.313 +03:00 [INF] Now listening on: http://localhost:5041
+2022-12-05 14:22:55.315 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2022-12-05 14:22:55.315 +03:00 [INF] Hosting environment: Development
+2022-12-05 14:22:55.315 +03:00 [INF] Content root path: F:\TestProjects\DMS_API\DMS_API\
+2022-12-05 14:22:56.129 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/index.html - -
+2022-12-05 14:22:56.310 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_vs/browserLink - -
+2022-12-05 14:22:56.310 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - -
+2022-12-05 14:22:56.317 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/index.html - - - 200 - text/html;charset=utf-8 190.5377ms
+2022-12-05 14:22:56.317 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - - - 200 11984 application/javascript;+charset=utf-8 6.0653ms
+2022-12-05 14:22:56.340 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_vs/browserLink - - - 200 - text/javascript;+charset=UTF-8 29.9175ms
+2022-12-05 14:22:56.389 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - -
+2022-12-05 14:22:56.485 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - - - 200 - application/json;charset=utf-8 96.0749ms
+2022-12-05 14:24:46.392 +03:00 [INF] Request starting HTTP/1.1 POST https://localhost:7040/api/Group/GetChildsInGroupByID_Search application/json 66
+2022-12-05 14:24:46.459 +03:00 [INF] Executing endpoint 'DMS_API.Controllers.GroupController.GetChildsInGroupByID_Search (DMS_API)'
+2022-12-05 14:24:46.481 +03:00 [INF] Route matched with {action = "GetChildsInGroupByID_Search", controller = "Group"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetChildsInGroupByID_Search(DMS_API.ModelsView.SearchChildGroupModelView, DMS_API.ModelsView.RequestHeaderModelView) on controller DMS_API.Controllers.GroupController (DMS_API).
+2022-12-05 14:24:46.726 +03:00 [INF] Executing ObjectResult, writing value of type 'DMS_API.ModelsView.ResponseModelView'.
+2022-12-05 14:24:46.739 +03:00 [INF] Executed action DMS_API.Controllers.GroupController.GetChildsInGroupByID_Search (DMS_API) in 254.5722ms
+2022-12-05 14:24:46.741 +03:00 [INF] Executed endpoint 'DMS_API.Controllers.GroupController.GetChildsInGroupByID_Search (DMS_API)'
+2022-12-05 14:24:46.743 +03:00 [INF] Request finished HTTP/1.1 POST https://localhost:7040/api/Group/GetChildsInGroupByID_Search application/json 66 - 417 - application/json;+charset=utf-8 350.1360ms
+2022-12-05 14:25:06.427 +03:00 [INF] Request starting HTTP/1.1 POST https://localhost:7040/api/Group/GetChildsInGroupByID_Search application/json 66
+2022-12-05 14:25:06.430 +03:00 [INF] Executing endpoint 'DMS_API.Controllers.GroupController.GetChildsInGroupByID_Search (DMS_API)'
+2022-12-05 14:25:06.430 +03:00 [INF] Route matched with {action = "GetChildsInGroupByID_Search", controller = "Group"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetChildsInGroupByID_Search(DMS_API.ModelsView.SearchChildGroupModelView, DMS_API.ModelsView.RequestHeaderModelView) on controller DMS_API.Controllers.GroupController (DMS_API).
+2022-12-05 14:25:35.939 +03:00 [INF] Executing ObjectResult, writing value of type 'DMS_API.ModelsView.ResponseModelView'.
+2022-12-05 14:25:35.939 +03:00 [INF] Executed action DMS_API.Controllers.GroupController.GetChildsInGroupByID_Search (DMS_API) in 29509.0551ms
+2022-12-05 14:25:35.939 +03:00 [INF] Executed endpoint 'DMS_API.Controllers.GroupController.GetChildsInGroupByID_Search (DMS_API)'
+2022-12-05 14:25:35.939 +03:00 [INF] Request finished HTTP/1.1 POST https://localhost:7040/api/Group/GetChildsInGroupByID_Search application/json 66 - 417 - application/json;+charset=utf-8 29512.8252ms
+2022-12-05 14:49:25.475 +03:00 [INF] User profile is available. Using 'C:\Users\pc\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2022-12-05 14:49:25.648 +03:00 [INF] Now listening on: https://localhost:7040
+2022-12-05 14:49:25.648 +03:00 [INF] Now listening on: http://localhost:5041
+2022-12-05 14:49:25.650 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2022-12-05 14:49:25.650 +03:00 [INF] Hosting environment: Development
+2022-12-05 14:49:25.650 +03:00 [INF] Content root path: F:\TestProjects\DMS_API\DMS_API\
+2022-12-05 14:49:26.231 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/index.html - -
+2022-12-05 14:49:26.420 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_vs/browserLink - -
+2022-12-05 14:49:26.420 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - -
+2022-12-05 14:49:26.422 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/index.html - - - 200 - text/html;charset=utf-8 193.6270ms
+2022-12-05 14:49:26.429 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - - - 200 11984 application/javascript;+charset=utf-8 9.0214ms
+2022-12-05 14:49:26.450 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_vs/browserLink - - - 200 - text/javascript;+charset=UTF-8 29.8067ms
+2022-12-05 14:49:26.497 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - -
+2022-12-05 14:49:26.596 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - - - 200 - application/json;charset=utf-8 98.6187ms
+2022-12-05 14:49:39.493 +03:00 [INF] Request starting HTTP/1.1 GET https://localhost:7040/api/User/ResetPassword/39 - -
+2022-12-05 14:49:39.676 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException: IDX10223: Lifetime validation failed. The token is expired. ValidTo: 'System.DateTime', Current time: 'System.DateTime'.
+   at Microsoft.IdentityModel.Tokens.Validators.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler.ValidateTokenPayload(JwtSecurityToken jwtToken, TokenValidationParameters validationParameters)
+   at System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler.ValidateToken(String token, TokenValidationParameters validationParameters, SecurityToken& validatedToken)
+   at Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler.HandleAuthenticateAsync()
+2022-12-05 14:49:39.700 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10223: Lifetime validation failed. The token is expired. ValidTo: 'System.DateTime', Current time: 'System.DateTime'.
+2022-12-05 14:49:39.704 +03:00 [INF] Executing endpoint 'DMS_API.Controllers.UserController.ResetPassword (DMS_API)'
+2022-12-05 14:49:39.724 +03:00 [INF] Route matched with {action = "ResetPassword", controller = "User"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] ResetPassword(Int32, DMS_API.ModelsView.RequestHeaderModelView) on controller DMS_API.Controllers.UserController (DMS_API).
+2022-12-05 14:49:41.725 +03:00 [INF] Executing OkObjectResult, writing value of type 'DMS_API.ModelsView.ResponseModelView'.
+2022-12-05 14:49:41.738 +03:00 [INF] Executed action DMS_API.Controllers.UserController.ResetPassword (DMS_API) in 2010.5335ms
+2022-12-05 14:49:41.740 +03:00 [INF] Executed endpoint 'DMS_API.Controllers.UserController.ResetPassword (DMS_API)'
+2022-12-05 14:49:41.741 +03:00 [INF] Request finished HTTP/1.1 GET https://localhost:7040/api/User/ResetPassword/39 - - - 200 - application/json;+charset=utf-8 2248.2238ms
+2022-12-05 14:53:12.012 +03:00 [INF] User profile is available. Using 'C:\Users\pc\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2022-12-05 14:53:12.178 +03:00 [INF] Now listening on: https://localhost:7040
+2022-12-05 14:53:12.178 +03:00 [INF] Now listening on: http://localhost:5041
+2022-12-05 14:53:12.179 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2022-12-05 14:53:12.179 +03:00 [INF] Hosting environment: Development
+2022-12-05 14:53:12.180 +03:00 [INF] Content root path: F:\TestProjects\DMS_API\DMS_API\
+2022-12-05 14:53:12.892 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/index.html - -
+2022-12-05 14:53:13.077 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/index.html - - - 200 - text/html;charset=utf-8 186.2200ms
+2022-12-05 14:53:13.083 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_vs/browserLink - -
+2022-12-05 14:53:13.083 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - -
+2022-12-05 14:53:13.088 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - - - 200 11984 application/javascript;+charset=utf-8 5.3502ms
+2022-12-05 14:53:13.117 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_vs/browserLink - - - 200 - text/javascript;+charset=UTF-8 34.3689ms
+2022-12-05 14:53:13.164 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - -
+2022-12-05 14:53:13.262 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - - - 200 - application/json;charset=utf-8 97.9657ms
+2022-12-05 14:53:26.913 +03:00 [INF] User profile is available. Using 'C:\Users\pc\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2022-12-05 14:53:27.088 +03:00 [INF] Now listening on: https://localhost:7040
+2022-12-05 14:53:27.088 +03:00 [INF] Now listening on: http://localhost:5041
+2022-12-05 14:53:27.090 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2022-12-05 14:53:27.090 +03:00 [INF] Hosting environment: Development
+2022-12-05 14:53:27.090 +03:00 [INF] Content root path: F:\TestProjects\DMS_API\DMS_API\
+2022-12-05 14:53:27.305 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/index.html - -
+2022-12-05 14:53:27.514 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - -
+2022-12-05 14:53:27.514 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_vs/browserLink - -
+2022-12-05 14:53:27.521 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - - - 200 11984 application/javascript;+charset=utf-8 6.5193ms
+2022-12-05 14:53:27.521 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/index.html - - - 200 - text/html;charset=utf-8 218.9727ms
+2022-12-05 14:53:27.544 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_vs/browserLink - - - 200 - text/javascript;+charset=UTF-8 30.7529ms
+2022-12-05 14:53:27.602 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - -
+2022-12-05 14:53:27.702 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - - - 200 - application/json;charset=utf-8 100.0718ms
+2022-12-05 14:53:31.552 +03:00 [INF] Request starting HTTP/1.1 GET https://localhost:7040/api/User/ResetPassword/39 - -
+2022-12-05 14:53:31.738 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException: IDX10223: Lifetime validation failed. The token is expired. ValidTo: 'System.DateTime', Current time: 'System.DateTime'.
+   at Microsoft.IdentityModel.Tokens.Validators.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler.ValidateTokenPayload(JwtSecurityToken jwtToken, TokenValidationParameters validationParameters)
+   at System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler.ValidateToken(String token, TokenValidationParameters validationParameters, SecurityToken& validatedToken)
+   at Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler.HandleAuthenticateAsync()
+2022-12-05 14:53:31.759 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10223: Lifetime validation failed. The token is expired. ValidTo: 'System.DateTime', Current time: 'System.DateTime'.
+2022-12-05 14:53:31.763 +03:00 [INF] Executing endpoint 'DMS_API.Controllers.UserController.ResetPassword (DMS_API)'
+2022-12-05 14:53:31.783 +03:00 [INF] Route matched with {action = "ResetPassword", controller = "User"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] ResetPassword(Int32, DMS_API.ModelsView.RequestHeaderModelView) on controller DMS_API.Controllers.UserController (DMS_API).
+2022-12-05 14:53:34.955 +03:00 [INF] Executing OkObjectResult, writing value of type 'DMS_API.ModelsView.ResponseModelView'.
+2022-12-05 14:53:34.967 +03:00 [INF] Executed action DMS_API.Controllers.UserController.ResetPassword (DMS_API) in 3180.9701ms
+2022-12-05 14:53:34.970 +03:00 [INF] Executed endpoint 'DMS_API.Controllers.UserController.ResetPassword (DMS_API)'
+2022-12-05 14:53:34.971 +03:00 [INF] Request finished HTTP/1.1 GET https://localhost:7040/api/User/ResetPassword/39 - - - 200 - application/json;+charset=utf-8 3419.1352ms
+2022-12-05 14:55:28.399 +03:00 [INF] User profile is available. Using 'C:\Users\pc\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2022-12-05 14:55:28.589 +03:00 [INF] Now listening on: https://localhost:7040
+2022-12-05 14:55:28.589 +03:00 [INF] Now listening on: http://localhost:5041
+2022-12-05 14:55:28.591 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2022-12-05 14:55:28.591 +03:00 [INF] Hosting environment: Development
+2022-12-05 14:55:28.591 +03:00 [INF] Content root path: F:\TestProjects\DMS_API\DMS_API\
+2022-12-05 14:55:29.096 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/index.html - -
+2022-12-05 14:55:29.285 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_vs/browserLink - -
+2022-12-05 14:55:29.285 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - -
+2022-12-05 14:55:29.291 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - - - 200 11984 application/javascript;+charset=utf-8 5.4866ms
+2022-12-05 14:55:29.291 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/index.html - - - 200 - text/html;charset=utf-8 197.1135ms
+2022-12-05 14:55:29.314 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_vs/browserLink - - - 200 - text/javascript;+charset=UTF-8 28.6198ms
+2022-12-05 14:55:29.369 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - -
+2022-12-05 14:55:29.465 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - - - 200 - application/json;charset=utf-8 96.3088ms
+2022-12-05 14:55:54.132 +03:00 [INF] Request starting HTTP/1.1 POST https://localhost:7040/api/User/Login application/json 54
+2022-12-05 14:55:54.198 +03:00 [INF] Executing endpoint 'DMS_API.Controllers.UserController.Login (DMS_API)'
+2022-12-05 14:55:54.220 +03:00 [INF] Route matched with {action = "Login", controller = "User"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(DMS_API.ModelsView.LoginModelView, System.String) on controller DMS_API.Controllers.UserController (DMS_API).
+2022-12-05 14:58:52.967 +03:00 [INF] User profile is available. Using 'C:\Users\pc\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2022-12-05 14:58:53.154 +03:00 [INF] Now listening on: https://localhost:7040
+2022-12-05 14:58:53.154 +03:00 [INF] Now listening on: http://localhost:5041
+2022-12-05 14:58:53.156 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2022-12-05 14:58:53.156 +03:00 [INF] Hosting environment: Development
+2022-12-05 14:58:53.156 +03:00 [INF] Content root path: F:\TestProjects\DMS_API\DMS_API\
+2022-12-05 14:58:53.699 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/index.html - -
+2022-12-05 14:58:53.896 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/index.html - - - 200 - text/html;charset=utf-8 198.7412ms
+2022-12-05 14:58:53.901 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_vs/browserLink - -
+2022-12-05 14:58:53.901 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - -
+2022-12-05 14:58:53.907 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - - - 200 11984 application/javascript;+charset=utf-8 5.9947ms
+2022-12-05 14:58:53.929 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_vs/browserLink - - - 200 - text/javascript;+charset=UTF-8 27.6067ms
+2022-12-05 14:58:53.976 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - -
+2022-12-05 14:58:54.070 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - - - 200 - application/json;charset=utf-8 94.2271ms
+2022-12-05 14:58:56.126 +03:00 [INF] Request starting HTTP/1.1 POST https://localhost:7040/api/Group/GetChildsInGroupByID_Search application/json 64
+2022-12-05 14:58:56.191 +03:00 [INF] Executing endpoint 'DMS_API.Controllers.GroupController.GetChildsInGroupByID_Search (DMS_API)'
+2022-12-05 14:58:56.211 +03:00 [INF] Route matched with {action = "GetChildsInGroupByID_Search", controller = "Group"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetChildsInGroupByID_Search(DMS_API.ModelsView.SearchChildGroupModelView, DMS_API.ModelsView.RequestHeaderModelView) on controller DMS_API.Controllers.GroupController (DMS_API).
+2022-12-05 14:58:56.437 +03:00 [INF] Executing ObjectResult, writing value of type 'DMS_API.ModelsView.ResponseModelView'.
+2022-12-05 14:58:56.450 +03:00 [INF] Executed action DMS_API.Controllers.GroupController.GetChildsInGroupByID_Search (DMS_API) in 235.0023ms
+2022-12-05 14:58:56.453 +03:00 [INF] Executed endpoint 'DMS_API.Controllers.GroupController.GetChildsInGroupByID_Search (DMS_API)'
+2022-12-05 14:58:56.455 +03:00 [INF] Request finished HTTP/1.1 POST https://localhost:7040/api/Group/GetChildsInGroupByID_Search application/json 64 - 400 - application/json;+charset=utf-8 329.1384ms
+2022-12-05 14:59:01.271 +03:00 [INF] Request starting HTTP/1.1 POST https://localhost:7040/api/Group/GetChildsInGroupByID_Search application/json 64
+2022-12-05 14:59:01.274 +03:00 [INF] Executing endpoint 'DMS_API.Controllers.GroupController.GetChildsInGroupByID_Search (DMS_API)'
+2022-12-05 14:59:01.274 +03:00 [INF] Route matched with {action = "GetChildsInGroupByID_Search", controller = "Group"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetChildsInGroupByID_Search(DMS_API.ModelsView.SearchChildGroupModelView, DMS_API.ModelsView.RequestHeaderModelView) on controller DMS_API.Controllers.GroupController (DMS_API).
+2022-12-05 14:59:01.306 +03:00 [INF] Executing OkObjectResult, writing value of type 'DMS_API.ModelsView.ResponseModelView'.
+2022-12-05 14:59:01.308 +03:00 [INF] Executed action DMS_API.Controllers.GroupController.GetChildsInGroupByID_Search (DMS_API) in 33.4143ms
+2022-12-05 14:59:01.308 +03:00 [INF] Executed endpoint 'DMS_API.Controllers.GroupController.GetChildsInGroupByID_Search (DMS_API)'
+2022-12-05 14:59:01.308 +03:00 [INF] Request finished HTTP/1.1 POST https://localhost:7040/api/Group/GetChildsInGroupByID_Search application/json 64 - 200 - application/json;+charset=utf-8 36.9062ms
+2022-12-05 14:59:31.219 +03:00 [INF] Request starting HTTP/1.1 POST https://localhost:7040/api/Group/GetChildsInGroupByID_Search application/json 66
+2022-12-05 14:59:31.223 +03:00 [INF] Executing endpoint 'DMS_API.Controllers.GroupController.GetChildsInGroupByID_Search (DMS_API)'
+2022-12-05 14:59:31.223 +03:00 [INF] Route matched with {action = "GetChildsInGroupByID_Search", controller = "Group"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetChildsInGroupByID_Search(DMS_API.ModelsView.SearchChildGroupModelView, DMS_API.ModelsView.RequestHeaderModelView) on controller DMS_API.Controllers.GroupController (DMS_API).
+2022-12-05 14:59:31.234 +03:00 [INF] Executing OkObjectResult, writing value of type 'DMS_API.ModelsView.ResponseModelView'.
+2022-12-05 14:59:31.234 +03:00 [INF] Executed action DMS_API.Controllers.GroupController.GetChildsInGroupByID_Search (DMS_API) in 11.3115ms
+2022-12-05 14:59:31.234 +03:00 [INF] Executed endpoint 'DMS_API.Controllers.GroupController.GetChildsInGroupByID_Search (DMS_API)'
+2022-12-05 14:59:31.234 +03:00 [INF] Request finished HTTP/1.1 POST https://localhost:7040/api/Group/GetChildsInGroupByID_Search application/json 66 - 200 - application/json;+charset=utf-8 15.1404ms
+2022-12-05 14:59:36.640 +03:00 [INF] Request starting HTTP/1.1 POST https://localhost:7040/api/Group/GetChildsInGroupByID_Search application/json 66
+2022-12-05 14:59:36.640 +03:00 [INF] Executing endpoint 'DMS_API.Controllers.GroupController.GetChildsInGroupByID_Search (DMS_API)'
+2022-12-05 14:59:36.640 +03:00 [INF] Route matched with {action = "GetChildsInGroupByID_Search", controller = "Group"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetChildsInGroupByID_Search(DMS_API.ModelsView.SearchChildGroupModelView, DMS_API.ModelsView.RequestHeaderModelView) on controller DMS_API.Controllers.GroupController (DMS_API).
+2022-12-05 14:59:36.653 +03:00 [INF] Executing OkObjectResult, writing value of type 'DMS_API.ModelsView.ResponseModelView'.
+2022-12-05 14:59:36.654 +03:00 [INF] Executed action DMS_API.Controllers.GroupController.GetChildsInGroupByID_Search (DMS_API) in 13.5812ms
+2022-12-05 14:59:36.654 +03:00 [INF] Executed endpoint 'DMS_API.Controllers.GroupController.GetChildsInGroupByID_Search (DMS_API)'
+2022-12-05 14:59:36.654 +03:00 [INF] Request finished HTTP/1.1 POST https://localhost:7040/api/Group/GetChildsInGroupByID_Search application/json 66 - 200 - application/json;+charset=utf-8 13.9032ms
+2022-12-05 14:59:41.162 +03:00 [INF] Request starting HTTP/1.1 POST https://localhost:7040/api/Group/GetChildsInGroupByID_Search application/json 66
+2022-12-05 14:59:41.162 +03:00 [INF] Executing endpoint 'DMS_API.Controllers.GroupController.GetChildsInGroupByID_Search (DMS_API)'
+2022-12-05 14:59:41.162 +03:00 [INF] Route matched with {action = "GetChildsInGroupByID_Search", controller = "Group"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetChildsInGroupByID_Search(DMS_API.ModelsView.SearchChildGroupModelView, DMS_API.ModelsView.RequestHeaderModelView) on controller DMS_API.Controllers.GroupController (DMS_API).
+2022-12-05 14:59:41.175 +03:00 [INF] Executing OkObjectResult, writing value of type 'DMS_API.ModelsView.ResponseModelView'.
+2022-12-05 14:59:41.175 +03:00 [INF] Executed action DMS_API.Controllers.GroupController.GetChildsInGroupByID_Search (DMS_API) in 12.6288ms
+2022-12-05 14:59:41.175 +03:00 [INF] Executed endpoint 'DMS_API.Controllers.GroupController.GetChildsInGroupByID_Search (DMS_API)'
+2022-12-05 14:59:41.175 +03:00 [INF] Request finished HTTP/1.1 POST https://localhost:7040/api/Group/GetChildsInGroupByID_Search application/json 66 - 200 - application/json;+charset=utf-8 13.0330ms
+2022-12-05 14:59:45.046 +03:00 [INF] Request starting HTTP/1.1 POST https://localhost:7040/api/Group/GetChildsInGroupByID_Search application/json 64
+2022-12-05 14:59:45.046 +03:00 [INF] Executing endpoint 'DMS_API.Controllers.GroupController.GetChildsInGroupByID_Search (DMS_API)'
+2022-12-05 14:59:45.046 +03:00 [INF] Route matched with {action = "GetChildsInGroupByID_Search", controller = "Group"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetChildsInGroupByID_Search(DMS_API.ModelsView.SearchChildGroupModelView, DMS_API.ModelsView.RequestHeaderModelView) on controller DMS_API.Controllers.GroupController (DMS_API).
+2022-12-05 14:59:45.057 +03:00 [INF] Executing OkObjectResult, writing value of type 'DMS_API.ModelsView.ResponseModelView'.
+2022-12-05 14:59:45.057 +03:00 [INF] Executed action DMS_API.Controllers.GroupController.GetChildsInGroupByID_Search (DMS_API) in 11.6064ms
+2022-12-05 14:59:45.057 +03:00 [INF] Executed endpoint 'DMS_API.Controllers.GroupController.GetChildsInGroupByID_Search (DMS_API)'
+2022-12-05 14:59:45.057 +03:00 [INF] Request finished HTTP/1.1 POST https://localhost:7040/api/Group/GetChildsInGroupByID_Search application/json 64 - 200 - application/json;+charset=utf-8 11.9347ms
+2022-12-05 14:59:52.606 +03:00 [INF] Request starting HTTP/1.1 POST https://localhost:7040/api/Group/GetChildsInGroupByID_Search application/json 64
+2022-12-05 14:59:52.606 +03:00 [INF] Executing endpoint 'DMS_API.Controllers.GroupController.GetChildsInGroupByID_Search (DMS_API)'
+2022-12-05 14:59:52.606 +03:00 [INF] Route matched with {action = "GetChildsInGroupByID_Search", controller = "Group"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetChildsInGroupByID_Search(DMS_API.ModelsView.SearchChildGroupModelView, DMS_API.ModelsView.RequestHeaderModelView) on controller DMS_API.Controllers.GroupController (DMS_API).
+2022-12-05 14:59:52.618 +03:00 [INF] Executing OkObjectResult, writing value of type 'DMS_API.ModelsView.ResponseModelView'.
+2022-12-05 14:59:52.618 +03:00 [INF] Executed action DMS_API.Controllers.GroupController.GetChildsInGroupByID_Search (DMS_API) in 11.9512ms
+2022-12-05 14:59:52.618 +03:00 [INF] Executed endpoint 'DMS_API.Controllers.GroupController.GetChildsInGroupByID_Search (DMS_API)'
+2022-12-05 14:59:52.618 +03:00 [INF] Request finished HTTP/1.1 POST https://localhost:7040/api/Group/GetChildsInGroupByID_Search application/json 64 - 200 - application/json;+charset=utf-8 12.3549ms
+2022-12-05 15:00:03.764 +03:00 [INF] Request starting HTTP/1.1 POST https://localhost:7040/api/Group/GetChildsInGroupByID_Search application/json 69
+2022-12-05 15:00:03.764 +03:00 [INF] Executing endpoint 'DMS_API.Controllers.GroupController.GetChildsInGroupByID_Search (DMS_API)'
+2022-12-05 15:00:03.764 +03:00 [INF] Route matched with {action = "GetChildsInGroupByID_Search", controller = "Group"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetChildsInGroupByID_Search(DMS_API.ModelsView.SearchChildGroupModelView, DMS_API.ModelsView.RequestHeaderModelView) on controller DMS_API.Controllers.GroupController (DMS_API).
+2022-12-05 15:00:03.775 +03:00 [INF] Executing OkObjectResult, writing value of type 'DMS_API.ModelsView.ResponseModelView'.
+2022-12-05 15:00:03.776 +03:00 [INF] Executed action DMS_API.Controllers.GroupController.GetChildsInGroupByID_Search (DMS_API) in 11.6372ms
+2022-12-05 15:00:03.776 +03:00 [INF] Executed endpoint 'DMS_API.Controllers.GroupController.GetChildsInGroupByID_Search (DMS_API)'
+2022-12-05 15:00:03.776 +03:00 [INF] Request finished HTTP/1.1 POST https://localhost:7040/api/Group/GetChildsInGroupByID_Search application/json 69 - 200 - application/json;+charset=utf-8 12.0157ms
+2022-12-05 15:00:25.702 +03:00 [INF] Request starting HTTP/1.1 POST https://localhost:7040/api/Group/GetChildsInGroupByID_Search application/json 69
+2022-12-05 15:00:25.702 +03:00 [INF] Executing endpoint 'DMS_API.Controllers.GroupController.GetChildsInGroupByID_Search (DMS_API)'
+2022-12-05 15:00:25.704 +03:00 [INF] Route matched with {action = "GetChildsInGroupByID_Search", controller = "Group"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetChildsInGroupByID_Search(DMS_API.ModelsView.SearchChildGroupModelView, DMS_API.ModelsView.RequestHeaderModelView) on controller DMS_API.Controllers.GroupController (DMS_API).
+2022-12-05 15:00:25.717 +03:00 [INF] Executing OkObjectResult, writing value of type 'DMS_API.ModelsView.ResponseModelView'.
+2022-12-05 15:00:25.717 +03:00 [INF] Executed action DMS_API.Controllers.GroupController.GetChildsInGroupByID_Search (DMS_API) in 12.5582ms
+2022-12-05 15:00:25.717 +03:00 [INF] Executed endpoint 'DMS_API.Controllers.GroupController.GetChildsInGroupByID_Search (DMS_API)'
+2022-12-05 15:00:25.717 +03:00 [INF] Request finished HTTP/1.1 POST https://localhost:7040/api/Group/GetChildsInGroupByID_Search application/json 69 - 200 - application/json;+charset=utf-8 15.1174ms
