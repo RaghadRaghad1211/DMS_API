@@ -147,7 +147,9 @@ namespace DMS_API.Services
         {
             try
             {
-                string getOrgInfo = $"SELECT OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName, OrgArNameUp, OrgEnNameUp, OrgKuNameUp, OrgIsActive, ObjDescription  FROM [User].[V_OrgTable]  WHERE OrgId= {OrgID} ";
+                string getOrgInfo = "SELECT OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName, " +
+                                    "       OrgArNameUp, OrgEnNameUp, OrgKuNameUp, OrgIsActive, ObjDescription  " +
+                                   $"FROM  [User].[V_OrgTable]  WHERE OrgId= {OrgID} ";
                 DataTable dt = new DataTable();
                 dt = await Task.Run(() => dam.FireDataTable(getOrgInfo));
                 if (dt == null)

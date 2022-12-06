@@ -32,10 +32,19 @@ namespace DMS_API.Controllers
 
         [AllowAnonymous]
         [HttpGet]
-        [Route("ResetPassword/{UserId}")]
-        public async Task<IActionResult> ResetPassword([FromRoute] int UserId, [FromHeader] RequestHeaderModelView RequestHeader)
+        [Route("ResetPasswordAdmin/{UserId}")]
+        public async Task<IActionResult> ResetPasswordAdmin([FromRoute] int UserId, [FromHeader] RequestHeaderModelView RequestHeader)
         {
-            Response_MV = await User_S.ResetPassword(UserId, RequestHeader);
+            Response_MV = await User_S.ResetPasswordAdmin(UserId, RequestHeader);
+            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("ResetPasswordUser/{UserName}")]
+        public async Task<IActionResult> ResetPasswordUser([FromRoute] string UserName, [FromHeader] string? Lang = "Ar")
+        {
+            Response_MV = await User_S.ResetPasswordUser(UserName, Lang);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
