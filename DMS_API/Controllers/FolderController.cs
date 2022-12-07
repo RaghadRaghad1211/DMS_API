@@ -88,24 +88,6 @@ namespace DMS_API.Controllers
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
-        //[AllowAnonymous]
-        //[HttpGet]
-        //[Route("GetChildsNotInFolderByID/{FolderId}")]
-        //public async Task<IActionResult> GetChildsNotInFolderByID([FromRoute] int FolderId, [FromHeader] RequestHeaderModelView RequestHeader)
-        //{
-        //    Response_MV = await LinkParentChild_S.GetChildNotInGroupByID(FolderId, RequestHeader);
-        //    return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
-        //}
-
-        //[AllowAnonymous]
-        //[HttpPost]
-        //[Route("GetChildsNotInFolderByID_Search")]
-        //public async Task<IActionResult> GetChildsNotInFolderByID_Search([FromBody] SearchChildParentModelView SearchChildFolder_MV, [FromHeader] RequestHeaderModelView RequestHeader)
-        //{
-        //    Response_MV = await LinkParentChild_S.GetChildNotInGroupByID_Search(SearchChildFolder_MV, RequestHeader);
-        //    return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
-        //}
-
         [AllowAnonymous]
         [HttpPost]
         [Route("AddChildsIntoFolder")]
@@ -123,6 +105,18 @@ namespace DMS_API.Controllers
             Response_MV = await LinkParentChild_S.RemoveChildFromParent((int)HelpService.ClassType.Folder, LinkParentChild_MV, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
+
+
+        [AllowAnonymous]
+        [HttpPut]
+        [Route("MoveFolderToNewFolder")]
+        public async Task<IActionResult> MoveFolderToNewFolder([FromBody] MoveChildToNewFolderModelView MoveChildToNewFolder_MV, [FromHeader] RequestHeaderModelView RequestHeader)
+        {
+            Response_MV = await LinkParentChild_S.MoveChildToNewFolder((int)HelpService.ClassType.Folder, (int)HelpService.ClassType.Folder, MoveChildToNewFolder_MV, RequestHeader);
+            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
+        }
+
+
         #endregion
     }
 }

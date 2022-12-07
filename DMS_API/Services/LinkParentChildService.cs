@@ -477,6 +477,87 @@ namespace DMS_API.Services
         }
         #endregion
 
+        #region Folders & Documents
+        public async Task<ResponseModelView> MoveChildToNewFolder(int FolderClassID, int ChildClassID, MoveChildToNewFolderModelView MoveChildToNewFolder_MV, RequestHeaderModelView RequestHeader)
+        {
+            try
+            {
+                Session_S = new SessionService();
+                var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
+                if (ResponseSession.Success == false)
+                {
+                    return ResponseSession;
+                }
+                else
+                {
+
+
+                    int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
+                    int checkExist = await Task.Run(() => Convert.ToInt32(dam.FireSQL("SELECT COUNT(LcId) FROM [User].[V_Links] " +
+                                                                                     $"WHERE  LcParentObjId={MoveChildToNewFolder_MV.CurrentParentID} AND LcParentClsId={FolderClassID} " +
+                                                                                     $"       AND LcChildObjId={MoveChildToNewFolder_MV.ChildID} AND LcChildClsId={ChildClassID}   ")));
+                    if (MoveChildToNewFolder_MV.CurrentParentID == 0 || MoveChildToNewFolder_MV.ChildID == 0 || MoveChildToNewFolder_MV.NewParentID == 0)
+                    {
+                        Response_MV = new ResponseModelView
+                        {
+                            Success = false,
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.MustSelectedObjects],
+                            Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                        };
+                        return Response_MV;
+                    }
+                    else
+                    {
+                        if (checkExist == 0)
+                        {
+                            Response_MV = new ResponseModelView
+                            {
+                                Success = false,
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsNotExist],
+                                Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                            };
+                            return Response_MV;
+                        }
+                        else
+                        {
+                            string moveChild2Folder = "EXEC [Main].[MoveChildToFolder] ";
+                            var outValue = await Task.Run(() => dam.DoQueryExecProcedure(moveChild2Folder));
+                            if (outValue == 0.ToString() || (outValue == null || outValue.Trim() == ""))
+                            {
+                                Response_MV = new ResponseModelView
+                                {
+                                    Success = false,
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.MoveFaild],
+                                    Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                                };
+                                return Response_MV;
+                            }
+                            else
+                            {
+                                Response_MV = new ResponseModelView
+                                {
+                                    Success = true,
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.MoveSuccess],
+                                    Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
+                                };
+                                return Response_MV;
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Response_MV = new ResponseModelView
+                {
+                    Success = false,
+                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError] + " - " + ex.Message,
+                    Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                };
+                return Response_MV;
+            }
+        }
+        #endregion
 
         #region Test
         //public async Task<ResponseModelView> GetLinkParentsChildsList(PaginationModelView Pagination_MV, RequestHeaderModelView RequestHeader)

@@ -28,6 +28,8 @@
         public static readonly string DeleteFaild = "DeleteFaild";
         public static readonly string EditSuccess = "EditSuccess";
         public static readonly string EditFaild = "EditFaild";
+        public static readonly string MoveSuccess = "MoveSuccess";
+        public static readonly string MoveFaild = "MoveFaild";
         public static readonly string UserNotActive = "UserNotActive";
         public static readonly string LoginFaild = "LoginFaild";
         public static readonly string InsertFaild = "InsertFaild";
@@ -151,6 +153,8 @@
                      {DeleteFaild, "فشل بعملية الحذف" },//OrgNameMustEnter
                      {OrgNameMustEnter, "يجب اضافة اسم الموؤسسة" },
                      { UsernameIsExist, "أسم المستخدم موجود" },
+                     { MoveSuccess, "تمت عملية النقل" },
+                     { MoveFaild, "فشل بعملية النقل" },
 
 
 
@@ -181,7 +185,7 @@
                      { InsertSuccess, "Insert Success" },
                      { InsertFaild, "Insert Faild" },
                      { EditSuccess, "Edit Success" },
-                     { EditFaild, "Faild Success" },
+                     { EditFaild, "Edit Faild" },
                      { IsExist, "Is Exist" },
                      { IsNotExist, "Is Not Exist" },
                      { IsEmpty, "Is Empty" },
@@ -216,6 +220,8 @@
                      {DeleteFaild, "Delete Faild" },
                      {OrgNameMustEnter, "OrgName Must Enter" },
                      {UsernameIsExist, "Username is exist" },
+                     { MoveSuccess, "Move Success" },
+                     { MoveFaild, "Move Faild" },
 
 
 
