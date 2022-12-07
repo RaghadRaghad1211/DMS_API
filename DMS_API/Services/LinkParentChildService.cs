@@ -17,7 +17,7 @@ namespace DMS_API.Services
         private DataTable dt { get; set; }
         private LinkParentChildModel LinkParentChild_M { get; set; }
         private GetChildNotInParentModelView ChildNotInParent_M { get; set; }
-        private List<LinkParentChildModel> LinkParentChild_Mlist { get; set; } 
+        private List<LinkParentChildModel> LinkParentChild_Mlist { get; set; }
         private List<GetChildNotInParentModelView> ChildNotInParent_MVlist { get; set; }
         private ResponseModelView Response_MV { get; set; }
         // 2 Group , 4 Folder  , 5 Document
@@ -31,6 +31,8 @@ namespace DMS_API.Services
         #endregion
 
         #region Functions
+
+        #region Groups & Folders
         public async Task<ResponseModelView> GetChildInParentByID(int ParentClassID, int ParentID, RequestHeaderModelView RequestHeader)
         {
             try
@@ -51,12 +53,12 @@ namespace DMS_API.Services
                     //                            "FROM    [User].V_Links " +
                     //                           $"WHERE   LcParentObjId={ParentID} AND LcParentClsId ={ParentClassID} AND LcIsActive=1"; GetChildsInGroup
 
-                    string getParentChildInfo = $"SELECT LcId,ParentUserOwnerId,ParentOrgOwnerId, LcParentObjId, ObjTitle, LcParentClsId," +
+                    string getGroupChildInfo = $"SELECT LcId,ParentUserOwnerId,ParentOrgOwnerId, LcParentObjId, ObjTitle, LcParentClsId," +
                                                  "       ParentClassType, LcChildObjId, ChildTitle, LcChildClsId, ChildClassType, LcIsActive " +
-                                                $" FROM  [User].[GetChildsInGroup]({ ParentID})";
+                                                $" FROM  [Main].[GetChildsInParent]({ParentID},{ParentClassID})";
 
                     dt = new DataTable();
-                    dt = await Task.Run(() => dam.FireDataTable(getParentChildInfo));
+                    dt = await Task.Run(() => dam.FireDataTable(getGroupChildInfo));
                     if (dt == null)
                     {
                         Response_MV = new ResponseModelView
@@ -120,8 +122,7 @@ namespace DMS_API.Services
                 return Response_MV;
             }
         }
-
-        public async Task<ResponseModelView> GetChildInParentByID_Search(SearchChildGroupModelView SearchChildGroup_MV, RequestHeaderModelView RequestHeader)
+        public async Task<ResponseModelView> GetChildInParentByID_Search(int ParentClassID, SearchChildParentModelView SearchChildParent_MV, RequestHeaderModelView RequestHeader)
         {
             try
             {
@@ -140,12 +141,12 @@ namespace DMS_API.Services
                     //                             "       ParentClassType, LcChildObjId, ChildTitle, LcChildClsId, ChildClassType, LcIsActive " +
                     //                            $" FROM  [User].[GetChildsInGroup]({ParentID})";
 
-                    string getParentChildInfo_Search = $"SELECT LcId,ParentUserOwnerId,ParentOrgOwnerId, LcParentObjId, ObjTitle, LcParentClsId," +
+                    string getGroupChildInfo_Search = $"SELECT LcId,ParentUserOwnerId,ParentOrgOwnerId, LcParentObjId, ObjTitle, LcParentClsId," +
                                                  "       ParentClassType, LcChildObjId, ChildTitle, LcChildClsId, ChildClassType, LcIsActive " +
-                                                $" FROM  [User].[GetChildsInGroup_Search]({SearchChildGroup_MV.GroupId} , {SearchChildGroup_MV.ChildTypeId},'{SearchChildGroup_MV.TitleSearch}')";
+                                                $" FROM  [Main].[GetChildsInParent_Search]({SearchChildParent_MV.ParentId}, {ParentClassID}, {SearchChildParent_MV.ChildTypeId},'{SearchChildParent_MV.TitleSearch}')";
 
                     dt = new DataTable();
-                    dt = await Task.Run(() => dam.FireDataTable(getParentChildInfo_Search));
+                    dt = await Task.Run(() => dam.FireDataTable(getGroupChildInfo_Search));
                     if (dt == null)
                     {
                         Response_MV = new ResponseModelView
@@ -209,8 +210,10 @@ namespace DMS_API.Services
                 return Response_MV;
             }
         }
+        #endregion
 
-        public async Task<ResponseModelView> GetChildNotInParentByID(int ParentID, RequestHeaderModelView RequestHeader)
+        #region Groups
+        public async Task<ResponseModelView> GetChildNotInGroupByID(int ParentClassID, int GroupID, RequestHeaderModelView RequestHeader)
         {
             try
             {
@@ -223,13 +226,7 @@ namespace DMS_API.Services
                 else
                 {
                     int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
-                    //int orgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {userLoginID} "));
-
-                    //string getParentChildInfo = "SELECT  LcId,ParentUserOwnerId,ParentOrgOwnerId, LcParentObjId, ObjTitle, LcParentClsId,  " +
-                    //                            "        ParentClassType, LcChildObjId, ChildTitle, LcChildClsId, ChildClassType, LcIsActive " +
-                    //                            "FROM    [User].V_Links " +
-                    //                           $"WHERE   LcParentObjId={ParentID} AND LcParentClsId ={ParentClassID} AND LcIsActive=1";
-                    string getChildNotinGroup = $"SELECT ID, Title, IsActive, Type FROM [User].[GetChildsNotInGroup] ({ParentID} ,{userLoginID})";
+                    string getChildNotinGroup = $"SELECT ID, Title, IsActive, Type FROM [User].[GetChildsNotInGroup] ({GroupID}, {ParentClassID}, {userLoginID})";
 
                     dt = new DataTable();
                     dt = await Task.Run(() => dam.FireDataTable(getChildNotinGroup));
@@ -288,10 +285,9 @@ namespace DMS_API.Services
                 return Response_MV;
             }
         }
-
-        public async Task<ResponseModelView> GetChildNotInParentByID_Search(SearchChildGroupModelView SearchChildGroup_MV, RequestHeaderModelView RequestHeader)
+        public async Task<ResponseModelView> GetChildNotInGroupByID_Search(int ParentClassID, SearchChildParentModelView SearchChildParent_MV, RequestHeaderModelView RequestHeader)
         {
-            try                                                             //@GroupId INT,@UserId int,@Type int,@Title
+            try
             {
                 Session_S = new SessionService();
                 var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
@@ -303,7 +299,7 @@ namespace DMS_API.Services
                 {
                     int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
 
-                    string GetChildsNotInGroup_Search = $"SELECT ID, Title, IsActive, Type FROM [User].[GetChildsNotInGroup_Search] ({SearchChildGroup_MV.GroupId} ,{userLoginID}, {SearchChildGroup_MV.ChildTypeId},'{SearchChildGroup_MV.TitleSearch}')";
+                    string GetChildsNotInGroup_Search = $"SELECT ID, Title, IsActive, Type FROM [User].[GetChildsNotInGroup_Search] ({SearchChildParent_MV.ParentId}, {ParentClassID} ,{userLoginID}, {SearchChildParent_MV.ChildTypeId},'{SearchChildParent_MV.TitleSearch}')";
 
                     dt = new DataTable();
                     dt = await Task.Run(() => dam.FireDataTable(GetChildsNotInGroup_Search));
@@ -362,7 +358,9 @@ namespace DMS_API.Services
                 return Response_MV;
             }
         }
+        #endregion
 
+        #region Groups & Folders
         public async Task<ResponseModelView> AddChildIntoParent(int ParentClassID, LinkParentChildModelView LinkParentChild_MV, RequestHeaderModelView RequestHeader)
         {
             try
@@ -387,7 +385,7 @@ namespace DMS_API.Services
                     }
                     for (int i = 0; i < LinkParentChild_MV.ChildIds.Count; i++)
                     {
-                        string exeut = $"EXEC [Main].[AddLinksPro]  '{LinkParentChild_MV.ParentId}', '{ParentClassID}','{LinkParentChild_MV.ChildIds[i]}',{1} ";
+                        string exeut = $"EXEC [Main].[AddLinksPro]  '{LinkParentChild_MV.ParentId}', '{ParentClassID}', '{LinkParentChild_MV.ChildIds[i]}',{1} ";
                         var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
                         if (outValue == 0.ToString() || (outValue == null || outValue.Trim() == ""))
                         {
@@ -420,7 +418,6 @@ namespace DMS_API.Services
                 return Response_MV;
             }
         }
-
         public async Task<ResponseModelView> RemoveChildFromParent(int ParentClassID, LinkParentChildModelView LinkParentChild_MV, RequestHeaderModelView RequestHeader)
         {
             try
@@ -445,7 +442,7 @@ namespace DMS_API.Services
                     }
                     for (int i = 0; i < LinkParentChild_MV.ChildIds.Count; i++)
                     {
-                        string exeut = $"EXEC [Main].[UpdateLinksPro]  '{LinkParentChild_MV.ParentId}','{LinkParentChild_MV.ChildIds[i]}',{0} ";
+                        string exeut = $"EXEC [Main].[UpdateLinksPro]  '{LinkParentChild_MV.ParentId}', '{ParentClassID}', '{LinkParentChild_MV.ChildIds[i]}','{0}' ";
                         var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
                         if (outValue == 0.ToString() || (outValue == null || outValue.Trim() == ""))
                         {
@@ -478,7 +475,7 @@ namespace DMS_API.Services
                 return Response_MV;
             }
         }
-
+        #endregion
 
 
         #region Test

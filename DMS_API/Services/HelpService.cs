@@ -20,7 +20,9 @@ namespace DMS_API.Services
         private static ResponseModelView Response_MV { get; set; }
         public enum ClassType
         {
+            User = 1,
             Group = 2,
+            Org = 3,
             Folder = 4,
             Document = 5
         }

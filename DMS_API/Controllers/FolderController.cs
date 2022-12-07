@@ -79,14 +79,50 @@ namespace DMS_API.Controllers
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
+        [AllowAnonymous]
+        [HttpPost]
+        [Route("GetChildsInFolderByID_Search")]
+        public async Task<IActionResult> GetChildsInFolderByID_Search([FromBody] SearchChildParentModelView SearchChildFolder_MV, [FromHeader] RequestHeaderModelView RequestHeader)
+        {
+            Response_MV = await LinkParentChild_S.GetChildInParentByID_Search((int)HelpService.ClassType.Folder, SearchChildFolder_MV, RequestHeader);
+            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
+        }
+
         //[AllowAnonymous]
         //[HttpGet]
-        //[Route("GetDesktopFolderByUserLoginID")]
-        //public async Task<IActionResult> GetDesktopFolderByUserLoginID([FromHeader] RequestHeaderModelView RequestHeader)
+        //[Route("GetChildsNotInFolderByID/{FolderId}")]
+        //public async Task<IActionResult> GetChildsNotInFolderByID([FromRoute] int FolderId, [FromHeader] RequestHeaderModelView RequestHeader)
         //{
-        //    Response_MV = await HelpService.GetDesktopFolderByUserLoginID(RequestHeader);
+        //    Response_MV = await LinkParentChild_S.GetChildNotInGroupByID(FolderId, RequestHeader);
         //    return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         //}
+
+        //[AllowAnonymous]
+        //[HttpPost]
+        //[Route("GetChildsNotInFolderByID_Search")]
+        //public async Task<IActionResult> GetChildsNotInFolderByID_Search([FromBody] SearchChildParentModelView SearchChildFolder_MV, [FromHeader] RequestHeaderModelView RequestHeader)
+        //{
+        //    Response_MV = await LinkParentChild_S.GetChildNotInGroupByID_Search(SearchChildFolder_MV, RequestHeader);
+        //    return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
+        //}
+
+        [AllowAnonymous]
+        [HttpPost]
+        [Route("AddChildsIntoFolder")]
+        public async Task<IActionResult> AddChildsIntoFolder([FromBody] LinkParentChildModelView LinkParentChild_MV, [FromHeader] RequestHeaderModelView RequestHeader)
+        {
+            Response_MV = await LinkParentChild_S.AddChildIntoParent((int)HelpService.ClassType.Folder, LinkParentChild_MV, RequestHeader);
+            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
+        }
+
+        [AllowAnonymous]
+        [HttpPut]
+        [Route("RemoveChildsFromFolder")]
+        public async Task<IActionResult> RemoveChildsFromFolder([FromBody] LinkParentChildModelView LinkParentChild_MV, [FromHeader] RequestHeaderModelView RequestHeader)
+        {
+            Response_MV = await LinkParentChild_S.RemoveChildFromParent((int)HelpService.ClassType.Folder, LinkParentChild_MV, RequestHeader);
+            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
+        }
         #endregion
     }
 }

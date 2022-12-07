@@ -26,6 +26,15 @@ try
     #endregion
     Log.Information("API is Starting");
 
+    #region Create Server Folder
+    string path = Path.Combine(builder.Environment.WebRootPath, "DMSserver");
+    if (!Directory.Exists(path))
+    {
+        Directory.CreateDirectory(path);
+        for (int i = 1; i <= 1000; i++)
+            System.IO.Directory.CreateDirectory($"{path}\\{i}");
+    }
+    #endregion
     #region Cors
     builder.Services.AddCors(options =>
     {

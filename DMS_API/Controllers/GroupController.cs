@@ -82,29 +82,42 @@ namespace DMS_API.Controllers
         [AllowAnonymous]
         [HttpPost]
         [Route("GetChildsInGroupByID_Search")]
-        public async Task<IActionResult> GetChildsInGroupByID_Search([FromBody] SearchChildGroupModelView SearchChildGroup_MV, [FromHeader] RequestHeaderModelView RequestHeader)
+        public async Task<IActionResult> GetChildsInGroupByID_Search([FromBody] SearchChildParentModelView SearchChildGroup_MV, [FromHeader] RequestHeaderModelView RequestHeader)
         {
-            Response_MV = await LinkParentChild_S.GetChildInParentByID_Search(SearchChildGroup_MV, RequestHeader);
+            Response_MV = await LinkParentChild_S.GetChildInParentByID_Search((int)HelpService.ClassType.Group, SearchChildGroup_MV, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
+
+
+
+
 
         [AllowAnonymous]
         [HttpGet]
         [Route("GetChildsNotInGroupByID/{GroupId}")]
         public async Task<IActionResult> GetChildsNotInGroupByID([FromRoute] int GroupId, [FromHeader] RequestHeaderModelView RequestHeader)
         {
-            Response_MV = await LinkParentChild_S.GetChildNotInParentByID(GroupId, RequestHeader);
+            Response_MV = await LinkParentChild_S.GetChildNotInGroupByID((int)HelpService.ClassType.Group, GroupId, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
         [AllowAnonymous]
         [HttpPost]
         [Route("GetChildsNotInGroupByID_Search")]
-        public async Task<IActionResult> GetChildsNotInGroupByID_Search([FromBody] SearchChildGroupModelView SearchChildGroup_MV, [FromHeader] RequestHeaderModelView RequestHeader)
+        public async Task<IActionResult> GetChildsNotInGroupByID_Search([FromBody] SearchChildParentModelView SearchChildGroup_MV, [FromHeader] RequestHeaderModelView RequestHeader)
         {
-            Response_MV = await LinkParentChild_S.GetChildNotInParentByID_Search(SearchChildGroup_MV, RequestHeader);
+            Response_MV = await LinkParentChild_S.GetChildNotInGroupByID_Search((int)HelpService.ClassType.Group, SearchChildGroup_MV, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
+
+
+
+
+
+
+
+
+
 
         [AllowAnonymous]
         [HttpPost]
