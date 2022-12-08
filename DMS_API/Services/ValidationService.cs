@@ -53,9 +53,13 @@ namespace DMS_API.Services
         public static bool IsPhoneNumber(this string phoneNumber)
         {
             int count = phoneNumber.Length;
-            if (count == 11)
+            if (count == 13)
             {
-                return Regex.Match(phoneNumber, @"^([0-9]{11})$").Success;
+                if (phoneNumber.Substring(0, 4) == "9647")
+                {
+                    return Regex.Match(phoneNumber, @"^([0-9]{13})$").Success;
+                }
+                return false;
             }
             return false;
         }

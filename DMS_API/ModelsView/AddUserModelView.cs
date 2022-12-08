@@ -10,13 +10,11 @@
         public string UserName { get; set; }      
         public string Password { get; set; }
         public string PasswordConfirm { get; set; }
-        public string Role { get; set; }
-        public bool IsOrgAdmin { get; set; }=false;
+        public bool IsOrgAdmin { get; set; }
         public string PhoneNo { get; set; }
         public string Email { get; set; }
         public string UserEmpNo { get; set; }
         public string UserIdintNo { get; set; }
-        //public int UserOwner { get; set; }
         public int OrgOwner { get; set; }
         public bool IsActive { get; set; }
         public string Note { get; set; }

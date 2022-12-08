@@ -10,7 +10,7 @@
         public string FullName { get; set; }
         public string UserName { get; set; }
         public string Role { get; set; }
-        public bool IsOrgAdmin { get; set; } = false;
+        public bool IsOrgAdmin { get; set; }
         public string PhoneNo { get; set; }
         public string Email { get; set; }
         public string UserEmpNo { get; set; }

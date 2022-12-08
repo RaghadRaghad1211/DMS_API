@@ -509,3 +509,126 @@
 2022-12-08 13:21:23.375 +03:00 [INF] Executed action DMS_API.Controllers.DocumentController.AddDocument (DMS_API) in 10282.9756ms
 2022-12-08 13:21:23.375 +03:00 [INF] Executed endpoint 'DMS_API.Controllers.DocumentController.AddDocument (DMS_API)'
 2022-12-08 13:21:23.375 +03:00 [INF] Request finished HTTP/1.1 POST https://localhost:7040/api/Document/AddDocument application/json 499 - 200 - application/json;+charset=utf-8 10285.6297ms
+2022-12-08 13:52:00.924 +03:00 [INF] User profile is available. Using 'C:\Users\pc\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2022-12-08 13:52:01.125 +03:00 [INF] Now listening on: https://localhost:7040
+2022-12-08 13:52:01.125 +03:00 [INF] Now listening on: http://localhost:5041
+2022-12-08 13:52:01.126 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2022-12-08 13:52:01.127 +03:00 [INF] Hosting environment: Development
+2022-12-08 13:52:01.127 +03:00 [INF] Content root path: F:\TestProjects\DMS_API\DMS_API\
+2022-12-08 13:52:01.445 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/index.html - -
+2022-12-08 13:52:01.632 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/index.html - - - 200 - text/html;charset=utf-8 189.5860ms
+2022-12-08 13:52:01.638 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_vs/browserLink - -
+2022-12-08 13:52:01.638 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - -
+2022-12-08 13:52:01.644 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - - - 200 11984 application/javascript;+charset=utf-8 5.5638ms
+2022-12-08 13:52:01.665 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_vs/browserLink - - - 200 - text/javascript;+charset=UTF-8 26.9307ms
+2022-12-08 13:52:01.718 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - -
+2022-12-08 13:52:01.816 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - - - 200 - application/json;charset=utf-8 98.3260ms
+2022-12-08 13:57:12.140 +03:00 [INF] User profile is available. Using 'C:\Users\pc\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2022-12-08 13:57:12.308 +03:00 [INF] Now listening on: https://localhost:7040
+2022-12-08 13:57:12.308 +03:00 [INF] Now listening on: http://localhost:5041
+2022-12-08 13:57:12.310 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2022-12-08 13:57:12.310 +03:00 [INF] Hosting environment: Development
+2022-12-08 13:57:12.310 +03:00 [INF] Content root path: F:\TestProjects\DMS_API\DMS_API\
+2022-12-08 13:57:12.971 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/index.html - -
+2022-12-08 13:57:13.162 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/index.html - - - 200 - text/html;charset=utf-8 193.6392ms
+2022-12-08 13:57:13.163 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - -
+2022-12-08 13:57:13.163 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_vs/browserLink - -
+2022-12-08 13:57:13.174 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - - - 200 11984 application/javascript;+charset=utf-8 10.6493ms
+2022-12-08 13:57:13.199 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_vs/browserLink - - - 200 - text/javascript;+charset=UTF-8 36.5482ms
+2022-12-08 13:57:13.252 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - -
+2022-12-08 13:57:13.350 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - - - 200 - application/json;charset=utf-8 97.9943ms
+2022-12-08 14:21:35.831 +03:00 [INF] User profile is available. Using 'C:\Users\pc\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2022-12-08 14:21:36.007 +03:00 [INF] Now listening on: https://localhost:7040
+2022-12-08 14:21:36.008 +03:00 [INF] Now listening on: http://localhost:5041
+2022-12-08 14:21:36.009 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2022-12-08 14:21:36.010 +03:00 [INF] Hosting environment: Development
+2022-12-08 14:21:36.010 +03:00 [INF] Content root path: F:\TestProjects\DMS_API\DMS_API\
+2022-12-08 14:21:36.665 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/index.html - -
+2022-12-08 14:21:36.846 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - -
+2022-12-08 14:21:36.847 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_vs/browserLink - -
+2022-12-08 14:21:36.855 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - - - 200 11984 application/javascript;+charset=utf-8 8.4105ms
+2022-12-08 14:21:36.855 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/index.html - - - 200 - text/html;charset=utf-8 193.3642ms
+2022-12-08 14:21:36.885 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_vs/browserLink - - - 200 - text/javascript;+charset=UTF-8 38.2240ms
+2022-12-08 14:21:36.946 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - -
+2022-12-08 14:21:37.043 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - - - 200 - application/json;charset=utf-8 96.8294ms
+2022-12-08 14:21:50.127 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/api/User/ResetPasswordAdmin/1 - -
+2022-12-08 14:21:50.198 +03:00 [INF] Executing endpoint 'DMS_API.Controllers.UserController.ResetPasswordAdmin (DMS_API)'
+2022-12-08 14:21:50.220 +03:00 [INF] Route matched with {action = "ResetPasswordAdmin", controller = "User"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] ResetPasswordAdmin(Int32, DMS_API.ModelsView.RequestHeaderModelView) on controller DMS_API.Controllers.UserController (DMS_API).
+2022-12-08 14:21:58.053 +03:00 [INF] Executing ObjectResult, writing value of type 'DMS_API.ModelsView.ResponseModelView'.
+2022-12-08 14:21:58.066 +03:00 [INF] Executed action DMS_API.Controllers.UserController.ResetPasswordAdmin (DMS_API) in 7840.9482ms
+2022-12-08 14:21:58.067 +03:00 [INF] Executed endpoint 'DMS_API.Controllers.UserController.ResetPasswordAdmin (DMS_API)'
+2022-12-08 14:21:58.068 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/api/User/ResetPasswordAdmin/1 - - - 400 - application/json;+charset=utf-8 7940.0962ms
+2022-12-08 14:22:15.634 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/api/User/ResetPasswordAdmin/1 - -
+2022-12-08 14:22:15.638 +03:00 [INF] Executing endpoint 'DMS_API.Controllers.UserController.ResetPasswordAdmin (DMS_API)'
+2022-12-08 14:22:15.638 +03:00 [INF] Route matched with {action = "ResetPasswordAdmin", controller = "User"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] ResetPasswordAdmin(Int32, DMS_API.ModelsView.RequestHeaderModelView) on controller DMS_API.Controllers.UserController (DMS_API).
+2022-12-08 14:22:28.480 +03:00 [INF] User profile is available. Using 'C:\Users\pc\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2022-12-08 14:22:28.664 +03:00 [INF] Now listening on: https://localhost:7040
+2022-12-08 14:22:28.664 +03:00 [INF] Now listening on: http://localhost:5041
+2022-12-08 14:22:28.665 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2022-12-08 14:22:28.665 +03:00 [INF] Hosting environment: Development
+2022-12-08 14:22:28.666 +03:00 [INF] Content root path: F:\TestProjects\DMS_API\DMS_API\
+2022-12-08 14:22:29.275 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/index.html - -
+2022-12-08 14:22:29.474 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - -
+2022-12-08 14:22:29.474 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_vs/browserLink - -
+2022-12-08 14:22:29.476 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/index.html - - - 200 - text/html;charset=utf-8 202.6635ms
+2022-12-08 14:22:29.484 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - - - 200 11984 application/javascript;+charset=utf-8 9.6879ms
+2022-12-08 14:22:29.505 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_vs/browserLink - - - 200 - text/javascript;+charset=UTF-8 30.9108ms
+2022-12-08 14:22:29.557 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - -
+2022-12-08 14:22:29.656 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - - - 200 - application/json;charset=utf-8 98.9825ms
+2022-12-08 14:22:42.481 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/api/User/ResetPasswordAdmin/1 - -
+2022-12-08 14:22:42.548 +03:00 [INF] Executing endpoint 'DMS_API.Controllers.UserController.ResetPasswordAdmin (DMS_API)'
+2022-12-08 14:22:42.568 +03:00 [INF] Route matched with {action = "ResetPasswordAdmin", controller = "User"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] ResetPasswordAdmin(Int32, DMS_API.ModelsView.RequestHeaderModelView) on controller DMS_API.Controllers.UserController (DMS_API).
+2022-12-08 14:23:12.076 +03:00 [INF] Executing ObjectResult, writing value of type 'DMS_API.ModelsView.ResponseModelView'.
+2022-12-08 14:23:12.089 +03:00 [INF] Executed action DMS_API.Controllers.UserController.ResetPasswordAdmin (DMS_API) in 29516.7765ms
+2022-12-08 14:23:12.090 +03:00 [INF] Executed endpoint 'DMS_API.Controllers.UserController.ResetPasswordAdmin (DMS_API)'
+2022-12-08 14:23:12.090 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/api/User/ResetPasswordAdmin/1 - - - 400 - application/json;+charset=utf-8 29609.3647ms
+2022-12-08 14:23:29.107 +03:00 [INF] User profile is available. Using 'C:\Users\pc\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2022-12-08 14:23:29.278 +03:00 [INF] Now listening on: https://localhost:7040
+2022-12-08 14:23:29.278 +03:00 [INF] Now listening on: http://localhost:5041
+2022-12-08 14:23:29.279 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2022-12-08 14:23:29.280 +03:00 [INF] Hosting environment: Development
+2022-12-08 14:23:29.280 +03:00 [INF] Content root path: F:\TestProjects\DMS_API\DMS_API\
+2022-12-08 14:23:29.466 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/index.html - -
+2022-12-08 14:23:29.651 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_vs/browserLink - -
+2022-12-08 14:23:29.651 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - -
+2022-12-08 14:23:29.657 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - - - 200 11984 application/javascript;+charset=utf-8 5.6563ms
+2022-12-08 14:23:29.657 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/index.html - - - 200 - text/html;charset=utf-8 190.6001ms
+2022-12-08 14:23:29.684 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_vs/browserLink - - - 200 - text/javascript;+charset=UTF-8 32.9068ms
+2022-12-08 14:23:29.735 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - -
+2022-12-08 14:23:29.832 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - - - 200 - application/json;charset=utf-8 97.1953ms
+2022-12-08 14:23:39.260 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/api/User/ResetPasswordAdmin/5 - -
+2022-12-08 14:23:39.330 +03:00 [INF] Executing endpoint 'DMS_API.Controllers.UserController.ResetPasswordAdmin (DMS_API)'
+2022-12-08 14:23:39.351 +03:00 [INF] Route matched with {action = "ResetPasswordAdmin", controller = "User"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] ResetPasswordAdmin(Int32, DMS_API.ModelsView.RequestHeaderModelView) on controller DMS_API.Controllers.UserController (DMS_API).
+2022-12-08 14:24:00.263 +03:00 [INF] Executing ObjectResult, writing value of type 'DMS_API.ModelsView.ResponseModelView'.
+2022-12-08 14:24:00.275 +03:00 [INF] Executed action DMS_API.Controllers.UserController.ResetPasswordAdmin (DMS_API) in 20919.2476ms
+2022-12-08 14:24:00.276 +03:00 [INF] Executed endpoint 'DMS_API.Controllers.UserController.ResetPasswordAdmin (DMS_API)'
+2022-12-08 14:24:00.276 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/api/User/ResetPasswordAdmin/5 - - - 400 - application/json;+charset=utf-8 21016.3213ms
+2022-12-08 14:24:01.267 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/index.html - -
+2022-12-08 14:24:01.283 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/index.html - - - 200 - text/html;charset=utf-8 15.5837ms
+2022-12-08 14:24:01.315 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - -
+2022-12-08 14:24:01.316 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_vs/browserLink - -
+2022-12-08 14:24:01.316 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - - - 200 11984 application/javascript;+charset=utf-8 0.4267ms
+2022-12-08 14:24:01.337 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_vs/browserLink - - - 200 - text/javascript;+charset=UTF-8 20.9223ms
+2022-12-08 14:24:01.369 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - -
+2022-12-08 14:24:01.381 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - - - 200 - application/json;charset=utf-8 12.0817ms
+2022-12-08 14:24:05.130 +03:00 [INF] User profile is available. Using 'C:\Users\pc\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2022-12-08 14:24:05.407 +03:00 [INF] Now listening on: https://localhost:7040
+2022-12-08 14:24:05.407 +03:00 [INF] Now listening on: http://localhost:5041
+2022-12-08 14:24:05.409 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2022-12-08 14:24:05.409 +03:00 [INF] Hosting environment: Development
+2022-12-08 14:24:05.409 +03:00 [INF] Content root path: F:\TestProjects\DMS_API\DMS_API\
+2022-12-08 14:24:06.067 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/index.html - -
+2022-12-08 14:24:06.252 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/index.html - - - 200 - text/html;charset=utf-8 187.0736ms
+2022-12-08 14:24:06.261 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_vs/browserLink - -
+2022-12-08 14:24:06.261 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - -
+2022-12-08 14:24:06.265 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_framework/aspnetcore-browser-refresh.js - - - 200 11984 application/javascript;+charset=utf-8 4.3768ms
+2022-12-08 14:24:06.286 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/_vs/browserLink - - - 200 - text/javascript;+charset=UTF-8 25.7373ms
+2022-12-08 14:24:06.331 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - -
+2022-12-08 14:24:06.434 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/swagger/v1/swagger.json - - - 200 - application/json;charset=utf-8 103.9284ms
+2022-12-08 14:24:14.730 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7040/api/User/ResetPasswordAdmin/6 - -
+2022-12-08 14:24:14.797 +03:00 [INF] Executing endpoint 'DMS_API.Controllers.UserController.ResetPasswordAdmin (DMS_API)'
+2022-12-08 14:24:14.817 +03:00 [INF] Route matched with {action = "ResetPasswordAdmin", controller = "User"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] ResetPasswordAdmin(Int32, DMS_API.ModelsView.RequestHeaderModelView) on controller DMS_API.Controllers.UserController (DMS_API).
+2022-12-08 14:24:30.003 +03:00 [INF] Executing ObjectResult, writing value of type 'DMS_API.ModelsView.ResponseModelView'.
+2022-12-08 14:24:30.016 +03:00 [INF] Executed action DMS_API.Controllers.UserController.ResetPasswordAdmin (DMS_API) in 15194.345ms
+2022-12-08 14:24:30.017 +03:00 [INF] Executed endpoint 'DMS_API.Controllers.UserController.ResetPasswordAdmin (DMS_API)'
+2022-12-08 14:24:30.017 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7040/api/User/ResetPasswordAdmin/6 - - - 400 - application/json;+charset=utf-8 15287.1315ms
