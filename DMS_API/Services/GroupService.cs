@@ -17,7 +17,6 @@ namespace DMS_API.Services
         private List<GroupModel> Group_Mlist { get; set; }
         private ResponseModelView Response_MV { get; set; }
         private const int ClassID = 2; // Group
-      //  private const int IsDesktopFolder = 0;
 
         #endregion
 
@@ -268,7 +267,7 @@ namespace DMS_API.Services
                                                                          $"[ObjOrgOwner] IN ({whereField} FROM [User].GetOrgsbyUserId({userLoginID})) AND ObjClsId ={ClassID} "));
                         if (checkDeblicate == 0)
                         {
-                            string exeut = $"EXEC [User].[AddGroupOrFolderPro] '{ClassID}','{Group_MV.GroupTitle}', '{userLoginID}', '{Group_MV.GroupOrgOwnerID}', '{Group_MV.GroupDescription}' ";
+                            string exeut = $"EXEC [User].[AddGroupPro] '{ClassID}','{Group_MV.GroupTitle}', '{userLoginID}', '{Group_MV.GroupOrgOwnerID}', '{Group_MV.GroupDescription}' ";
                             var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
 
                             if (outValue == null || outValue.Trim() == "")

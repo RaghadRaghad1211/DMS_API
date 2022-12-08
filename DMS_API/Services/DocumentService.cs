@@ -2,6 +2,7 @@
 using DMS_API.Models;
 using DMS_API.ModelsView;
 using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 using System.Data;
 using System.Net;
 
@@ -36,11 +37,17 @@ namespace DMS_API.Services
 
 
 // get permession when user click on write or manage or QR...
-        // SELECT SourObjId, SourName, SourClsId, SourClsType, DestObjId, DestName, DestClsId, DestClsType, PerRead, PerWrite, PerManage, PerQR
-        // FROM [Document].[GetPermissionsOnObject](UserId,@ObjectId )
-        // WHERE SourObjId =ObjClicked AND PerManage =1
+// SELECT SourObjId, SourName, SourClsId, SourClsType, DestObjId, DestName, DestClsId, DestClsType, PerRead, PerWrite, PerManage, PerQR
+// FROM [Document].[GetPermissionsOnObject](UserId,@ObjectId )
+// WHERE SourObjId =ObjClicked AND PerManage =1
 
 
 
-        // to open folder get chilid where user have permession...
-        // SELECT DISTINCT OpenObject.SourObjId, OpenObject.SourName, OpenObject.SourClsId, OpenObject.SourClsType FROM (SELECT * FROM [Document].[GetPermissionsOnObject](41,6 )) OpenObject
+// to open folder get chilid where user have permession...
+// SELECT DISTINCT OpenObject.SourObjId, OpenObject.SourName, OpenObject.SourClsId, OpenObject.SourClsType FROM (SELECT * FROM [Document].[GetPermissionsOnObject](41,6 )) OpenObject
+
+
+
+//Declare @DataRecord nVarChar(1000)
+//Set @DataRecord = '1:Ahmed,2:Manager,3:6,4:DoctorId,5:678'
+//EXEC [Document].[AddDocument] @ClassId = 5,@ObjTitle = N'NewDocument2',@ObjUserOwner = 1,@ObjOrgOwner = 24,@Query = @DataRecord

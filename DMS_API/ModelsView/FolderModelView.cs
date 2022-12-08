@@ -8,5 +8,6 @@
         public bool FolderIsActive { get; set; }
         public string FolderDescription { get; set; }
         public bool IsFavoriteFolder { get; set; }
+        public int FolderPerantId { get; set; }
     }
 }
