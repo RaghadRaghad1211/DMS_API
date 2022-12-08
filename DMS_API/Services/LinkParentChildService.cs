@@ -183,7 +183,12 @@ namespace DMS_API.Services
                         {
                             Success = true,
                             Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
-                            Data = LinkParentChild_Mlist
+                            Data = new
+                            {
+                                Users = LinkParentChild_Mlist.Where(x => x.ChildClsId == 1),
+                                Groups = LinkParentChild_Mlist.Where(x => x.ChildClsId == 2)
+                            }
+                            //Data = LinkParentChild_Mlist
                         };
                         return Response_MV;
                     }
@@ -193,7 +198,12 @@ namespace DMS_API.Services
                         {
                             Success = true,
                             Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoData],
-                            Data = LinkParentChild_Mlist
+                            Data = new
+                            {
+                                Users = LinkParentChild_Mlist.Where(x => x.ChildClsId == 1),
+                                Groups = LinkParentChild_Mlist.Where(x => x.ChildClsId == 2)
+                            }
+                            //Data = LinkParentChild_Mlist
                         };
                         return Response_MV;
                     }
@@ -331,7 +341,12 @@ namespace DMS_API.Services
                         {
                             Success = true,
                             Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
-                            Data = ChildNotInParent_MVlist
+                            Data = new
+                            {
+                                Users = ChildNotInParent_MVlist.Where(x => x.Type == "User"),
+                                Groups = ChildNotInParent_MVlist.Where(x => x.Type == "Group")
+                            }
+                            //Data = ChildNotInParent_MVlist
                         };
                         return Response_MV;
                     }
@@ -522,7 +537,7 @@ namespace DMS_API.Services
                         else
                         {
                             string moveChild2Folder = $"EXEC [Main].[MoveChildToFolderPro] '{MoveChildToNewFolder_MV.CurrentParentID}','{MoveChildToNewFolder_MV.NewParentID}', '{FolderClassID}', '{MoveChildToNewFolder_MV.ChildID}', '{ChildClassID}' ";
-                                                                                                                  // (@CurrParentId int, @NewParentId int, @ParentClassId int, @ChildObjectId int, @ChildClassId int)
+                            // (@CurrParentId int, @NewParentId int, @ParentClassId int, @ChildObjectId int, @ChildClassId int)
                             var outValue = await Task.Run(() => dam.DoQueryExecProcedure(moveChild2Folder));
                             if (outValue == 0.ToString() || (outValue == null || outValue.Trim() == ""))
                             {

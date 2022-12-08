@@ -74,13 +74,13 @@ namespace DMS_API.Services
 
                         else
                         {
-                            string getGroupInfo = "SELECT  ObjId, ObjTitle, ObjClsId, ClsName, ObjIsActive, ObjCreationDate, ObjDescription, UserOwnerID, " +
-                                                 "            OwnerFullName, OwnerUserName, OrgOwner, OrgEnName,OrgArName , OrgKuName " +
-                                                 "FROM            [User].V_Groups " +
-                                                $"WHERE [OrgOwner] IN ({whereField} FROM [User].GetOrgsbyUserId({userLoginID})) AND ObjClsId ={ClassID} " +
-                                                 "ORDER BY ObjId " +
-                                                $"OFFSET      ({_PageNumber}-1)*{_PageRows} ROWS " +
-                                                $"FETCH NEXT   {_PageRows} ROWS ONLY ";
+                            string getGroupInfo = "SELECT    ObjId, ObjTitle, ObjClsId, ClsName, ObjIsActive, CONVERT(DATE,ObjCreationDate,104) AS ObjCreationDate, " +
+                                                 "           ObjDescription, UserOwnerID, OwnerFullName, OwnerUserName, OrgOwner, OrgEnName,OrgArName , OrgKuName " +
+                                                 "FROM       [User].V_Groups " +
+                                                $"WHERE      [OrgOwner] IN ({whereField} FROM [User].GetOrgsbyUserId({userLoginID})) AND ObjClsId ={ClassID} " +
+                                                 "ORDER BY   ObjId " +
+                                                $"OFFSET     ({_PageNumber}-1)*{_PageRows} ROWS " +
+                                                $"FETCH NEXT  {_PageRows} ROWS ONLY ";
 
                             dt = new DataTable();
                             dt = await Task.Run(() => dam.FireDataTable(getGroupInfo));

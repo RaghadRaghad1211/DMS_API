@@ -111,6 +111,23 @@ namespace DMS_API.Services
             string query = where.Remove(where.Length - 4, 4);
             return query;
         }
+        public static string GetQueryAddDocument(DocumentModelView Document_MV)
+        {
+            List<KeyValueModel>  KeyValue_Mlist = new List<KeyValueModel>();
+            for (int i = 0; i < Document_MV.KeysValues.Count; i++)
+            {
+                KeyValueModel KeyValue_M = new KeyValueModel()
+                { Key = Document_MV.KeysValues[i].Key, Value = Document_MV.KeysValues[i].Value };
+                KeyValue_Mlist.Add(KeyValue_M);
+            }
+            string Query = "";
+            foreach (var item in KeyValue_Mlist)
+            {
+                Query = Query + item.Key + ":" + item.Value + ",";
+            }
+            Query = Query.Remove(Query.Length - 1, 1);
+            return Query;
+        }
         public static async Task<List<OrgModel>> GetOrgsParentWithChildsByUserLoginID(int userLoginID, bool IsOrgAdmin = false)
         {
             try
