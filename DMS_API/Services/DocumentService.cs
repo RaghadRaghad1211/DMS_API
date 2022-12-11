@@ -4,25 +4,31 @@ using DMS_API.ModelsView;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Net;
+using System.Reflection.Metadata;
 
 namespace DMS_API.Services
 {
     public class DocumentService
     {
         #region Properteis
+        private IWebHostEnvironment Environment { get; }
         private readonly DataAccessService dam;
         private SessionService Session_S { get; set; }
         private DataTable dt { get; set; }
         private DocumentModel Document_M { get; set; }
         private List<DocumentModel> Document_Mlist { get; set; }
         private ResponseModelView Response_MV { get; set; }
+
+
         private const int ClassID = 5; // Document
         #endregion
 
         #region Constructor        
-        public DocumentService()
+        public DocumentService(IWebHostEnvironment environment)
         {
+            Environment = environment;
             dam = new DataAccessService(SecurityService.ConnectionString);
         }
         #endregion
@@ -253,7 +259,17 @@ namespace DMS_API.Services
                         Response_MV = new ResponseModelView
                         {
                             Success = false,
-                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.FolderNameMustEnter],
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.DocumentTitelMustEnter],
+                            Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                        };
+                        return Response_MV;
+                    }
+                    else if (Document_MV.DocumentFile.Length <= 0)
+                    {
+                        Response_MV = new ResponseModelView
+                        {
+                            Success = false,
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.DocumentFileMustUpload],
                             Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
                         };
                         return Response_MV;
@@ -261,12 +277,7 @@ namespace DMS_API.Services
                     else
                     {
                         int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
-                        //int orgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {userLoginID} "));
-                        //string whereField = orgOwnerID == 0 ? "SELECT '0' as OrgId UNION SELECT OrgId" : "SELECT OrgId";
-                        //int checkDeblicate = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) FROM [Main].[Objects] WHERE ObjTitle = '{Document_MV.DocumentTitle}' AND " +
-                        //                                                 $"[ObjOrgOwner] IN ({whereField} FROM [User].GetOrgsbyUserId({userLoginID})) AND ObjClsId ={ClassID} "));
-                        //if (checkDeblicate == 0)
-                        //{
+
                         if (Document_MV.KeysValues.Count == 0)
                         {
                             Response_MV = new ResponseModelView
@@ -278,10 +289,16 @@ namespace DMS_API.Services
                             return Response_MV;
                         }
                         string Query = HelpService.GetQueryAddDocument(Document_MV);
-                        string exeut = $"EXEC [Document].[AddDocumentPro] '{ClassID}','{Document_MV.DocumentTitle}', '{userLoginID}', '{Document_MV.DocumentOrgOwnerID}', '{Document_MV.DocumentDescription}', '{Query}', '{Document_MV.DocumentPerantId}', '{(int)HelpService.ClassType.Folder}' ";
+                        string exeut = "DECLARE   @MyNewValue bigint " +
+                                      $"EXEC      [Document].[AddDocumentPro] '{ClassID}','{Document_MV.DocumentTitle}', '{userLoginID}', '{Document_MV.DocumentOrgOwnerID}', " +
+                                      $"         '{Document_MV.DocumentDescription}', '{Query}', '{Document_MV.DocumentPerantId}', '{(int)HelpService.ClassType.Folder}', " +
+                                      $"         @NewValue = @MyNewValue OUTPUT  SELECT @MyNewValue AS newValue ";
 
-                        var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
 
+
+
+
+                        var outValue = await Task.Run(() => dam.FireSQL(exeut));
                         if (outValue == 0.ToString() || outValue == null || outValue.Trim() == "")
                         {
                             Response_MV = new ResponseModelView
@@ -292,27 +309,31 @@ namespace DMS_API.Services
                             };
                             return Response_MV;
                         }
-                        Response_MV = new ResponseModelView
+                        else
                         {
-                            Success = true,
-                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.InsertSuccess],
-                            Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
-                        };
-                        return Response_MV;
-                        //}
-                        //else
-                        //{
-                        //    Response_MV = new ResponseModelView
-                        //    {
-                        //        Success = false,
-                        //        Message = Document_MV.DocumentTitle + " " + MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsExist],
-                        //        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
-                        //    };
-                        //    return Response_MV;
-                        //}
+                            if (Document_MV.DocumentFile.Length > 0)
+                            {
+                                string DocFileName = Document_MV.DocumentFile.FileName;
+                                var DocFolder = await HelpService.CreateDocumentFolderInServerFolder(Convert.ToInt32(outValue), Environment);
+                                if (DocFolder != null)
+                                {
+                                    using (FileStream filestream = System.IO.File.Create(DocFolder))
+                                    {
+                                        Document_MV.DocumentFile.CopyTo(filestream);
+                                        filestream.Flush();
+                                    }
+                                }
+                            }
+                            Response_MV = new ResponseModelView
+                            {
+                                Success = true,
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.InsertSuccess],
+                                Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
+                            };
+                            return Response_MV;
+                        }
                     }
                 }
-
             }
             catch (Exception ex)
             {

@@ -1,17 +1,17 @@
 ﻿using ArchiveAPI.Services;
 using DMS_API.Models;
 using DMS_API.ModelsView;
-using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Net;
 using System.Reflection;
-using System.Security.Cryptography;
 
 namespace DMS_API.Services
 {
     public static class HelpService
     {
         #region Properteis
+        //  private static IWebHostEnvironment Environment;
         private static DataAccessService dam = new DataAccessService(SecurityService.ConnectionString);
         private static SessionService Session_S { get; set; }
         private static DataTable dt { get; set; }
@@ -113,7 +113,7 @@ namespace DMS_API.Services
         }
         public static string GetQueryAddDocument(DocumentModelView Document_MV)
         {
-            List<KeyValueModel>  KeyValue_Mlist = new List<KeyValueModel>();
+            List<KeyValueModel> KeyValue_Mlist = new List<KeyValueModel>();
             for (int i = 0; i < Document_MV.KeysValues.Count; i++)
             {
                 KeyValueModel KeyValue_M = new KeyValueModel()
@@ -124,6 +124,17 @@ namespace DMS_API.Services
             foreach (var item in KeyValue_Mlist)
             {
                 Query = Query + item.Key + ":" + item.Value + ",";
+            }
+            Query = Query.Remove(Query.Length - 1, 1);
+            return Query;
+        }
+        public static string GetQueryLinkPro(LinkParentChildModelView LinkParentChild_MV)
+        {
+            string Query = "";
+            for (int i = 0; i < LinkParentChild_MV.ChildIds.Count; i++)
+            {
+
+                Query = Query + LinkParentChild_MV.ChildIds[i] + ",";
             }
             Query = Query.Remove(Query.Length - 1, 1);
             return Query;
@@ -468,6 +479,36 @@ namespace DMS_API.Services
                     Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
                 };
                 return Response_MV;
+            }
+        }
+        public static async Task<string> GetDocumentLocationInServerFolder(int DocumentId, IWebHostEnvironment Environment)
+        {
+            try
+            {
+                var path = await Task.Run(() => Environment.WebRootPath + "\\DMSserver");
+                int currectFolderDoc = DocumentId % 999;
+                return path + "\\" + currectFolderDoc.ToString();
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+
+        }
+        public static async Task<string> CreateDocumentFolderInServerFolder(int DocumentId, IWebHostEnvironment Environment)
+        {
+            try
+            {
+                var path = Path.Combine(await GetDocumentLocationInServerFolder(DocumentId, Environment), DocumentId.ToString());
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
+                return path;
+            }
+            catch (Exception)
+            {
+                return null;
             }
         }
         #endregion

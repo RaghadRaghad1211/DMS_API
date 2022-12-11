@@ -64,6 +64,8 @@
         public static readonly string DeblicateKey = "DeblicateKey";
         public static readonly string GroupNameMustEnter = "GroupNameMustEnter";
         public static readonly string FolderNameMustEnter = "FolderNameMustEnter";
+        public static readonly string DocumentTitelMustEnter = "DocumentTitelMustEnter";
+        public static readonly string DocumentFileMustUpload = "DocumentFileMustUpload";
         public static readonly string TitelArIsEmpty = "TitelArIsEmpty";
         public static readonly string TitelEnIsEmpty = "TitelEnIsEmpty";
         public static readonly string MustSelectedObjects = "MustSelectedObjects";
@@ -134,7 +136,7 @@
                      {IsInt ,"يجب ادخال رقم"},
                      {TokenEmpty ,"رمز الوصول فارغ"},
                      {ConfirmPasswordIsIncorrect ,"تأكيد كلمة المرور غير صحيحة"},
-                     {PhoneIncorrect ,"تنسيق رقم الهاتف غير صحيح ، يجب ان يكون 11 رقم"},
+                     {PhoneIncorrect ,"تنسيق رقم الهاتف غير صحيح ، يجب ان يكون 13 رقم"},
                      {EmailIncorrect ,"تنسيق البريد الالكتروني غير صحيح"},
                      {FSTname ,"يجب ملئ على الاقل الاسم الثلاثي للمستخدم"},
                      {IsReset ,"تم اعادة تعيين كلمة المرور"},
@@ -155,6 +157,8 @@
                      { UsernameIsExist, "أسم المستخدم موجود" },
                      { MoveSuccess, "تمت عملية النقل" },
                      { MoveFaild, "فشل بعملية النقل" },
+                      {DocumentTitelMustEnter ,"يجب ادخال عنوان الوثيقة"},
+                       {DocumentFileMustUpload ,"يجب اختيار صورة الوثيقة"},
 
 
 
@@ -201,7 +205,7 @@
                      {IsInt ,"Must enter Number"},
                      {TokenEmpty ,"Token Is Empty"},
                      {ConfirmPasswordIsIncorrect ,"Confirm Password Is Incorrect"},
-                     {PhoneIncorrect ,"The phone number is formatted incorrectly, it must be 11 digits"},
+                     {PhoneIncorrect ,"The phone number is formatted incorrectly, it must be 13 digits"},
                      {EmailIncorrect ,"The email is formatted incorrectly"},
                      {FSTname ,"You must fill in at least the full name of the user"},
                      {IsReset ,"Password is reset"},
@@ -222,6 +226,8 @@
                      {UsernameIsExist, "Username is exist" },
                      { MoveSuccess, "Move Success" },
                      { MoveFaild, "Move Faild" },
+                     {DocumentTitelMustEnter ,"Document Titel Must Enter"},
+                     {DocumentFileMustUpload ,"Document File Must Upload"},
 
 
 

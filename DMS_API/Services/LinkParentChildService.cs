@@ -398,20 +398,19 @@ namespace DMS_API.Services
                         };
                         return Response_MV;
                     }
-                    for (int i = 0; i < LinkParentChild_MV.ChildIds.Count; i++)
+
+                    string Query = HelpService.GetQueryLinkPro(LinkParentChild_MV);
+                    string exeut = $"EXEC [Main].[AddLinksPro]  '{LinkParentChild_MV.ParentId}', '{ParentClassID}', '{Query}',{1} ";
+                    var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
+                    if (outValue == 0.ToString() || (outValue == null || outValue.Trim() == ""))
                     {
-                        string exeut = $"EXEC [Main].[AddLinksPro]  '{LinkParentChild_MV.ParentId}', '{ParentClassID}', '{LinkParentChild_MV.ChildIds[i]}',{1} ";
-                        var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
-                        if (outValue == 0.ToString() || (outValue == null || outValue.Trim() == ""))
+                        Response_MV = new ResponseModelView
                         {
-                            Response_MV = new ResponseModelView
-                            {
-                                Success = false,
-                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.InsertFaild],
-                                Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
-                            };
-                            return Response_MV;
-                        }
+                            Success = false,
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.InsertFaild],
+                            Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                        };
+                        return Response_MV;
                     }
                     Response_MV = new ResponseModelView
                     {
@@ -455,20 +454,19 @@ namespace DMS_API.Services
                         };
                         return Response_MV;
                     }
-                    for (int i = 0; i < LinkParentChild_MV.ChildIds.Count; i++)
+
+                    string Query = HelpService.GetQueryLinkPro(LinkParentChild_MV);
+                    string exeut = $"EXEC [Main].[UpdateLinksPro]  '{LinkParentChild_MV.ParentId}', '{ParentClassID}', '{Query}','{0}' ";
+                    var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
+                    if (outValue == 0.ToString() || (outValue == null || outValue.Trim() == ""))
                     {
-                        string exeut = $"EXEC [Main].[UpdateLinksPro]  '{LinkParentChild_MV.ParentId}', '{ParentClassID}', '{LinkParentChild_MV.ChildIds[i]}','{0}' ";
-                        var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
-                        if (outValue == 0.ToString() || (outValue == null || outValue.Trim() == ""))
+                        Response_MV = new ResponseModelView
                         {
-                            Response_MV = new ResponseModelView
-                            {
-                                Success = false,
-                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.DeleteFaild],
-                                Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
-                            };
-                            return Response_MV;
-                        }
+                            Success = false,
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.DeleteFaild],
+                            Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                        };
+                        return Response_MV;
                     }
                     Response_MV = new ResponseModelView
                     {

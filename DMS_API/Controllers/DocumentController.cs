@@ -3,6 +3,7 @@ using DMS_API.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace DMS_API.Controllers
@@ -15,13 +16,19 @@ namespace DMS_API.Controllers
         private DocumentService Document_S;
         private readonly LinkParentChildService LinkParentChild_S;
         private ResponseModelView Response_MV { get; set; }
+        public IWebHostEnvironment Environment { get; }
         #endregion
 
         #region Constructor
-        public DocumentController()
+        public DocumentController(IWebHostEnvironment environment)
         {
-            Document_S = new DocumentService();
+            Environment = environment;
+            Document_S = new DocumentService(environment);
             LinkParentChild_S = new LinkParentChildService();
+
+            //var ff = HelpService.GetDocumentLocationInServerFolder(1259843, Environment).Result;
+
+            //var feef = HelpService.CreateDocumentFolderInServerFolder(1259843, Environment).Result;
         }
         #endregion
 
@@ -59,7 +66,7 @@ namespace DMS_API.Controllers
         [AllowAnonymous]
         [HttpPost]
         [Route("AddDocument")]
-        public async Task<IActionResult> AddDocument([FromBody] DocumentModelView Document_MV, [FromHeader] RequestHeaderModelView RequestHeader)
+        public async Task<IActionResult> AddDocument([FromForm] DocumentModelView Document_MV, [FromHeader] RequestHeaderModelView RequestHeader)
         {
             Response_MV = await Document_S.AddDocument(Document_MV, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);

@@ -353,19 +353,12 @@ namespace DMS_API.Services
                     }
                     else
                     {
-                        //int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
-                        //int orgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {userLoginID} "));
-                        //string whereField = orgOwnerID == 0 ? "OrgUp" : "OrgId";
-
-                        //int checkDeblicate = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) FROM [Main].[Objects] WHERE ObjTitle = '{Folder_MV.FolderTitle}' AND " +
-                        //                                                 $"[ObjOrgOwner] IN (SELECT {whereField} FROM [User].GetOrgsbyUserId({userLoginID})) AND ObjClsId ={ClassID} "));
                         int checkDeblicate = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) FROM [User].[V_Folders] WHERE ObjId = {Folder_MV.FolderId} AND " +
                                                                          $"ObjClsId = {ClassID} "));
 
                         if (checkDeblicate > 0)
                         {
                             string exeut = $"EXEC [User].[UpdateFolderPro] '{Folder_MV.FolderId}','{Folder_MV.FolderTitle}', '{Folder_MV.FolderIsActive}', '{Folder_MV.FolderDescription}', '{Folder_MV.IsFavoriteFolder}' ";
-                            // (@ObjId int,@ObjTitle nvarchar(70),@UsIsActive bit,@ObjDescription nvarchar(max),@IsFavourite bit)	
                             var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
 
                             if (outValue == null || outValue.Trim() == "")

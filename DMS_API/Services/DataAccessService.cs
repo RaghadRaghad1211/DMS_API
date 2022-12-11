@@ -282,7 +282,7 @@ namespace ArchiveAPI.Services
                     SqlDataReader myReader = this.CMD.ExecuteReader();
 
                     OutValue = myReader.RecordsAffected.ToString();
-
+                   // var fff = myReader["ObjId"].ToString();
                     myReader.Close();
                 }
 
