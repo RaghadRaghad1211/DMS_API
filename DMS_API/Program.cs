@@ -31,7 +31,7 @@ try
     if (!Directory.Exists(path))
     {
         Directory.CreateDirectory(path);
-        for (int i = 1; i <= 1000; i++)
+        for (int i = 0; i <= 1000; i++)
             System.IO.Directory.CreateDirectory($"{path}\\{i}");
     }
     #endregion

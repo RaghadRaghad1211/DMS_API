@@ -7,6 +7,7 @@ using System.Data;
 using System.Data.Common;
 using System.Net;
 using System.Reflection.Metadata;
+using System.Text;
 
 namespace DMS_API.Services
 {
@@ -20,8 +21,6 @@ namespace DMS_API.Services
         private DocumentModel Document_M { get; set; }
         private List<DocumentModel> Document_Mlist { get; set; }
         private ResponseModelView Response_MV { get; set; }
-
-
         private const int ClassID = 5; // Document
         #endregion
 
@@ -277,58 +276,81 @@ namespace DMS_API.Services
                     else
                     {
                         int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
-
-                        if (Document_MV.KeysValues.Count == 0)
+                        int checkDeblicate = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) FROM [Document].[V_Documents] WHERE ObjTitle = '{Document_MV.DocumentTitle}' AND " +
+                                                                         $"OrgOwner ={Document_MV.DocumentOrgOwnerID} AND ObjClsId ={ClassID} AND ObjIsActive=1 "));
+                        if (checkDeblicate == 0)
                         {
-                            Response_MV = new ResponseModelView
+                            if (Document_MV.KeysValues.Count == 0)
                             {
-                                Success = false,
-                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.MustSelectedObjects],
-                                Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
-                            };
-                            return Response_MV;
-                        }
-                        string Query = HelpService.GetQueryAddDocument(Document_MV);
-                        string exeut = "DECLARE   @MyNewValue bigint " +
-                                      $"EXEC      [Document].[AddDocumentPro] '{ClassID}','{Document_MV.DocumentTitle}', '{userLoginID}', '{Document_MV.DocumentOrgOwnerID}', " +
-                                      $"         '{Document_MV.DocumentDescription}', '{Query}', '{Document_MV.DocumentPerantId}', '{(int)HelpService.ClassType.Folder}', " +
-                                      $"         @NewValue = @MyNewValue OUTPUT  SELECT @MyNewValue AS newValue ";
+                                Response_MV = new ResponseModelView
+                                {
+                                    Success = false,
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.MustSelectedObjects],
+                                    Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                                };
+                                return Response_MV;
+                            }
+                            string Query = HelpService.GetQueryAddDocument(Document_MV); //"1:Ahmed";
+                            string exeut = "DECLARE   @MyNewValue bigint " +
+                                          $"EXEC      [Document].[AddDocumentPro] '{ClassID}','{Document_MV.DocumentTitle}', '{userLoginID}', '{Document_MV.DocumentOrgOwnerID}', " +
+                                          $"         '{Document_MV.DocumentDescription}', '{Query}', '{Document_MV.DocumentPerantId}', '{(int)HelpService.ClassType.Folder}', " +
+                                          $"         @NewValue = @MyNewValue OUTPUT  SELECT @MyNewValue AS newValue ";
 
-
-
-
-
-                        var outValue = await Task.Run(() => dam.FireSQL(exeut));
-                        if (outValue == 0.ToString() || outValue == null || outValue.Trim() == "")
-                        {
-                            Response_MV = new ResponseModelView
+                            var outValue = await Task.Run(() => dam.FireSQL(exeut));
+                            if (outValue == 0.ToString() || outValue == null || outValue.Trim() == "")
                             {
-                                Success = false,
-                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.InsertFaild],
-                                Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
-                            };
-                            return Response_MV;
+                                Response_MV = new ResponseModelView
+                                {
+                                    Success = false,
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.InsertFaild],
+                                    Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                                };
+                                return Response_MV;
+                            }
+                            else
+                            {
+                                if (Document_MV.DocumentFile.Length > 0)
+                                {
+                                    string DocFileNameWithExten = Document_MV.DocumentFile.FileName;
+                                    if (Path.GetExtension(DocFileNameWithExten.ToLower()).Trim() != ".pdf")
+                                    {
+                                        Response_MV = new ResponseModelView
+                                        {
+                                            Success = false,
+                                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExtensionMustBePFD],
+                                            Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                                        };
+                                        return Response_MV;
+                                    }
+                                    var DocFolder = await HelpService.CreateDocumentFolderInServerFolder(Convert.ToInt32(outValue), Environment);
+                                    if (DocFolder != null)
+                                    {
+                                        string fillPath = Path.Combine(DocFolder, outValue + Path.GetExtension(DocFileNameWithExten).Trim());
+                                        //string fillPath = Path.Combine(DocFolder, outValue + ".pdf");
+                                        using (FileStream filestream = System.IO.File.Create(fillPath))
+                                        {
+                                            Document_MV.DocumentFile.CopyTo(filestream);
+                                            filestream.Flush();
+                                            filestream.Close();
+                                        }
+                                    }
+                                }
+                                Response_MV = new ResponseModelView
+                                {
+                                    Success = true,
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.InsertSuccess],
+                                    Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
+                                };
+                                return Response_MV;
+                            }
                         }
                         else
                         {
-                            if (Document_MV.DocumentFile.Length > 0)
-                            {
-                                string DocFileName = Document_MV.DocumentFile.FileName;
-                                var DocFolder = await HelpService.CreateDocumentFolderInServerFolder(Convert.ToInt32(outValue), Environment);
-                                if (DocFolder != null)
-                                {
-                                    using (FileStream filestream = System.IO.File.Create(DocFolder))
-                                    {
-                                        Document_MV.DocumentFile.CopyTo(filestream);
-                                        filestream.Flush();
-                                    }
-                                }
-                            }
                             Response_MV = new ResponseModelView
                             {
-                                Success = true,
-                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.InsertSuccess],
-                                Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
+                                Success = false,
+                                Message = Document_MV.DocumentTitle + " " + MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsExist],
+                                Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
                             };
                             return Response_MV;
                         }

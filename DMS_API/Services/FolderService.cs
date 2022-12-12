@@ -72,7 +72,7 @@ namespace DMS_API.Services
 
                         else
                         {
-                            string getFolderInfo = "SELECT  ObjId, ObjTitle, ObjClsId, ClsName, ObjIsActive, ObjCreationDate, ObjDescription, UserOwnerID, " +
+                            string getFolderInfo = "SELECT  ObjId, ObjTitle, ObjClsId, ClsName, ObjIsActive, CONVERT(DATE,ObjCreationDate,104) AS ObjCreationDate, ObjDescription, UserOwnerID, " +
                                                  "            OwnerFullName, OwnerUserName, OrgOwner, OrgEnName,OrgArName , OrgKuName " +
                                                  "FROM            [User].V_Folders " +
                                                 $"WHERE [OrgOwner] IN ({whereField} FROM [User].GetOrgsbyUserId({userLoginID})) AND ObjClsId ={ClassID} " +
@@ -104,7 +104,7 @@ namespace DMS_API.Services
                                         ObjClsId = Convert.ToInt32(dt.Rows[i]["ObjClsId"].ToString()),
                                         ClsName = dt.Rows[i]["ClsName"].ToString(),
                                         ObjIsActive = bool.Parse(dt.Rows[i]["ObjIsActive"].ToString()),
-                                        ObjCreationDate = DateTime.Parse(dt.Rows[i]["ObjCreationDate"].ToString()),
+                                        ObjCreationDate = DateTime.Parse(dt.Rows[i]["ObjCreationDate"].ToString()).ToShortDateString(),
                                         ObjDescription = dt.Rows[i]["ObjDescription"].ToString(),
                                         UserOwnerID = Convert.ToInt32(dt.Rows[i]["UserOwnerID"].ToString()),
                                         OwnerFullName = dt.Rows[i]["OwnerFullName"].ToString(),
@@ -166,7 +166,7 @@ namespace DMS_API.Services
                     int orgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {userLoginID} "));
                     //string whereField = orgOwnerID == 0 ? "OrgUp" : "OrgId";
                     string whereField = orgOwnerID == 0 ? "SELECT '0' as OrgId UNION SELECT OrgId" : "SELECT OrgId";
-                    string getFolderInfo = "SELECT  ObjId, ObjTitle, ObjClsId, ClsName, ObjIsActive, ObjCreationDate, ObjDescription, UserOwnerID, " +
+                    string getFolderInfo = "SELECT  ObjId, ObjTitle, ObjClsId, ClsName, ObjIsActive, CONVERT(DATE,ObjCreationDate,104) AS ObjCreationDate, ObjDescription, UserOwnerID, " +
                                                      "            OwnerFullName, OwnerUserName, OrgOwner, OrgEnName,OrgArName , OrgKuName " +
                                                      "FROM            [User].V_Folders " +
                                                     $"WHERE ObjId={id} AND [OrgOwner] IN ({whereField} FROM [User].GetOrgsbyUserId({userLoginID})) AND ObjClsId ={ClassID} ";
@@ -194,7 +194,7 @@ namespace DMS_API.Services
                             ObjClsId = Convert.ToInt32(dt.Rows[0]["ObjClsId"].ToString()),
                             ClsName = dt.Rows[0]["ClsName"].ToString(),
                             ObjIsActive = bool.Parse(dt.Rows[0]["ObjIsActive"].ToString()),
-                            ObjCreationDate = DateTime.Parse(dt.Rows[0]["ObjCreationDate"].ToString()),
+                            ObjCreationDate = DateTime.Parse(dt.Rows[0]["ObjCreationDate"].ToString()).ToShortDateString(),
                             ObjDescription = dt.Rows[0]["ObjDescription"].ToString(),
                             UserOwnerID = Convert.ToInt32(dt.Rows[0]["UserOwnerID"].ToString()),
                             OwnerFullName = dt.Rows[0]["OwnerFullName"].ToString(),
@@ -262,8 +262,10 @@ namespace DMS_API.Services
                         int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
                         int orgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {userLoginID} "));
                         string whereField = orgOwnerID == 0 ? "SELECT '0' as OrgId UNION SELECT OrgId" : "SELECT OrgId";
-                        int checkDeblicate = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) FROM [Main].[Objects] WHERE ObjTitle = '{Folder_MV.FolderTitle}' AND " +
-                                                                         $"[ObjOrgOwner] IN ({whereField} FROM [User].GetOrgsbyUserId({userLoginID})) AND ObjClsId ={ClassID} "));
+                        //int checkDeblicate = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) FROM [Main].[Objects] WHERE ObjTitle = '{Folder_MV.FolderTitle}' AND " +
+                        //                                                 $"[ObjOrgOwner] IN ({whereField} FROM [User].GetOrgsbyUserId({userLoginID})) AND ObjClsId ={ClassID} "));
+                        int checkDeblicate = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) FROM [User].[V_Folders] WHERE ObjTitle = '{Folder_MV.FolderTitle}' AND " +
+                                                                         $"OrgOwner ={Folder_MV.FolderOrgOwnerID} AND ObjClsId ={ClassID} AND ObjIsActive=1 "));
                         if (checkDeblicate == 0)
                         {
                             string exeut = $"EXEC [User].[AddFolderPro] '{ClassID}','{Folder_MV.FolderTitle}', '{userLoginID}', '{Folder_MV.FolderOrgOwnerID}', '{Folder_MV.FolderDescription}', '{Folder_MV.FolderPerantId}' ";
@@ -447,7 +449,7 @@ namespace DMS_API.Services
                         int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
                         int orgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {userLoginID} "));
                         string whereField = orgOwnerID == 0 ? "SELECT '0' as OrgId UNION SELECT OrgId" : "SELECT OrgId";
-                        string getfolderInfo = "SELECT  ObjId, ObjTitle, ObjClsId, ClsName, ObjIsActive, ObjCreationDate, ObjDescription, UserOwnerID, " +
+                        string getfolderInfo = "SELECT  ObjId, ObjTitle, ObjClsId, ClsName, ObjIsActive, CONVERT(DATE,ObjCreationDate,104) AS ObjCreationDate, ObjDescription, UserOwnerID, " +
                                                      "            OwnerFullName, OwnerUserName, OrgOwner, OrgEnName,OrgArName , OrgKuName " +
                                                      "FROM            [User].V_Folders " +
                                                   $"WHERE  ObjTitle LIKE '{Name}%' AND [OrgOwner] IN ({whereField} FROM [User].GetOrgsbyUserId({userLoginID})) AND ObjClsId ={ClassID} ";
@@ -477,7 +479,7 @@ namespace DMS_API.Services
                                     ObjClsId = Convert.ToInt32(dt.Rows[0]["ObjClsId"].ToString()),
                                     ClsName = dt.Rows[0]["ClsName"].ToString(),
                                     ObjIsActive = bool.Parse(dt.Rows[0]["ObjIsActive"].ToString()),
-                                    ObjCreationDate = DateTime.Parse(dt.Rows[0]["ObjCreationDate"].ToString()),
+                                    ObjCreationDate = DateTime.Parse(dt.Rows[0]["ObjCreationDate"].ToString()).ToShortDateString(),
                                     ObjDescription = dt.Rows[0]["ObjDescription"].ToString(),
                                     UserOwnerID = Convert.ToInt32(dt.Rows[0]["UserOwnerID"].ToString()),
                                     OwnerFullName = dt.Rows[0]["OwnerFullName"].ToString(),

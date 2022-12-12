@@ -5,7 +5,7 @@ namespace DMS_API.ModelsView
 {
     public class DocumentModelView
     {
-        // [Required(ErrorMessage = MessageService.MsgDictionary[HttpContext.Request.Headers["Lang"].ToString().ToLower()][MessageService.DocumentTitelMustEnter]))]
+       // [Required(ErrorMessage = MessageService.MsgDictionary[HttpContext.Headers["Lang"].ToString().ToLower()][MessageService.DocumentTitelMustEnter]))]
 
         public int DocumentId { get; set; }
         public string DocumentTitle { get; set; }

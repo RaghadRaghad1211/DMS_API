@@ -70,6 +70,7 @@
         public static readonly string TitelEnIsEmpty = "TitelEnIsEmpty";
         public static readonly string MustSelectedObjects = "MustSelectedObjects";
         public static readonly string OrgNameMustEnter = "OrgNameMustEnter";
+        public static readonly string ExtensionMustBePFD = "ExtensionMustBePFD";
 
 
 
@@ -159,6 +160,7 @@
                      { MoveFaild, "فشل بعملية النقل" },
                       {DocumentTitelMustEnter ,"يجب ادخال عنوان الوثيقة"},
                        {DocumentFileMustUpload ,"يجب اختيار صورة الوثيقة"},
+                        {ExtensionMustBePFD ,"يجب اختيار وثيقة بصيغة "+"PDF"},
 
 
 
@@ -228,6 +230,7 @@
                      { MoveFaild, "Move Faild" },
                      {DocumentTitelMustEnter ,"Document Titel Must Enter"},
                      {DocumentFileMustUpload ,"Document File Must Upload"},
+                      {ExtensionMustBePFD ,"Extension of Document Must be "+"PDF"},
 
 
 

@@ -66,7 +66,7 @@ namespace DMS_API.Controllers
         [AllowAnonymous]
         [HttpPost]
         [Route("AddDocument")]
-        public async Task<IActionResult> AddDocument([FromForm] DocumentModelView Document_MV, [FromHeader] RequestHeaderModelView RequestHeader)
+        public async Task<IActionResult> AddDocument([FromBody] DocumentModelView Document_MV, [FromHeader] RequestHeaderModelView RequestHeader)
         {
             Response_MV = await Document_S.AddDocument(Document_MV, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
