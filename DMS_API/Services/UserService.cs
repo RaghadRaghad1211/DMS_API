@@ -77,7 +77,7 @@ namespace DMS_API.Services
                     else
                     { // $ystemAdm!n 
                         string getUserInfo = "SELECT  UserID,UsFirstName,UsSecondName,UsThirdName,UsLastName, FullName, UsUserName,  Role, IsOrgAdmin, UserIsActive, UsPhoneNo, " +
-                                            "         UsEmail, UsUserEmpNo, UsUserIdintNo, UsIsOnLine, OrgArName, OrgEnName, OrgKuName, Note " +
+                                            "         UsEmail, UsUserEmpNo, UsUserIdintNo, UsIsOnLine, OrgOwner, OrgArName, OrgEnName, OrgKuName, Note " +
                                             "FROM     [User].V_Users " +
                                            $"WHERE    [UsUserName] = '{User_MV.Username}' AND UsPassword = '{SecurityService.PasswordEnecrypt(User_MV.Password)}' ";
 
@@ -124,6 +124,7 @@ namespace DMS_API.Services
                                     UserEmpNo = dt.Rows[0]["UsUserEmpNo"].ToString(),
                                     UserIdintNo = dt.Rows[0]["UsUserIdintNo"].ToString(),
                                     IsOnLine = bool.Parse(dt.Rows[0]["UsIsOnLine"].ToString()),
+                                    OrgOwnerID = Convert.ToInt32(dt.Rows[0]["OrgOwner"].ToString()),
                                     OrgArName = dt.Rows[0]["OrgArName"].ToString(),
                                     OrgEnName = dt.Rows[0]["OrgEnName"].ToString(),
                                     OrgKuName = dt.Rows[0]["OrgKuName"].ToString(),

@@ -265,7 +265,7 @@ namespace DMS_API.Services
                         //int checkDeblicate = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) FROM [Main].[Objects] WHERE ObjTitle = '{Folder_MV.FolderTitle}' AND " +
                         //                                                 $"[ObjOrgOwner] IN ({whereField} FROM [User].GetOrgsbyUserId({userLoginID})) AND ObjClsId ={ClassID} "));
                         int checkDeblicate = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) FROM [User].[V_Folders] WHERE ObjTitle = '{Folder_MV.FolderTitle}' AND " +
-                                                                         $"OrgOwner ={Folder_MV.FolderOrgOwnerID} AND ObjClsId ={ClassID} AND ObjIsActive=1 "));
+                                                                         $"ObjId IN (SELECT LcChildObjId FROM [Main].[GetChildsInParent]({Folder_MV.FolderPerantId},{ClassID})) AND ObjClsId ={ClassID} AND ObjIsActive=1 "));
                         if (checkDeblicate == 0)
                         {
                             string exeut = $"EXEC [User].[AddFolderPro] '{ClassID}','{Folder_MV.FolderTitle}', '{userLoginID}', '{Folder_MV.FolderOrgOwnerID}', '{Folder_MV.FolderDescription}', '{Folder_MV.FolderPerantId}' ";
@@ -317,7 +317,6 @@ namespace DMS_API.Services
                         }
                     }
                 }
-
             }
             catch (Exception ex)
             {

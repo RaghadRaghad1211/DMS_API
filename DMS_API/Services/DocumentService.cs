@@ -277,7 +277,7 @@ namespace DMS_API.Services
                     {
                         int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
                         int checkDeblicate = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) FROM [Document].[V_Documents] WHERE ObjTitle = '{Document_MV.DocumentTitle}' AND " +
-                                                                         $"OrgOwner ={Document_MV.DocumentOrgOwnerID} AND ObjClsId ={ClassID} AND ObjIsActive=1 "));
+                                                                         $"ObjId IN (SELECT LcChildObjId FROM [Main].[GetChildsInParent]({Document_MV.DocumentPerantId},{(int)HelpService.ClassType.Folder})) AND ObjClsId ={ClassID} AND ObjIsActive=1 "));
                         if (checkDeblicate == 0)
                         {
                             if (Document_MV.KeysValues.Count == 0)
