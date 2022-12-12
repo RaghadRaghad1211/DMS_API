@@ -8,7 +8,7 @@
         public string ClsName { get; set; }
         public bool ObjIsActive { get; set; }
         public string ObjCreationDate { get; set; }
-        //public bool IsFavoriteFolder { get; set; }
+        public bool IsFavoriteFolder { get; set; }
         public string ObjDescription { get; set; }
         public int UserOwnerID { get; set; }
         public string OwnerFullName { get; set; }

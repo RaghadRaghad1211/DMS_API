@@ -3,6 +3,7 @@ using DMS_API.Models;
 using DMS_API.ModelsView;
 using System.Data;
 using System.Net;
+using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 
 namespace DMS_API.Services
@@ -203,6 +204,8 @@ namespace DMS_API.Services
                             OrgEnName = dt.Rows[0]["OrgEnName"].ToString(),
                             OrgArName = dt.Rows[0]["OrgArName"].ToString(),
                             OrgKuName = dt.Rows[0]["OrgKuName"].ToString(),
+                            IsFavoriteFolder = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) FROM [User].[V_Favourites] WHERE [ObjUserId] ={userLoginID} AND " +
+                                                                           $"[ObjFavId]={dt.Rows[0]["ObjId"]} AND [IsActive] = 1 ")) > 0 ? true : false,
                         };
                         Response_MV = new ResponseModelView
                         {
@@ -523,7 +526,7 @@ namespace DMS_API.Services
                 return Response_MV;
             }
         }
-       
+
         #endregion
 
     }
