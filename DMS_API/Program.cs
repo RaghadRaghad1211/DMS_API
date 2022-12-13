@@ -19,9 +19,13 @@ var builder = WebApplication.CreateBuilder(args);
 try
 {
     #region Logs
+    //builder.Host.UseSerilog(((ctx, lc) => lc
+    //            .WriteTo.File(
+    //                          path: $@"{Directory.GetCurrentDirectory()}\wwwroot\Logs\Log.txt",
+    //                          rollingInterval: RollingInterval.Day)));
     builder.Host.UseSerilog(((ctx, lc) => lc
                 .WriteTo.File(
-                              path: $@"{Directory.GetCurrentDirectory()}\wwwroot\Logs\Log.txt",
+                              path: $@"C:\DMS-Logger\Log.txt",
                               rollingInterval: RollingInterval.Day)));
     #endregion
     Log.Information("API is Starting");
@@ -48,28 +52,28 @@ try
     });
     #endregion
     #region Authentication
-    builder.Services.AddAuthentication(options =>
-    {
-        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-    })
-     .AddJwtBearer(option =>
-     {
-         var key = SecurityService.JwtKey;
-         var KeyByte = Encoding.ASCII.GetBytes(key);
-         option.SaveToken = true;
-         option.TokenValidationParameters = new TokenValidationParameters
-         {
-             ValidateIssuer = true,
-             ValidateAudience = true,
-             ValidateLifetime = true,
-             ValidateIssuerSigningKey = true,
-             ValidAudience = SecurityService.JwtAudience,
-             ValidIssuer = SecurityService.JwtIssuer,
-             IssuerSigningKey = new SymmetricSecurityKey(KeyByte)
-         };
-     });
+    //builder.Services.AddAuthentication(options =>
+    //{
+    //    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    //    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    //    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+    //})
+    // .AddJwtBearer(option =>
+    // {
+    //     var key = "Qig5PmxqgqBbVDtVYRorpC55wm8w3ZrL";// SecurityService.JwtKey;
+    //     var KeyByte = Encoding.ASCII.GetBytes(key);
+    //     option.SaveToken = true;
+    //     option.TokenValidationParameters = new TokenValidationParameters
+    //     {
+    //         ValidateIssuer = true,
+    //         ValidateAudience = true,
+    //         ValidateLifetime = true,
+    //         ValidateIssuerSigningKey = true,
+    //         ValidAudience = "APIsecurity", //SecurityService.JwtAudience,
+    //         ValidIssuer = "APIsecurity", //SecurityService.JwtIssuer,
+    //         IssuerSigningKey = new SymmetricSecurityKey(KeyByte)
+    //     };
+    // });
     #endregion
 
     builder.Services.AddControllers();

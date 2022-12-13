@@ -13,7 +13,8 @@ namespace DMS_API.ModelsView
         public bool DocumentIsActive { get; set; }
         public string DocumentDescription { get; set; }
         public int DocumentPerantId { get; set; }
-        public List<KeyValueModel> KeysValues { get; set; }
+        public string KeysValues { get; set; }
+        //public List<KeyValueModel> KeysValues { get; set; }
         public IFormFile DocumentFile { get; set; }
     }
     public class KeyValueModel

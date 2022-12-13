@@ -64,7 +64,7 @@ namespace DMS_API.Services
                 }
                 else
                 {
-                    if (User_MV.Password.Length < 8)
+                    if (User_MV.Password.Trim().Length < 8)
                     {
                         Response_MV = new ResponseModelView
                         {
@@ -79,7 +79,7 @@ namespace DMS_API.Services
                         string getUserInfo = "SELECT  UserID,UsFirstName,UsSecondName,UsThirdName,UsLastName, FullName, UsUserName,  Role, IsOrgAdmin, UserIsActive, UsPhoneNo, " +
                                             "         UsEmail, UsUserEmpNo, UsUserIdintNo, UsIsOnLine, OrgOwner, OrgArName, OrgEnName, OrgKuName, Note " +
                                             "FROM     [User].V_Users " +
-                                           $"WHERE    [UsUserName] = '{User_MV.Username}' AND UsPassword = '{SecurityService.PasswordEnecrypt(User_MV.Password)}' ";
+                                           $"WHERE    [UsUserName] = '{User_MV.Username.Trim()}' AND UsPassword = '{SecurityService.PasswordEnecrypt(User_MV.Password.Trim(), User_MV.Username.Trim())}' ";
 
                         dt = new DataTable();
                         dt = await Task.Run(() => dam.FireDataTable(getUserInfo));
@@ -195,7 +195,7 @@ namespace DMS_API.Services
                 {
                     //int checkExist = Convert.ToInt16(dam.FireSQL($"SELECT COUNT(*) FROM [User].Users WHERE UsId ={id} "));
                     DataTable dtEmail = new DataTable();
-                    dtEmail = await Task.Run(() => dam.FireDataTable($"SELECT UsPhoneNo, UsEmail FROM [User].Users WHERE UsId ={id} "));
+                    dtEmail = await Task.Run(() => dam.FireDataTable($"SELECT UsUserName, UsPhoneNo, UsEmail FROM [User].Users WHERE UsId ={id} "));
                     if (dtEmail.Rows.Count > 0)
                     {
                         string RounPass = SecurityService.RoundomPassword();
@@ -205,7 +205,7 @@ namespace DMS_API.Services
                         bool isResetOTP = await SecurityService.SendOTP(dtEmail.Rows[0]["UsPhoneNo"].ToString(), MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.PhonePasswordIsReset] + RounPass);
                         if (isResetEmail == true && isResetOTP == true)
                         {
-                            string reset = $"UPDATE [User].Users SET UsPassword='{SecurityService.PasswordEnecrypt(RounPass)}' WHERE UsId ={id} ";
+                            string reset = $"UPDATE [User].Users SET UsPassword='{SecurityService.PasswordEnecrypt(RounPass, dtEmail.Rows[0]["UsUserName"].ToString())}' WHERE UsId ={id} ";
                             await Task.Run(() => dam.DoQuery(reset));
                             Response_MV = new ResponseModelView
                             {
@@ -272,7 +272,7 @@ namespace DMS_API.Services
                         bool isResetOTP = await SecurityService.SendOTP(dtEmail.Rows[0]["UsPhoneNo"].ToString(), MessageService.MsgDictionary[Lang.ToLower()][MessageService.PhonePasswordIsReset] + RounPass);
                         if (isResetEmail == true && isResetOTP == true)
                         {
-                            string reset = $"UPDATE [User].Users SET UsPassword='{SecurityService.PasswordEnecrypt(RounPass)}' WHERE UsUserName ='{username}' ";
+                            string reset = $"UPDATE [User].Users SET UsPassword='{SecurityService.PasswordEnecrypt(RounPass, username)}' WHERE UsUserName ='{username}' ";
                             await Task.Run(() => dam.DoQuery(reset));
                             Response_MV = new ResponseModelView
                             {
@@ -362,10 +362,10 @@ namespace DMS_API.Services
                     else
                     {
                         int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
-                        int checkExist = Convert.ToInt16(dam.FireSQL($"SELECT COUNT(*) FROM [User].Users WHERE UsId ={userLoginID} AND  UsPassword ='{SecurityService.PasswordEnecrypt(ChangePassword_MV.OldPassword)}' "));
+                        int checkExist = Convert.ToInt16(dam.FireSQL($"SELECT COUNT(*) FROM [User].Users WHERE UsId ={userLoginID} AND  UsPassword ='{SecurityService.PasswordEnecrypt(ChangePassword_MV.OldPassword, dam.FireSQL($"SELECT UsUserName FROM [User].Users WHERE UsId ={userLoginID}") )}' "));
                         if (checkExist > 0)
                         {
-                            string change = $"UPDATE [User].Users SET UsPassword='{SecurityService.PasswordEnecrypt(ChangePassword_MV.NewPassword)}' WHERE UsId ={userLoginID} ";
+                            string change = $"UPDATE [User].Users SET UsPassword='{SecurityService.PasswordEnecrypt(ChangePassword_MV.NewPassword, dam.FireSQL($"SELECT UsUserName FROM [User].Users WHERE UsId ={userLoginID}"))}' WHERE UsId ={userLoginID} ";
                             await Task.Run(() => dam.DoQuery(change));
                             Response_MV = new ResponseModelView
                             {
@@ -712,7 +712,7 @@ namespace DMS_API.Services
                         int checkDeblicate = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) FROM [User].Users WHERE UsUserName = '{AddUser_MV.UserName}' "));
                         if (checkDeblicate == 0)
                         {
-                            string exeut = $"EXEC [User].[AddUserPro] '{AddUser_MV.UserName}', '{userLoginID}', '{AddUser_MV.OrgOwner}', '{AddUser_MV.Note}', '{AddUser_MV.FirstName}',  '{AddUser_MV.SecondName}', '{AddUser_MV.ThirdName}', '{AddUser_MV.LastName}', '{SecurityService.PasswordEnecrypt(AddUser_MV.Password)}', '{AddUser_MV.PhoneNo}', '{AddUser_MV.Email}', '{AddUser_MV.IsActive}', '{AddUser_MV.UserEmpNo}', '{AddUser_MV.UserIdintNo}', '{AddUser_MV.IsOrgAdmin}' ";
+                            string exeut = $"EXEC [User].[AddUserPro] '{AddUser_MV.UserName}', '{userLoginID}', '{AddUser_MV.OrgOwner}', '{AddUser_MV.Note}', '{AddUser_MV.FirstName}',  '{AddUser_MV.SecondName}', '{AddUser_MV.ThirdName}', '{AddUser_MV.LastName}', '{SecurityService.PasswordEnecrypt(AddUser_MV.Password, AddUser_MV.UserName)}', '{AddUser_MV.PhoneNo}', '{AddUser_MV.Email}', '{AddUser_MV.IsActive}', '{AddUser_MV.UserEmpNo}', '{AddUser_MV.UserIdintNo}', '{AddUser_MV.IsOrgAdmin}' ";
                             var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
 
                             if (outValue == null || outValue.Trim() == "")

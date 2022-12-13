@@ -280,20 +280,31 @@ namespace DMS_API.Services
                                                                          $"ObjId IN (SELECT LcChildObjId FROM [Main].[GetChildsInParent]({Document_MV.DocumentPerantId},{(int)HelpService.ClassType.Folder})) AND ObjClsId ={ClassID} AND ObjIsActive=1 "));
                         if (checkDeblicate == 0)
                         {
-                            if (Document_MV.KeysValues.Count == 0)
+                            //if (Document_MV.KeysValues.Count == 0)
+                            //{
+                            //    Response_MV = new ResponseModelView
+                            //    {
+                            //        Success = false,
+                            //        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.MustSelectedObjects],
+                            //        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                            //    };
+                            //    return Response_MV;
+                            //}
+                            if (ValidationService.IsEmpty(Document_MV.KeysValues) == true)
                             {
                                 Response_MV = new ResponseModelView
                                 {
                                     Success = false,
-                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.MustSelectedObjects],
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.MustFillInformation],
                                     Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
                                 };
                                 return Response_MV;
                             }
-                            string Query = HelpService.GetQueryAddDocument(Document_MV); //"1:Ahmed";
+                            //string Query = HelpService.GetQueryAddDocument(Document_MV);
+
                             string exeut = "DECLARE   @MyNewValue bigint " +
                                           $"EXEC      [Document].[AddDocumentPro] '{ClassID}','{Document_MV.DocumentTitle}', '{userLoginID}', '{Document_MV.DocumentOrgOwnerID}', " +
-                                          $"         '{Document_MV.DocumentDescription}', '{Query}', '{Document_MV.DocumentPerantId}', '{(int)HelpService.ClassType.Folder}', " +
+                                          $"         '{Document_MV.DocumentDescription}', '{Document_MV.KeysValues}', '{Document_MV.DocumentPerantId}', '{(int)HelpService.ClassType.Folder}', " +
                                           $"         @NewValue = @MyNewValue OUTPUT  SELECT @MyNewValue AS newValue ";
 
                             var outValue = await Task.Run(() => dam.FireSQL(exeut));
@@ -325,6 +336,11 @@ namespace DMS_API.Services
                                     var DocFolder = await HelpService.CreateDocumentFolderInServerFolder(Convert.ToInt32(outValue), Environment);
                                     if (DocFolder != null)
                                     {
+                                        // تشفير
+
+
+
+
                                         string fillPath = Path.Combine(DocFolder, outValue + Path.GetExtension(DocFileNameWithExten).Trim());
                                         //string fillPath = Path.Combine(DocFolder, outValue + ".pdf");
                                         using (FileStream filestream = System.IO.File.Create(fillPath))
