@@ -125,8 +125,6 @@ try
 
     app.UseCors();
 
-    //app.UseCors(c => c.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
-
     #region HttpStatusCode
     app.Use(async (context, next) =>
     {
@@ -167,8 +165,6 @@ try
     app.UseAuthorization();
 
     app.UseStaticFiles();
-
-    //app.UseSerilogRequestLogging();
 
     app.MapControllers();
 

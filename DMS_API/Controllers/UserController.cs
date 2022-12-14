@@ -21,7 +21,6 @@ namespace DMS_API.Controllers
         #endregion
 
         #region Actions
-        [AllowAnonymous]
         [HttpPost]
         [Route("Login")]
         public async Task<IActionResult> Login([FromBody] LoginModelView Login_MV, [FromHeader] string? Lang = "Ar")
@@ -30,7 +29,6 @@ namespace DMS_API.Controllers
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
-        [AllowAnonymous]
         [HttpGet]
         [Route("ResetPasswordAdmin/{UserId}")]
         public async Task<IActionResult> ResetPasswordAdmin([FromRoute] int UserId, [FromHeader] RequestHeaderModelView RequestHeader)
@@ -39,7 +37,6 @@ namespace DMS_API.Controllers
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
-        [AllowAnonymous]
         [HttpGet]
         [Route("ResetPasswordUser/{UserName}")]
         public async Task<IActionResult> ResetPasswordUser([FromRoute] string UserName, [FromHeader] string? Lang = "Ar")
@@ -48,7 +45,6 @@ namespace DMS_API.Controllers
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
-        [AllowAnonymous]
         [HttpPost]
         [Route("ChangeMyPassword")]
         public async Task<IActionResult> ChangeMyPassword([FromBody] ChangePasswordModelView ChangePassword_MV, [FromHeader] RequestHeaderModelView RequestHeader)
@@ -57,7 +53,6 @@ namespace DMS_API.Controllers
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
-        [AllowAnonymous]
         [HttpPost]
         [Route("EditMyContact")]
         public async Task<IActionResult> EditMyContact([FromBody] EditMyContactModelView EditMyContact_MV, [FromHeader] RequestHeaderModelView RequestHeader)
@@ -66,7 +61,6 @@ namespace DMS_API.Controllers
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
-        [AllowAnonymous]
         [HttpPost]
         [Route("GetUsersList")]
         public async Task<IActionResult> GetUsersList([FromBody] PaginationModelView Pagination_MV, [FromHeader] RequestHeaderModelView RequestHeader)
@@ -75,7 +69,6 @@ namespace DMS_API.Controllers
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
-        [AllowAnonymous]
         [HttpGet]
         [Route("GetUsersByID/{UserId}")]
         public async Task<IActionResult> GetUsersByID([FromRoute] int UserId, [FromHeader] RequestHeaderModelView RequestHeader)
@@ -84,7 +77,6 @@ namespace DMS_API.Controllers
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
-        [AllowAnonymous]
         [HttpPost]
         [Route("AddUser")]
         public async Task<IActionResult> AddUser([FromBody] AddUserModelView AddUser_MV, [FromHeader] RequestHeaderModelView RequestHeader)
@@ -93,7 +85,6 @@ namespace DMS_API.Controllers
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
-        [AllowAnonymous]
         [HttpPut]
         [Route("EditUser")]
         public async Task<IActionResult> EditUser([FromBody] EditUserModelView EditUser_MV, [FromHeader] RequestHeaderModelView RequestHeader)
@@ -101,7 +92,7 @@ namespace DMS_API.Controllers
             Response_MV = await User_S.EditUser(EditUser_MV, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
-        [AllowAnonymous]
+
         [HttpGet]
         [Route("SearchUsersByUserName/{username}")]
         public async Task<IActionResult> SearchUsersByUserName([FromRoute] string username, [FromHeader] RequestHeaderModelView RequestHeader)
@@ -110,7 +101,6 @@ namespace DMS_API.Controllers
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
-        [AllowAnonymous]
         [HttpPost]
         [Route("SearchUsersAdvance")]
         public async Task<IActionResult> SearchUsersAdvance([FromBody] SearchUserModelView SearchUser_MV, [FromHeader] RequestHeaderModelView RequestHeader)

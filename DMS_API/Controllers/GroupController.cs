@@ -25,7 +25,6 @@ namespace DMS_API.Controllers
         #endregion
 
         #region Actions
-        [AllowAnonymous]
         [HttpPost]
         [Route("GetGroupsList")]
         public async Task<IActionResult> GetGroupsList([FromBody] PaginationModelView Pagination_MV, [FromHeader] RequestHeaderModelView RequestHeader)
@@ -34,7 +33,6 @@ namespace DMS_API.Controllers
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
-        [AllowAnonymous]
         [HttpGet]
         [Route("GetGroupsByID/{GroupId}")]
         public async Task<IActionResult> GetGroupsByID([FromRoute] int GroupId, [FromHeader] RequestHeaderModelView RequestHeader)
@@ -43,7 +41,6 @@ namespace DMS_API.Controllers
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
-        [AllowAnonymous]
         [HttpPost]
         [Route("AddGroup")]
         public async Task<IActionResult> AddGroup([FromBody] GroupModelView Group_MV, [FromHeader] RequestHeaderModelView RequestHeader)
@@ -52,7 +49,6 @@ namespace DMS_API.Controllers
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
-        [AllowAnonymous]
         [HttpPut]
         [Route("EditGroup")]
         public async Task<IActionResult> EditGroup([FromBody] GroupModelView Group_MV, [FromHeader] RequestHeaderModelView RequestHeader)
@@ -61,7 +57,6 @@ namespace DMS_API.Controllers
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
-        [AllowAnonymous]
         [HttpPost]
         [Route("SearchGroupByName/{Name}")]
         public async Task<IActionResult> SearchGroupByName([FromRoute] string Name, [FromBody] PaginationModelView Pagination_MV, [FromHeader] RequestHeaderModelView RequestHeader)
@@ -70,7 +65,6 @@ namespace DMS_API.Controllers
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
-        [AllowAnonymous]
         [HttpGet]
         [Route("GetChildsInGroupByID/{GroupId}")]
         public async Task<IActionResult> GetChildsInGroupByID([FromRoute] int GroupId, [FromHeader] RequestHeaderModelView RequestHeader)
@@ -79,7 +73,6 @@ namespace DMS_API.Controllers
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
-        [AllowAnonymous]
         [HttpPost]
         [Route("GetChildsInGroupByID_Search")]
         public async Task<IActionResult> GetChildsInGroupByID_Search([FromBody] SearchChildParentModelView SearchChildGroup_MV, [FromHeader] RequestHeaderModelView RequestHeader)
@@ -92,7 +85,6 @@ namespace DMS_API.Controllers
 
 
 
-        [AllowAnonymous]
         [HttpGet]
         [Route("GetChildsNotInGroupByID/{GroupId}")]
         public async Task<IActionResult> GetChildsNotInGroupByID([FromRoute] int GroupId, [FromHeader] RequestHeaderModelView RequestHeader)
@@ -101,7 +93,6 @@ namespace DMS_API.Controllers
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
-        [AllowAnonymous]
         [HttpPost]
         [Route("GetChildsNotInGroupByID_Search")]
         public async Task<IActionResult> GetChildsNotInGroupByID_Search([FromBody] SearchChildParentModelView SearchChildGroup_MV, [FromHeader] RequestHeaderModelView RequestHeader)
@@ -119,7 +110,6 @@ namespace DMS_API.Controllers
 
 
 
-        [AllowAnonymous]
         [HttpPost]
         [Route("AddChildsIntoGroup")]
         public async Task<IActionResult> AddChildsIntoGroup([FromBody] LinkParentChildModelView LinkParentChild_MV, [FromHeader] RequestHeaderModelView RequestHeader)
@@ -128,7 +118,6 @@ namespace DMS_API.Controllers
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
-        [AllowAnonymous]
         [HttpPut]
         [Route("RemoveChildsFromGroup")]
         public async Task<IActionResult> RemoveChildsFromGroup([FromBody] LinkParentChildModelView LinkParentChild_MV, [FromHeader] RequestHeaderModelView RequestHeader)

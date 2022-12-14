@@ -22,7 +22,6 @@ namespace DMS_API.Controllers
 
         #region Actions
 
-        [AllowAnonymous]
         [HttpPost]
         [Route("GetHomeData")]
         public async Task<IActionResult> GetHomeData([FromBody]PaginationModelView Pagination_MV, [FromHeader] RequestHeaderModelView RequestHeader)
@@ -31,7 +30,6 @@ namespace DMS_API.Controllers
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
-        [AllowAnonymous]
         [HttpGet]
         [Route("GeneralSearchByTitle/{title}")]
         public async Task<IActionResult> GeneralSearchByTitle([FromRoute] string title, [FromHeader] RequestHeaderModelView RequestHeader)

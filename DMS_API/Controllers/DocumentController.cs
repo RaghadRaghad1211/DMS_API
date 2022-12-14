@@ -33,7 +33,6 @@ namespace DMS_API.Controllers
         #endregion
 
         #region Actions
-        [AllowAnonymous]
         [HttpPost]
         [Route("GetDocumentsList")]
         public async Task<IActionResult> GetDocumentsList([FromBody] PaginationModelView Pagination_MV, [FromHeader] RequestHeaderModelView RequestHeader)
@@ -42,7 +41,6 @@ namespace DMS_API.Controllers
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
-        [AllowAnonymous]
         [HttpGet]
         [Route("GetDocumentsByID/{DocumentId}")]
         public async Task<IActionResult> GetDocumentsByID([FromRoute] int DocumentId, [FromHeader] RequestHeaderModelView RequestHeader)
@@ -53,7 +51,6 @@ namespace DMS_API.Controllers
 
 
 
-        [AllowAnonymous]
         [HttpGet]
         [Route("SearchDocumentByName/{Name}")]
 
@@ -63,12 +60,19 @@ namespace DMS_API.Controllers
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
-        [AllowAnonymous]
         [HttpPost]
         [Route("AddDocument")]
-        public async Task<IActionResult> AddDocument([FromForm] DocumentModelView Document_MV, [FromHeader] RequestHeaderModelView RequestHeader)
+        public async Task<IActionResult> AddDocument([FromBody] DocumentModelView Document_MV, [FromForm] DocumentFileModelView DocumentFile_MV, [FromHeader] RequestHeaderModelView RequestHeader)
         {
-            Response_MV = await Document_S.AddDocument(Document_MV, RequestHeader);
+            Response_MV = await Document_S.AddDocument(Document_MV, DocumentFile_MV, RequestHeader);
+            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
+        }
+
+        [HttpPost]
+        [Route("EditDocument")]
+        public async Task<IActionResult> EditDocument([FromBody] DocumentModelView Document_MV, [FromForm] DocumentFileModelView DocumentFile_MV, [FromHeader] RequestHeaderModelView RequestHeader)
+        {
+            Response_MV = await Document_S.EditDocument(Document_MV, DocumentFile_MV, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 

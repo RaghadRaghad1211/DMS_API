@@ -47,6 +47,7 @@
         public static readonly string NoData = "NoData";
         public static readonly string IsExist = "IsExist";
         public static readonly string UsernameIsExist = "UsernameIsExist";
+        public static readonly string PhoneIsExist = "PhoneIsExist";
         public static readonly string IsNotExist = "IsNotExist";
         public static readonly string MustFillInformation = "MustFillInformation";
         public static readonly string ServerError = "Server Error";
@@ -156,6 +157,7 @@
                      {DeleteFaild, "فشل بعملية الحذف" },//OrgNameMustEnter
                      {OrgNameMustEnter, "يجب اضافة اسم الموؤسسة" },
                      { UsernameIsExist, "أسم المستخدم موجود" },
+                     { PhoneIsExist, "رقم الهاتف موجود" },
                      { MoveSuccess, "تمت عملية النقل" },
                      { MoveFaild, "فشل بعملية النقل" },
                       {DocumentTitelMustEnter ,"يجب ادخال عنوان الوثيقة"},
@@ -226,6 +228,7 @@
                      {DeleteFaild, "Delete Faild" },
                      {OrgNameMustEnter, "OrgName Must Enter" },
                      {UsernameIsExist, "Username is exist" },
+                      { PhoneIsExist, "Phone Is Exist" },
                      { MoveSuccess, "Move Success" },
                      { MoveFaild, "Move Faild" },
                      {DocumentTitelMustEnter ,"Document Titel Must Enter"},

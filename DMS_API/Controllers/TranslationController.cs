@@ -22,7 +22,6 @@ namespace DMS_API.Controllers
         #endregion
 
         #region Actions
-        [AllowAnonymous]
         [HttpPost]
         [Route("GetTranslationList")]
         public async Task<IActionResult> GetTranslationList([FromBody] PaginationModelView Pagination_MV, [FromHeader] RequestHeaderModelView RequestHeader)
@@ -31,7 +30,6 @@ namespace DMS_API.Controllers
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
-        [AllowAnonymous]
         [HttpGet]
         [Route("GetTranslationByID/{id}")]
         public async Task<IActionResult> GetTranslationByID([FromRoute] int id, [FromHeader] RequestHeaderModelView RequestHeader)
@@ -40,7 +38,6 @@ namespace DMS_API.Controllers
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
-        [AllowAnonymous]
         [HttpPost]
         [Route("AddTranslationWords")]
         public async Task<IActionResult> AddTranslationWords([FromBody] TranslationModel Translation_M, [FromHeader] RequestHeaderModelView RequestHeader)
@@ -49,7 +46,6 @@ namespace DMS_API.Controllers
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
-        [AllowAnonymous]
         [HttpPut]
         [Route("EditTranslationWords")]
         public async Task<IActionResult> EditTranslationWords([FromBody] TranslationModel Translation_M, [FromHeader] RequestHeaderModelView RequestHeader)
@@ -58,7 +54,6 @@ namespace DMS_API.Controllers
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
-        [AllowAnonymous]
         [HttpPost]
         [Route("SearchTranslationWords")]
         public async Task<IActionResult> SearchTranslationWords([FromBody] SearchTranslationModelView SearchTranslation_MV, [FromHeader] RequestHeaderModelView RequestHeader)
@@ -67,7 +62,6 @@ namespace DMS_API.Controllers
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
-        [AllowAnonymous]
         [HttpGet]
         [Route("GetTranslationPage")]
         public async Task<IActionResult> GetTranslationPage([FromHeader] string? Lang = "Ar")

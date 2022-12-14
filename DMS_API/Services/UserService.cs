@@ -82,6 +82,7 @@ namespace DMS_API.Services
                                            $"WHERE    [UsUserName] = '{User_MV.Username.Trim()}' AND UsPassword = '{SecurityService.PasswordEnecrypt(User_MV.Password.Trim(), User_MV.Username.Trim())}' ";
 
                         dt = new DataTable();
+                        await Task.Delay(2000);
                         dt = await Task.Run(() => dam.FireDataTable(getUserInfo));
                         if (dt == null)
                         {
@@ -261,48 +262,48 @@ namespace DMS_API.Services
                 //}
                 //else
                 //{
-                    DataTable dtEmail = new DataTable();
-                    dtEmail = await Task.Run(() => dam.FireDataTable($"SELECT UsPhoneNo, UsEmail FROM [User].Users WHERE UsUserName ='{username}' "));
-                    if (dtEmail.Rows.Count > 0)
+                DataTable dtEmail = new DataTable();
+                dtEmail = await Task.Run(() => dam.FireDataTable($"SELECT UsPhoneNo, UsEmail FROM [User].Users WHERE UsUserName ='{username}' "));
+                if (dtEmail.Rows.Count > 0)
+                {
+                    string RounPass = SecurityService.RoundomPassword();
+                    bool isResetEmail = SecurityService.SendEmail(dtEmail.Rows[0]["UsEmail"].ToString(),
+                         MessageService.MsgDictionary[Lang.ToLower()][MessageService.EmailSubjectPasswordIsReset],
+                         MessageService.MsgDictionary[Lang.ToLower()][MessageService.EmailBodyPasswordIsReset] + RounPass);
+                    bool isResetOTP = await SecurityService.SendOTP(dtEmail.Rows[0]["UsPhoneNo"].ToString(), MessageService.MsgDictionary[Lang.ToLower()][MessageService.PhonePasswordIsReset] + RounPass);
+                    if (isResetEmail == true && isResetOTP == true)
                     {
-                        string RounPass = SecurityService.RoundomPassword();
-                        bool isResetEmail = SecurityService.SendEmail(dtEmail.Rows[0]["UsEmail"].ToString(),
-                             MessageService.MsgDictionary[Lang.ToLower()][MessageService.EmailSubjectPasswordIsReset],
-                             MessageService.MsgDictionary[Lang.ToLower()][MessageService.EmailBodyPasswordIsReset] + RounPass);
-                        bool isResetOTP = await SecurityService.SendOTP(dtEmail.Rows[0]["UsPhoneNo"].ToString(), MessageService.MsgDictionary[Lang.ToLower()][MessageService.PhonePasswordIsReset] + RounPass);
-                        if (isResetEmail == true && isResetOTP == true)
+                        string reset = $"UPDATE [User].Users SET UsPassword='{SecurityService.PasswordEnecrypt(RounPass, username)}' WHERE UsUserName ='{username}' ";
+                        await Task.Run(() => dam.DoQuery(reset));
+                        Response_MV = new ResponseModelView
                         {
-                            string reset = $"UPDATE [User].Users SET UsPassword='{SecurityService.PasswordEnecrypt(RounPass, username)}' WHERE UsUserName ='{username}' ";
-                            await Task.Run(() => dam.DoQuery(reset));
-                            Response_MV = new ResponseModelView
-                            {
-                                Success = true,
-                                Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.IsReset],
-                                Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
-                            };
-                            return Response_MV;
-                        }
-                        else
-                        {
-                            Response_MV = new ResponseModelView
-                            {
-                                Success = false,
-                                Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.ExceptionError],
-                                Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
-                            };
-                            return Response_MV;
-                        }
+                            Success = true,
+                            Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.IsReset],
+                            Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
+                        };
+                        return Response_MV;
                     }
                     else
                     {
                         Response_MV = new ResponseModelView
                         {
                             Success = false,
-                            Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.IsExist],
-                            Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                            Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.ExceptionError],
+                            Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
                         };
                         return Response_MV;
                     }
+                }
+                else
+                {
+                    Response_MV = new ResponseModelView
+                    {
+                        Success = false,
+                        Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.IsExist],
+                        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                    };
+                    return Response_MV;
+                }
                 //}
             }
             catch (Exception ex)
@@ -362,7 +363,7 @@ namespace DMS_API.Services
                     else
                     {
                         int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
-                        int checkExist = Convert.ToInt16(dam.FireSQL($"SELECT COUNT(*) FROM [User].Users WHERE UsId ={userLoginID} AND  UsPassword ='{SecurityService.PasswordEnecrypt(ChangePassword_MV.OldPassword, dam.FireSQL($"SELECT UsUserName FROM [User].Users WHERE UsId ={userLoginID}") )}' "));
+                        int checkExist = Convert.ToInt16(dam.FireSQL($"SELECT COUNT(*) FROM [User].Users WHERE UsId ={userLoginID} AND  UsPassword ='{SecurityService.PasswordEnecrypt(ChangePassword_MV.OldPassword, dam.FireSQL($"SELECT UsUserName FROM [User].Users WHERE UsId ={userLoginID}"))}' "));
                         if (checkExist > 0)
                         {
                             string change = $"UPDATE [User].Users SET UsPassword='{SecurityService.PasswordEnecrypt(ChangePassword_MV.NewPassword, dam.FireSQL($"SELECT UsUserName FROM [User].Users WHERE UsId ={userLoginID}"))}' WHERE UsId ={userLoginID} ";
@@ -443,11 +444,19 @@ namespace DMS_API.Services
                         }
                         else
                         {
+                            //string getUserInfo1 = "SELECT      UserID, UsFirstName, UsSecondName, UsThirdName, UsLastName, FullName, UsUserName, Role, IsOrgAdmin, UserIsActive, UsPhoneNo, UsEmail, " +
+                            //                     "            UsUserEmpNo, UsUserIdintNo, UsIsOnLine, OrgOwner, OrgArName, OrgEnName, OrgKuName, Note " +
+                            //                     "FROM        [User].V_Users " +
+                            //                    $"WHERE [OrgOwner] IN (SELECT [OrgId] FROM [User].GetOrgsbyUserId({userLoginID})) " +
+                            //                     "ORDER BY UserID " +
+                            //                    $"OFFSET      ({_PageNumber}-1)*{_PageRows} ROWS " +
+                            //                    $"FETCH NEXT   {_PageRows} ROWS ONLY ";
+
                             string getUserInfo = "SELECT      UserID, UsFirstName, UsSecondName, UsThirdName, UsLastName, FullName, UsUserName, Role, IsOrgAdmin, UserIsActive, UsPhoneNo, UsEmail, " +
-                                                 "            UsUserEmpNo, UsUserIdintNo, UsIsOnLine, OrgOwner, OrgArName, OrgEnName, OrgKuName, Note " +
+                                                 "            UsUserEmpNo, UsUserIdintNo, UsIsOnLine, OrgOwner, [User].V_Users.OrgArName, [User].V_Users.OrgEnName, [User].V_Users.OrgKuName, Note " +
                                                  "FROM        [User].V_Users " +
-                                                $"WHERE [OrgOwner] IN (SELECT [OrgId] FROM [User].GetOrgsbyUserId({userLoginID})) " +
-                                                 "ORDER BY UserID " +
+                                                $"INNER JOIN  [User].GetOrgsbyUserId({userLoginID}) AS GetOrgsbyUserId ON[User].V_Users.OrgOwner = GetOrgsbyUserId.OrgId " +
+                                                 "ORDER BY    UserID " +
                                                 $"OFFSET      ({_PageNumber}-1)*{_PageRows} ROWS " +
                                                 $"FETCH NEXT   {_PageRows} ROWS ONLY ";
 
@@ -542,7 +551,7 @@ namespace DMS_API.Services
                     int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
                     string getUserInfo = "SELECT   UserID, UsFirstName, UsSecondName, UsThirdName, UsLastName, FullName, UsUserName, Role, IsOrgAdmin, UserIsActive, UsPhoneNo, UsEmail, " +
                                          "         UsUserEmpNo, UsUserIdintNo, UsIsOnLine, OrgOwner, OrgArName, OrgEnName, OrgKuName, Note " +
-                                        $"FROM     [User].V_Users WHERE UserID={id} AND [OrgOwner] IN (SELECT [OrgId] FROM [User].[GetOrgsbyUserId]({userLoginID})) AND [USERID] !={userLoginID} ";
+                                        $"FROM     [User].V_Users WHERE UserID={id} ";
 
                     dt = new DataTable();
                     dt = await Task.Run(() => dam.FireDataTable(getUserInfo));
@@ -645,7 +654,7 @@ namespace DMS_API.Services
                         };
                         return Response_MV;
                     }
-                    else if (ValidationService.IsPhoneNumber(AddUser_MV.PhoneNo) == false)
+                    else if (ValidationService.IsPhoneNumber(AddUser_MV.PhoneNo.Trim()) == false)
                     {
                         Response_MV = new ResponseModelView
                         {
@@ -655,7 +664,7 @@ namespace DMS_API.Services
                         };
                         return Response_MV;
                     }
-                    else if (ValidationService.IsEmail(AddUser_MV.Email) == false)
+                    else if (ValidationService.IsEmail(AddUser_MV.Email.ToLower().Trim()) == false)
                     {
                         Response_MV = new ResponseModelView
                         {
@@ -675,7 +684,7 @@ namespace DMS_API.Services
                         };
                         return Response_MV;
                     }
-                    else if (ValidationService.IsEmpty(AddUser_MV.Password) == true)
+                    else if (ValidationService.IsEmpty(AddUser_MV.Password.Trim()) == true)
                     {
                         Response_MV = new ResponseModelView
                         {
@@ -685,7 +694,7 @@ namespace DMS_API.Services
                         };
                         return Response_MV;
                     }
-                    else if (AddUser_MV.Password.Length < 8)
+                    else if (AddUser_MV.Password.Trim().Length < 8)
                     {
                         Response_MV = new ResponseModelView
                         {
@@ -709,25 +718,16 @@ namespace DMS_API.Services
                     else
                     {
                         int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
-                        int checkDeblicate = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) FROM [User].Users WHERE UsUserName = '{AddUser_MV.UserName}' "));
-                        if (checkDeblicate == 0)
+                        int checkDeblicateUsername = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) FROM [User].Users WHERE UsUserName = '{AddUser_MV.UserName}' "));
+                        if (checkDeblicateUsername == 0)
                         {
-                            string exeut = $"EXEC [User].[AddUserPro] '{AddUser_MV.UserName}', '{userLoginID}', '{AddUser_MV.OrgOwner}', '{AddUser_MV.Note}', '{AddUser_MV.FirstName}',  '{AddUser_MV.SecondName}', '{AddUser_MV.ThirdName}', '{AddUser_MV.LastName}', '{SecurityService.PasswordEnecrypt(AddUser_MV.Password, AddUser_MV.UserName)}', '{AddUser_MV.PhoneNo}', '{AddUser_MV.Email}', '{AddUser_MV.IsActive}', '{AddUser_MV.UserEmpNo}', '{AddUser_MV.UserIdintNo}', '{AddUser_MV.IsOrgAdmin}' ";
-                            var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
+                            int checkDeblicatePhone = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) FROM [User].Users WHERE UsPhoneNo = '{AddUser_MV.PhoneNo}' "));
+                            if (checkDeblicatePhone == 0)
+                            {
+                                string exeut = $"EXEC [User].[AddUserPro] '{AddUser_MV.UserName.Trim()}', '{userLoginID}', '{AddUser_MV.OrgOwner}', '{AddUser_MV.Note}', '{AddUser_MV.FirstName.Trim()}',  '{AddUser_MV.SecondName.Trim()}', '{AddUser_MV.ThirdName.Trim()}', '{AddUser_MV.LastName.Trim()}', '{SecurityService.PasswordEnecrypt(AddUser_MV.Password.Trim(), AddUser_MV.UserName.Trim())}', '{AddUser_MV.PhoneNo.Trim()}', '{AddUser_MV.Email.ToLower().Trim()}', '{AddUser_MV.IsActive}', '{AddUser_MV.UserEmpNo}', '{AddUser_MV.UserIdintNo}', '{AddUser_MV.IsOrgAdmin}' ";
+                                var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
 
-                            if (outValue == null || outValue.Trim() == "")
-                            {
-                                Response_MV = new ResponseModelView
-                                {
-                                    Success = false,
-                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.InsertFaild],
-                                    Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
-                                };
-                                return Response_MV;
-                            }
-                            else
-                            {
-                                if (outValue == 0.ToString())
+                                if (outValue == null || outValue.Trim() == "")
                                 {
                                     Response_MV = new ResponseModelView
                                     {
@@ -739,14 +739,37 @@ namespace DMS_API.Services
                                 }
                                 else
                                 {
-                                    Response_MV = new ResponseModelView
+                                    if (outValue == 0.ToString())
                                     {
-                                        Success = true,
-                                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.InsertSuccess],
-                                        Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
-                                    };
-                                    return Response_MV;
+                                        Response_MV = new ResponseModelView
+                                        {
+                                            Success = false,
+                                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.InsertFaild],
+                                            Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                                        };
+                                        return Response_MV;
+                                    }
+                                    else
+                                    {
+                                        Response_MV = new ResponseModelView
+                                        {
+                                            Success = true,
+                                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.InsertSuccess],
+                                            Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
+                                        };
+                                        return Response_MV;
+                                    }
                                 }
+                            }
+                            else
+                            {
+                                Response_MV = new ResponseModelView
+                                {
+                                    Success = false,
+                                    Message = AddUser_MV.UserName + " " + MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.PhoneIsExist],
+                                    Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                                };
+                                return Response_MV;
                             }
                         }
                         else
@@ -759,6 +782,7 @@ namespace DMS_API.Services
                             };
                             return Response_MV;
                         }
+
                     }
                 }
             }
@@ -795,7 +819,7 @@ namespace DMS_API.Services
                         };
                         return Response_MV;
                     }
-                    else if (ValidationService.IsPhoneNumber(EditUser_MV.PhoneNo) == false)
+                    else if (ValidationService.IsPhoneNumber(EditUser_MV.PhoneNo.Trim()) == false)
                     {
                         Response_MV = new ResponseModelView
                         {
@@ -805,7 +829,7 @@ namespace DMS_API.Services
                         };
                         return Response_MV;
                     }
-                    else if (ValidationService.IsEmail(EditUser_MV.Email) == false)
+                    else if (ValidationService.IsEmail(EditUser_MV.Email.ToLower().Trim()) == false)
                     {
                         Response_MV = new ResponseModelView
                         {
@@ -831,7 +855,7 @@ namespace DMS_API.Services
                         int checkDeblicate = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) FROM [User].Users WHERE UsId = {EditUser_MV.UserID} "));
                         if (checkDeblicate > 0)
                         {
-                            string exeut = $"EXEC [User].[UpdateUserPro] '{EditUser_MV.UserID}', '{EditUser_MV.IsActive}',  '{EditUser_MV.OrgOwner}', '{EditUser_MV.Note}', '{EditUser_MV.FirstName}', '{EditUser_MV.SecondName}', '{EditUser_MV.ThirdName}', '{EditUser_MV.LastName}', '{EditUser_MV.PhoneNo}', '{EditUser_MV.Email}', '{EditUser_MV.UserEmpNo}', '{EditUser_MV.UserIdintNo}', '{EditUser_MV.IsOrgAdmin}' ";
+                            string exeut = $"EXEC [User].[UpdateUserPro] '{EditUser_MV.UserID}', '{EditUser_MV.IsActive}',  '{EditUser_MV.OrgOwner}', '{EditUser_MV.Note}', '{EditUser_MV.FirstName.Trim()}', '{EditUser_MV.SecondName.Trim()}', '{EditUser_MV.ThirdName.Trim()}', '{EditUser_MV.LastName.Trim()}', '{EditUser_MV.PhoneNo.Trim()}', '{EditUser_MV.Email.ToLower().Trim()}', '{EditUser_MV.UserEmpNo}', '{EditUser_MV.UserIdintNo}', '{EditUser_MV.IsOrgAdmin}' ";
                             var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
 
                             if (outValue == null || outValue.Trim() == "")

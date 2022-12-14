@@ -54,7 +54,7 @@ namespace DMS_API.Services
                     //                           $"WHERE   LcParentObjId={ParentID} AND LcParentClsId ={ParentClassID} AND LcIsActive=1"; GetChildsInGroup
 
                     string getGroupChildInfo = $"SELECT LcId,ParentUserOwnerId,ParentOrgOwnerId, LcParentObjId, ObjTitle, LcParentClsId," +
-                                                 "       ParentClassType, LcChildObjId, ChildTitle, LcChildClsId, ChildClassType, LcIsActive " +
+                                                 "       ParentClassType, LcChildObjId, ChildTitle, LcChildClsId, ChildClassType, ChildCreationDate, LcIsActive " +
                                                 $" FROM  [Main].[GetChildsInParent]({ParentID},{ParentClassID})";
 
                     dt = new DataTable();
@@ -87,6 +87,7 @@ namespace DMS_API.Services
                                 ChildTitle = dt.Rows[i]["ChildTitle"].ToString(),
                                 ChildClsId = Convert.ToInt32(dt.Rows[i]["LcChildClsId"].ToString()),
                                 ChildClassType = dt.Rows[i]["ChildClassType"].ToString(),
+                                ChildCreationDate = DateTime.Parse(dt.Rows[i]["ChildCreationDate"].ToString()).ToShortDateString(),
                                 LcIsActive = bool.Parse(dt.Rows[i]["LcIsActive"].ToString()),
                             };
                             LinkParentChild_Mlist.Add(LinkParentChild_M);
@@ -142,7 +143,7 @@ namespace DMS_API.Services
                     //                            $" FROM  [User].[GetChildsInGroup]({ParentID})";
 
                     string getGroupChildInfo_Search = $"SELECT LcId,ParentUserOwnerId,ParentOrgOwnerId, LcParentObjId, ObjTitle, LcParentClsId," +
-                                                 "       ParentClassType, LcChildObjId, ChildTitle, LcChildClsId, ChildClassType, LcIsActive " +
+                                                 "       ParentClassType, LcChildObjId, ChildTitle, LcChildClsId, ChildClassType, ChildCreationDate, LcIsActive " +
                                                 $" FROM  [Main].[GetChildsInParent_Search]({SearchChildParent_MV.ParentId}, {ParentClassID}, {SearchChildParent_MV.ChildTypeId},'{SearchChildParent_MV.TitleSearch}')";
 
                     dt = new DataTable();
@@ -175,6 +176,7 @@ namespace DMS_API.Services
                                 ChildTitle = dt.Rows[i]["ChildTitle"].ToString(),
                                 ChildClsId = Convert.ToInt32(dt.Rows[i]["LcChildClsId"].ToString()),
                                 ChildClassType = dt.Rows[i]["ChildClassType"].ToString(),
+                                ChildCreationDate = DateTime.Parse(dt.Rows[i]["ChildCreationDate"].ToString()).ToShortDateString(),
                                 LcIsActive = bool.Parse(dt.Rows[i]["LcIsActive"].ToString()),
                             };
                             LinkParentChild_Mlist.Add(LinkParentChild_M);

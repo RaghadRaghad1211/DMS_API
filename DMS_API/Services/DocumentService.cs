@@ -29,6 +29,8 @@ namespace DMS_API.Services
         {
             Environment = environment;
             dam = new DataAccessService(SecurityService.ConnectionString);
+
+            var ff = SecurityService.PasswordEnecrypt("00000000","asmaa");
         }
         #endregion
 
@@ -169,13 +171,12 @@ namespace DMS_API.Services
                 else
                 {
                     int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
-                    int orgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {userLoginID} "));
-                    //string whereField = orgOwnerID == 0 ? "OrgUp" : "OrgId";
-                    string whereField = orgOwnerID == 0 ? "SELECT '0' as OrgId UNION SELECT OrgId" : "SELECT OrgId";
+                    //int orgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {userLoginID} "));
+                    //string whereField = orgOwnerID == 0 ? "SELECT '0' as OrgId UNION SELECT OrgId" : "SELECT OrgId";
                     string getDocumentInfo = "SELECT  ObjId, ObjTitle, ObjClsId, ClsName, ObjIsActive, ObjCreationDate, ObjDescription, UserOwnerID, " +
                                            "          OwnerFullName, OwnerUserName, OrgOwner, OrgEnName,OrgArName , OrgKuName " +
                                            "FROM      [Document].V_Documents " +
-                                          $"WHERE     ObjId={id} AND [OrgOwner] IN ({whereField} FROM [User].GetOrgsbyUserId({userLoginID})) AND ObjClsId ={ClassID} ";
+                                          $"WHERE     ObjId={id}  ";
 
 
                     dt = new DataTable();
@@ -241,7 +242,7 @@ namespace DMS_API.Services
                 return Response_MV;
             }
         }
-        public async Task<ResponseModelView> AddDocument(DocumentModelView Document_MV, RequestHeaderModelView RequestHeader)
+        public async Task<ResponseModelView> AddDocument(DocumentModelView Document_MV, DocumentFileModelView DocumentFile_MV, RequestHeaderModelView RequestHeader)
         {
             try
             {
@@ -263,7 +264,7 @@ namespace DMS_API.Services
                         };
                         return Response_MV;
                     }
-                    else if (Document_MV.DocumentFile.Length <= 0)
+                    else if (DocumentFile_MV.DocumentFile.Length <= 0)
                     {
                         Response_MV = new ResponseModelView
                         {
@@ -280,31 +281,31 @@ namespace DMS_API.Services
                                                                          $"ObjId IN (SELECT LcChildObjId FROM [Main].[GetChildsInParent]({Document_MV.DocumentPerantId},{(int)HelpService.ClassType.Folder})) AND ObjClsId ={ClassID} AND ObjIsActive=1 "));
                         if (checkDeblicate == 0)
                         {
-                            //if (Document_MV.KeysValues.Count == 0)
-                            //{
-                            //    Response_MV = new ResponseModelView
-                            //    {
-                            //        Success = false,
-                            //        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.MustSelectedObjects],
-                            //        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
-                            //    };
-                            //    return Response_MV;
-                            //}
-                            if (ValidationService.IsEmpty(Document_MV.KeysValues) == true)
+                            if (Document_MV.KeysValues.Count == 0)
                             {
                                 Response_MV = new ResponseModelView
                                 {
                                     Success = false,
-                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.MustFillInformation],
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.MustSelectedObjects],
                                     Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
                                 };
                                 return Response_MV;
                             }
-                            //string Query = HelpService.GetQueryAddDocument(Document_MV);
+                            //if (ValidationService.IsEmpty(Document_MV.KeysValues) == true)
+                            //{
+                            //    Response_MV = new ResponseModelView
+                            //    {
+                            //        Success = false,
+                            //        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.MustFillInformation],
+                            //        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                            //    };
+                            //    return Response_MV;
+                            //}
+                            string Query = HelpService.GetQueryAddDocument(Document_MV);
 
                             string exeut = "DECLARE   @MyNewValue bigint " +
                                           $"EXEC      [Document].[AddDocumentPro] '{ClassID}','{Document_MV.DocumentTitle}', '{userLoginID}', '{Document_MV.DocumentOrgOwnerID}', " +
-                                          $"         '{Document_MV.DocumentDescription}', '{Document_MV.KeysValues}', '{Document_MV.DocumentPerantId}', '{(int)HelpService.ClassType.Folder}', " +
+                                          $"         '{Document_MV.DocumentDescription}', '{Query}', '{Document_MV.DocumentPerantId}', '{(int)HelpService.ClassType.Folder}', " +
                                           $"         @NewValue = @MyNewValue OUTPUT  SELECT @MyNewValue AS newValue ";
 
                             var outValue = await Task.Run(() => dam.FireSQL(exeut));
@@ -320,9 +321,9 @@ namespace DMS_API.Services
                             }
                             else
                             {
-                                if (Document_MV.DocumentFile.Length > 0)
+                                if (DocumentFile_MV.DocumentFile.Length > 0)
                                 {
-                                    string DocFileNameWithExten = Document_MV.DocumentFile.FileName;
+                                    string DocFileNameWithExten = DocumentFile_MV.DocumentFile.FileName;
                                     if (Path.GetExtension(DocFileNameWithExten.ToLower()).Trim() != ".pdf")
                                     {
                                         Response_MV = new ResponseModelView
@@ -345,7 +346,7 @@ namespace DMS_API.Services
                                         //string fillPath = Path.Combine(DocFolder, outValue + ".pdf");
                                         using (FileStream filestream = System.IO.File.Create(fillPath))
                                         {
-                                            Document_MV.DocumentFile.CopyTo(filestream);
+                                            DocumentFile_MV.DocumentFile.CopyTo(filestream);
                                             filestream.Flush();
                                             filestream.Close();
                                         }
@@ -370,6 +371,138 @@ namespace DMS_API.Services
                             };
                             return Response_MV;
                         }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Response_MV = new ResponseModelView
+                {
+                    Success = false,
+                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError] + " - " + ex.Message,
+                    Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                };
+                return Response_MV;
+
+            }
+        }
+        public async Task<ResponseModelView> EditDocument(DocumentModelView Document_MV, DocumentFileModelView DocumentFile_MV, RequestHeaderModelView RequestHeader)
+        {
+            try
+            {
+                Session_S = new SessionService();
+                var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
+                if (ResponseSession.Success == false)
+                {
+                    return ResponseSession;
+                }
+                else
+                {
+                    if (ValidationService.IsEmpty(Document_MV.DocumentTitle) == true)
+                    {
+                        Response_MV = new ResponseModelView
+                        {
+                            Success = false,
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.DocumentTitelMustEnter],
+                            Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                        };
+                        return Response_MV;
+                    }
+                    else if (DocumentFile_MV.DocumentFile.Length <= 0)
+                    {
+                        Response_MV = new ResponseModelView
+                        {
+                            Success = false,
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.DocumentFileMustUpload],
+                            Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                        };
+                        return Response_MV;
+                    }
+                    else
+                    {
+                        int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
+                        if (Document_MV.KeysValues.Count == 0)
+                        {
+                            Response_MV = new ResponseModelView
+                            {
+                                Success = false,
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.MustSelectedObjects],
+                                Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                            };
+                            return Response_MV;
+                        }
+
+                        string Query = HelpService.GetQueryAddDocument(Document_MV);
+
+                        string exeut = "DECLARE   @MyNewValue bigint " +
+                                      $"EXEC      [Document].[UpdateDocumentPro] '{Document_MV.DocumentId}','{ClassID}','{Document_MV.DocumentTitle}', '{userLoginID}', '{Document_MV.DocumentOrgOwnerID}', " +
+                                      $"         '{Document_MV.DocumentDescription}', '{Query}', '{Document_MV.DocumentPerantId}', '{(int)HelpService.ClassType.Folder}', " +
+                                      $"         @NewValue = @MyNewValue OUTPUT  SELECT @MyNewValue AS newValue ";
+
+
+                        var outValue = await Task.Run(() => dam.FireSQL(exeut));
+                        if (outValue == 0.ToString() || outValue == null || outValue.Trim() == "")
+                        {
+                            Response_MV = new ResponseModelView
+                            {
+                                Success = false,
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.InsertFaild],
+                                Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                            };
+                            return Response_MV;
+                        }
+                        else
+                        {
+                            if (DocumentFile_MV.DocumentFile.Length > 0)
+                            {
+                                string DocFileNameWithExten = DocumentFile_MV.DocumentFile.FileName;
+                                if (Path.GetExtension(DocFileNameWithExten.ToLower()).Trim() != ".pdf")
+                                {
+                                    Response_MV = new ResponseModelView
+                                    {
+                                        Success = false,
+                                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExtensionMustBePFD],
+                                        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                                    };
+                                    return Response_MV;
+                                }
+                                var DocFolder = await HelpService.CreateDocumentFolderInServerFolder(Convert.ToInt32(outValue), Environment);
+                                if (DocFolder != null)
+                                {
+                                    // تشفير
+
+
+
+
+                                    string fillPath = Path.Combine(DocFolder, outValue + Path.GetExtension(DocFileNameWithExten).Trim());
+                                    //string fillPath = Path.Combine(DocFolder, outValue + ".pdf");
+                                    using (FileStream filestream = System.IO.File.Create(fillPath))
+                                    {
+                                        DocumentFile_MV.DocumentFile.CopyTo(filestream);
+                                        filestream.Flush();
+                                        filestream.Close();
+                                    }
+                                }
+                            }
+                            Response_MV = new ResponseModelView
+                            {
+                                Success = true,
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.InsertSuccess],
+                                Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
+                            };
+                            return Response_MV;
+                        }
+                        //}
+                        //else
+                        //{
+                        //    Response_MV = new ResponseModelView
+                        //    {
+                        //        Success = false,
+                        //        Message = Document_MV.DocumentTitle + " " + MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsExist],
+                        //        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                        //    };
+                        //    return Response_MV;
+                        //}
                     }
                 }
             }

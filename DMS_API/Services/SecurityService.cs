@@ -9,6 +9,7 @@ using System.Net.Mail;
 using System.Net;
 using ArchiveAPI.Services;
 using System.Data;
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 
 namespace DMS_API.Services
 {
@@ -22,14 +23,14 @@ namespace DMS_API.Services
         public static readonly string ConnectionString =
             "Server=10.55.101.20,1433;Database=DMS_DB;Integrated Security=false;User ID=dms; Password=dms;Connection Timeout=60";
 
-        public static string PasswordSalt;
+        private static string PasswordSalt;
 
-        public static string JwtKey;
-        public static string JwtIssuer;
-        public static string JwtAudience;
+        private static string JwtKey;
+        private static string JwtIssuer;
+        private static string JwtAudience;
 
-        public static string MsgEmail;
-        public static string MsgPassword;
+        private static string MsgEmail;
+        private static string MsgPassword;
 
         private static string OtpUrl;
         private static string OtpUsername;
@@ -203,11 +204,11 @@ namespace DMS_API.Services
                 return false;
             }
         }
-        public static string PasswordEnecrypt(string pass, string username)
+        public static string PasswordEnecrypt(string password, string username)
         {
             if (GetSecureKeys() == true)
             {
-                byte[] bytes = Encoding.UTF8.GetBytes(pass);//Encoding.UTF8.GetBytes
+                byte[] bytes = Encoding.UTF8.GetBytes(password);
                 byte[] src = Encoding.UTF8.GetBytes(PasswordSalt + username);
                 byte[] dst = new byte[src.Length + bytes.Length];
                 Buffer.BlockCopy(src, 0, dst, 0, src.Length);
@@ -241,16 +242,30 @@ namespace DMS_API.Services
         #endregion
 
         #region Test Password    
-        //public static string PasswordEnecrypt1(string pass)
+        //public static string PasswordEnecrypt1(string password, string username)
         //{
-        //    byte[] bytes = Encoding.UTF8.GetBytes(pass);
-        //    byte[] src = Encoding.UTF8.GetBytes(PasswordSaltKey);
-        //    byte[] dst = new byte[src.Length + bytes.Length];
-        //    Buffer.BlockCopy(src, 0, dst, 0, src.Length);
-        //    Buffer.BlockCopy(bytes, 0, dst, src.Length, bytes.Length);
-        //    HashAlgorithm algorithm = HashAlgorithm.Create("SHA1");
-        //    byte[] inArray = algorithm.ComputeHash(dst);
-        //    return Convert.ToBase64String(inArray);
+        //    if (GetSecureKeys() == true)
+        //    {
+
+        //        byte[] salt = Encoding.UTF8.GetBytes(PasswordSalt + username);
+
+        //        using (var rngCsp = new RNGCryptoServiceProvider())
+        //        {
+        //            rngCsp.GetNonZeroBytes(salt);
+        //        }
+        //        string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
+        //                                               password: password,
+        //                                               salt: salt,
+        //                                               prf: KeyDerivationPrf.HMACSHA256,
+        //                                               iterationCount: 100000,
+        //                                               numBytesRequested: 256 / 8));
+
+        //        return hashed;
+        //    }
+        //    else
+        //    {
+        //        return null;
+        //    }
         //}
 
         //public static string PasswordEnecrypt(string pass)

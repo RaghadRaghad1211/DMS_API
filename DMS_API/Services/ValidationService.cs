@@ -65,8 +65,19 @@ namespace DMS_API.Services
         }
         public static bool IsEmail(this string email)
         {
-            int count = email.Count(x => x == '@');
-            return count == 1 ? true : false;
+
+            try
+            {
+                if (email.Contains('@'))
+                {
+                    return email.Contains('.');
+                }
+                return false;
+            }
+            catch
+            {
+                return false;
+            }
         }
         public static string IsPasswordStrength(this string TxtPassword)
         {
