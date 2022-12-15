@@ -60,23 +60,37 @@ namespace DMS_API.Controllers
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
+        //[HttpPost]
+        //[Route("AddDocument")]
+        //public async Task<IActionResult> AddDocument([FromBody] DocumentModelView Document_MV, [FromForm] DocumentFileModelView DocumentFile_MV, [FromHeader] RequestHeaderModelView RequestHeader)
+        //{
+        //    Response_MV = await Document_S.AddDocument(Document_MV, DocumentFile_MV, RequestHeader);
+        //    return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
+        //}
+
         [HttpPost]
         [Route("AddDocument")]
-        public async Task<IActionResult> AddDocument([FromBody] DocumentModelView Document_MV, [FromForm] DocumentFileModelView DocumentFile_MV, [FromHeader] RequestHeaderModelView RequestHeader)
+        public async Task<IActionResult> AddDocument([FromForm] DocumentModelView Document_MV, [FromHeader] RequestHeaderModelView RequestHeader)
         {
-            Response_MV = await Document_S.AddDocument(Document_MV, DocumentFile_MV, RequestHeader);
+            Response_MV = await Document_S.AddDocument(Document_MV, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
         [HttpPost]
         [Route("EditDocument")]
-        public async Task<IActionResult> EditDocument([FromBody] DocumentModelView Document_MV, [FromForm] DocumentFileModelView DocumentFile_MV, [FromHeader] RequestHeaderModelView RequestHeader)
+        public async Task<IActionResult> EditDocument([FromForm] DocumentModelView Document_MV, [FromHeader] RequestHeaderModelView RequestHeader)
         {
-            Response_MV = await Document_S.EditDocument(Document_MV, DocumentFile_MV, RequestHeader);
+            Response_MV = await Document_S.EditDocument(Document_MV, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
-
+        [HttpGet]
+        [Route("ViewDocumentMetadata/{DocumentId}")]
+        public async Task<IActionResult> ViewDocumentMetadata([FromRoute] int DocumentId, [FromHeader] RequestHeaderModelView RequestHeader)
+        {
+            Response_MV = await Document_S.ViewDocumentMetadata(DocumentId, RequestHeader);
+            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
+        }
 
 
 

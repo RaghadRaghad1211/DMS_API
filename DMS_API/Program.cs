@@ -19,10 +19,7 @@ var builder = WebApplication.CreateBuilder(args);
 try
 {
     #region Logs
-    //builder.Host.UseSerilog(((ctx, lc) => lc
-    //            .WriteTo.File(
-    //                          path: $@"{Directory.GetCurrentDirectory()}\wwwroot\Logs\Log.txt",
-    //                          rollingInterval: RollingInterval.Day)));
+
     builder.Host.UseSerilog(((ctx, lc) => lc
                 .WriteTo.File(
                               path: $@"C:\DMS-Logger\Log.txt",
@@ -31,7 +28,8 @@ try
     Log.Information("API is Starting");
 
     #region Create Server Folder
-    string path = Path.Combine(builder.Environment.WebRootPath, "DMSserver");
+    // string path = Path.Combine(builder.Environment.WebRootPath, "DMSserver");
+    string path = $@"{Directory.GetCurrentDirectory()}\wwwroot\DMSserver";
     if (!Directory.Exists(path))
     {
         Directory.CreateDirectory(path);

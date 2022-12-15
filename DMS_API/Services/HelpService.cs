@@ -1,6 +1,8 @@
 ﻿using ArchiveAPI.Services;
 using DMS_API.Models;
 using DMS_API.ModelsView;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.FileProviders;
 using System.Data;
 using System.IO;
 using System.Net;
@@ -113,21 +115,22 @@ namespace DMS_API.Services
         }
         public static string GetQueryAddDocument(DocumentModelView Document_MV)
         {
-            List<KeyValueModel> KeyValue_Mlist = new List<KeyValueModel>();
-            for (int i = 0; i < Document_MV.KeysValues.Count; i++)
-            {
-                KeyValueModel KeyValue_M = new KeyValueModel()
-                { Key = Document_MV.KeysValues[i].Key, Value = Document_MV.KeysValues[i].Value };
-                KeyValue_Mlist.Add(KeyValue_M);
-            }
-            string Query = "";
-            foreach (var item in KeyValue_Mlist)
-            {
-                Query = Query + item.Key + ":" + item.Value + ",";
-            }
-            Query = Query.Remove(Query.Length - 1, 1);
-            return Query;
-           // return null;
+            //List<KeyValueModel> KeyValue_Mlist = new List<KeyValueModel>();
+            //for (int i = 0; i < Document_MV.KeysValues.Count; i++)
+            //{
+            //    KeyValueModel KeyValue_M = new KeyValueModel()
+            //    { Key = Document_MV.KeysValues[i].Key, Value = Document_MV.KeysValues[i].Value };
+            //    KeyValue_Mlist.Add(KeyValue_M);
+            //}
+            //string Query = "";
+            //foreach (var item in KeyValue_Mlist)
+            //{
+            //    Query = Query + item.Key + ":" + item.Value + ",";
+            //}
+            //Query = Query.Remove(Query.Length - 1, 1);
+            //return Query;
+
+            return null;
         }
         public static string GetQueryLinkPro(LinkParentChildModelView LinkParentChild_MV)
         {
@@ -439,7 +442,9 @@ namespace DMS_API.Services
                     //                                                    $"OFFSET      ({_PageNumber}-1)*{_PageRows} ROWS " +
                     //                                                    $"FETCH NEXT   {_PageRows} ROWS ONLY "));
                     dtGetGroup = await Task.Run(() => dam.FireDataTable($"SELECT      GroupId, GroupName   FROM    [User].[GetMyGroupsbyUserId]({userLoginID}) " +
-                                                                        $"ORDER BY    GroupId "));
+                                                                        $"ORDER BY    GroupId " +
+                                                                        $"OFFSET      ({_PageNumberFav}-1)*{_PageRowsFav} ROWS " +
+                                                                        $"FETCH NEXT   {_PageRowsFav} ROWS ONLY "));
                     MyGroup MyGroup = new MyGroup();
                     List<MyGroup> MyGroup_List = new List<MyGroup>();
                     if (dtGetGroup.Rows.Count > 0)
@@ -483,6 +488,7 @@ namespace DMS_API.Services
                 return Response_MV;
             }
         }
+
         public static async Task<string> GetDocumentLocationInServerFolder(int DocumentId, IWebHostEnvironment Environment)
         {
             try
@@ -495,8 +501,8 @@ namespace DMS_API.Services
             {
                 return null;
             }
-
         }
+
         public static async Task<string> CreateDocumentFolderInServerFolder(int DocumentId, IWebHostEnvironment Environment)
         {
             try
