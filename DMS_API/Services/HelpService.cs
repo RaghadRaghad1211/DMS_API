@@ -144,6 +144,17 @@ namespace DMS_API.Services
             Query = Query.Remove(Query.Length - 1, 1);
             return Query;
         }
+        public static string GetQueryMoveChilds(MoveChildToNewFolderModelView MoveChildToNewFolder_MV)
+        {
+            string Query = "";
+            for (int i = 0; i < MoveChildToNewFolder_MV.ChildIds.Count; i++)
+            {
+
+                Query = Query + MoveChildToNewFolder_MV.ChildIds[i] + ",";
+            }
+            Query = Query.Remove(Query.Length - 1, 1);
+            return Query;
+        }
         public static async Task<List<OrgModel>> GetOrgsParentWithChildsByUserLoginID(int userLoginID, bool IsOrgAdmin = false)
         {
             try
@@ -489,7 +500,6 @@ namespace DMS_API.Services
                 return Response_MV;
             }
         }
-
         public static async Task<string> GetDocumentLocationInServerFolder(int DocumentId, IWebHostEnvironment Environment)
         {
             try
@@ -503,7 +513,6 @@ namespace DMS_API.Services
                 return null;
             }
         }
-
         public static async Task<string> CreateDocumentFolderInServerFolder(int DocumentId, IWebHostEnvironment Environment)
         {
             try

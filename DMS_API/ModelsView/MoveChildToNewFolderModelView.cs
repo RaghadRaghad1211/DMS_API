@@ -4,6 +4,7 @@
     {
         public int CurrentParentID { get; set; }
         public int ChildID { get; set; }
+        public List<int> ChildIds { get; set; }
         public int NewParentID { get; set; }
     }
 }

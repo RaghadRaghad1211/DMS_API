@@ -441,7 +441,7 @@ namespace DMS_API.Services
                             Response_MV = new ResponseModelView
                             {
                                 Success = false,
-                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.InsertFaild],
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.EditFaild],
                                 Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
                             };
                             return Response_MV;
@@ -482,7 +482,7 @@ namespace DMS_API.Services
                             Response_MV = new ResponseModelView
                             {
                                 Success = true,
-                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.InsertSuccess],
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.EditSuccess],
                                 Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
                             };
                             return Response_MV;
@@ -516,59 +516,8 @@ namespace DMS_API.Services
                 else
                 {
                     int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
-                    string getDocumentmatedateInfo = "SELECT  ObjId, ObjClsId, CDToolBoxId AS 'ToolId', TbToolName AS 'ToolType', CDID AS 'Key', KVValue AS 'Value', TbMultiSelect " +
-                                           "FROM      [Document].V_DocumentsMetadata " +
-                                          $"WHERE     ObjId={DocumentId}  ";
-
-
-                    dt = new DataTable();
-                    dt = await Task.Run(() => dam.FireDataTable(getDocumentmatedateInfo));
-                    if (dt == null)
-                    {
-                        Response_MV = new ResponseModelView
-                        {
-                            Success = false,
-                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
-                            Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
-                        };
-                        return Response_MV;
-                    }
-
-                    KeyValue_Mlist = new List<KeyValueModel>();
-                    if (dt.Rows.Count > 0)
-                    {
-                        for (int i = 0; i < dt.Rows.Count; i++)
-                        {
-                            KeyValue_M = new KeyValueModel
-                            {
-                                Key = Convert.ToInt32(dt.Rows[i]["Key"].ToString()),
-                                Value = dt.Rows[i]["Value"].ToString(),
-                                ToolId = Convert.ToInt32(dt.Rows[i]["ToolId"].ToString()),
-                                ToolType = dt.Rows[i]["ToolType"].ToString(),
-                            };
-                            KeyValue_Mlist.Add(KeyValue_M);
-                        }
-
-                        ViewDocument_MV = new DocumentMetadataModelView
-                        {
-                            ObjId = Convert.ToInt32(dt.Rows[0]["ObjId"].ToString()),
-                            ObjClsId = Convert.ToInt32(dt.Rows[0]["ObjClsId"].ToString()),
-                            KeysValues = KeyValue_Mlist,
-                            DocumentFilePath = SecurityService.HostFilesUrl + "/" +
-                                              (int.Parse(dt.Rows[0]["ObjId"].ToString()) % HelpService.MoodNum).ToString() + "/" +
-                                               dt.Rows[0]["ObjId"].ToString() + "/" +
-                                               dt.Rows[0]["ObjId"].ToString() + ".pdf" //+ ".pdf"
-                        };
-
-                        Response_MV = new ResponseModelView
-                        {
-                            Success = true,
-                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
-                            Data = ViewDocument_MV
-                        };
-                        return Response_MV;
-                    }
-                    else
+                    int CheckActivation = int.Parse(dam.FireSQL($"SELECT COUNT(*) FROM [Document].[V_Documents] WHERE ObjId={DocumentId} AND ObjIsActive=1"));
+                    if (CheckActivation == 0)
                     {
                         Response_MV = new ResponseModelView
                         {
@@ -578,6 +527,70 @@ namespace DMS_API.Services
                         };
                         return Response_MV;
                     }
+                    else
+                    {
+                        string getDocumentmatedateInfo = "SELECT    ObjId, ObjClsId, CDToolBoxId AS 'ToolId', TbToolName AS 'ToolType', CDID AS 'Key', KVValue AS 'Value', TbMultiSelect " +
+                                                         "FROM      [Document].V_DocumentsMetadata " +
+                                                        $"WHERE     ObjId={DocumentId}  ";
+                        dt = new DataTable();
+                        dt = await Task.Run(() => dam.FireDataTable(getDocumentmatedateInfo));
+                        if (dt == null)
+                        {
+                            Response_MV = new ResponseModelView
+                            {
+                                Success = false,
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
+                                Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                            };
+                            return Response_MV;
+                        }
+
+                        KeyValue_Mlist = new List<KeyValueModel>();
+                        if (dt.Rows.Count > 0)
+                        {
+                            for (int i = 0; i < dt.Rows.Count; i++)
+                            {
+                                KeyValue_M = new KeyValueModel
+                                {
+                                    Key = Convert.ToInt32(dt.Rows[i]["Key"].ToString()),
+                                    Value = dt.Rows[i]["Value"].ToString(),
+                                    ToolId = Convert.ToInt32(dt.Rows[i]["ToolId"].ToString()),
+                                    ToolType = dt.Rows[i]["ToolType"].ToString(),
+                                };
+                                KeyValue_Mlist.Add(KeyValue_M);
+                            }
+
+                            ViewDocument_MV = new DocumentMetadataModelView
+                            {
+                                ObjId = Convert.ToInt32(dt.Rows[0]["ObjId"].ToString()),
+                                ObjClsId = Convert.ToInt32(dt.Rows[0]["ObjClsId"].ToString()),
+                                KeysValues = KeyValue_Mlist,
+                                DocumentFilePath = SecurityService.HostFilesUrl + "/" +
+                                                  (int.Parse(dt.Rows[0]["ObjId"].ToString()) % HelpService.MoodNum).ToString() + "/" +
+                                                   dt.Rows[0]["ObjId"].ToString() + "/" +
+                                                   dt.Rows[0]["ObjId"].ToString() + ".pdf" //+ ".pdf"
+                            };
+
+                            Response_MV = new ResponseModelView
+                            {
+                                Success = true,
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
+                                Data = ViewDocument_MV
+                            };
+                            return Response_MV;
+                        }
+                        else
+                        {
+                            Response_MV = new ResponseModelView
+                            {
+                                Success = false,
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoData],
+                                Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                            };
+                            return Response_MV;
+                        }
+                    }
+
                 }
             }
             catch (Exception ex)

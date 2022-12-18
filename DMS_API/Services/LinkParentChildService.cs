@@ -536,8 +536,9 @@ namespace DMS_API.Services
                         }
                         else
                         {
+                            //string Query = HelpService.GetQueryMoveChilds(MoveChildToNewFolder_MV);
+                            //string moveChild2Folder = $"EXEC [Main].[MoveChildToFolderPro] '{MoveChildToNewFolder_MV.CurrentParentID}','{MoveChildToNewFolder_MV.NewParentID}', '{FolderClassID}', '{Query}', '{ChildClassID}' ";
                             string moveChild2Folder = $"EXEC [Main].[MoveChildToFolderPro] '{MoveChildToNewFolder_MV.CurrentParentID}','{MoveChildToNewFolder_MV.NewParentID}', '{FolderClassID}', '{MoveChildToNewFolder_MV.ChildID}', '{ChildClassID}' ";
-                            // (@CurrParentId int, @NewParentId int, @ParentClassId int, @ChildObjectId int, @ChildClassId int)
                             var outValue = await Task.Run(() => dam.DoQueryExecProcedure(moveChild2Folder));
                             if (outValue == 0.ToString() || (outValue == null || outValue.Trim() == ""))
                             {
