@@ -23,6 +23,8 @@ namespace DMS_API.Services
         public static readonly string ConnectionString =
             "Server=10.55.101.20,1433;Database=DMS_DB;Integrated Security=false;User ID=dms; Password=dms;Connection Timeout=60";
 
+        public static readonly string HostFilesUrl = "http://10.55.101.10:90/DMSserver";
+
         private static string PasswordSalt;
 
         private static string JwtKey;

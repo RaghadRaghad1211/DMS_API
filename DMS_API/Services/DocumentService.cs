@@ -554,9 +554,10 @@ namespace DMS_API.Services
                             ObjId = Convert.ToInt32(dt.Rows[0]["ObjId"].ToString()),
                             ObjClsId = Convert.ToInt32(dt.Rows[0]["ObjClsId"].ToString()),
                             KeysValues = KeyValue_Mlist,
-                            DocumentFilePath = Path.Combine(await HelpService.GetDocumentLocationInServerFolder
-                                                           (Convert.ToInt32(dt.Rows[0]["ObjId"].ToString()), Environment),
-                                                           dt.Rows[0]["ObjId"].ToString(), dt.Rows[0]["ObjId"].ToString() + ".pdf") //+ ".pdf"
+                            DocumentFilePath = SecurityService.HostFilesUrl + "/" +
+                                              (int.Parse(dt.Rows[0]["ObjId"].ToString()) % HelpService.MoodNum).ToString() + "/" +
+                                               dt.Rows[0]["ObjId"].ToString() + "/" +
+                                               dt.Rows[0]["ObjId"].ToString() + ".pdf" //+ ".pdf"
                         };
 
                         Response_MV = new ResponseModelView

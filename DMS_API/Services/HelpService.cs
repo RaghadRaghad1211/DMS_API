@@ -20,6 +20,7 @@ namespace DMS_API.Services
         private static GeneralSerarchModel GeneralSerarch_M { get; set; }
         private static HomeModel Home_M { get; set; }
         private static ResponseModelView Response_MV { get; set; }
+        public static readonly int MoodNum = 999;
         public enum ClassType
         {
             User = 1,
@@ -494,7 +495,7 @@ namespace DMS_API.Services
             try
             {
                 var path = await Task.Run(() => Environment.WebRootPath + "\\DMSserver");
-                int currectFolderDoc = DocumentId % 999;
+                int currectFolderDoc = DocumentId % MoodNum;
                 return path + "\\" + currectFolderDoc.ToString();
             }
             catch (Exception)
