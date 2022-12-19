@@ -42,7 +42,7 @@ namespace DMS_API.Services
                 {
                     int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
                     List<OrgModel> Org_Mlist = new List<OrgModel>();
-                    Org_Mlist = await HelpService.GetOrgsParentWithChildsByUserLoginID(userLoginID, ((SessionModel)ResponseSession.Data).IsOrgAdmin);
+                    Org_Mlist = await GlobalService.GetOrgsParentWithChildsByUserLoginID(userLoginID, ((SessionModel)ResponseSession.Data).IsOrgAdmin);
 
                     if (Org_Mlist == null)
                     {
@@ -95,7 +95,7 @@ namespace DMS_API.Services
 
                     int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
                     List<OrgTableModel> OrgTable_Mlist = new List<OrgTableModel>();
-                    OrgTable_Mlist = await HelpService.GetOrgsParentWithChildsByUserLoginID_Table(userLoginID);
+                    OrgTable_Mlist = await GlobalService.GetOrgsParentWithChildsByUserLoginID_Table(userLoginID);
 
                     if (OrgTable_Mlist == null)
                     {
@@ -217,7 +217,7 @@ namespace DMS_API.Services
                 {
                     int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
                     List<OrgTableModel> OrgTable_Mlist = new List<OrgTableModel>();
-                    OrgTable_Mlist = await HelpService.GetOrgsParentWithChildsByUserLoginID_Table(userLoginID);
+                    OrgTable_Mlist = await GlobalService.GetOrgsParentWithChildsByUserLoginID_Table(userLoginID);
 
                     if (OrgTable_Mlist == null)
                     {
@@ -291,7 +291,8 @@ namespace DMS_API.Services
                         int orgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {userLoginID} "));
                         if (checkDeblicate == 0)
                         {
-                            string exeut = $"EXEC [User].[AddOrgPro] '{AddOrg_MV.OrgArName}', '{userLoginID}', '{orgOwnerID}', '{AddOrg_MV.Note}', '{AddOrg_MV.OrgUp}', '{AddOrg_MV.OrgEnName}', '{AddOrg_MV.OrgKuName}' ";
+                            string OrgAdminUsername = "Admin@" + SecurityService.RoundomPassword(6);
+                            string exeut = $"EXEC [User].[AddOrgPro] '{AddOrg_MV.OrgArName}', '{userLoginID}', '{orgOwnerID}', '{AddOrg_MV.Note}', '{AddOrg_MV.OrgUp}', '{AddOrg_MV.OrgEnName}', '{AddOrg_MV.OrgKuName}', '{OrgAdminUsername}', '{SecurityService.PasswordEnecrypt("00000000", OrgAdminUsername)}' ";
                             var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
 
                             if (outValue == null || outValue.Trim() == "")

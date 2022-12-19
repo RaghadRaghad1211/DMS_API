@@ -559,7 +559,7 @@ namespace DMS_API.Services
         //        {
         //            int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
         //            List<OrgModel> Org_Mlist = new List<OrgModel>();
-        //            Org_Mlist = await HelpService.GetOrgsParentWithChildsByUserLoginID(userLoginID);
+        //            Org_Mlist = await GlobalService.GetOrgsParentWithChildsByUserLoginID(userLoginID);
         //            if (Org_Mlist == null)
         //            {
         //                Response_MV = new ResponseModelView

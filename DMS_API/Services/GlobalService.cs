@@ -10,10 +10,9 @@ using System.Reflection;
 
 namespace DMS_API.Services
 {
-    public static class HelpService
+    public static class GlobalService
     {
         #region Properteis
-        //  private static IWebHostEnvironment Environment;
         private static DataAccessService dam = new DataAccessService(SecurityService.ConnectionString);
         private static SessionService Session_S { get; set; }
         private static DataTable dt { get; set; }
@@ -182,7 +181,7 @@ namespace DMS_API.Services
                         OrgEnName = dt.Rows[0]["OrgEnName"].ToString(),
                         OrgKuName = dt.Rows[0]["OrgKuName"].ToString(),
                         OrgIsActive = bool.Parse(dt.Rows[0]["OrgIsActive"].ToString()),
-                        OrgChild = await HelpService.GetOrgsChilds(Convert.ToInt32(dt.Rows[0]["OrgId"].ToString()))
+                        OrgChild = await GlobalService.GetOrgsChilds(Convert.ToInt32(dt.Rows[0]["OrgId"].ToString()))
                     };
                     Org_Mlist.Add(Org_M);
                     return Org_Mlist;
@@ -529,6 +528,20 @@ namespace DMS_API.Services
                 return null;
             }
         }
+
+
+
+        //public static async Task<object> GetObjectPermession(int ObjectId, int UserId)
+        //{
+        //    string getObjectPermession = "SELECT     SourObjId, SourName, SourClsId, SourClsType, DestObjId, DestName, " +
+        //                                 "           DestClsId, DestClsType, PerRead, PerWrite, PerManage, PerQR " +
+        //                                $"FROM       [Document].[GetPermissionsOnObject]({UserId},{ObjectId})";
+
+
+        //   // return  getObjectPermession;
+        //}
         #endregion
     }
 }
+// SELECT SourObjId, SourName, SourClsId, SourClsType, DestObjId, DestName, DestClsId, DestClsType, PerRead, PerWrite, PerManage, PerQR
+// FROM [Document].[GetPermissionsOnObject](UserId,@ObjectId )

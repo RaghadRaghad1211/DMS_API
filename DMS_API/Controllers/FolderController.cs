@@ -69,7 +69,7 @@ namespace DMS_API.Controllers
         [Route("GetChildsInFolderByID/{FolderId}")]
         public async Task<IActionResult> GetChildsInFolderByID([FromRoute] int FolderId, [FromHeader] RequestHeaderModelView RequestHeader)
         {
-            Response_MV = await LinkParentChild_S.GetChildInParentByID((int)HelpService.ClassType.Folder, FolderId, RequestHeader);
+            Response_MV = await LinkParentChild_S.GetChildInParentByID((int)GlobalService.ClassType.Folder, FolderId, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
@@ -77,7 +77,7 @@ namespace DMS_API.Controllers
         [Route("GetChildsInFolderByID_Search")]
         public async Task<IActionResult> GetChildsInFolderByID_Search([FromBody] SearchChildParentModelView SearchChildFolder_MV, [FromHeader] RequestHeaderModelView RequestHeader)
         {
-            Response_MV = await LinkParentChild_S.GetChildInParentByID_Search((int)HelpService.ClassType.Folder, SearchChildFolder_MV, RequestHeader);
+            Response_MV = await LinkParentChild_S.GetChildInParentByID_Search((int)GlobalService.ClassType.Folder, SearchChildFolder_MV, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
@@ -85,7 +85,7 @@ namespace DMS_API.Controllers
         [Route("AddChildsIntoFolder")]
         public async Task<IActionResult> AddChildsIntoFolder([FromBody] LinkParentChildModelView LinkParentChild_MV, [FromHeader] RequestHeaderModelView RequestHeader)
         {
-            Response_MV = await LinkParentChild_S.AddChildIntoParent((int)HelpService.ClassType.Folder, LinkParentChild_MV, RequestHeader);
+            Response_MV = await LinkParentChild_S.AddChildIntoParent((int)GlobalService.ClassType.Folder, LinkParentChild_MV, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
@@ -93,7 +93,7 @@ namespace DMS_API.Controllers
         [Route("RemoveChildsFromFolder")]
         public async Task<IActionResult> RemoveChildsFromFolder([FromBody] LinkParentChildModelView LinkParentChild_MV, [FromHeader] RequestHeaderModelView RequestHeader)
         {
-            Response_MV = await LinkParentChild_S.RemoveChildFromParent((int)HelpService.ClassType.Folder, LinkParentChild_MV, RequestHeader);
+            Response_MV = await LinkParentChild_S.RemoveChildFromParent((int)GlobalService.ClassType.Folder, LinkParentChild_MV, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
@@ -102,7 +102,7 @@ namespace DMS_API.Controllers
         [Route("MoveFolderToNewFolder")]
         public async Task<IActionResult> MoveFolderToNewFolder([FromBody] MoveChildToNewFolderModelView MoveChildToNewFolder_MV, [FromHeader] RequestHeaderModelView RequestHeader)
         {
-            Response_MV = await LinkParentChild_S.MoveChildToNewFolder((int)HelpService.ClassType.Folder, (int)HelpService.ClassType.Folder, MoveChildToNewFolder_MV, RequestHeader);
+            Response_MV = await LinkParentChild_S.MoveChildToNewFolder((int)GlobalService.ClassType.Folder, (int)GlobalService.ClassType.Folder, MoveChildToNewFolder_MV, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 

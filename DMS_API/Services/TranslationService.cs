@@ -48,7 +48,7 @@ namespace DMS_API.Services
                     }
                     else
                     {
-                        string ColLang = HelpService.GetMessageColumn(RequestHeader.Lang);
+                        string ColLang = GlobalService.GetMessageColumn(RequestHeader.Lang);
                         int _PageNumber = Pagination_MV.PageNumber == 0 ? 1 : Pagination_MV.PageNumber;
                         int _PageRows = Pagination_MV.PageRows == 0 ? 1 : Pagination_MV.PageRows;
                         int CurrentPage = _PageNumber; int PageRows = _PageRows;
@@ -155,7 +155,7 @@ namespace DMS_API.Services
                 }
                 else
                 {
-                    string Mlang = HelpService.GetMessageColumn(RequestHeader.Lang);
+                    string Mlang = GlobalService.GetMessageColumn(RequestHeader.Lang);
                     string get = $"SELECT Trid, TrKey, TrArName, TrEnName, TrKrName FROM Main.Translation WHERE Trid={id}";
                     Dt = new DataTable();
                     Dt = await Task.Run(() => dam.FireDataTable(get));
@@ -236,7 +236,7 @@ namespace DMS_API.Services
                     }
                     else
                     {
-                        string Mlang = HelpService.GetMessageColumn(RequestHeader.Lang);
+                        string Mlang = GlobalService.GetMessageColumn(RequestHeader.Lang);
                         int checkDeblicate = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(TrKey) FROM Main.Translation WHERE TrKey = '{Translation_M.TrKey}' "));
                         if (checkDeblicate == 0)
                         {
@@ -311,7 +311,7 @@ namespace DMS_API.Services
                     }
                     else
                     {
-                        string Mlang = HelpService.GetMessageColumn(RequestHeader.Lang);
+                        string Mlang = GlobalService.GetMessageColumn(RequestHeader.Lang);
                         int check = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(Trid) FROM Main.Translation WHERE Trid={Translation_M.Trid}"));
                         if (check > 0)
                         {
@@ -388,7 +388,7 @@ namespace DMS_API.Services
                         }
                         else
                         {
-                            string ColumnSearch = HelpService.GetTranslationSearchColumn(SearchTranslation_MV.KeySearch);
+                            string ColumnSearch = GlobalService.GetTranslationSearchColumn(SearchTranslation_MV.KeySearch);
                             int _PageNumber = SearchTranslation_MV.PageNumber == 0 ? 1 : SearchTranslation_MV.PageNumber;
                             int _PageRows = SearchTranslation_MV.PageRows == 0 ? 1 : SearchTranslation_MV.PageRows;
                             int CurrentPage = _PageNumber; int PageRows = _PageRows;
@@ -488,7 +488,7 @@ namespace DMS_API.Services
         {
             try
             {
-                string Mlang = HelpService.GetTranslationColumn(Lang);
+                string Mlang = GlobalService.GetTranslationColumn(Lang);
                 string get = $"SELECT DISTINCT  TrKey, {Mlang} AS 'Word' FROM Main.Translation";
                 Dt = new DataTable();
                 Dt = await Task.Run(() => dam.FireDataTable(get));

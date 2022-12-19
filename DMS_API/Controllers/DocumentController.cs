@@ -25,10 +25,6 @@ namespace DMS_API.Controllers
             Environment = environment;
             Document_S = new DocumentService(environment);
             LinkParentChild_S = new LinkParentChildService();
-
-            //var ff = HelpService.GetDocumentLocationInServerFolder(1259843, Environment).Result;
-
-            //var feef = HelpService.CreateDocumentFolderInServerFolder(1259843, Environment).Result;
         }
         #endregion
 
@@ -105,7 +101,7 @@ namespace DMS_API.Controllers
         [Route("MoveDocumentToNewFolder")]
         public async Task<IActionResult> MoveDocumentToNewFolder([FromBody] MoveChildToNewFolderModelView MoveChildToNewFolder_MV, [FromHeader] RequestHeaderModelView RequestHeader)
         {
-            Response_MV = await LinkParentChild_S.MoveChildToNewFolder((int)HelpService.ClassType.Folder, (int)HelpService.ClassType.Document, MoveChildToNewFolder_MV, RequestHeader);
+            Response_MV = await LinkParentChild_S.MoveChildToNewFolder((int)GlobalService.ClassType.Folder, (int)GlobalService.ClassType.Document, MoveChildToNewFolder_MV, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
         #endregion

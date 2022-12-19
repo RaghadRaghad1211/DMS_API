@@ -229,10 +229,9 @@ namespace DMS_API.Services
                 return null;
             }
         }
-        public static string RoundomPassword()
+        public static string RoundomPassword(int length = 10)
         {
             const string valid = "abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ123456789!@#$%^&*?";
-            int length = 10;
             StringBuilder res = new StringBuilder();
             Random rnd = new Random();
             while (0 < length--)

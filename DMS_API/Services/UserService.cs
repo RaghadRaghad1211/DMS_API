@@ -194,12 +194,11 @@ namespace DMS_API.Services
                 }
                 else
                 {
-                    //int checkExist = Convert.ToInt16(dam.FireSQL($"SELECT COUNT(*) FROM [User].Users WHERE UsId ={id} "));
                     DataTable dtEmail = new DataTable();
                     dtEmail = await Task.Run(() => dam.FireDataTable($"SELECT UsUserName, UsPhoneNo, UsEmail FROM [User].Users WHERE UsId ={id} "));
                     if (dtEmail.Rows.Count > 0)
                     {
-                        string RounPass = SecurityService.RoundomPassword();
+                        string RounPass = SecurityService.RoundomPassword(10);
                         bool isResetEmail = SecurityService.SendEmail(dtEmail.Rows[0]["UsEmail"].ToString(),
                              MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.EmailSubjectPasswordIsReset],
                              MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.EmailBodyPasswordIsReset] + RounPass);
@@ -254,19 +253,11 @@ namespace DMS_API.Services
         {
             try
             {
-                //Session_S = new SessionService();
-                //var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
-                //if (ResponseSession.Success == false)
-                //{
-                //    return ResponseSession;
-                //}
-                //else
-                //{
                 DataTable dtEmail = new DataTable();
                 dtEmail = await Task.Run(() => dam.FireDataTable($"SELECT UsPhoneNo, UsEmail FROM [User].Users WHERE UsUserName ='{username}' "));
                 if (dtEmail.Rows.Count > 0)
                 {
-                    string RounPass = SecurityService.RoundomPassword();
+                    string RounPass = SecurityService.RoundomPassword(10);
                     bool isResetEmail = SecurityService.SendEmail(dtEmail.Rows[0]["UsEmail"].ToString(),
                          MessageService.MsgDictionary[Lang.ToLower()][MessageService.EmailSubjectPasswordIsReset],
                          MessageService.MsgDictionary[Lang.ToLower()][MessageService.EmailBodyPasswordIsReset] + RounPass);
@@ -304,7 +295,6 @@ namespace DMS_API.Services
                     };
                     return Response_MV;
                 }
-                //}
             }
             catch (Exception ex)
             {
@@ -412,7 +402,6 @@ namespace DMS_API.Services
                 }
                 else
                 {
-                    //int OrgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {((SessionModel)ResponseSession.Data).UserID} AND [USERID] !=1 "));
                     int _PageNumber = Pagination_MV.PageNumber == 0 ? 1 : Pagination_MV.PageNumber;
                     int _PageRows = Pagination_MV.PageRows == 0 ? 1 : Pagination_MV.PageRows;
                     int CurrentPage = _PageNumber; int PageRows = _PageRows;
@@ -444,14 +433,6 @@ namespace DMS_API.Services
                         }
                         else
                         {
-                            //string getUserInfo1 = "SELECT      UserID, UsFirstName, UsSecondName, UsThirdName, UsLastName, FullName, UsUserName, Role, IsOrgAdmin, UserIsActive, UsPhoneNo, UsEmail, " +
-                            //                     "            UsUserEmpNo, UsUserIdintNo, UsIsOnLine, OrgOwner, OrgArName, OrgEnName, OrgKuName, Note " +
-                            //                     "FROM        [User].V_Users " +
-                            //                    $"WHERE [OrgOwner] IN (SELECT [OrgId] FROM [User].GetOrgsbyUserId({userLoginID})) " +
-                            //                     "ORDER BY UserID " +
-                            //                    $"OFFSET      ({_PageNumber}-1)*{_PageRows} ROWS " +
-                            //                    $"FETCH NEXT   {_PageRows} ROWS ONLY ";
-
                             string getUserInfo = "SELECT      UserID, UsFirstName, UsSecondName, UsThirdName, UsLastName, FullName, UsUserName, Role, IsOrgAdmin, UserIsActive, UsPhoneNo, UsEmail, " +
                                                  "            UsUserEmpNo, UsUserIdintNo, UsIsOnLine, OrgOwner, [User].V_Users.OrgArName, [User].V_Users.OrgEnName, [User].V_Users.OrgKuName, Note " +
                                                  "FROM        [User].V_Users " +
@@ -1037,7 +1018,7 @@ namespace DMS_API.Services
                     int _PageRows = SearchUser_MV.PageRows == 0 ? 1 : SearchUser_MV.PageRows;
                     int CurrentPage = _PageNumber; int PageRows = _PageRows;
                     int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
-                    string where = HelpService.GetUserSearchColumn(SearchUser_MV);
+                    string where = GlobalService.GetUserSearchColumn(SearchUser_MV);
                     var MaxTotal = dam.FireDataTable($"SELECT COUNT(*) AS TotalRows, CEILING(COUNT(*) / CAST({_PageRows} AS FLOAT)) AS MaxPage " +
                                                       $"FROM [User].V_Users {where}  AND [OrgOwner] IN (SELECT [OrgId] FROM [User].[GetOrgsbyUserId]({userLoginID})) AND [USERID] !={userLoginID} ");
                     if (MaxTotal == null)
@@ -1249,7 +1230,7 @@ namespace DMS_API.Services
         //        {
         //            int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
         //            List<OrgModel> Org_Mlist = new List<OrgModel>();
-        //            Org_Mlist = await HelpService.GetOrgsParentWithChildsByUserLoginID(userLoginID);
+        //            Org_Mlist = await GlobalService.GetOrgsParentWithChildsByUserLoginID(userLoginID);
         //            if (Org_Mlist == null)
         //            {
         //                Response_MV = new ResponseModelView
@@ -1326,7 +1307,7 @@ namespace DMS_API.Services
         //                OrgArName = dt.Rows[0]["OrgArName"].ToString(),
         //                OrgEnName = dt.Rows[0]["OrgEnName"].ToString(),
         //                OrgKuName = dt.Rows[0]["OrgKuName"].ToString(),
-        //                OrgChild = await HelpService.GetChildByParentID(Convert.ToInt32(dt.Rows[0]["OrgId"].ToString()))
+        //                OrgChild = await GlobalService.GetChildByParentID(Convert.ToInt32(dt.Rows[0]["OrgId"].ToString()))
         //            };
         //            Org_Mlist.Add(Org_M);
         //            Response_MV = new ResponseModelView

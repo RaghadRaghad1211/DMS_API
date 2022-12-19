@@ -26,7 +26,7 @@ namespace DMS_API.Controllers
         [Route("GetHomeData")]
         public async Task<IActionResult> GetHomeData([FromBody]PaginationModelView Pagination_MV, [FromHeader] RequestHeaderModelView RequestHeader)
         {
-            Response_MV = await HelpService.GetHomeData(Pagination_MV,RequestHeader);
+            Response_MV = await GlobalService.GetHomeData(Pagination_MV,RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
@@ -34,7 +34,7 @@ namespace DMS_API.Controllers
         [Route("GeneralSearchByTitle/{title}")]
         public async Task<IActionResult> GeneralSearchByTitle([FromRoute] string title, [FromHeader] RequestHeaderModelView RequestHeader)
         {
-            Response_MV = await HelpService.GeneralSearchByTitle(title, RequestHeader);
+            Response_MV = await GlobalService.GeneralSearchByTitle(title, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
         #endregion

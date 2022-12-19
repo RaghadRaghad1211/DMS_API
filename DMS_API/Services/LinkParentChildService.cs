@@ -401,7 +401,7 @@ namespace DMS_API.Services
                         return Response_MV;
                     }
 
-                    string Query = HelpService.GetQueryLinkPro(LinkParentChild_MV);
+                    string Query = GlobalService.GetQueryLinkPro(LinkParentChild_MV);
                     string exeut = $"EXEC [Main].[AddLinksPro]  '{LinkParentChild_MV.ParentId}', '{ParentClassID}', '{Query}',{1} ";
                     var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
                     if (outValue == 0.ToString() || (outValue == null || outValue.Trim() == ""))
@@ -457,7 +457,7 @@ namespace DMS_API.Services
                         return Response_MV;
                     }
 
-                    string Query = HelpService.GetQueryLinkPro(LinkParentChild_MV);
+                    string Query = GlobalService.GetQueryLinkPro(LinkParentChild_MV);
                     string exeut = $"EXEC [Main].[UpdateLinksPro]  '{LinkParentChild_MV.ParentId}', '{ParentClassID}', '{Query}','{0}' ";
                     var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
                     if (outValue == 0.ToString() || (outValue == null || outValue.Trim() == ""))
@@ -508,11 +508,11 @@ namespace DMS_API.Services
 
 
                     int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
-                    int checkExist = await Task.Run(() => Convert.ToInt32(dam.FireSQL("SELECT COUNT(LcId) FROM [User].[V_Links] " +
-                                                                                     $"WHERE  LcParentObjId={MoveChildToNewFolder_MV.CurrentParentID} AND LcParentClsId={FolderClassID} " +
-                                                                                     $"       AND LcChildObjId={MoveChildToNewFolder_MV.ChildID} AND LcChildClsId={ChildClassID}   ")));
+                    //int checkExist = await Task.Run(() => Convert.ToInt32(dam.FireSQL("SELECT COUNT(LcId) FROM [User].[V_Links] " +
+                    //                                                                 $"WHERE  LcParentObjId={MoveChildToNewFolder_MV.CurrentParentID} AND LcParentClsId={FolderClassID} " +
+                    //                                                                 $"       AND LcChildObjId={MoveChildToNewFolder_MV.ChildID} AND LcChildClsId={ChildClassID}   ")));
 
-                    if (MoveChildToNewFolder_MV.CurrentParentID == 0 || MoveChildToNewFolder_MV.ChildID == 0 || MoveChildToNewFolder_MV.NewParentID == 0)
+                    if (MoveChildToNewFolder_MV.CurrentParentID == 0 || MoveChildToNewFolder_MV.ChildIds.Count == 0 || MoveChildToNewFolder_MV.NewParentID == 0)
                     {
                         Response_MV = new ResponseModelView
                         {
@@ -524,43 +524,43 @@ namespace DMS_API.Services
                     }
                     else
                     {
-                        if (checkExist == 0)
+                        //if (checkExist == 0)
+                        //{
+                        //    Response_MV = new ResponseModelView
+                        //    {
+                        //        Success = false,
+                        //        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsNotExist],
+                        //        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                        //    };
+                        //    return Response_MV;
+                        //}
+                        //else
+                        //{
+                        string Query = GlobalService.GetQueryMoveChilds(MoveChildToNewFolder_MV);
+                        string moveChild2Folder = $"EXEC [Main].[MoveChildToFolderPro] '{MoveChildToNewFolder_MV.CurrentParentID}','{MoveChildToNewFolder_MV.NewParentID}', '{FolderClassID}', '{Query}', '{ChildClassID}' ";
+                        //string moveChild2Folder = $"EXEC [Main].[MoveChildToFolderPro] '{MoveChildToNewFolder_MV.CurrentParentID}','{MoveChildToNewFolder_MV.NewParentID}', '{FolderClassID}', '{MoveChildToNewFolder_MV.ChildID}', '{ChildClassID}' ";
+                        var outValue = await Task.Run(() => dam.DoQueryExecProcedure(moveChild2Folder));
+                        if (outValue == 0.ToString() || (outValue == null || outValue.Trim() == ""))
                         {
                             Response_MV = new ResponseModelView
                             {
                                 Success = false,
-                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsNotExist],
-                                Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.MoveFaild],
+                                Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
                             };
                             return Response_MV;
                         }
                         else
                         {
-                            //string Query = HelpService.GetQueryMoveChilds(MoveChildToNewFolder_MV);
-                            //string moveChild2Folder = $"EXEC [Main].[MoveChildToFolderPro] '{MoveChildToNewFolder_MV.CurrentParentID}','{MoveChildToNewFolder_MV.NewParentID}', '{FolderClassID}', '{Query}', '{ChildClassID}' ";
-                            string moveChild2Folder = $"EXEC [Main].[MoveChildToFolderPro] '{MoveChildToNewFolder_MV.CurrentParentID}','{MoveChildToNewFolder_MV.NewParentID}', '{FolderClassID}', '{MoveChildToNewFolder_MV.ChildID}', '{ChildClassID}' ";
-                            var outValue = await Task.Run(() => dam.DoQueryExecProcedure(moveChild2Folder));
-                            if (outValue == 0.ToString() || (outValue == null || outValue.Trim() == ""))
+                            Response_MV = new ResponseModelView
                             {
-                                Response_MV = new ResponseModelView
-                                {
-                                    Success = false,
-                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.MoveFaild],
-                                    Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
-                                };
-                                return Response_MV;
-                            }
-                            else
-                            {
-                                Response_MV = new ResponseModelView
-                                {
-                                    Success = true,
-                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.MoveSuccess],
-                                    Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
-                                };
-                                return Response_MV;
-                            }
+                                Success = true,
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.MoveSuccess],
+                                Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
+                            };
+                            return Response_MV;
                         }
+                        // }
                     }
                 }
             }

@@ -21,7 +21,6 @@ namespace DMS_API.Services
         private DocumentModel Document_M { get; set; }
         private List<DocumentModel> Document_Mlist { get; set; }
         private DocumentMetadataModelView ViewDocument_MV { get; set; }
-        //  private List<DocumentMetadataModelView> ViewDocument_MVlist { get; set; }
         private KeyValueModel KeyValue_M { get; set; }
         private List<KeyValueModel> KeyValue_Mlist { get; set; }
         private ResponseModelView Response_MV { get; set; }
@@ -33,8 +32,6 @@ namespace DMS_API.Services
         {
             Environment = environment;
             dam = new DataAccessService(SecurityService.ConnectionString);
-
-            // var ff = SecurityService.PasswordEnecrypt("00000000","asmaa");
         }
         #endregion
 
@@ -282,7 +279,7 @@ namespace DMS_API.Services
                     {
                         int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
                         int checkDeblicate = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) FROM [Document].[V_Documents] WHERE ObjTitle = '{Document_MV.DocumentTitle}' AND " +
-                                                                         $"ObjId IN (SELECT LcChildObjId FROM [Main].[GetChildsInParent]({Document_MV.DocumentPerantId},{(int)HelpService.ClassType.Folder})) AND ObjClsId ={ClassID} AND ObjIsActive=1 "));
+                                                                         $"ObjId IN (SELECT LcChildObjId FROM [Main].[GetChildsInParent]({Document_MV.DocumentPerantId},{(int)GlobalService.ClassType.Folder})) AND ObjClsId ={ClassID} AND ObjIsActive=1 "));
                         if (checkDeblicate == 0)
                         {
                             if (ValidationService.IsEmpty(Document_MV.KeysValues) == true)
@@ -296,11 +293,11 @@ namespace DMS_API.Services
                                 return Response_MV;
                             }
 
-                            //string Query = HelpService.GetQueryAddDocument(Document_MV);
+                            //string Query = GlobalService.GetQueryAddDocument(Document_MV);
 
                             string exeut = "DECLARE   @MyNewValue bigint " +
                                           $"EXEC      [Document].[AddDocumentPro] '{ClassID}','{Document_MV.DocumentTitle}', '{userLoginID}', '{Document_MV.DocumentOrgOwnerID}', " +
-                                          $"         '{Document_MV.DocumentDescription}', '{Document_MV.KeysValues}', '{Document_MV.DocumentPerantId}', '{(int)HelpService.ClassType.Folder}', " +
+                                          $"         '{Document_MV.DocumentDescription}', '{Document_MV.KeysValues}', '{Document_MV.DocumentPerantId}', '{(int)GlobalService.ClassType.Folder}', " +
                                           $"         @NewValue = @MyNewValue OUTPUT  SELECT @MyNewValue AS newValue ";
 
                             var outValue = await Task.Run(() => dam.FireDataTable(exeut));
@@ -329,7 +326,7 @@ namespace DMS_API.Services
                                         };
                                         return Response_MV;
                                     }
-                                    var DocFolder = await HelpService.CreateDocumentFolderInServerFolder(Convert.ToInt32(outValue.Rows[0][0].ToString()), Environment);
+                                    var DocFolder = await GlobalService.CreateDocumentFolderInServerFolder(Convert.ToInt32(outValue.Rows[0][0].ToString()), Environment);
                                     if (DocFolder != null)
                                     {
                                         // تشفير
@@ -427,11 +424,11 @@ namespace DMS_API.Services
                             return Response_MV;
                         }
 
-                        //string Query = HelpService.GetQueryAddDocument(Document_MV);
+                        //string Query = GlobalService.GetQueryAddDocument(Document_MV);
 
                         string exeut = "DECLARE   @MyNewValue bigint " +
                                       $"EXEC      [Document].[UpdateDocumentPro] '{Document_MV.DocumentId}','{ClassID}','{Document_MV.DocumentTitle}', '{userLoginID}', '{Document_MV.DocumentOrgOwnerID}', " +
-                                      $"         '{Document_MV.DocumentDescription}', '{Document_MV.KeysValues}', '{Document_MV.DocumentPerantId}', '{(int)HelpService.ClassType.Folder}', " +
+                                      $"         '{Document_MV.DocumentDescription}', '{Document_MV.KeysValues}', '{Document_MV.DocumentPerantId}', '{(int)GlobalService.ClassType.Folder}', " +
                                       $"         @NewValue = @MyNewValue OUTPUT  SELECT @MyNewValue AS newValue ";
 
 
@@ -461,7 +458,7 @@ namespace DMS_API.Services
                                     };
                                     return Response_MV;
                                 }
-                                var DocFolder = await HelpService.CreateDocumentFolderInServerFolder(Convert.ToInt32(outValue.Rows[0][0].ToString()), Environment);
+                                var DocFolder = await GlobalService.CreateDocumentFolderInServerFolder(Convert.ToInt32(outValue.Rows[0][0].ToString()), Environment);
                                 if (DocFolder != null)
                                 {
                                     // تشفير
@@ -502,7 +499,6 @@ namespace DMS_API.Services
 
             }
         }
-
         public async Task<ResponseModelView> ViewDocumentMetadata(int DocumentId, RequestHeaderModelView RequestHeader)
         {
             try
@@ -566,7 +562,7 @@ namespace DMS_API.Services
                                 ObjClsId = Convert.ToInt32(dt.Rows[0]["ObjClsId"].ToString()),
                                 KeysValues = KeyValue_Mlist,
                                 DocumentFilePath = SecurityService.HostFilesUrl + "/" +
-                                                  (int.Parse(dt.Rows[0]["ObjId"].ToString()) % HelpService.MoodNum).ToString() + "/" +
+                                                  (int.Parse(dt.Rows[0]["ObjId"].ToString()) % GlobalService.MoodNum).ToString() + "/" +
                                                    dt.Rows[0]["ObjId"].ToString() + "/" +
                                                    dt.Rows[0]["ObjId"].ToString() + ".pdf" //+ ".pdf"
                             };
@@ -709,6 +705,12 @@ namespace DMS_API.Services
         }
 
 
+        //public async Task<ResponseModelView> GetDocumentPermession(int DocumentId, RequestHeaderModelView RequestHeader)
+        //{
+
+        //}
+
+
 
 
 
@@ -722,8 +724,8 @@ namespace DMS_API.Services
 
 
 // get permession when user click on write or manage or QR...
-// SELECT SourObjId, SourName, SourClsId, SourClsType, DestObjId, DestName, DestClsId, DestClsType, PerRead, PerWrite, PerManage, PerQR
-// FROM [Document].[GetPermissionsOnObject](UserId,@ObjectId )
+// SELECT SourObjId, SourTitle, SourType, SourTypeName, DestObjId, DestTitle, DestType, DestTypeName, IsRead, IsWrite, IsManage, IsQR, SourUserName, SourOrgArName, SourOrgEnName, SourOrgKuName
+// FROM [Document].[GetPermissionsOnObject] (41, 6)
 // WHERE SourObjId =ObjClicked AND PerManage =1
 
 
