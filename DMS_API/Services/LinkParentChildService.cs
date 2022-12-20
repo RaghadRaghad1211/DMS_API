@@ -14,13 +14,13 @@ namespace DMS_API.Services
         #region Properteis
         private readonly DataAccessService dam;
         private SessionService Session_S { get; set; }
+        private PermissionsService Permissions_S { get; set; }
         private DataTable dt { get; set; }
         private LinkParentChildModel LinkParentChild_M { get; set; }
         private GetChildNotInParentModelView ChildNotInParent_M { get; set; }
         private List<LinkParentChildModel> LinkParentChild_Mlist { get; set; }
         private List<GetChildNotInParentModelView> ChildNotInParent_MVlist { get; set; }
         private ResponseModelView Response_MV { get; set; }
-        // 2 Group , 4 Folder  , 5 Document
         #endregion
 
         #region Constructor        
@@ -53,12 +53,12 @@ namespace DMS_API.Services
                     //                            "FROM    [User].V_Links " +
                     //                           $"WHERE   LcParentObjId={ParentID} AND LcParentClsId ={ParentClassID} AND LcIsActive=1"; GetChildsInGroup
 
-                    string getGroupChildInfo = $"SELECT LcId,ParentUserOwnerId,ParentOrgOwnerId, LcParentObjId, ObjTitle, LcParentClsId," +
+                    string getParintChildInfo = $"SELECT LcId,ParentUserOwnerId,ParentOrgOwnerId, LcParentObjId, ObjTitle, LcParentClsId," +
                                                  "       ParentClassType, LcChildObjId, ChildTitle, LcChildClsId, ChildClassType, ChildCreationDate, LcIsActive " +
                                                 $" FROM  [Main].[GetChildsInParent]({ParentID},{ParentClassID})";
 
                     dt = new DataTable();
-                    dt = await Task.Run(() => dam.FireDataTable(getGroupChildInfo));
+                    dt = await Task.Run(() => dam.FireDataTable(getParintChildInfo));
                     if (dt == null)
                     {
                         Response_MV = new ResponseModelView

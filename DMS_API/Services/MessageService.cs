@@ -72,6 +72,7 @@
         public static readonly string MustSelectedObjects = "MustSelectedObjects";
         public static readonly string OrgNameMustEnter = "OrgNameMustEnter";
         public static readonly string ExtensionMustBePFD = "ExtensionMustBePFD";
+        public static readonly string NoPermission = "NoPermission";
 
 
 
@@ -82,7 +83,6 @@
 
 
 
-        public static readonly string InvalidIdentity = "InvalidIdentity";
         public static readonly string InvalidVerificationCode = "InvalidVerificationCode";
 
         public static readonly string UserNotExist = "UserNotExist";
@@ -163,6 +163,7 @@
                       {DocumentTitelMustEnter ,"يجب ادخال عنوان الوثيقة"},
                        {DocumentFileMustUpload ,"يجب اختيار صورة الوثيقة"},
                         {ExtensionMustBePFD ,"يجب اختيار وثيقة بصيغة "+"PDF"},
+                        { NoPermission, "ليس لديك صلاحية لعمل هذا الاجراء" },
 
 
 
@@ -234,6 +235,7 @@
                      {DocumentTitelMustEnter ,"Document Titel Must Enter"},
                      {DocumentFileMustUpload ,"Document File Must Upload"},
                       {ExtensionMustBePFD ,"Extension of Document Must be "+"PDF"},
+                      { NoPermission, "You don't have permission to do this action" },
 
 
 

@@ -23,7 +23,8 @@ namespace DMS_API.Services
         public static readonly string ConnectionString =
             "Server=10.55.101.20,1433;Database=DMS_DB;Integrated Security=false;User ID=dms; Password=dms;Connection Timeout=60";
 
-        public static readonly string HostFilesUrl = "http://10.55.101.10:90/DMSserver";
+        public static readonly string HostFilesUrl = 
+            "http://10.55.101.10:90/DMSserver";
 
         private static string PasswordSalt;
 
@@ -232,6 +233,17 @@ namespace DMS_API.Services
         public static string RoundomPassword(int length = 10)
         {
             const string valid = "abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ123456789!@#$%^&*?";
+            StringBuilder res = new StringBuilder();
+            Random rnd = new Random();
+            while (0 < length--)
+            {
+                res.Append(valid[rnd.Next(valid.Length)]);
+            }
+            return res.ToString();
+        }
+        public static string RoundomKey(int length = 10)
+        {
+            const string valid = "abcdefghijkmnopqrstuvwxyzABCDEFGHIJKMNOPQRSTUVWXYZ0123456789";
             StringBuilder res = new StringBuilder();
             Random rnd = new Random();
             while (0 < length--)

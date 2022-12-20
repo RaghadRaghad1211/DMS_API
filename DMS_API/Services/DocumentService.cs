@@ -8,6 +8,7 @@ using System.Data.Common;
 using System.Net;
 using System.Reflection.Metadata;
 using System.Text;
+using static System.Net.WebRequestMethods;
 
 namespace DMS_API.Services
 {
@@ -334,7 +335,7 @@ namespace DMS_API.Services
 
 
 
-                                        string fillPath = Path.Combine(DocFolder, outValue.Rows[0][0].ToString() + Path.GetExtension(DocFileNameWithExten).Trim());
+                                        string fillPath = Path.Combine(DocFolder, outValue.Rows[0][0].ToString() + SecurityService.RoundomKey() + Path.GetExtension(DocFileNameWithExten).Trim());
                                         //string fillPath = Path.Combine(DocFolder, outValue + ".pdf");
                                         using (FileStream filestream = System.IO.File.Create(fillPath))
                                         {
@@ -466,7 +467,7 @@ namespace DMS_API.Services
 
 
 
-                                    string fillPath = Path.Combine(DocFolder, outValue.Rows[0][0].ToString() + Path.GetExtension(DocFileNameWithExten).Trim());
+                                    string fillPath = Path.Combine(DocFolder, outValue.Rows[0][0].ToString() + SecurityService.RoundomKey() + Path.GetExtension(DocFileNameWithExten).Trim());
                                     //string fillPath = Path.Combine(DocFolder, outValue + ".pdf");
                                     using (FileStream filestream = System.IO.File.Create(fillPath))
                                     {
@@ -556,15 +557,28 @@ namespace DMS_API.Services
                                 KeyValue_Mlist.Add(KeyValue_M);
                             }
 
+                            string getDocPath = SecurityService.HostFilesUrl + "/" +
+                                                  (int.Parse(dt.Rows[0]["ObjId"].ToString()) % GlobalService.MoodNum).ToString() + "/" +
+                                                   dt.Rows[0]["ObjId"].ToString() + "/" +
+                                                   Path.GetFileName(Directory.GetFiles(
+                                                                              Path.Combine(
+                                                                                   await GlobalService.GetDocumentLocationInServerFolder
+                                                                                         (Convert.ToInt32(dt.Rows[0]["ObjId"].ToString()), Environment),
+                                                                                          Convert.ToInt32(dt.Rows[0]["ObjId"].ToString()).ToString())).
+                                                                                                                              FirstOrDefault(x => Path.GetFileName(x).
+                                                                                                                              StartsWith(dt.Rows[0]["ObjId"].ToString())));
                             ViewDocument_MV = new DocumentMetadataModelView
                             {
                                 ObjId = Convert.ToInt32(dt.Rows[0]["ObjId"].ToString()),
                                 ObjClsId = Convert.ToInt32(dt.Rows[0]["ObjClsId"].ToString()),
                                 KeysValues = KeyValue_Mlist,
-                                DocumentFilePath = SecurityService.HostFilesUrl + "/" +
-                                                  (int.Parse(dt.Rows[0]["ObjId"].ToString()) % GlobalService.MoodNum).ToString() + "/" +
-                                                   dt.Rows[0]["ObjId"].ToString() + "/" +
-                                                   dt.Rows[0]["ObjId"].ToString() + ".pdf" //+ ".pdf"
+                                DocumentFilePath = getDocPath
+                                #region old code
+                                //DocumentFilePath = SecurityService.HostFilesUrl + "/" +
+                                //                  (int.Parse(dt.Rows[0]["ObjId"].ToString()) % GlobalService.MoodNum).ToString() + "/" +
+                                //                   dt.Rows[0]["ObjId"].ToString() + "/" +
+                                //                   dt.Rows[0]["ObjId"].ToString() + ".pdf"
+                                #endregion
                             };
 
                             Response_MV = new ResponseModelView
