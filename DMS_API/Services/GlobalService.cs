@@ -528,20 +528,21 @@ namespace DMS_API.Services
                 return null;
             }
         }
-
-
-
-        //public static async Task<object> GetObjectPermession(int ObjectId, int UserId)
-        //{
-        //    string getObjectPermession = "SELECT     SourObjId, SourName, SourClsId, SourClsType, DestObjId, DestName, " +
-        //                                 "           DestClsId, DestClsType, PerRead, PerWrite, PerManage, PerQR " +
-        //                                $"FROM       [Document].[GetPermissionsOnObject]({UserId},{ObjectId})";
-
-
-        //   // return  getObjectPermession;
-        //}
+        public static Task<bool> IsFolderOpenableToMoveInsideIt(int FolderId, List<int> ObjectsIds)
+        {
+            if (ObjectsIds.Count > 0)
+            {
+                foreach (var id in ObjectsIds)
+                {
+                    if (FolderId == id)
+                    {
+                        return Task.FromResult(false);
+                    }
+                }
+                return Task.FromResult(true);
+            }
+            return Task.FromResult(true);
+        }
         #endregion
     }
 }
-// SELECT SourObjId, SourName, SourClsId, SourClsType, DestObjId, DestName, DestClsId, DestClsType, PerRead, PerWrite, PerManage, PerQR
-// FROM [Document].[GetPermissionsOnObject](UserId,@ObjectId )

@@ -109,7 +109,6 @@ namespace DMS_API.Services
                     }
                     else
                     {
-                        var gf = Math.Ceiling(OrgTable_Mlist.Count / (float)_PageRows);
                         Response_MV = new ResponseModelView
                         {
                             Success = true,

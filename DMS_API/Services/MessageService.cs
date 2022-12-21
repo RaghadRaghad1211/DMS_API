@@ -73,6 +73,7 @@
         public static readonly string OrgNameMustEnter = "OrgNameMustEnter";
         public static readonly string ExtensionMustBePFD = "ExtensionMustBePFD";
         public static readonly string NoPermission = "NoPermission";
+        public static readonly string FolderUnOpenable = "FolderUnOpenable";
 
 
 
@@ -160,11 +161,11 @@
                      { PhoneIsExist, "رقم الهاتف موجود" },
                      { MoveSuccess, "تمت عملية النقل" },
                      { MoveFaild, "فشل بعملية النقل" },
-                      {DocumentTitelMustEnter ,"يجب ادخال عنوان الوثيقة"},
-                       {DocumentFileMustUpload ,"يجب اختيار صورة الوثيقة"},
-                        {ExtensionMustBePFD ,"يجب اختيار وثيقة بصيغة "+"PDF"},
-                        { NoPermission, "ليس لديك صلاحية لعمل هذا الاجراء" },
-
+                     {DocumentTitelMustEnter ,"يجب ادخال عنوان الوثيقة"},
+                     {DocumentFileMustUpload ,"يجب اختيار صورة الوثيقة"},
+                     {ExtensionMustBePFD ,"يجب اختيار وثيقة بصيغة "+"PDF"},
+                     { NoPermission, "ليس لديك صلاحية لعمل هذا الاجراء" }, 
+                     { FolderUnOpenable, "لايمكن نقل داخل هذا المجلد" },
 
 
 
@@ -236,7 +237,7 @@
                      {DocumentFileMustUpload ,"Document File Must Upload"},
                       {ExtensionMustBePFD ,"Extension of Document Must be "+"PDF"},
                       { NoPermission, "You don't have permission to do this action" },
-
+                      { FolderUnOpenable, "It is not possible to move inside this folder" },
 
 
 

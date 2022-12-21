@@ -25,7 +25,7 @@ namespace DMS_API.Services
         #endregion
 
         #region Functions
-        public async Task<ResponseModelView> GetChildsInParentWithPermissions(int ParentClassId, int ParentId, RequestHeaderModelView RequestHeader)
+        public async Task<ResponseModelView> GetChildsInParentWithPermissions(int ParentClassId, FolderChildsPermissionsModelView FolderChildsPermissions_MV, RequestHeaderModelView RequestHeader)
         {
             try
             {
@@ -37,69 +37,216 @@ namespace DMS_API.Services
                 }
                 else
                 {
+                    int _PageNumber = FolderChildsPermissions_MV.PageNumber == 0 ? 1 : FolderChildsPermissions_MV.PageNumber;
+                    int _PageRows = FolderChildsPermissions_MV.PageRows == 0 ? 1 : FolderChildsPermissions_MV.PageRows;
+                    int CurrentPage = _PageNumber;
                     int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
-                    string getPermessions = " SELECT   SourObjId, SourTitle, SourType, SourTypeName," +
-                                            "          DestObjId, DestTitle, DestType, DestTypeName, " +
-                                            "          IsRead, IsWrite, IsManage, IsQR, SourCreationDate, " +
-                                            "          SourUserName, SourOrgArName, SourOrgEnName, SourOrgKuName  " +
-                                           $" FROM     [Document].[GetChildsInParentWithPermissions] ({userLoginID}, {ParentId})";
-
-                    dt = new DataTable();
-                    dt = await Task.Run(() => dam.FireDataTable(getPermessions));
-                    if (dt == null)
+                    if (FolderChildsPermissions_MV.IsMoveAtion == true)
                     {
-                        Response_MV = new ResponseModelView
+                        if (FolderChildsPermissions_MV.ObjectsMovable.Count <= 0)
                         {
-                            Success = false,
-                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
-                            Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
-                        };
-                        return Response_MV;
-                    }
-                    Permessions_Mlist = new List<PermessionsModel>();
-                    if (dt.Rows.Count > 0)
-                    {
-                        for (int i = 0; i < dt.Rows.Count; i++)
-                        {
-                            Permessions_M = new PermessionsModel
+                            Response_MV = new ResponseModelView
                             {
-                                SourObjId = Convert.ToInt32(dt.Rows[i]["SourObjId"].ToString()),
-                                SourTitle = dt.Rows[i]["SourTitle"].ToString(),
-                                SourType = Convert.ToInt32(dt.Rows[i]["SourType"].ToString()),
-                                SourTypeName = dt.Rows[i]["SourTypeName"].ToString(),
-                                DestObjId = Convert.ToInt32(dt.Rows[i]["DestObjId"].ToString()),
-                                DestTitle = dt.Rows[i]["DestTitle"].ToString(),
-                                DestType = Convert.ToInt32(dt.Rows[i]["DestType"].ToString()),
-                                DestTypeName = dt.Rows[i]["DestTypeName"].ToString(),
-                                IsRead = bool.Parse(dt.Rows[i]["IsRead"].ToString()),
-                                IsWrite = bool.Parse(dt.Rows[i]["IsWrite"].ToString()),
-                                IsManage = bool.Parse(dt.Rows[i]["IsManage"].ToString()),
-                                IsQR = bool.Parse(dt.Rows[i]["IsQR"].ToString()),
-                                SourUserName = dt.Rows[i]["SourUserName"].ToString(),
-                                SourOrgArName = dt.Rows[i]["SourOrgArName"].ToString(),
-                                SourOrgEnName = dt.Rows[i]["SourOrgEnName"].ToString(),
-                                SourOrgKuName = dt.Rows[i]["SourOrgKuName"].ToString(),
-                                SourCreationDate = DateTime.Parse(dt.Rows[i]["SourCreationDate"].ToString()).ToShortDateString()
+                                Success = false,
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.MustSelectedObjects],
+                                Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
                             };
-                            Permessions_Mlist.Add(Permessions_M);
+                            return Response_MV;
                         }
-                        Response_MV = new ResponseModelView
+                        else
                         {
-                            Success = true,
-                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
-                            Data = Permessions_Mlist
-                        };
-                        return Response_MV;
+                            bool canOpen = await GlobalService.IsFolderOpenableToMoveInsideIt(FolderChildsPermissions_MV.ParentId, FolderChildsPermissions_MV.ObjectsMovable);
+                            if (canOpen == false)
+                            {
+                                Response_MV = new ResponseModelView
+                                {
+                                    Success = false,
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.FolderUnOpenable],
+                                    Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                                };
+                                return Response_MV;
+                            }
+                            else
+                            {
+                                string getPermessions = " SELECT   SourObjId, SourTitle, SourType, SourTypeName," +
+                                                        "          DestObjId, DestTitle, DestType, DestTypeName, " +
+                                                        "          IsRead, IsWrite, IsManage, IsQR, SourCreationDate, " +
+                                                        "          SourUserName, SourOrgArName, SourOrgEnName, SourOrgKuName  " +
+                                                       $" FROM     [Document].[GetChildsInParentWithPermissions] ({userLoginID}, {FolderChildsPermissions_MV.ParentId}) " +
+                                                        "ORDER BY  SourObjId " +
+                                                       $"OFFSET      ({_PageNumber}-1)*{_PageRows} ROWS " +
+                                                       $"FETCH NEXT   {_PageRows} ROWS ONLY ";
+
+                                dt = new DataTable();
+                                dt = await Task.Run(() => dam.FireDataTable(getPermessions));
+                                if (dt == null)
+                                {
+                                    Response_MV = new ResponseModelView
+                                    {
+                                        Success = false,
+                                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
+                                        Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                                    };
+                                    return Response_MV;
+                                }
+                                Permessions_Mlist = new List<PermessionsModel>();
+                                if (dt.Rows.Count > 0)
+                                {
+                                    for (int i = 0; i < dt.Rows.Count; i++)
+                                    {
+                                        Permessions_M = new PermessionsModel
+                                        {
+                                            SourObjId = Convert.ToInt32(dt.Rows[i]["SourObjId"].ToString()),
+                                            SourTitle = dt.Rows[i]["SourTitle"].ToString(),
+                                            SourType = Convert.ToInt32(dt.Rows[i]["SourType"].ToString()),
+                                            SourTypeName = dt.Rows[i]["SourTypeName"].ToString(),
+                                            DestObjId = Convert.ToInt32(dt.Rows[i]["DestObjId"].ToString()),
+                                            DestTitle = dt.Rows[i]["DestTitle"].ToString(),
+                                            DestType = Convert.ToInt32(dt.Rows[i]["DestType"].ToString()),
+                                            DestTypeName = dt.Rows[i]["DestTypeName"].ToString(),
+                                            IsRead = bool.Parse(dt.Rows[i]["IsRead"].ToString()),
+                                            IsWrite = bool.Parse(dt.Rows[i]["IsWrite"].ToString()),
+                                            IsManage = bool.Parse(dt.Rows[i]["IsManage"].ToString()),
+                                            IsQR = bool.Parse(dt.Rows[i]["IsQR"].ToString()),
+                                            SourUserName = dt.Rows[i]["SourUserName"].ToString(),
+                                            SourOrgArName = dt.Rows[i]["SourOrgArName"].ToString(),
+                                            SourOrgEnName = dt.Rows[i]["SourOrgEnName"].ToString(),
+                                            SourOrgKuName = dt.Rows[i]["SourOrgKuName"].ToString(),
+                                            SourCreationDate = DateTime.Parse(dt.Rows[i]["SourCreationDate"].ToString()).ToShortDateString()
+                                        };
+                                        Permessions_Mlist.Add(Permessions_M);
+                                    }
+                                    Response_MV = new ResponseModelView
+                                    {
+                                        Success = true,
+                                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
+                                        Data = new
+                                        {
+                                            TotalRows = Permessions_Mlist.Count,
+                                            MaxPage = Math.Ceiling(Permessions_Mlist.Count / (float)_PageRows),
+                                            CurrentPage = _PageNumber,
+                                            PageRows = _PageRows,
+                                            data = new
+                                            {
+                                                Permessions_Mlist
+                                            }
+                                        }
+                                        //Data = Permessions_Mlist
+                                    };
+                                    return Response_MV;
+                                }
+                                else
+                                {
+                                    Response_MV = new ResponseModelView
+                                    {
+                                        Success = true,
+                                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoData],
+                                        Data = new
+                                        {
+                                            TotalRows = Permessions_Mlist.Count,
+                                            MaxPage = Math.Ceiling(Permessions_Mlist.Count / (float)_PageRows),
+                                            CurrentPage = _PageNumber,
+                                            PageRows = _PageRows,
+                                            data = new
+                                            {
+                                                Permessions_Mlist
+                                            }
+                                        }
+                                        //Data = Permessions_Mlist
+                                    };
+                                    return Response_MV;
+                                }
+                            }
+                        }
                     }
                     else
                     {
-                        Response_MV = new ResponseModelView
+                        string getPermessions = " SELECT   SourObjId, SourTitle, SourType, SourTypeName," +
+                                                "          DestObjId, DestTitle, DestType, DestTypeName, " +
+                                                "          IsRead, IsWrite, IsManage, IsQR, SourCreationDate, " +
+                                                "          SourUserName, SourOrgArName, SourOrgEnName, SourOrgKuName  " +
+                                               $" FROM     [Document].[GetChildsInParentWithPermissions] ({userLoginID}, {FolderChildsPermissions_MV.ParentId}) " +
+                                               "ORDER BY   SourObjId " +
+                                                       $"OFFSET      ({_PageNumber}-1)*{_PageRows} ROWS " +
+                                                       $"FETCH NEXT   {_PageRows} ROWS ONLY ";
+
+                        dt = new DataTable();
+                        dt = await Task.Run(() => dam.FireDataTable(getPermessions));
+                        if (dt == null)
                         {
-                            Success = true,
-                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoData],
-                            Data = Permessions_Mlist
-                        };
-                        return Response_MV;
+                            Response_MV = new ResponseModelView
+                            {
+                                Success = false,
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
+                                Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                            };
+                            return Response_MV;
+                        }
+                        Permessions_Mlist = new List<PermessionsModel>();
+                        if (dt.Rows.Count > 0)
+                        {
+                            for (int i = 0; i < dt.Rows.Count; i++)
+                            {
+                                Permessions_M = new PermessionsModel
+                                {
+                                    SourObjId = Convert.ToInt32(dt.Rows[i]["SourObjId"].ToString()),
+                                    SourTitle = dt.Rows[i]["SourTitle"].ToString(),
+                                    SourType = Convert.ToInt32(dt.Rows[i]["SourType"].ToString()),
+                                    SourTypeName = dt.Rows[i]["SourTypeName"].ToString(),
+                                    DestObjId = Convert.ToInt32(dt.Rows[i]["DestObjId"].ToString()),
+                                    DestTitle = dt.Rows[i]["DestTitle"].ToString(),
+                                    DestType = Convert.ToInt32(dt.Rows[i]["DestType"].ToString()),
+                                    DestTypeName = dt.Rows[i]["DestTypeName"].ToString(),
+                                    IsRead = bool.Parse(dt.Rows[i]["IsRead"].ToString()),
+                                    IsWrite = bool.Parse(dt.Rows[i]["IsWrite"].ToString()),
+                                    IsManage = bool.Parse(dt.Rows[i]["IsManage"].ToString()),
+                                    IsQR = bool.Parse(dt.Rows[i]["IsQR"].ToString()),
+                                    SourUserName = dt.Rows[i]["SourUserName"].ToString(),
+                                    SourOrgArName = dt.Rows[i]["SourOrgArName"].ToString(),
+                                    SourOrgEnName = dt.Rows[i]["SourOrgEnName"].ToString(),
+                                    SourOrgKuName = dt.Rows[i]["SourOrgKuName"].ToString(),
+                                    SourCreationDate = DateTime.Parse(dt.Rows[i]["SourCreationDate"].ToString()).ToShortDateString()
+                                };
+                                Permessions_Mlist.Add(Permessions_M);
+                            }
+                            Response_MV = new ResponseModelView
+                            {
+                                Success = true,
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
+                                Data = new
+                                {
+                                    TotalRows = Permessions_Mlist.Count,
+                                    MaxPage = Math.Ceiling(Permessions_Mlist.Count / (float)_PageRows),
+                                    CurrentPage = _PageNumber,
+                                    PageRows = _PageRows,
+                                    data = new
+                                    {
+                                        Permessions_Mlist
+                                    }
+                                }
+                            };
+                            return Response_MV;
+                        }
+                        else
+                        {
+                            Response_MV = new ResponseModelView
+                            {
+                                Success = true,
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoData],
+                                Data = new
+                                {
+                                    TotalRows = Permessions_Mlist.Count,
+                                    MaxPage = Math.Ceiling(Permessions_Mlist.Count / (float)_PageRows),
+                                    CurrentPage = _PageNumber,
+                                    PageRows = _PageRows,
+                                    data = new
+                                    {
+                                        Permessions_Mlist
+                                    }
+                                }
+                            };
+                            return Response_MV;
+                        }
                     }
                 }
             }

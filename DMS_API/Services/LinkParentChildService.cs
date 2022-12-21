@@ -505,13 +505,7 @@ namespace DMS_API.Services
                 }
                 else
                 {
-
-
                     int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
-                    //int checkExist = await Task.Run(() => Convert.ToInt32(dam.FireSQL("SELECT COUNT(LcId) FROM [User].[V_Links] " +
-                    //                                                                 $"WHERE  LcParentObjId={MoveChildToNewFolder_MV.CurrentParentID} AND LcParentClsId={FolderClassID} " +
-                    //                                                                 $"       AND LcChildObjId={MoveChildToNewFolder_MV.ChildID} AND LcChildClsId={ChildClassID}   ")));
-
                     if (MoveChildToNewFolder_MV.CurrentParentID == 0 || MoveChildToNewFolder_MV.ChildIds.Count == 0 || MoveChildToNewFolder_MV.NewParentID == 0)
                     {
                         Response_MV = new ResponseModelView
@@ -524,18 +518,6 @@ namespace DMS_API.Services
                     }
                     else
                     {
-                        //if (checkExist == 0)
-                        //{
-                        //    Response_MV = new ResponseModelView
-                        //    {
-                        //        Success = false,
-                        //        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsNotExist],
-                        //        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
-                        //    };
-                        //    return Response_MV;
-                        //}
-                        //else
-                        //{
                         string Query = GlobalService.GetQueryMoveChilds(MoveChildToNewFolder_MV);
                         string moveChild2Folder = $"EXEC [Main].[MoveChildToFolderPro] '{MoveChildToNewFolder_MV.CurrentParentID}','{MoveChildToNewFolder_MV.NewParentID}', '{FolderClassID}', '{Query}', '{ChildClassID}' ";
                         //string moveChild2Folder = $"EXEC [Main].[MoveChildToFolderPro] '{MoveChildToNewFolder_MV.CurrentParentID}','{MoveChildToNewFolder_MV.NewParentID}', '{FolderClassID}', '{MoveChildToNewFolder_MV.ChildID}', '{ChildClassID}' ";
@@ -560,7 +542,6 @@ namespace DMS_API.Services
                             };
                             return Response_MV;
                         }
-                        // }
                     }
                 }
             }
