@@ -40,94 +40,40 @@ namespace DMS_API.Services
                 }
                 else
                 {
-                    int _PageNumber = Pagination_MV.PageNumber == 0 ? 1 : Pagination_MV.PageNumber;
-                    int _PageRows = Pagination_MV.PageRows == 0 ? 1 : Pagination_MV.PageRows;
-                    int CurrentPage = _PageNumber;
-
-                    int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
-                    int orgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {userLoginID} "));
-                    string whereField = orgOwnerID == 0 ? "SELECT '0' as OrgId UNION SELECT OrgId" : "SELECT OrgId";
-                    var MaxTotal = dam.FireDataTable($"SELECT COUNT(*) AS TotalRows, CEILING(COUNT(*) / CAST({_PageRows} AS FLOAT)) AS MaxPage " +
-                                             $"FROM [User].V_Groups  WHERE [OrgOwner] IN ({whereField} FROM [User].[GetOrgsbyUserId]({userLoginID})) AND ObjClsId ={ClassID} ");
-                    if (MaxTotal == null)
+                    if (((SessionModel)ResponseSession.Data).IsAdministrator == false || ((SessionModel)ResponseSession.Data).IsOrgAdmin == false)
                     {
                         Response_MV = new ResponseModelView
                         {
                             Success = false,
-                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
-                            Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoPermission],
+                            Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
                         };
                         return Response_MV;
                     }
                     else
                     {
-                        if (MaxTotal.Rows.Count == 0)
+                        int _PageNumber = Pagination_MV.PageNumber == 0 ? 1 : Pagination_MV.PageNumber;
+                        int _PageRows = Pagination_MV.PageRows == 0 ? 1 : Pagination_MV.PageRows;
+                        int CurrentPage = _PageNumber;
+
+                        int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
+                        int orgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {userLoginID} "));
+                        string whereField = orgOwnerID == 0 ? "SELECT '0' as OrgId UNION SELECT OrgId" : "SELECT OrgId";
+                        var MaxTotal = dam.FireDataTable($"SELECT COUNT(*) AS TotalRows, CEILING(COUNT(*) / CAST({_PageRows} AS FLOAT)) AS MaxPage " +
+                                                 $"FROM [User].V_Groups  WHERE [OrgOwner] IN ({whereField} FROM [User].[GetOrgsbyUserId]({userLoginID})) AND ObjClsId ={ClassID} ");
+                        if (MaxTotal == null)
                         {
                             Response_MV = new ResponseModelView
                             {
                                 Success = false,
-                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoData],
-                                Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
+                                Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
                             };
                             return Response_MV;
                         }
-
                         else
                         {
-                            string getGroupInfo = "SELECT    ObjId, ObjTitle, ObjClsId, ClsName, ObjIsActive, CONVERT(DATE,ObjCreationDate,104) AS ObjCreationDate, " +
-                                                 "           ObjDescription, UserOwnerID, OwnerFullName, OwnerUserName, OrgOwner, OrgEnName,OrgArName , OrgKuName " +
-                                                 "FROM       [User].V_Groups " +
-                                                $"WHERE      [OrgOwner] IN ({whereField} FROM [User].GetOrgsbyUserId({userLoginID})) AND ObjClsId ={ClassID} " +
-                                                 "ORDER BY   ObjId " +
-                                                $"OFFSET     ({_PageNumber}-1)*{_PageRows} ROWS " +
-                                                $"FETCH NEXT  {_PageRows} ROWS ONLY ";
-
-                            dt = new DataTable();
-                            dt = await Task.Run(() => dam.FireDataTable(getGroupInfo));
-                            if (dt == null)
-                            {
-                                Response_MV = new ResponseModelView
-                                {
-                                    Success = false,
-                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
-                                    Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
-                                };
-                                return Response_MV;
-                            }
-                            Group_Mlist = new List<GroupModel>();
-                            if (dt.Rows.Count > 0)
-                            {
-                                for (int i = 0; i < dt.Rows.Count; i++)
-                                {
-                                    Group_M = new GroupModel
-                                    {
-                                        ObjId = Convert.ToInt32(dt.Rows[i]["ObjId"].ToString()),
-                                        ObjTitle = dt.Rows[i]["ObjTitle"].ToString(),
-                                        ObjClsId = Convert.ToInt32(dt.Rows[i]["ObjClsId"].ToString()),
-                                        ClsName = dt.Rows[i]["ClsName"].ToString(),
-                                        ObjIsActive = bool.Parse(dt.Rows[i]["ObjIsActive"].ToString()),
-                                        ObjCreationDate = DateTime.Parse(dt.Rows[i]["ObjCreationDate"].ToString()).ToShortDateString(),
-                                        ObjDescription = dt.Rows[i]["ObjDescription"].ToString(),
-                                        UserOwnerID = Convert.ToInt32(dt.Rows[i]["UserOwnerID"].ToString()),
-                                        OwnerFullName = dt.Rows[i]["OwnerFullName"].ToString(),
-                                        OwnerUserName = dt.Rows[i]["OwnerUserName"].ToString(),
-                                        OrgOwner = dt.Rows[i]["OrgOwner"].ToString(),
-                                        OrgEnName = dt.Rows[i]["OrgEnName"].ToString(),
-                                        OrgArName = dt.Rows[i]["OrgArName"].ToString(),
-                                        OrgKuName = dt.Rows[i]["OrgKuName"].ToString(),
-                                    };
-                                    Group_Mlist.Add(Group_M);
-                                }
-
-                                Response_MV = new ResponseModelView
-                                {
-                                    Success = true,
-                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
-                                    Data = new { TotalRows = MaxTotal.Rows[0]["TotalRows"], MaxPage = MaxTotal.Rows[0]["MaxPage"], CurrentPage, data = Group_Mlist }
-                                };
-                                return Response_MV;
-                            }
-                            else
+                            if (MaxTotal.Rows.Count == 0)
                             {
                                 Response_MV = new ResponseModelView
                                 {
@@ -136,6 +82,73 @@ namespace DMS_API.Services
                                     Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
                                 };
                                 return Response_MV;
+                            }
+
+                            else
+                            {
+                                string getGroupInfo = "SELECT    ObjId, ObjTitle, ObjClsId, ClsName, ObjIsActive, CONVERT(DATE,ObjCreationDate,104) AS ObjCreationDate, " +
+                                                     "           ObjDescription, UserOwnerID, OwnerFullName, OwnerUserName, OrgOwner, OrgEnName,OrgArName , OrgKuName " +
+                                                     "FROM       [User].V_Groups " +
+                                                    $"WHERE      [OrgOwner] IN ({whereField} FROM [User].GetOrgsbyUserId({userLoginID})) AND ObjClsId ={ClassID} " +
+                                                     "ORDER BY   ObjId " +
+                                                    $"OFFSET     ({_PageNumber}-1)*{_PageRows} ROWS " +
+                                                    $"FETCH NEXT  {_PageRows} ROWS ONLY ";
+
+                                dt = new DataTable();
+                                dt = await Task.Run(() => dam.FireDataTable(getGroupInfo));
+                                if (dt == null)
+                                {
+                                    Response_MV = new ResponseModelView
+                                    {
+                                        Success = false,
+                                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
+                                        Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                                    };
+                                    return Response_MV;
+                                }
+                                Group_Mlist = new List<GroupModel>();
+                                if (dt.Rows.Count > 0)
+                                {
+                                    for (int i = 0; i < dt.Rows.Count; i++)
+                                    {
+                                        Group_M = new GroupModel
+                                        {
+                                            ObjId = Convert.ToInt32(dt.Rows[i]["ObjId"].ToString()),
+                                            ObjTitle = dt.Rows[i]["ObjTitle"].ToString(),
+                                            ObjClsId = Convert.ToInt32(dt.Rows[i]["ObjClsId"].ToString()),
+                                            ClsName = dt.Rows[i]["ClsName"].ToString(),
+                                            ObjIsActive = bool.Parse(dt.Rows[i]["ObjIsActive"].ToString()),
+                                            ObjCreationDate = DateTime.Parse(dt.Rows[i]["ObjCreationDate"].ToString()).ToShortDateString(),
+                                            ObjDescription = dt.Rows[i]["ObjDescription"].ToString(),
+                                            UserOwnerID = Convert.ToInt32(dt.Rows[i]["UserOwnerID"].ToString()),
+                                            OwnerFullName = dt.Rows[i]["OwnerFullName"].ToString(),
+                                            OwnerUserName = dt.Rows[i]["OwnerUserName"].ToString(),
+                                            OrgOwner = dt.Rows[i]["OrgOwner"].ToString(),
+                                            OrgEnName = dt.Rows[i]["OrgEnName"].ToString(),
+                                            OrgArName = dt.Rows[i]["OrgArName"].ToString(),
+                                            OrgKuName = dt.Rows[i]["OrgKuName"].ToString(),
+                                        };
+                                        Group_Mlist.Add(Group_M);
+                                    }
+
+                                    Response_MV = new ResponseModelView
+                                    {
+                                        Success = true,
+                                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
+                                        Data = new { TotalRows = MaxTotal.Rows[0]["TotalRows"], MaxPage = MaxTotal.Rows[0]["MaxPage"], CurrentPage, data = Group_Mlist }
+                                    };
+                                    return Response_MV;
+                                }
+                                else
+                                {
+                                    Response_MV = new ResponseModelView
+                                    {
+                                        Success = false,
+                                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoData],
+                                        Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                                    };
+                                    return Response_MV;
+                                }
                             }
                         }
                     }
@@ -248,43 +261,44 @@ namespace DMS_API.Services
                 }
                 else
                 {
-                    if (ValidationService.IsEmpty(Group_MV.GroupTitle) == true)
+                    if (((SessionModel)ResponseSession.Data).IsAdministrator == false || ((SessionModel)ResponseSession.Data).IsOrgAdmin == false)
                     {
                         Response_MV = new ResponseModelView
                         {
                             Success = false,
-                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GroupNameMustEnter],
-                            Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoPermission],
+                            Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
                         };
                         return Response_MV;
                     }
                     else
                     {
-                        int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
-                        int orgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {userLoginID} "));
-                        string whereField = orgOwnerID == 0 ? "SELECT '0' as OrgId UNION SELECT OrgId" : "SELECT OrgId";
-                        //int checkDeblicate = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) FROM [Main].[Objects] WHERE ObjTitle = '{Group_MV.GroupTitle}' AND " +
-                        //                                                 $"[ObjOrgOwner] IN ({whereField} FROM [User].GetOrgsbyUserId({userLoginID})) AND ObjClsId ={ClassID} "));
-                        int checkDeblicate = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) FROM [User].[V_Groups] WHERE ObjTitle = '{Group_MV.GroupTitle}' AND " +
-                                                                         $"OrgOwner ={Group_MV.GroupOrgOwnerID} AND ObjClsId ={ClassID} AND ObjIsActive=1 "));
-                        if (checkDeblicate == 0)
-                        {
-                            string exeut = $"EXEC [User].[AddGroupPro] '{ClassID}','{Group_MV.GroupTitle}', '{userLoginID}', '{Group_MV.GroupOrgOwnerID}', '{Group_MV.GroupDescription}' ";
-                            var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
 
-                            if (outValue == null || outValue.Trim() == "")
+                        if (ValidationService.IsEmpty(Group_MV.GroupTitle) == true)
+                        {
+                            Response_MV = new ResponseModelView
                             {
-                                Response_MV = new ResponseModelView
-                                {
-                                    Success = false,
-                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.InsertFaild],
-                                    Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
-                                };
-                                return Response_MV;
-                            }
-                            else
+                                Success = false,
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GroupNameMustEnter],
+                                Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                            };
+                            return Response_MV;
+                        }
+                        else
+                        {
+                            int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
+                            int orgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {userLoginID} "));
+                            string whereField = orgOwnerID == 0 ? "SELECT '0' as OrgId UNION SELECT OrgId" : "SELECT OrgId";
+                            //int checkDeblicate = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) FROM [Main].[Objects] WHERE ObjTitle = '{Group_MV.GroupTitle}' AND " +
+                            //                                                 $"[ObjOrgOwner] IN ({whereField} FROM [User].GetOrgsbyUserId({userLoginID})) AND ObjClsId ={ClassID} "));
+                            int checkDeblicate = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) FROM [User].[V_Groups] WHERE ObjTitle = '{Group_MV.GroupTitle}' AND " +
+                                                                             $"OrgOwner ={Group_MV.GroupOrgOwnerID} AND ObjClsId ={ClassID} AND ObjIsActive=1 "));
+                            if (checkDeblicate == 0)
                             {
-                                if (outValue == 0.ToString())
+                                string exeut = $"EXEC [User].[AddGroupPro] '{ClassID}','{Group_MV.GroupTitle}', '{userLoginID}', '{Group_MV.GroupOrgOwnerID}', '{Group_MV.GroupDescription}' ";
+                                var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
+
+                                if (outValue == null || outValue.Trim() == "")
                                 {
                                     Response_MV = new ResponseModelView
                                     {
@@ -296,29 +310,41 @@ namespace DMS_API.Services
                                 }
                                 else
                                 {
-                                    Response_MV = new ResponseModelView
+                                    if (outValue == 0.ToString())
                                     {
-                                        Success = true,
-                                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.InsertSuccess],
-                                        Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
-                                    };
-                                    return Response_MV;
+                                        Response_MV = new ResponseModelView
+                                        {
+                                            Success = false,
+                                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.InsertFaild],
+                                            Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                                        };
+                                        return Response_MV;
+                                    }
+                                    else
+                                    {
+                                        Response_MV = new ResponseModelView
+                                        {
+                                            Success = true,
+                                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.InsertSuccess],
+                                            Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
+                                        };
+                                        return Response_MV;
+                                    }
                                 }
                             }
-                        }
-                        else
-                        {
-                            Response_MV = new ResponseModelView
+                            else
                             {
-                                Success = false,
-                                Message = Group_MV.GroupTitle + " " + MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsExist],
-                                Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
-                            };
-                            return Response_MV;
+                                Response_MV = new ResponseModelView
+                                {
+                                    Success = false,
+                                    Message = Group_MV.GroupTitle + " " + MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsExist],
+                                    Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                                };
+                                return Response_MV;
+                            }
                         }
                     }
                 }
-
             }
             catch (Exception ex)
             {
@@ -344,45 +370,45 @@ namespace DMS_API.Services
                 }
                 else
                 {
-                    if (ValidationService.IsEmpty(Group_MV.GroupTitle) == true)
+                    if (((SessionModel)ResponseSession.Data).IsAdministrator == false || ((SessionModel)ResponseSession.Data).IsOrgAdmin == false)
                     {
                         Response_MV = new ResponseModelView
                         {
                             Success = false,
-                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GroupNameMustEnter],
-                            Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoPermission],
+                            Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
                         };
                         return Response_MV;
                     }
                     else
                     {
-                        //int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
-                        //int orgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {userLoginID} "));
-                        //string whereField = orgOwnerID == 0 ? "OrgUp" : "OrgId";
-
-                        //int checkDeblicate = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) FROM [Main].[Objects] WHERE ObjTitle = '{Group_MV.GroupTitle}' AND " +
-                        //                                                 $"[ObjOrgOwner] IN (SELECT {whereField} FROM [User].GetOrgsbyUserId({userLoginID})) AND ObjClsId ={ClassID} "));
-
-                        int checkDeblicate = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) FROM [User].[V_Groups] WHERE ObjId = {Group_MV.GroupId} AND " +
-                                                                         $"ObjClsId = {ClassID} "));
-                        if (checkDeblicate > 0)
+                        if (ValidationService.IsEmpty(Group_MV.GroupTitle) == true)
                         {
-                            string exeut = $"EXEC [User].[UpdateGroupPro] '{Group_MV.GroupId}','{Group_MV.GroupTitle}', '{Group_MV.GroupIsActive}','{Group_MV.GroupDescription}' ";
-                            var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
+                            Response_MV = new ResponseModelView
+                            {
+                                Success = false,
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GroupNameMustEnter],
+                                Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                            };
+                            return Response_MV;
+                        }
+                        else
+                        {
+                            //int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
+                            //int orgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {userLoginID} "));
+                            //string whereField = orgOwnerID == 0 ? "OrgUp" : "OrgId";
 
-                            if (outValue == null || outValue.Trim() == "")
+                            //int checkDeblicate = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) FROM [Main].[Objects] WHERE ObjTitle = '{Group_MV.GroupTitle}' AND " +
+                            //                                                 $"[ObjOrgOwner] IN (SELECT {whereField} FROM [User].GetOrgsbyUserId({userLoginID})) AND ObjClsId ={ClassID} "));
+
+                            int checkDeblicate = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) FROM [User].[V_Groups] WHERE ObjId = {Group_MV.GroupId} AND " +
+                                                                             $"ObjClsId = {ClassID} "));
+                            if (checkDeblicate > 0)
                             {
-                                Response_MV = new ResponseModelView
-                                {
-                                    Success = false,
-                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.UpdateFaild],
-                                    Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
-                                };
-                                return Response_MV;
-                            }
-                            else
-                            {
-                                if (outValue == 0.ToString())
+                                string exeut = $"EXEC [User].[UpdateGroupPro] '{Group_MV.GroupId}','{Group_MV.GroupTitle}', '{Group_MV.GroupIsActive}','{Group_MV.GroupDescription}' ";
+                                var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
+
+                                if (outValue == null || outValue.Trim() == "")
                                 {
                                     Response_MV = new ResponseModelView
                                     {
@@ -394,25 +420,38 @@ namespace DMS_API.Services
                                 }
                                 else
                                 {
-                                    Response_MV = new ResponseModelView
+                                    if (outValue == 0.ToString())
                                     {
-                                        Success = true,
-                                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.UpdateSuccess],
-                                        Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
-                                    };
-                                    return Response_MV;
+                                        Response_MV = new ResponseModelView
+                                        {
+                                            Success = false,
+                                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.UpdateFaild],
+                                            Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                                        };
+                                        return Response_MV;
+                                    }
+                                    else
+                                    {
+                                        Response_MV = new ResponseModelView
+                                        {
+                                            Success = true,
+                                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.UpdateSuccess],
+                                            Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
+                                        };
+                                        return Response_MV;
+                                    }
                                 }
                             }
-                        }
-                        else
-                        {
-                            Response_MV = new ResponseModelView
+                            else
                             {
-                                Success = false,
-                                Message = Group_MV.GroupTitle + " " + MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsExist],
-                                Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
-                            };
-                            return Response_MV;
+                                Response_MV = new ResponseModelView
+                                {
+                                    Success = false,
+                                    Message = Group_MV.GroupTitle + " " + MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsExist],
+                                    Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                                };
+                                return Response_MV;
+                            }
                         }
                     }
                 }

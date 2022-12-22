@@ -47,15 +47,9 @@ namespace DMS_API.Services
                 {
                     int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
                     int orgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {userLoginID} "));
-
-                    //string getParentChildInfo = "SELECT  LcId,ParentUserOwnerId,ParentOrgOwnerId, LcParentObjId, ObjTitle, LcParentClsId,  " +
-                    //                            "        ParentClassType, LcChildObjId, ChildTitle, LcChildClsId, ChildClassType, LcIsActive " +
-                    //                            "FROM    [User].V_Links " +
-                    //                           $"WHERE   LcParentObjId={ParentID} AND LcParentClsId ={ParentClassID} AND LcIsActive=1"; GetChildsInGroup
-
                     string getParintChildInfo = $"SELECT LcId,ParentUserOwnerId,ParentOrgOwnerId, LcParentObjId, ObjTitle, LcParentClsId," +
                                                  "       ParentClassType, LcChildObjId, ChildTitle, LcChildClsId, ChildClassType, ChildCreationDate, LcIsActive " +
-                                                $" FROM  [Main].[GetChildsInParent]({ParentID},{ParentClassID})";
+                                                $" FROM  [Main].[GetChildsInParentForAdmin]({ParentID},{ParentClassID})";
 
                     dt = new DataTable();
                     dt = await Task.Run(() => dam.FireDataTable(getParintChildInfo));

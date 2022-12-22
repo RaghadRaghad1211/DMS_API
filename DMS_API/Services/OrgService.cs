@@ -263,50 +263,50 @@ namespace DMS_API.Services
                 }
                 else
                 {
-                    if (ValidationService.IsEmpty(AddOrg_MV.OrgArName) == true)
+                    if (((SessionModel)ResponseSession.Data).IsAdministrator == false || ((SessionModel)ResponseSession.Data).IsOrgAdmin == false)
                     {
                         Response_MV = new ResponseModelView
                         {
                             Success = false,
-                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.TitelArIsEmpty],
-                            Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
-                        };
-                        return Response_MV;
-                    }
-                    else if (ValidationService.IsEmpty(AddOrg_MV.OrgEnName) == true)
-                    {
-                        Response_MV = new ResponseModelView
-                        {
-                            Success = false,
-                            Message = AddOrg_MV.OrgEnName + " " + MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.TitelEnIsEmpty],
-                            Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoPermission],
+                            Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
                         };
                         return Response_MV;
                     }
                     else
                     {
-                        int checkDeblicate = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) FROM [User].Orgs WHERE OrgArName = '{AddOrg_MV.OrgArName}' AND OrgUp={AddOrg_MV.OrgUp} "));
-                        int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
-                        int orgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {userLoginID} "));
-                        if (checkDeblicate == 0)
+                        if (ValidationService.IsEmpty(AddOrg_MV.OrgArName) == true)
                         {
-                            string OrgAdminUsername = "Admin@" + SecurityService.RoundomPassword(6);
-                            string exeut = $"EXEC [User].[AddOrgPro] '{AddOrg_MV.OrgArName}', '{userLoginID}', '{orgOwnerID}', '{AddOrg_MV.Note}', '{AddOrg_MV.OrgUp}', '{AddOrg_MV.OrgEnName}', '{AddOrg_MV.OrgKuName}', '{OrgAdminUsername}', '{SecurityService.PasswordEnecrypt("00000000", OrgAdminUsername)}' ";
-                            var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
+                            Response_MV = new ResponseModelView
+                            {
+                                Success = false,
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.TitelArIsEmpty],
+                                Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                            };
+                            return Response_MV;
+                        }
+                        else if (ValidationService.IsEmpty(AddOrg_MV.OrgEnName) == true)
+                        {
+                            Response_MV = new ResponseModelView
+                            {
+                                Success = false,
+                                Message = AddOrg_MV.OrgEnName + " " + MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.TitelEnIsEmpty],
+                                Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                            };
+                            return Response_MV;
+                        }
+                        else
+                        {
+                            int checkDeblicate = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) FROM [User].Orgs WHERE OrgArName = '{AddOrg_MV.OrgArName}' AND OrgUp={AddOrg_MV.OrgUp} "));
+                            int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
+                            int orgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {userLoginID} "));
+                            if (checkDeblicate == 0)
+                            {
+                                string OrgAdminUsername = "Admin@" + SecurityService.RoundomPassword(6);
+                                string exeut = $"EXEC [User].[AddOrgPro] '{AddOrg_MV.OrgArName}', '{userLoginID}', '{orgOwnerID}', '{AddOrg_MV.Note}', '{AddOrg_MV.OrgUp}', '{AddOrg_MV.OrgEnName}', '{AddOrg_MV.OrgKuName}', '{OrgAdminUsername}', '{SecurityService.PasswordEnecrypt("00000000", OrgAdminUsername)}' ";
+                                var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
 
-                            if (outValue == null || outValue.Trim() == "")
-                            {
-                                Response_MV = new ResponseModelView
-                                {
-                                    Success = false,
-                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.InsertFaild],
-                                    Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
-                                };
-                                return Response_MV;
-                            }
-                            else
-                            {
-                                if (outValue == 0.ToString())
+                                if (outValue == null || outValue.Trim() == "")
                                 {
                                     Response_MV = new ResponseModelView
                                     {
@@ -318,25 +318,38 @@ namespace DMS_API.Services
                                 }
                                 else
                                 {
-                                    Response_MV = new ResponseModelView
+                                    if (outValue == 0.ToString())
                                     {
-                                        Success = true,
-                                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.InsertSuccess],
-                                        Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
-                                    };
-                                    return Response_MV;
+                                        Response_MV = new ResponseModelView
+                                        {
+                                            Success = false,
+                                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.InsertFaild],
+                                            Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                                        };
+                                        return Response_MV;
+                                    }
+                                    else
+                                    {
+                                        Response_MV = new ResponseModelView
+                                        {
+                                            Success = true,
+                                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.InsertSuccess],
+                                            Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
+                                        };
+                                        return Response_MV;
+                                    }
                                 }
                             }
-                        }
-                        else
-                        {
-                            Response_MV = new ResponseModelView
+                            else
                             {
-                                Success = false,
-                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsExist],
-                                Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
-                            };
-                            return Response_MV;
+                                Response_MV = new ResponseModelView
+                                {
+                                    Success = false,
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsExist],
+                                    Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                                };
+                                return Response_MV;
+                            }
                         }
                     }
                 }
@@ -364,50 +377,51 @@ namespace DMS_API.Services
                 }
                 else
                 {
-                    if (ValidationService.IsEmpty(EditOrg_MV.OrgArName) == true)
+                    if (((SessionModel)ResponseSession.Data).IsAdministrator == false || ((SessionModel)ResponseSession.Data).IsOrgAdmin == false)
                     {
                         Response_MV = new ResponseModelView
                         {
                             Success = false,
-                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.TitelArIsEmpty],
-                            Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
-                        };
-                        return Response_MV;
-                    }
-                    else if (ValidationService.IsEmpty(EditOrg_MV.OrgEnName) == true)
-                    {
-                        Response_MV = new ResponseModelView
-                        {
-                            Success = false,
-                            Message = EditOrg_MV.OrgEnName + " " + MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.TitelEnIsEmpty],
-                            Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoPermission],
+                            Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
                         };
                         return Response_MV;
                     }
                     else
                     {
 
-                        int checkDeblicate = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) FROM [User].Orgs WHERE OrgId = {EditOrg_MV.OrgId}  "));
-                        int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
-                        int orgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {userLoginID} "));
-                        if (checkDeblicate > 0)
+                        if (ValidationService.IsEmpty(EditOrg_MV.OrgArName) == true)
                         {
-                            string exeut = $"EXEC [User].[UpdateOrgPro]  '{EditOrg_MV.OrgId}', '{EditOrg_MV.OrgArName}', '{userLoginID}', '{orgOwnerID}','{EditOrg_MV.IsActive}',  '{EditOrg_MV.Note}', '{EditOrg_MV.OrgUp}', '{EditOrg_MV.OrgEnName}', '{EditOrg_MV.OrgKuName}'";
-                            var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
+                            Response_MV = new ResponseModelView
+                            {
+                                Success = false,
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.TitelArIsEmpty],
+                                Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                            };
+                            return Response_MV;
+                        }
+                        else if (ValidationService.IsEmpty(EditOrg_MV.OrgEnName) == true)
+                        {
+                            Response_MV = new ResponseModelView
+                            {
+                                Success = false,
+                                Message = EditOrg_MV.OrgEnName + " " + MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.TitelEnIsEmpty],
+                                Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                            };
+                            return Response_MV;
+                        }
+                        else
+                        {
 
-                            if (outValue == null || outValue.Trim() == "")
+                            int checkDeblicate = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) FROM [User].Orgs WHERE OrgId = {EditOrg_MV.OrgId}  "));
+                            int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
+                            int orgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {userLoginID} "));
+                            if (checkDeblicate > 0)
                             {
-                                Response_MV = new ResponseModelView
-                                {
-                                    Success = false,
-                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.EditFaild],
-                                    Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
-                                };
-                                return Response_MV;
-                            }
-                            else
-                            {
-                                if (outValue == 0.ToString())
+                                string exeut = $"EXEC [User].[UpdateOrgPro]  '{EditOrg_MV.OrgId}', '{EditOrg_MV.OrgArName}', '{userLoginID}', '{orgOwnerID}','{EditOrg_MV.IsActive}',  '{EditOrg_MV.Note}', '{EditOrg_MV.OrgUp}', '{EditOrg_MV.OrgEnName}', '{EditOrg_MV.OrgKuName}'";
+                                var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
+
+                                if (outValue == null || outValue.Trim() == "")
                                 {
                                     Response_MV = new ResponseModelView
                                     {
@@ -419,25 +433,38 @@ namespace DMS_API.Services
                                 }
                                 else
                                 {
-                                    Response_MV = new ResponseModelView
+                                    if (outValue == 0.ToString())
                                     {
-                                        Success = true,
-                                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.EditSuccess],
-                                        Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
-                                    };
-                                    return Response_MV;
+                                        Response_MV = new ResponseModelView
+                                        {
+                                            Success = false,
+                                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.EditFaild],
+                                            Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                                        };
+                                        return Response_MV;
+                                    }
+                                    else
+                                    {
+                                        Response_MV = new ResponseModelView
+                                        {
+                                            Success = true,
+                                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.EditSuccess],
+                                            Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
+                                        };
+                                        return Response_MV;
+                                    }
                                 }
                             }
-                        }
-                        else
-                        {
-                            Response_MV = new ResponseModelView
+                            else
                             {
-                                Success = false,
-                                Message = EditOrg_MV.OrgArName + " " + MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsNotExist],
-                                Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
-                            };
-                            return Response_MV;
+                                Response_MV = new ResponseModelView
+                                {
+                                    Success = false,
+                                    Message = EditOrg_MV.OrgArName + " " + MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsNotExist],
+                                    Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                                };
+                                return Response_MV;
+                            }
                         }
                     }
                 }
