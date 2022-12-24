@@ -74,17 +74,6 @@ namespace DMS_API.Services
                                 };
                                 return Response_MV;
                             }
-
-                            //else if (Session_M.IsOrgAdmin == false)
-                            //{
-                            //    Response_MV = new ResponseModelView
-                            //    {
-                            //        Success = false,
-                            //        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.Forbidden],
-                            //        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
-                            //    };
-                            //    return Response_MV;
-                            //}
                             else
                             {
                                 Response_MV = new ResponseModelView
@@ -128,11 +117,16 @@ namespace DMS_API.Services
                 }
                 else
                 {
+                    int inGroupAdmins = int.Parse(dam.FireSQL($"SELECT  COUNT(*)   FROM    [User].[GetMyGroupsbyUserId]({Convert.ToInt32(Dt.Rows[0]["UserID"].ToString())}) WHERE GroupName= 'GroupOrgAdmins'   "));
+
+
+
                     Session_M = new SessionModel
                     {
                         UserID = Convert.ToInt32(Dt.Rows[0]["UserID"].ToString()),
                         IsAdministrator = Convert.ToBoolean(Dt.Rows[0]["IsAdministrator"].ToString()), // Forbidden
                         IsOrgAdmin = Convert.ToBoolean(Dt.Rows[0]["IsOrgAdmin"].ToString()), // Forbidden
+                        IsGroupOrgAdmin = inGroupAdmins > 0 ? true : false, // Forbidden
                         IsExpairy = Convert.ToBoolean(Dt.Rows[0]["IsExpairy"].ToString()) // ExpiredToken
                     };
                     return Session_M;

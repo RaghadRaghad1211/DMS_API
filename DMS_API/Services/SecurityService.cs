@@ -124,6 +124,9 @@ namespace DMS_API.Services
                     //new Claim("Password", User_M.Password),
                     new Claim("FullName", User_M.FullName),
                     new Claim(ClaimTypes.Role,User_M.Role),
+                    new Claim("IsOrgAdmin",User_M.IsOrgAdmin.ToString()),
+                    new Claim(ClaimTypes.MobilePhone,User_M.PhoneNo),
+                    new Claim("CreationDate",User_M.UserCreationDate),
                     new Claim("Datetime", DateTime.UtcNow.ToString())
                     }),
 

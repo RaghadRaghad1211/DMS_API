@@ -263,7 +263,7 @@ namespace DMS_API.Services
                 }
                 else
                 {
-                    if (((SessionModel)ResponseSession.Data).IsAdministrator == false || ((SessionModel)ResponseSession.Data).IsOrgAdmin == false)
+                    if (((SessionModel)ResponseSession.Data).IsOrgAdmin == false && ((SessionModel)ResponseSession.Data).IsGroupOrgAdmin == false)
                     {
                         Response_MV = new ResponseModelView
                         {
@@ -377,7 +377,7 @@ namespace DMS_API.Services
                 }
                 else
                 {
-                    if (((SessionModel)ResponseSession.Data).IsAdministrator == false || ((SessionModel)ResponseSession.Data).IsOrgAdmin == false)
+                    if (((SessionModel)ResponseSession.Data).IsOrgAdmin == false && ((SessionModel)ResponseSession.Data).IsGroupOrgAdmin == false)
                     {
                         Response_MV = new ResponseModelView
                         {

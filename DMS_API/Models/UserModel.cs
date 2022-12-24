@@ -22,5 +22,6 @@
         public string OrgKuName { get; set; }
         public bool IsActive { get; set; }
         public string Note { get; set; }
+        public string UserCreationDate { get; set; }
     }
 }

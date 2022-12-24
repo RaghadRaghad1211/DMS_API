@@ -77,7 +77,7 @@ namespace DMS_API.Services
                     else
                     { // $ystemAdm!n 
                         string getUserInfo = "SELECT  UserID,UsFirstName,UsSecondName,UsThirdName,UsLastName, FullName, UsUserName,  Role, IsOrgAdmin, UserIsActive, UsPhoneNo, " +
-                                            "         UsEmail, UsUserEmpNo, UsUserIdintNo, UsIsOnLine, OrgOwner, OrgArName, OrgEnName, OrgKuName, Note " +
+                                            "         UsEmail, UsUserEmpNo, UsUserIdintNo, UsIsOnLine, OrgOwner, OrgArName, OrgEnName, OrgKuName, Note, UserCreationDate " +
                                             "FROM     [User].V_Users " +
                                            $"WHERE    [UsUserName] = '{User_MV.Username.Trim()}' AND UsPassword = '{SecurityService.PasswordEnecrypt(User_MV.Password.Trim(), User_MV.Username.Trim())}' ";
 
@@ -130,6 +130,8 @@ namespace DMS_API.Services
                                     OrgEnName = dt.Rows[0]["OrgEnName"].ToString(),
                                     OrgKuName = dt.Rows[0]["OrgKuName"].ToString(),
                                     Note = dt.Rows[0]["Note"].ToString(),
+                                    UserCreationDate = DateTime.Parse(dt.Rows[0]["UserCreationDate"].ToString()).ToShortDateString(),
+
                                 };
                                 var JWTtoken = SecurityService.GeneratTokenAuthenticate(User_M);
                                 SessionService Session_S = new SessionService();
@@ -156,7 +158,6 @@ namespace DMS_API.Services
                                 }
 
                             }
-
                         }
                         else
                         {
@@ -182,7 +183,7 @@ namespace DMS_API.Services
                 return Response_MV;
             }
         }
-        public async Task<ResponseModelView> ResetPasswordAdmin(int id, RequestHeaderModelView RequestHeader)
+        public async Task<ResponseModelView> ResetPasswordByAdmin(int userId, RequestHeaderModelView RequestHeader)
         {
             try
             {
@@ -194,47 +195,60 @@ namespace DMS_API.Services
                 }
                 else
                 {
-                    DataTable dtEmail = new DataTable();
-                    dtEmail = await Task.Run(() => dam.FireDataTable($"SELECT UsUserName, UsPhoneNo, UsEmail FROM [User].Users WHERE UsId ={id} "));
-                    if (dtEmail.Rows.Count > 0)
+                    if (((SessionModel)ResponseSession.Data).IsOrgAdmin == false && ((SessionModel)ResponseSession.Data).IsGroupOrgAdmin == false)
                     {
-                        string RounPass = SecurityService.RoundomPassword(10);
-                        bool isResetEmail = SecurityService.SendEmail(dtEmail.Rows[0]["UsEmail"].ToString(),
-                             MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.EmailSubjectPasswordIsReset],
-                             MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.EmailBodyPasswordIsReset] + RounPass);
-                        bool isResetOTP = await SecurityService.SendOTP(dtEmail.Rows[0]["UsPhoneNo"].ToString(), MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.PhonePasswordIsReset] + RounPass);
-                        if (isResetEmail == true && isResetOTP == true)
+                        Response_MV = new ResponseModelView
                         {
-                            string reset = $"UPDATE [User].Users SET UsPassword='{SecurityService.PasswordEnecrypt(RounPass, dtEmail.Rows[0]["UsUserName"].ToString())}' WHERE UsId ={id} ";
-                            await Task.Run(() => dam.DoQuery(reset));
-                            Response_MV = new ResponseModelView
+                            Success = false,
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoPermission],
+                            Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                        };
+                        return Response_MV;
+                    }
+                    else
+                    {
+                        DataTable dtEmail = new DataTable();
+                        dtEmail = await Task.Run(() => dam.FireDataTable($"SELECT UsUserName, UsPhoneNo, UsEmail FROM [User].Users WHERE UsId ={userId} "));
+                        if (dtEmail.Rows.Count > 0)
+                        {
+                            string RounPass = SecurityService.RoundomPassword(10);
+                            bool isResetEmail = SecurityService.SendEmail(dtEmail.Rows[0]["UsEmail"].ToString(),
+                                 MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.EmailSubjectPasswordIsReset],
+                                 MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.EmailBodyPasswordIsReset] + RounPass);
+                            bool isResetOTP = await SecurityService.SendOTP(dtEmail.Rows[0]["UsPhoneNo"].ToString(), MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.PhonePasswordIsReset] + RounPass);
+                            if (isResetEmail == true && isResetOTP == true)
                             {
-                                Success = true,
-                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsReset],
-                                Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
-                            };
-                            return Response_MV;
+                                string reset = $"UPDATE [User].Users SET UsPassword='{SecurityService.PasswordEnecrypt(RounPass, dtEmail.Rows[0]["UsUserName"].ToString())}' WHERE UsId ={userId} ";
+                                await Task.Run(() => dam.DoQuery(reset));
+                                Response_MV = new ResponseModelView
+                                {
+                                    Success = true,
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsReset],
+                                    Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
+                                };
+                                return Response_MV;
+                            }
+                            else
+                            {
+                                Response_MV = new ResponseModelView
+                                {
+                                    Success = false,
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
+                                    Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                                };
+                                return Response_MV;
+                            }
                         }
                         else
                         {
                             Response_MV = new ResponseModelView
                             {
                                 Success = false,
-                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
-                                Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsExist],
+                                Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
                             };
                             return Response_MV;
                         }
-                    }
-                    else
-                    {
-                        Response_MV = new ResponseModelView
-                        {
-                            Success = false,
-                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsExist],
-                            Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
-                        };
-                        return Response_MV;
                     }
                 }
             }
@@ -249,7 +263,7 @@ namespace DMS_API.Services
                 return Response_MV;
             }
         }
-        public async Task<ResponseModelView> ResetPasswordUser(string username, string Lang)
+        public async Task<ResponseModelView> ResetPasswordByUser(string username, string Lang)
         {
             try
             {
@@ -402,7 +416,7 @@ namespace DMS_API.Services
                 }
                 else
                 {
-                    if (((SessionModel)ResponseSession.Data).IsAdministrator == false || ((SessionModel)ResponseSession.Data).IsOrgAdmin == false)
+                    if (((SessionModel)ResponseSession.Data).IsOrgAdmin == false && ((SessionModel)ResponseSession.Data).IsGroupOrgAdmin == false)
                     {
                         Response_MV = new ResponseModelView
                         {
@@ -628,7 +642,7 @@ namespace DMS_API.Services
                 }
                 else
                 {
-                    if (((SessionModel)ResponseSession.Data).IsAdministrator == false || ((SessionModel)ResponseSession.Data).IsOrgAdmin == false)
+                    if (((SessionModel)ResponseSession.Data).IsOrgAdmin == false && ((SessionModel)ResponseSession.Data).IsGroupOrgAdmin == false)
                     {
                         Response_MV = new ResponseModelView
                         {
@@ -815,7 +829,7 @@ namespace DMS_API.Services
                 }
                 else
                 {
-                    if (((SessionModel)ResponseSession.Data).IsAdministrator == false || ((SessionModel)ResponseSession.Data).IsOrgAdmin == false)
+                    if (((SessionModel)ResponseSession.Data).IsOrgAdmin == false && ((SessionModel)ResponseSession.Data).IsGroupOrgAdmin == false)
                     {
                         Response_MV = new ResponseModelView
                         {

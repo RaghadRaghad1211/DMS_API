@@ -25,6 +25,7 @@ namespace DMS_API.Services
         private KeyValueModel KeyValue_M { get; set; }
         private List<KeyValueModel> KeyValue_Mlist { get; set; }
         private ResponseModelView Response_MV { get; set; }
+        private const int LengthKey = 15;
         private const int ClassID = 5; // Document
         #endregion
 
@@ -335,7 +336,7 @@ namespace DMS_API.Services
 
 
 
-                                        string fillPath = Path.Combine(DocFolder, outValue.Rows[0][0].ToString() + SecurityService.RoundomKey() + Path.GetExtension(DocFileNameWithExten).Trim());
+                                        string fillPath = Path.Combine(DocFolder, SecurityService.RoundomKey(LengthKey) + outValue.Rows[0][0].ToString() + SecurityService.RoundomKey(LengthKey) + Path.GetExtension(DocFileNameWithExten).Trim());
                                         //string fillPath = Path.Combine(DocFolder, outValue + ".pdf");
                                         using (FileStream filestream = System.IO.File.Create(fillPath))
                                         {
@@ -467,7 +468,7 @@ namespace DMS_API.Services
 
 
 
-                                    string fillPath = Path.Combine(DocFolder, outValue.Rows[0][0].ToString() + SecurityService.RoundomKey() + Path.GetExtension(DocFileNameWithExten).Trim());
+                                    string fillPath = Path.Combine(DocFolder, SecurityService.RoundomKey(LengthKey) + outValue.Rows[0][0].ToString() + SecurityService.RoundomKey(LengthKey) + Path.GetExtension(DocFileNameWithExten).Trim());
                                     //string fillPath = Path.Combine(DocFolder, outValue + ".pdf");
                                     using (FileStream filestream = System.IO.File.Create(fillPath))
                                     {
@@ -566,7 +567,9 @@ namespace DMS_API.Services
                                                                                          (Convert.ToInt32(dt.Rows[0]["ObjId"].ToString()), Environment),
                                                                                           Convert.ToInt32(dt.Rows[0]["ObjId"].ToString()).ToString())).
                                                                                                                               FirstOrDefault(x => Path.GetFileName(x).
-                                                                                                                              StartsWith(dt.Rows[0]["ObjId"].ToString())));
+                                                                                                                                             Remove(0, LengthKey).
+                                                                                                                                             StartsWith(dt.Rows[0]["ObjId"].ToString())));
+                            //StartsWith(dt.Rows[0]["ObjId"].ToString())));
                             ViewDocument_MV = new DocumentMetadataModelView
                             {
                                 ObjId = Convert.ToInt32(dt.Rows[0]["ObjId"].ToString()),
@@ -719,30 +722,8 @@ namespace DMS_API.Services
         }
 
 
-        //public async Task<ResponseModelView> GetDocumentPermession(int DocumentId, RequestHeaderModelView RequestHeader)
-        //{
-
-        //}
-
-
-
-
 
 
         #endregion
     }
 }
-
-
-
-
-
-// get permession when user click on write or manage or QR...
-// SELECT SourObjId, SourTitle, SourType, SourTypeName, DestObjId, DestTitle, DestType, DestTypeName, IsRead, IsWrite, IsManage, IsQR, SourUserName, SourOrgArName, SourOrgEnName, SourOrgKuName
-// FROM [Document].[GetPermissionsOnObject] (41, 6)
-// WHERE SourObjId =ObjClicked AND PerManage =1
-
-
-
-// to open folder get chilid where user have permession...
-// SELECT DISTINCT OpenObject.SourObjId, OpenObject.SourName, OpenObject.SourClsId, OpenObject.SourClsType FROM (SELECT * FROM [Document].[GetPermissionsOnObject](41,6 )) OpenObject
