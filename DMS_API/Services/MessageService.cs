@@ -144,8 +144,8 @@
                      {FSTname ,"يجب ملئ على الاقل الاسم الثلاثي للمستخدم"},
                      {IsReset ,"تم اعادة تعيين كلمة المرور"},
                      {EmailSubjectPasswordIsReset, "إعادة تعيين كلمة المرور" },//
-                     {EmailBodyPasswordIsReset ,"تم إعادة تعيين كلمة المرور .. كلمة المرور الجديدة : "},//
-                     {PhonePasswordIsReset ,"تم إعادة تعيين كلمة المرور : "},//
+                     {EmailBodyPasswordIsReset ,"تم إعادة تعيين كلمة المرور لنظام ادارة الوثائق .. كلمة المرور الجديدة : "},//
+                     {PhonePasswordIsReset ,"تم إعادة تعيين كلمة المرور  لنظام ادارة الوثائق : "},//
                      {OldPasswordNotCorrect ,"كلمة المرور القديمة غير صحيحة"},
                      {ChangePasswordSuccess ,"تم تغيير كلمة المرور"},
                      {DeblicateKey ,"الكلمة المفتاحية موجودة في قاعدة البيانات"},
@@ -216,8 +216,8 @@
                      {FSTname ,"You must fill in at least the full name of the user"},
                      {IsReset ,"Password is reset"},
                      {EmailSubjectPasswordIsReset ,"Password Reset"},//
-                     {EmailBodyPasswordIsReset ,"The password has been reset.. The new password: "},//
-                     {PhonePasswordIsReset ,"The password has been reset: "},//
+                     {EmailBodyPasswordIsReset ,"The password has been reset for Documents Management System.. The new password: "},//
+                     {PhonePasswordIsReset ,"The password has been reset for Documents Management System: "},//
                      {OldPasswordNotCorrect ,"The old password is incorrectly"},
                      {ChangePasswordSuccess ,"Password changed"},
                      {DeblicateKey ,"The keyword is exist in database"},

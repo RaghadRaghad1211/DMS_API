@@ -472,7 +472,10 @@ namespace DMS_API.Services
             }
         }
 
+        //public async Task<ResponseModelView> CreateQRcodePDF()
+        //{
 
+        //}
         #endregion
     }
 }
