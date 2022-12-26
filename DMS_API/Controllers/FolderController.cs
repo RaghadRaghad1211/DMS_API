@@ -12,7 +12,6 @@ namespace DMS_API.Controllers
     {
         #region Properteis
         private readonly FolderService Folder_S;
-        private readonly PermissionsService Permissions_S;
         private readonly LinkParentChildService LinkParentChild_S;
         private ResponseModelView Response_MV { get; set; }
         #endregion
@@ -22,7 +21,6 @@ namespace DMS_API.Controllers
         {
             Folder_S = new FolderService();
             LinkParentChild_S = new LinkParentChildService();
-            Permissions_S = new PermissionsService();
         }
         #endregion
 
@@ -108,55 +106,7 @@ namespace DMS_API.Controllers
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
-        [HttpPost]
-        [Route("GetChildInFolderByFolderIdWithPermessions")]
-        public async Task<IActionResult> GetChildInParentByIdWithPermessions([FromBody] FolderChildsPermissionsModelView FolderChildsPermissions_MV, [FromHeader] RequestHeaderModelView RequestHeader)
-        {
-            Response_MV = await Permissions_S.GetChildsInParentWithPermissions((int)GlobalService.ClassType.Folder, FolderChildsPermissions_MV, RequestHeader);
-            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
-        }
-
-        [HttpGet]
-        [Route("GetPermissionsOnFolderByFolderId/{FolderId}")]
-        public async Task<IActionResult> GetPermissionsOnObjectByObjectId([FromRoute] int FolderId, [FromHeader] RequestHeaderModelView RequestHeader)
-        {
-            Response_MV = await Permissions_S.GetPermissionsOnObjectByObjectId((int)GlobalService.ClassType.Folder, FolderId, RequestHeader);
-            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
-        }
-
-        [HttpPost]
-        [Route("AddPermissionsOnFolder")]
-        public async Task<IActionResult> AddPermissionsOnObject([FromBody] AddPermissionsModelView AddPermissions_MV, [FromHeader] RequestHeaderModelView RequestHeader)
-        {
-            Response_MV = await Permissions_S.AddPermissionsOnObject(AddPermissions_MV, RequestHeader);
-            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
-        }
-
-        [HttpPut]
-        [Route("EditPermissionsOnFolder")]
-        public async Task<IActionResult> EditPermissionsOnObject([FromBody] EditPermissionsModelView EditPermissions_MV, [FromHeader] RequestHeaderModelView RequestHeader)
-        {
-            Response_MV = await Permissions_S.EditPermissionsOnObject(EditPermissions_MV, RequestHeader);
-            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
-        }
-
-
-        [HttpPost]
-        [Route("GetUsersOrGroupsHavePermissionOnFolder/{FolderId}")]
-        public async Task<IActionResult> GetUsersOrGroupsHavePermissionOnObject([FromRoute] int FolderId, [FromBody] PaginationModelView Pagination_MV, [FromHeader] RequestHeaderModelView RequestHeader)
-        {
-            Response_MV = await Permissions_S.GetUsersOrGroupsHavePermissionOnObject(FolderId, Pagination_MV, RequestHeader);
-            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
-        }
-
-
-        [HttpPost]
-        [Route("GetUsersOrGroupsNotHavePermissionOnFolder/{FolderId}")]
-        public async Task<IActionResult> GetUsersOrGroupsNotHavePermissionOnObject([FromRoute] int FolderId, [FromBody] PaginationModelView Pagination_MV, [FromHeader] RequestHeaderModelView RequestHeader)
-        {
-            Response_MV = await Permissions_S.GetUsersOrGroupsNotHavePermissionOnObject(FolderId,Pagination_MV, RequestHeader);
-            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
-        }
+        
 
         #endregion
     }

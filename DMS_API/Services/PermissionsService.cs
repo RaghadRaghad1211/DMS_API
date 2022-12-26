@@ -29,7 +29,7 @@ namespace DMS_API.Services
         #endregion
 
         #region Functions
-        public async Task<ResponseModelView> GetChildsInParentWithPermissions(int ParentClassId, FolderChildsPermissionsModelView FolderChildsPermissions_MV, RequestHeaderModelView RequestHeader)
+        public async Task<ResponseModelView> GetChildsInParentWithPermissions(FolderChildsPermissionsModelView FolderChildsPermissions_MV, RequestHeaderModelView RequestHeader)
         {
             try
             {
@@ -265,7 +265,7 @@ namespace DMS_API.Services
                 return Response_MV;
             }
         }
-        public async Task<ResponseModelView> GetPermissionsOnObjectByObjectId(int ObjectClassId, int ObjectId, RequestHeaderModelView RequestHeader)
+        public async Task<ResponseModelView> GetPermissionsOnObjectByObjectId( int ObjectId, RequestHeaderModelView RequestHeader)
         {
             try
             {
