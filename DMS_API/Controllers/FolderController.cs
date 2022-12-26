@@ -140,6 +140,24 @@ namespace DMS_API.Controllers
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
+
+        [HttpPost]
+        [Route("GetUsersOrGroupsHavePermissionOnFolder/{FolderId}")]
+        public async Task<IActionResult> GetUsersOrGroupsHavePermissionOnObject([FromRoute] int FolderId, [FromBody] PaginationModelView Pagination_MV, [FromHeader] RequestHeaderModelView RequestHeader)
+        {
+            Response_MV = await Permissions_S.GetUsersOrGroupsHavePermissionOnObject(FolderId, Pagination_MV, RequestHeader);
+            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
+        }
+
+
+        [HttpPost]
+        [Route("GetUsersOrGroupsNotHavePermissionOnFolder/{FolderId}")]
+        public async Task<IActionResult> GetUsersOrGroupsNotHavePermissionOnObject([FromRoute] int FolderId, [FromBody] PaginationModelView Pagination_MV, [FromHeader] RequestHeaderModelView RequestHeader)
+        {
+            Response_MV = await Permissions_S.GetUsersOrGroupsNotHavePermissionOnObject(FolderId,Pagination_MV, RequestHeader);
+            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
+        }
+
         #endregion
     }
 }

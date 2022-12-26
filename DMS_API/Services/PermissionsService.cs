@@ -1,6 +1,8 @@
 ﻿using ArchiveAPI.Services;
 using DMS_API.Models;
 using DMS_API.ModelsView;
+using Microsoft.AspNetCore.Http.Headers;
+using System;
 using System.Data;
 using System.Net;
 
@@ -14,6 +16,8 @@ namespace DMS_API.Services
         private DataTable dt { get; set; }
         private PermessionsModel Permessions_M { get; set; }
         private List<PermessionsModel> Permessions_Mlist { get; set; }
+        private GetDestPerOnObjectModelView DestNotHavePer_MV { get; set; }
+        private List<GetDestPerOnObjectModelView> DestNotHavePer_MVlist { get; set; }
         private ResponseModelView Response_MV { get; set; }
         #endregion
 
@@ -471,11 +475,205 @@ namespace DMS_API.Services
                 return Response_MV;
             }
         }
+        public async Task<ResponseModelView> GetUsersOrGroupsNotHavePermissionOnObject(int ObjectId, PaginationModelView Pagination_MV, RequestHeaderModelView RequestHeader)
+        {
+            try
+            {
+                Session_S = new SessionService();
+                var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
+                if (ResponseSession.Success == false)
+                {
+                    return ResponseSession;
+                }
+                else
+                {
+                    int _PageNumber = Pagination_MV.PageNumber == 0 ? 1 : Pagination_MV.PageNumber;
+                    int _PageRows = Pagination_MV.PageRows == 0 ? 1 : Pagination_MV.PageRows;
+                    int CurrentPage = _PageNumber;
+                    int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
+                    string getPermessions = " SELECT   DestObjId, DestTitle, DestTypeId, DestTypeName" +
+                                           $" FROM     [User].[GetDestObjsNotHavePerOnSourObj] ({userLoginID},{ObjectId}) " +
+                                                        "ORDER BY  DestTypeId " +
+                                                       $"OFFSET      ({_PageNumber}-1)*{_PageRows} ROWS " +
+                                                       $"FETCH NEXT   {_PageRows} ROWS ONLY ";
 
-        //public async Task<ResponseModelView> CreateQRcodePDF()
-        //{
 
-        //}
-        #endregion
+
+
+                    dt = new DataTable();
+                    dt = await Task.Run(() => dam.FireDataTable(getPermessions));
+                    if (dt == null)
+                    {
+                        Response_MV = new ResponseModelView
+                        {
+                            Success = false,
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
+                            Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                        };
+                        return Response_MV;
+                    }
+                    DestNotHavePer_MVlist = new List<GetDestPerOnObjectModelView>();
+                    if (dt.Rows.Count > 0)
+                    {
+                        for (int i = 0; i < dt.Rows.Count; i++)
+                        {
+                            DestNotHavePer_MV = new GetDestPerOnObjectModelView
+                            {
+
+                                DestObjId = Convert.ToInt32(dt.Rows[i]["DestObjId"].ToString()),
+                                DestObjTitle = dt.Rows[i]["DestTitle"].ToString(),
+                                DestTypeId = Convert.ToInt32(dt.Rows[i]["DestTypeId"].ToString()),
+                                DestTypeName = dt.Rows[i]["DestTypeName"].ToString()
+                            };
+                            DestNotHavePer_MVlist.Add(DestNotHavePer_MV);
+                        }
+                        Response_MV = new ResponseModelView
+                        {
+                            Success = true,
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
+                            Data = new
+                            {
+                                TotalRows = DestNotHavePer_MVlist.Count,
+                                MaxPage = Math.Ceiling(DestNotHavePer_MVlist.Count / (float)_PageRows),
+                                CurrentPage = _PageNumber,
+                                PageRows = _PageRows,
+                                data = DestNotHavePer_MVlist
+                            }
+                        };
+                        return Response_MV;
+                    }
+                    else
+                    {
+                        Response_MV = new ResponseModelView
+                        {
+                            Success = true,
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoData],
+                            Data = new
+                            {
+                                TotalRows = DestNotHavePer_MVlist.Count,
+                                MaxPage = Math.Ceiling(DestNotHavePer_MVlist.Count / (float)_PageRows),
+                                CurrentPage = _PageNumber,
+                                PageRows = _PageRows,
+                                data = DestNotHavePer_MVlist
+                            }
+                        };
+                        return Response_MV;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Response_MV = new ResponseModelView
+                {
+                    Success = false,
+                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError] + " - " + ex.Message,
+                    Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                };
+                return Response_MV;
+            }
+        }
+        public async Task<ResponseModelView> GetUsersOrGroupsHavePermissionOnObject(int ObjectId, PaginationModelView Pagination_MV, RequestHeaderModelView RequestHeader)
+        {
+            try
+            {
+                Session_S = new SessionService();
+                var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
+                if (ResponseSession.Success == false)
+                {
+                    return ResponseSession;
+                }
+                else
+                {
+                    int _PageNumber = Pagination_MV.PageNumber == 0 ? 1 : Pagination_MV.PageNumber;
+                    int _PageRows = Pagination_MV.PageRows == 0 ? 1 : Pagination_MV.PageRows;
+                    int CurrentPage = _PageNumber;
+                    int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
+                    string getPermessions = " SELECT   DestObjId, DestTitle, DestTypeId, DestTypeName" +
+                                           $" FROM     [User].[GetDestObjsHavePerOnSourObj] ({userLoginID},{ObjectId}) " +
+                                                        "ORDER BY  DestTypeId " +
+                                                       $"OFFSET      ({_PageNumber}-1)*{_PageRows} ROWS " +
+                                                       $"FETCH NEXT   {_PageRows} ROWS ONLY ";
+
+                    dt = new DataTable();
+                    dt = await Task.Run(() => dam.FireDataTable(getPermessions));
+                    if (dt == null)
+                    {
+                        Response_MV = new ResponseModelView
+                        {
+                            Success = false,
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
+                            Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                        };
+                        return Response_MV;
+                    }
+                    DestNotHavePer_MVlist = new List<GetDestPerOnObjectModelView>();
+                    if (dt.Rows.Count > 0)
+                    {
+                        for (int i = 0; i < dt.Rows.Count; i++)
+                        {
+                            DestNotHavePer_MV = new GetDestPerOnObjectModelView
+                            {
+
+                                DestObjId = Convert.ToInt32(dt.Rows[i]["DestObjId"].ToString()),
+                                DestObjTitle = dt.Rows[i]["DestTitle"].ToString(),
+                                DestTypeId = Convert.ToInt32(dt.Rows[i]["DestTypeId"].ToString()),
+                                DestTypeName = dt.Rows[i]["DestTypeName"].ToString()
+                            };
+                            DestNotHavePer_MVlist.Add(DestNotHavePer_MV);
+                        }
+                        Response_MV = new ResponseModelView
+                        {
+                            Success = true,
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
+                            Data = new
+                            {
+                                TotalRows = DestNotHavePer_MVlist.Count,
+                                MaxPage = Math.Ceiling(DestNotHavePer_MVlist.Count / (float)_PageRows),
+                                CurrentPage = _PageNumber,
+                                PageRows = _PageRows,
+                                data = DestNotHavePer_MVlist
+                            }
+                        };
+                        return Response_MV;
+                    }
+                    else
+                    {
+                        Response_MV = new ResponseModelView
+                        {
+                            Success = true,
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoData],
+                            Data = new
+                            {
+                                TotalRows = DestNotHavePer_MVlist.Count,
+                                MaxPage = Math.Ceiling(DestNotHavePer_MVlist.Count / (float)_PageRows),
+                                CurrentPage = _PageNumber,
+                                PageRows = _PageRows,
+                                data = DestNotHavePer_MVlist
+                            }
+                        };
+                        return Response_MV;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Response_MV = new ResponseModelView
+                {
+                    Success = false,
+                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError] + " - " + ex.Message,
+                    Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                };
+                return Response_MV;
+            }
+        }
     }
+
+
+
+
+    //public async Task<ResponseModelView> CreateQRcodePDF()
+    //{
+
+    //}
+    #endregion
 }

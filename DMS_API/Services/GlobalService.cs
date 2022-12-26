@@ -153,7 +153,7 @@ namespace DMS_API.Services
             }
             Query = Query.Remove(Query.Length - 1, 1);
             return Query;
-        }
+        }        
         public static async Task<List<OrgModel>> GetOrgsParentWithChildsByUserLoginID(int userLoginID, bool IsOrgAdmin = false)
         {
             try

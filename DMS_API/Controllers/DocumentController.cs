@@ -60,14 +60,6 @@ namespace DMS_API.Controllers
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
-        //[HttpPost]
-        //[Route("AddDocument")]
-        //public async Task<IActionResult> AddDocument([FromBody] DocumentModelView Document_MV, [FromForm] DocumentFileModelView DocumentFile_MV, [FromHeader] RequestHeaderModelView RequestHeader)
-        //{
-        //    Response_MV = await Document_S.AddDocument(Document_MV, DocumentFile_MV, RequestHeader);
-        //    return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
-        //}
-
         [HttpPost]
         [Route("AddDocument")]
         public async Task<IActionResult> AddDocument([FromForm] DocumentModelView Document_MV, [FromHeader] RequestHeaderModelView RequestHeader)
@@ -130,6 +122,23 @@ namespace DMS_API.Controllers
         public async Task<IActionResult> EditPermissionsOnObject([FromBody] EditPermissionsModelView EditPermissions_MV, [FromHeader] RequestHeaderModelView RequestHeader)
         {
             Response_MV = await Permissions_S.EditPermissionsOnObject(EditPermissions_MV, RequestHeader);
+            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
+        }
+
+        [HttpPost]
+        [Route("GetUsersOrGroupsHavePermissionOnDocument/{DocumentId}")]
+        public async Task<IActionResult> GetUsersOrGroupsHavePermissionOnObject([FromRoute] int DocumentId, [FromBody] PaginationModelView Pagination_MV, [FromHeader] RequestHeaderModelView RequestHeader)
+        {
+            Response_MV = await Permissions_S.GetUsersOrGroupsHavePermissionOnObject(DocumentId, Pagination_MV, RequestHeader);
+            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
+        }
+
+
+        [HttpPost]
+        [Route("GetUsersOrGroupsNotHavePermissionOnDocument/{DocumentId}")]
+        public async Task<IActionResult> GetUsersOrGroupsNotHavePermissionOnObject([FromRoute] int DocumentId, [FromBody] PaginationModelView Pagination_MV, [FromHeader] RequestHeaderModelView RequestHeader)
+        {
+            Response_MV = await Permissions_S.GetUsersOrGroupsNotHavePermissionOnObject(DocumentId, Pagination_MV, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
         #endregion
