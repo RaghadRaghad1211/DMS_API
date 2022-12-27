@@ -1,8 +1,6 @@
 ﻿using ArchiveAPI.Services;
 using DMS_API.Models;
 using DMS_API.ModelsView;
-using Microsoft.AspNetCore.Http.Headers;
-using System;
 using System.Data;
 using System.Net;
 
@@ -130,12 +128,8 @@ namespace DMS_API.Services
                                             MaxPage = Math.Ceiling(Permessions_Mlist.Count / (float)_PageRows),
                                             CurrentPage = _PageNumber,
                                             PageRows = _PageRows,
-                                            data = new
-                                            {
-                                                Permessions_Mlist
-                                            }
+                                            data = Permessions_Mlist
                                         }
-                                        //Data = Permessions_Mlist
                                     };
                                     return Response_MV;
                                 }
@@ -151,12 +145,8 @@ namespace DMS_API.Services
                                             MaxPage = Math.Ceiling(Permessions_Mlist.Count / (float)_PageRows),
                                             CurrentPage = _PageNumber,
                                             PageRows = _PageRows,
-                                            data = new
-                                            {
-                                                Permessions_Mlist
-                                            }
+                                            data = Permessions_Mlist
                                         }
-                                        //Data = Permessions_Mlist
                                     };
                                     return Response_MV;
                                 }
@@ -223,10 +213,7 @@ namespace DMS_API.Services
                                     MaxPage = Math.Ceiling(Permessions_Mlist.Count / (float)_PageRows),
                                     CurrentPage = _PageNumber,
                                     PageRows = _PageRows,
-                                    data = new
-                                    {
-                                        Permessions_Mlist
-                                    }
+                                    data = Permessions_Mlist
                                 }
                             };
                             return Response_MV;
@@ -243,10 +230,7 @@ namespace DMS_API.Services
                                     MaxPage = Math.Ceiling(Permessions_Mlist.Count / (float)_PageRows),
                                     CurrentPage = _PageNumber,
                                     PageRows = _PageRows,
-                                    data = new
-                                    {
-                                        Permessions_Mlist
-                                    }
+                                    data = Permessions_Mlist
                                 }
                             };
                             return Response_MV;
@@ -265,7 +249,7 @@ namespace DMS_API.Services
                 return Response_MV;
             }
         }
-        public async Task<ResponseModelView> GetPermissionsOnObjectByObjectId( int ObjectId, RequestHeaderModelView RequestHeader)
+        public async Task<ResponseModelView> GetPermissionsOnObjectByObjectId(int ObjectId, RequestHeaderModelView RequestHeader)
         {
             try
             {
@@ -363,7 +347,7 @@ namespace DMS_API.Services
                 else
                 {
                     int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
-                    bool checkManagePermission = bool.Parse(dam.FireSQL($"SELECT [IsManage] FROM [User].[V_Permission] WHERE [SourObjId]={AddPermissions_MV.SourObjId} AND [DestObjId]={userLoginID}"));
+                    bool checkManagePermission = GlobalService.CheckUserPermissions(userLoginID, AddPermissions_MV.SourObjId).Result.IsManage;
                     if (checkManagePermission == true)
                     {
                         string exeut = $"EXEC [User].[AddPermissionPro] '{AddPermissions_MV.SourObjId}','{AddPermissions_MV.SourClsId}', '{AddPermissions_MV.DestObjId}', '{AddPermissions_MV.DestClsId}','{AddPermissions_MV.PerRead}', '{AddPermissions_MV.PerWrite}', '{AddPermissions_MV.PerManage}', '{AddPermissions_MV.PerQR}' ";
@@ -425,7 +409,8 @@ namespace DMS_API.Services
                 else
                 {
                     int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
-                    bool checkManagePermission = bool.Parse(dam.FireSQL($"SELECT [IsManage] FROM [User].[V_Permission] WHERE [SourObjId]={EditPermissions_MV.SourObjId} AND [DestObjId]={userLoginID}"));
+                    //bool checkManagePermission = bool.Parse(dam.FireSQL($"SELECT [IsManage] FROM [User].[V_Permission] WHERE [SourObjId]={EditPermissions_MV.SourObjId} AND [DestObjId]={userLoginID}"));
+                    bool checkManagePermission = GlobalService.CheckUserPermissions(userLoginID, EditPermissions_MV.SourObjId).Result.IsManage;
                     if (checkManagePermission == true)
                     {
                         string exeut = $"EXEC [User].[UpdatePermissionPro]  '{EditPermissions_MV.SourObjId}', '{EditPermissions_MV.DestObjId}', '{EditPermissions_MV.PerRead}', '{EditPermissions_MV.PerWrite}', '{EditPermissions_MV.PerManage}', '{EditPermissions_MV.PerQR}' ";
@@ -666,14 +651,15 @@ namespace DMS_API.Services
                 return Response_MV;
             }
         }
+
+
+
+
+
+        
+
+
+
+        #endregion
     }
-
-
-
-
-    //public async Task<ResponseModelView> CreateQRcodePDF()
-    //{
-
-    //}
-    #endregion
 }

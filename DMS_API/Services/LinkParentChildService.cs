@@ -4,8 +4,6 @@ using DMS_API.ModelsView;
 using System.Data;
 using System.Net;
 using System.Text.RegularExpressions;
-
-
 namespace DMS_API.Services
 {
 
@@ -46,7 +44,7 @@ namespace DMS_API.Services
                 else
                 {
                     int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
-                    int orgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {userLoginID} "));
+                    // int orgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {userLoginID} "));
                     string getParintChildInfo = $"SELECT LcId,ParentUserOwnerId,ParentOrgOwnerId, LcParentObjId, ObjTitle, LcParentClsId," +
                                                  "       ParentClassType, LcChildObjId, ChildTitle, LcChildClsId, ChildClassType, ChildCreationDate, LcIsActive " +
                                                 $" FROM  [Main].[GetChildsInParentForAdmin]({ParentID},{ParentClassID})";
@@ -440,6 +438,29 @@ namespace DMS_API.Services
                 }
                 else
                 {
+                    if (ParentClassID == (int)GlobalService.ClassType.Folder)
+                    {
+                        int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
+                        foreach (var item in LinkParentChild_MV.ChildIds)
+                        {
+                            bool checkManagePermission = GlobalService.CheckUserPermissions(userLoginID, item).Result.IsManage;
+                            if (checkManagePermission == false)
+                            {
+                                LinkParentChild_MV.ChildIds.Remove(item);
+                            }
+                            if (LinkParentChild_MV.ChildIds.Count == 0 || LinkParentChild_MV.ChildIds == null)
+                            {
+                                Response_MV = new ResponseModelView
+                                {
+                                    Success = false,
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoPermission],
+                                    Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                                };
+                                return Response_MV;
+                            }
+                        }
+                    }
+
                     if (LinkParentChild_MV.ChildIds.Count == 0)
                     {
                         Response_MV = new ResponseModelView
@@ -450,27 +471,29 @@ namespace DMS_API.Services
                         };
                         return Response_MV;
                     }
-
-                    string Query = GlobalService.GetQueryLinkPro(LinkParentChild_MV);
-                    string exeut = $"EXEC [Main].[UpdateLinksPro]  '{LinkParentChild_MV.ParentId}', '{ParentClassID}', '{Query}','{0}' ";
-                    var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
-                    if (outValue == 0.ToString() || (outValue == null || outValue.Trim() == ""))
+                    else
                     {
+                        string Query = GlobalService.GetQueryLinkPro(LinkParentChild_MV);
+                        string exeut = $"EXEC [Main].[UpdateLinksPro]  '{LinkParentChild_MV.ParentId}', '{ParentClassID}', '{Query}','{0}' ";
+                        var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
+                        if (outValue == 0.ToString() || (outValue == null || outValue.Trim() == ""))
+                        {
+                            Response_MV = new ResponseModelView
+                            {
+                                Success = false,
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.DeleteFaild],
+                                Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                            };
+                            return Response_MV;
+                        }
                         Response_MV = new ResponseModelView
                         {
-                            Success = false,
-                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.DeleteFaild],
-                            Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                            Success = true,
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.DeleteSuccess],
+                            Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
                         };
                         return Response_MV;
                     }
-                    Response_MV = new ResponseModelView
-                    {
-                        Success = true,
-                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.DeleteSuccess],
-                        Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
-                    };
-                    return Response_MV;
                 }
             }
             catch (Exception ex)
@@ -500,6 +523,24 @@ namespace DMS_API.Services
                 else
                 {
                     int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
+                    foreach (var item in MoveChildToNewFolder_MV.ChildIds)
+                    {
+                        bool checkManagePermission = GlobalService.CheckUserPermissions(userLoginID, item).Result.IsManage;
+                        if (checkManagePermission == false)
+                        {
+                            MoveChildToNewFolder_MV.ChildIds.Remove(item);
+                        }
+                        if (MoveChildToNewFolder_MV.ChildIds.Count == 0 || MoveChildToNewFolder_MV.ChildIds == null)
+                        {
+                            Response_MV = new ResponseModelView
+                            {
+                                Success = false,
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoPermission],
+                                Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                            };
+                            return Response_MV;
+                        }
+                    }
                     if (MoveChildToNewFolder_MV.CurrentParentID == 0 || MoveChildToNewFolder_MV.ChildIds.Count == 0 || MoveChildToNewFolder_MV.NewParentID == 0)
                     {
                         Response_MV = new ResponseModelView

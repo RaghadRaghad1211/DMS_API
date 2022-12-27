@@ -1,10 +1,7 @@
 ﻿using ArchiveAPI.Services;
 using DMS_API.Models;
 using DMS_API.ModelsView;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.FileProviders;
 using System.Data;
-using System.IO;
 using System.Net;
 using System.Reflection;
 
@@ -153,7 +150,7 @@ namespace DMS_API.Services
             }
             Query = Query.Remove(Query.Length - 1, 1);
             return Query;
-        }        
+        }
         public static async Task<List<OrgModel>> GetOrgsParentWithChildsByUserLoginID(int userLoginID, bool IsOrgAdmin = false)
         {
             try
@@ -246,9 +243,6 @@ namespace DMS_API.Services
         {
             try
             {
-                //int OrgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {userLoginID} "));
-                //string whereField = OrgOwnerID == 0 ? "OrgUp" : "OrgId";
-
                 string getOrgInfo = "SELECT OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName , OrgArNameUp, OrgEnNameUp, OrgKuNameUp, OrgIsActive, ObjDescription  " +
                                    $"FROM [User].[GetOrgsbyUserIdTable]({userLoginID}) ORDER BY OrgId "; // WHERE {whereField} !={OrgOwnerID}
                 DataTable dt = new DataTable();
@@ -528,7 +522,7 @@ namespace DMS_API.Services
                 return null;
             }
         }
-        public static Task<bool> IsFolderOpenableToMoveInsideIt(int FolderId, List<int> ObjectsIds)
+        public static async Task<bool> IsFolderOpenableToMoveInsideIt(int FolderId, List<int> ObjectsIds)
         {
             if (ObjectsIds.Count > 0)
             {
@@ -536,13 +530,64 @@ namespace DMS_API.Services
                 {
                     if (FolderId == id)
                     {
-                        return Task.FromResult(false);
+                        return await Task.FromResult(false);
                     }
                 }
-                return Task.FromResult(true);
+                return await Task.FromResult(true);
             }
-            return Task.FromResult(true);
+            return await Task.FromResult(true);
         }
+        public static async Task<PermissionTypeModel> CheckUserPermissions(int UserId, int ObjectId)
+        {
+            try
+            {
+                string getPermissions = "SELECT  [SourObjId], [DestObjId], [IsRead], [IsWrite], [IsManage], [IsQR] " +
+                                        "FROM    [DMS_DB].[User].[V_Permission]  " +
+                                       $"WHERE [SourObjId]={ObjectId} AND [DestObjId]={UserId} ";
+                DataTable dt = new DataTable();
+                dt = await Task.Run(() => dam.FireDataTable(getPermissions));
+                if (dt == null)
+                {
+                    return null;
+                }
+                else
+                {
+                    if (dt.Rows.Count > 0)
+                    {
+                        PermissionTypeModel PerType_M = new PermissionTypeModel
+                        {
+                            UserId = Convert.ToInt32(dt.Rows[0]["DestObjId"].ToString()),
+                            ObjectId = Convert.ToInt32(dt.Rows[0]["SourObjId"].ToString()),
+                            IsRead = bool.Parse(dt.Rows[0]["IsRead"].ToString()),
+                            IsWrite = bool.Parse(dt.Rows[0]["IsWrite"].ToString()),
+                            IsManage = bool.Parse(dt.Rows[0]["IsManage"].ToString()),
+                            IsQR = bool.Parse(dt.Rows[0]["IsQR"].ToString())
+                        };
+                        return PerType_M;
+                    }
+                    return null;
+                }
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+        //public static async Task<object> CreateQRcodePNG(string QRtext, int DocumentId, IWebHostEnvironment Environment)
+        //{
+        //    try
+        //    {
+                
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return null;
+        //    }
+        //}
+
+
+        //var path = Path.Combine(await GetDocumentLocationInServerFolder(DocumentId, Environment), DocumentId.ToString());
+
         #endregion
     }
 }

@@ -10,6 +10,7 @@ using System.Net;
 using ArchiveAPI.Services;
 using System.Data;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace DMS_API.Services
 {
@@ -23,7 +24,7 @@ namespace DMS_API.Services
         public static readonly string ConnectionString =
             "Server=10.55.101.20,1433;Database=DMS_DB;Integrated Security=false;User ID=dms; Password=dms;Connection Timeout=60";
 
-        public static readonly string HostFilesUrl = 
+        public static readonly string HostFilesUrl =
             "http://10.55.101.10:90/DMSserver";
 
         private static string PasswordSalt;
@@ -255,48 +256,6 @@ namespace DMS_API.Services
             }
             return res.ToString();
         }
-        #endregion
-
-        #region Test Password    
-        //public static string PasswordEnecrypt1(string password, string username)
-        //{
-        //    if (GetSecureKeys() == true)
-        //    {
-
-        //        byte[] salt = Encoding.UTF8.GetBytes(PasswordSalt + username);
-
-        //        using (var rngCsp = new RNGCryptoServiceProvider())
-        //        {
-        //            rngCsp.GetNonZeroBytes(salt);
-        //        }
-        //        string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
-        //                                               password: password,
-        //                                               salt: salt,
-        //                                               prf: KeyDerivationPrf.HMACSHA256,
-        //                                               iterationCount: 100000,
-        //                                               numBytesRequested: 256 / 8));
-
-        //        return hashed;
-        //    }
-        //    else
-        //    {
-        //        return null;
-        //    }
-        //}
-
-        //public static string PasswordEnecrypt(string pass)
-        //{
-        //    byte[] bytes = Encoding.UTF8.GetBytes(pass);//Encoding.UTF8.GetBytes
-        //    SHA256Managed hashstring = new SHA256Managed();
-        //    byte[] hash = hashstring.ComputeHash(bytes);
-        //    string hashString = string.Empty;
-        //    foreach (byte x in hash)
-        //    {
-        //        hashString += String.Format("{0:x2}", x);
-        //    }
-        //    return hashString;
-        //}
-
         #endregion
     }
 
