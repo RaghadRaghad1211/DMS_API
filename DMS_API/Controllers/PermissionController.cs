@@ -34,6 +34,14 @@ namespace DMS_API.Controllers
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
+        [HttpPost]
+        [Route("GetChildInFolderByFolderIdWithPermessions_Search")]
+        public async Task<IActionResult> GetChildInFolderByIdWithPermessions_Search([FromBody] FolderChildsPermissionsSearchModelView FolderChildsPermissionsSearch_MV, [FromHeader] RequestHeaderModelView RequestHeader)
+        {
+            Response_MV = await Permissions_S.GetChildsInParentWithPermissions_Search(FolderChildsPermissionsSearch_MV, RequestHeader);
+            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
+        }
+
         [HttpGet]
         [Route("GetPermissionsOnFolderByFolderId/{FolderId}")]
         public async Task<IActionResult> GetPermissionsOnFolderByObjectId([FromRoute] int FolderId, [FromHeader] RequestHeaderModelView RequestHeader)

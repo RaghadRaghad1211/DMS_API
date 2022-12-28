@@ -38,8 +38,14 @@ namespace DMS_API.Models
 
         [JsonPropertyName("ChildCreationDate")]
         public string SourCreationDate { get; set; }
-    }
 
+        public List<TrackingPathModel> TrackingPath { get; set; }
+    }
+    public class TrackingPathModel
+    {
+        public int TrackId { get; set; }
+        public string TrackName { get; set; }
+    }
     public class PermissionTypeModel
     {
         public int UserId { get; set; }

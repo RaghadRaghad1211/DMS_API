@@ -1,7 +1,13 @@
 ﻿using ArchiveAPI.Services;
 using DMS_API.Models;
 using DMS_API.ModelsView;
+using iTextSharp.text.pdf;
+using iTextSharp.text.pdf.qrcode;
+using Microsoft.AspNetCore.Hosting.Server;
+using QRCoder;
 using System.Data;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.Net;
 using System.Reflection;
 
@@ -537,35 +543,52 @@ namespace DMS_API.Services
             }
             return await Task.FromResult(true);
         }
-        public static async Task<PermissionTypeModel> CheckUserPermissions(int UserId, int ObjectId)
+        public static async Task<PermissionTypeModel> CheckUserPermissionsFolderAndDocument(SessionModel ResponseSession, int ObjectId)
         {
             try
             {
-                string getPermissions = "SELECT  [SourObjId], [DestObjId], [IsRead], [IsWrite], [IsManage], [IsQR] " +
-                                        "FROM    [DMS_DB].[User].[V_Permission]  " +
-                                       $"WHERE [SourObjId]={ObjectId} AND [DestObjId]={UserId} ";
-                DataTable dt = new DataTable();
-                dt = await Task.Run(() => dam.FireDataTable(getPermissions));
-                if (dt == null)
+                if (ResponseSession.IsOrgAdmin == false && ResponseSession.IsGroupOrgAdmin == false)
                 {
-                    return null;
+                    int ParintId = int.Parse(dam.FireSQL($"SELECT LcParentObjId   FROM [User].[V_Links] WHERE [LcChildObjId]={ObjectId}   "));
+                    string getPermissions = "SELECT  [SourObjId], [DestObjId], [IsRead], [IsWrite], [IsManage], [IsQR] " +
+                                           $"FROM    [Document].[GetChildsInParentWithPermissions] ({ResponseSession.UserID}, {ParintId}) WHERE SourObjId={ObjectId} ";
+
+                    DataTable dt = new DataTable();
+                    dt = await Task.Run(() => dam.FireDataTable(getPermissions));
+                    if (dt == null)
+                    {
+                        return null;
+                    }
+                    else
+                    {
+                        if (dt.Rows.Count > 0)
+                        {
+                            PermissionTypeModel PerType_M = new PermissionTypeModel
+                            {
+                                UserId = Convert.ToInt32(dt.Rows[0]["DestObjId"].ToString()),
+                                ObjectId = Convert.ToInt32(dt.Rows[0]["SourObjId"].ToString()),
+                                IsRead = bool.Parse(dt.Rows[0]["IsRead"].ToString()),
+                                IsWrite = bool.Parse(dt.Rows[0]["IsWrite"].ToString()),
+                                IsManage = bool.Parse(dt.Rows[0]["IsManage"].ToString()),
+                                IsQR = bool.Parse(dt.Rows[0]["IsQR"].ToString())
+                            };
+                            return PerType_M;
+                        }
+                        return null;
+                    }
                 }
                 else
                 {
-                    if (dt.Rows.Count > 0)
+                    PermissionTypeModel PerType_M = new PermissionTypeModel
                     {
-                        PermissionTypeModel PerType_M = new PermissionTypeModel
-                        {
-                            UserId = Convert.ToInt32(dt.Rows[0]["DestObjId"].ToString()),
-                            ObjectId = Convert.ToInt32(dt.Rows[0]["SourObjId"].ToString()),
-                            IsRead = bool.Parse(dt.Rows[0]["IsRead"].ToString()),
-                            IsWrite = bool.Parse(dt.Rows[0]["IsWrite"].ToString()),
-                            IsManage = bool.Parse(dt.Rows[0]["IsManage"].ToString()),
-                            IsQR = bool.Parse(dt.Rows[0]["IsQR"].ToString())
-                        };
-                        return PerType_M;
-                    }
-                    return null;
+                        UserId = ResponseSession.UserID,
+                        ObjectId = ObjectId,
+                        IsRead = true,
+                        IsWrite = true,
+                        IsManage = true,
+                        IsQR = true
+                    };
+                    return PerType_M;
                 }
             }
             catch (Exception)
@@ -573,21 +596,69 @@ namespace DMS_API.Services
                 return null;
             }
         }
-        //public static async Task<object> CreateQRcodePNG(string QRtext, int DocumentId, IWebHostEnvironment Environment)
-        //{
-        //    try
-        //    {
-                
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return null;
-        //    }
-        //}
+        public static async Task<object> CreateQRcodePNG(string QRtext, int DocumentId, IWebHostEnvironment Environment)
+        {
+            try
+            {
+                //QRCodeGenerator QrGenerator = new QRCodeGenerator();
+                //QRCodeData QrCodeInfo = QrGenerator.CreateQrCode(QRtext, QRCodeGenerator.ECCLevel.Q);
+                //QRCoder.QRCode QrCode = new QRCoder.QRCode(QrCodeInfo);
+                //Bitmap QrBitmap = QrCode.GetGraphic(60);
+
+                //MemoryStream ms = new MemoryStream();
+                //QrBitmap.Save(ms, ImageFormat.Png);
+                //byte[] BitmapArray = ms.ToArray();
+                //string QrUri = string.Format("data:image/png;base64,{0}", Convert.ToBase64String(BitmapArray));
+                //return QrUri;
+
+
+
+
+
+
+                //QRCodeGenerator QrGenerator = new QRCodeGenerator();
+                //QRCodeData QrCodeInfo = QrGenerator.CreateQrCode(QRtext, QRCodeGenerator.ECCLevel.Q);
+                //QRCoder.QRCode QrCode = new QRCoder.QRCode(QrCodeInfo);
+                ////   System.Web.UI.WebControls.Image imgBarCode = new System.Web.UI.WebControls.Image();
+                //// imgBarCode.Height = 150;
+                //// imgBarCode.Width = 150;
+                //using (Bitmap bitMap = QrCode.GetGraphic(60))
+                //{
+                //    using (MemoryStream ms = new MemoryStream())
+                //    {
+                //        bitMap.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+                //        byte[] byteImage = ms.ToArray();
+                //        System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
+                //        img.Save(Server.MapPath("Images/") + "Test.Jpeg", System.Drawing.Imaging.ImageFormat.Jpeg);
+                //        imgBarCode.ImageUrl = "data:image/png;base64," + Convert.ToBase64String(byteImage);
+                //    }
+                //    plBarCode.Controls.Add(imgBarCode);
+                //}
+
+
+                //// var bitmapBytes = BitmapToBytes(qrCodeImage); //Convert bitmap into a byte array
+                //return File(bitmapBytes, "image/jpeg"); //Return as file result
+
+
+
+
+
+
+                return null;
+
+
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
 
 
         //var path = Path.Combine(await GetDocumentLocationInServerFolder(DocumentId, Environment), DocumentId.ToString());
 
         #endregion
     }
+
 }

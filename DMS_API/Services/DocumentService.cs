@@ -1,6 +1,8 @@
 ﻿using ArchiveAPI.Services;
 using DMS_API.Models;
 using DMS_API.ModelsView;
+using iTextSharp.text;
+using Microsoft.AspNetCore.Hosting.Server;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Data;
@@ -8,6 +10,7 @@ using System.Data.Common;
 using System.Net;
 using System.Reflection.Metadata;
 using System.Text;
+using static iTextSharp.text.pdf.AcroFields;
 using static System.Net.WebRequestMethods;
 
 namespace DMS_API.Services
@@ -336,8 +339,7 @@ namespace DMS_API.Services
                                         // تشفير
 
 
-
-
+                     
                                         string fillPath = Path.Combine(DocFolder, SecurityService.RoundomKey(LengthKey) + outValue.Rows[0][0].ToString() + SecurityService.RoundomKey(LengthKey) + Path.GetExtension(DocFileNameWithExten).Trim());
                                         //string fillPath = Path.Combine(DocFolder, outValue + ".pdf");
                                         using (FileStream filestream = System.IO.File.Create(fillPath))
@@ -395,7 +397,11 @@ namespace DMS_API.Services
                 else
                 {
                     int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
-                    bool checkManagePermission = GlobalService.CheckUserPermissions(userLoginID, Document_MV.DocumentId).Result.IsWrite;
+                    var result = GlobalService.CheckUserPermissionsFolderAndDocument((SessionModel)ResponseSession.Data, Document_MV.DocumentId).Result;
+                    bool checkManagePermission = result == null ? false : result.IsWrite;
+                    //bool checkManagePermission = GlobalService.CheckUserPermissions((SessionModel)ResponseSession.Data, Document_MV.DocumentId).Result.Select(x=>x.IsWrite==true).FirstOrDefault();
+                    //bool checkManagePermission = GlobalService.CheckUserPermissions((SessionModel)ResponseSession.Data, Document_MV.DocumentId).Result.IsWrite;
+
                     if (checkManagePermission == true)
                     {
                         if (ValidationService.IsEmpty(Document_MV.DocumentTitle) == true)
@@ -530,7 +536,10 @@ namespace DMS_API.Services
                 else
                 {
                     int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
-                    bool checkManagePermission = GlobalService.CheckUserPermissions(userLoginID, DocumentId).Result.IsRead;
+                    var result = GlobalService.CheckUserPermissionsFolderAndDocument((SessionModel)ResponseSession.Data, DocumentId).Result;
+                    bool checkManagePermission = result == null ? false : result.IsRead;
+                    //bool checkManagePermission = GlobalService.CheckUserPermissions((SessionModel)ResponseSession.Data, DocumentId).Result.IsRead;
+
                     if (checkManagePermission == true)
                     {
                         int CheckActivation = int.Parse(dam.FireSQL($"SELECT COUNT(*) FROM [Document].[V_Documents] WHERE ObjId={DocumentId} AND ObjIsActive=1"));
@@ -646,6 +655,8 @@ namespace DMS_API.Services
                 return Response_MV;
             }
         }
+
+
         public async Task<ResponseModelView> SearchDocumentByName(string Name, RequestHeaderModelView RequestHeader)
         {
             try

@@ -443,7 +443,9 @@ namespace DMS_API.Services
                         int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
                         foreach (var item in LinkParentChild_MV.ChildIds)
                         {
-                            bool checkManagePermission = GlobalService.CheckUserPermissions(userLoginID, item).Result.IsManage;
+                            var result = GlobalService.CheckUserPermissionsFolderAndDocument((SessionModel)ResponseSession.Data, item).Result;
+                            bool checkManagePermission = result == null ? false : result.IsManage;
+
                             if (checkManagePermission == false)
                             {
                                 LinkParentChild_MV.ChildIds.Remove(item);
@@ -525,7 +527,9 @@ namespace DMS_API.Services
                     int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
                     foreach (var item in MoveChildToNewFolder_MV.ChildIds)
                     {
-                        bool checkManagePermission = GlobalService.CheckUserPermissions(userLoginID, item).Result.IsManage;
+                        var result = GlobalService.CheckUserPermissionsFolderAndDocument((SessionModel)ResponseSession.Data, item).Result;
+                        bool checkManagePermission = result == null ? false : result.IsManage; 
+
                         if (checkManagePermission == false)
                         {
                             MoveChildToNewFolder_MV.ChildIds.Remove(item);

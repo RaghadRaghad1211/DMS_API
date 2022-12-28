@@ -6,6 +6,7 @@ using System.Net;
 using System.Reflection.Metadata;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
+using static iTextSharp.text.pdf.AcroFields;
 
 namespace DMS_API.Services
 {
@@ -347,7 +348,9 @@ namespace DMS_API.Services
                 else
                 {
                     int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
-                    bool checkManagePermission = GlobalService.CheckUserPermissions(userLoginID, Folder_MV.FolderId).Result.IsWrite;
+                    var result = GlobalService.CheckUserPermissionsFolderAndDocument((SessionModel)ResponseSession.Data, Folder_MV.FolderId).Result;
+                    bool checkManagePermission = result == null ? false : result.IsWrite;
+
                     if (checkManagePermission == true)
                     {
                         if (ValidationService.IsEmpty(Folder_MV.FolderTitle) == true)
