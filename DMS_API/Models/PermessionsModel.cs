@@ -4,6 +4,8 @@ namespace DMS_API.Models
 {
     public class PermessionsModel
     {
+        public int ParentId { get; set; }
+
         [JsonPropertyName("ChildId")]
         public int SourObjId { get; set; }
 

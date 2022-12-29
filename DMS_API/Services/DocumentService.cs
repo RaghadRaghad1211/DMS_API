@@ -37,7 +37,8 @@ namespace DMS_API.Services
         {
             Environment = environment;
             dam = new DataAccessService(SecurityService.ConnectionString);
-           // var ddd = GlobalService.CreateQRcodePNG("hello",300, Environment);
+
+            var ddd = GlobalService.CreateQRcodePNG(100,300, Environment);
 
         }
         #endregion
@@ -339,8 +340,8 @@ namespace DMS_API.Services
                                         // تشفير
 
 
-                     
-                                        string fillPath = Path.Combine(DocFolder, SecurityService.RoundomKey(LengthKey) + outValue.Rows[0][0].ToString() + SecurityService.RoundomKey(LengthKey) + Path.GetExtension(DocFileNameWithExten).Trim());
+                                        string DocumentFileName = SecurityService.RoundomKey(LengthKey) + outValue.Rows[0][0].ToString() + SecurityService.RoundomKey(LengthKey) + Path.GetExtension(DocFileNameWithExten).Trim();
+                                        string fillPath = Path.Combine(DocFolder, DocumentFileName);
                                         //string fillPath = Path.Combine(DocFolder, outValue + ".pdf");
                                         using (FileStream filestream = System.IO.File.Create(fillPath))
                                         {
@@ -478,8 +479,8 @@ namespace DMS_API.Services
 
 
 
-
-                                        string fillPath = Path.Combine(DocFolder, SecurityService.RoundomKey(LengthKey) + outValue.Rows[0][0].ToString() + SecurityService.RoundomKey(LengthKey) + Path.GetExtension(DocFileNameWithExten).Trim());
+                                        string DocumentFileName = SecurityService.RoundomKey(LengthKey) + outValue.Rows[0][0].ToString() + SecurityService.RoundomKey(LengthKey) + Path.GetExtension(DocFileNameWithExten).Trim();
+                                        string fillPath = Path.Combine(DocFolder, DocumentFileName);
                                         //string fillPath = Path.Combine(DocFolder, outValue + ".pdf");
                                         using (FileStream filestream = System.IO.File.Create(fillPath))
                                         {
@@ -655,8 +656,6 @@ namespace DMS_API.Services
                 return Response_MV;
             }
         }
-
-
         public async Task<ResponseModelView> SearchDocumentByName(string Name, RequestHeaderModelView RequestHeader)
         {
             try

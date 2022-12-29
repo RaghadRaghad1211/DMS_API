@@ -111,6 +111,7 @@ namespace DMS_API.Services
                                     {
                                         Permessions_M = new PermessionsModel
                                         {
+                                            ParentId = FolderChildsPermissions_MV.ParentId,
                                             SourObjId = Convert.ToInt32(dt.Rows[i]["SourObjId"].ToString()),
                                             SourTitle = dt.Rows[i]["SourTitle"].ToString(),
                                             SourType = Convert.ToInt32(dt.Rows[i]["SourType"].ToString()),
@@ -213,6 +214,7 @@ namespace DMS_API.Services
                             {
                                 Permessions_M = new PermessionsModel
                                 {
+                                    ParentId = FolderChildsPermissions_MV.ParentId,
                                     SourObjId = Convert.ToInt32(dt.Rows[i]["SourObjId"].ToString()),
                                     SourTitle = dt.Rows[i]["SourTitle"].ToString(),
                                     SourType = Convert.ToInt32(dt.Rows[i]["SourType"].ToString()),
@@ -707,7 +709,7 @@ namespace DMS_API.Services
                                             "          DestObjId, DestTitle, DestType, DestTypeName, " +
                                             "          IsRead, IsWrite, IsManage, IsQR, SourCreationDate, " +
                                             "          SourUserName, SourOrgArName, SourOrgEnName, SourOrgKuName  " +
-                                           $" FROM     [Document].[GetChildsInParentWithPermissions] ({userLoginID}, {FolderChildsPermissionsSearch_MV.ParentId}) " +
+                                           $" FROM     [Document].[GetChildsInParentWithPermissions_Search] ({userLoginID}, {FolderChildsPermissionsSearch_MV.ParentId}) " +
                                            $" WHERE SourTitle LIKE '{FolderChildsPermissionsSearch_MV.ChildTitle}%' " +
                                            "ORDER BY   SourObjId " +
                                                    $"OFFSET      ({_PageNumber}-1)*{_PageRows} ROWS " +
@@ -745,6 +747,7 @@ namespace DMS_API.Services
                         {
                             Permessions_M = new PermessionsModel
                             {
+                                ParentId = FolderChildsPermissionsSearch_MV.ParentId,
                                 SourObjId = Convert.ToInt32(dt.Rows[i]["SourObjId"].ToString()),
                                 SourTitle = dt.Rows[i]["SourTitle"].ToString(),
                                 SourType = Convert.ToInt32(dt.Rows[i]["SourType"].ToString()),

@@ -8,8 +8,16 @@ using QRCoder;
 using System.Data;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Drawing.Printing;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Reflection;
+using ZXing.Rendering;
+using ZXing.Common;
+using ZXing.QrCode.Internal;
+using ZXing;
+using ZXing.QrCode;
+using ZXing.Mobile;
 
 namespace DMS_API.Services
 {
@@ -596,67 +604,32 @@ namespace DMS_API.Services
                 return null;
             }
         }
-        public static async Task<object> CreateQRcodePNG(string QRtext, int DocumentId, IWebHostEnvironment Environment)
+        public static async Task<bool> CreateQRcodePNG(int QrId, int DocumentId, IWebHostEnvironment Environment)
         {
             try
             {
-                //QRCodeGenerator QrGenerator = new QRCodeGenerator();
-                //QRCodeData QrCodeInfo = QrGenerator.CreateQrCode(QRtext, QRCodeGenerator.ECCLevel.Q);
-                //QRCoder.QRCode QrCode = new QRCoder.QRCode(QrCodeInfo);
-                //Bitmap QrBitmap = QrCode.GetGraphic(60);
-
-                //MemoryStream ms = new MemoryStream();
-                //QrBitmap.Save(ms, ImageFormat.Png);
-                //byte[] BitmapArray = ms.ToArray();
-                //string QrUri = string.Format("data:image/png;base64,{0}", Convert.ToBase64String(BitmapArray));
-                //return QrUri;
-
-
-
-
-
-
-                //QRCodeGenerator QrGenerator = new QRCodeGenerator();
-                //QRCodeData QrCodeInfo = QrGenerator.CreateQrCode(QRtext, QRCodeGenerator.ECCLevel.Q);
-                //QRCoder.QRCode QrCode = new QRCoder.QRCode(QrCodeInfo);
-                ////   System.Web.UI.WebControls.Image imgBarCode = new System.Web.UI.WebControls.Image();
-                //// imgBarCode.Height = 150;
-                //// imgBarCode.Width = 150;
-                //using (Bitmap bitMap = QrCode.GetGraphic(60))
-                //{
-                //    using (MemoryStream ms = new MemoryStream())
-                //    {
-                //        bitMap.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
-                //        byte[] byteImage = ms.ToArray();
-                //        System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
-                //        img.Save(Server.MapPath("Images/") + "Test.Jpeg", System.Drawing.Imaging.ImageFormat.Jpeg);
-                //        imgBarCode.ImageUrl = "data:image/png;base64," + Convert.ToBase64String(byteImage);
-                //    }
-                //    plBarCode.Controls.Add(imgBarCode);
-                //}
-
-
-                //// var bitmapBytes = BitmapToBytes(qrCodeImage); //Convert bitmap into a byte array
-                //return File(bitmapBytes, "image/jpeg"); //Return as file result
-
-
-
-
-
-
-                return null;
-
-
+                QRCodeGenerator QrGenerator = new QRCodeGenerator();
+                QRCodeData QrCodeInfo = QrGenerator.CreateQrCode(QrId.ToString(), QRCodeGenerator.ECCLevel.H);
+                QRCoder.QRCode QrCode = new QRCoder.QRCode(QrCodeInfo);
+                Bitmap QrBitmap = QrCode.GetGraphic(60);
+                var path = Path.Combine(await GetDocumentLocationInServerFolder(DocumentId, Environment), DocumentId.ToString());
+                //QrBitmap.Save(path + $"\\{QrId}" + ".png");
+                using (MemoryStream memory = new MemoryStream())
+                {
+                    using (FileStream fs = new FileStream(path + $"\\{QrId}" + ".png", FileMode.Create, FileAccess.ReadWrite))
+                    {
+                        QrBitmap.Save(memory, ImageFormat.Png);
+                        byte[] bytes = memory.ToArray();
+                        fs.Write(bytes, 0, bytes.Length);
+                    }
+                }
+                return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return null;
+                return false;
             }
         }
-
-
-
-        //var path = Path.Combine(await GetDocumentLocationInServerFolder(DocumentId, Environment), DocumentId.ToString());
 
         #endregion
     }
