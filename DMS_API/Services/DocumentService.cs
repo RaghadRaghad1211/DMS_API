@@ -30,7 +30,7 @@ namespace DMS_API.Services
         private ResponseModelView Response_MV { get; set; }
         private const int LengthKey = 15;
         private const int ClassID = 5; // Document
-        #endregion
+        #endregion 
 
         #region Constructor        
         public DocumentService(IWebHostEnvironment environment)
@@ -180,8 +180,6 @@ namespace DMS_API.Services
                 else
                 {
                     int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
-                    //int orgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {userLoginID} "));
-                    //string whereField = orgOwnerID == 0 ? "SELECT '0' as OrgId UNION SELECT OrgId" : "SELECT OrgId";
                     string getDocumentInfo = "SELECT  ObjId, ObjTitle, ObjClsId, ClsName, ObjIsActive, ObjCreationDate, ObjDescription, UserOwnerID, " +
                                            "          OwnerFullName, OwnerUserName, OrgOwner, OrgEnName,OrgArName , OrgKuName " +
                                            "FROM      [Document].V_Documents " +
