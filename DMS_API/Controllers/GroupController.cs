@@ -34,10 +34,10 @@ namespace DMS_API.Controllers
         }
 
         [HttpGet]
-        [Route("GetGroupsByID/{GroupId}")]
-        public async Task<IActionResult> GetGroupsByID([FromRoute] int GroupId, [FromHeader] RequestHeaderModelView RequestHeader)
+        [Route("GetGroupById/{GroupId}")]
+        public async Task<IActionResult> GetGroupById([FromRoute] int GroupId, [FromHeader] RequestHeaderModelView RequestHeader)
         {
-            Response_MV = await Group_S.GetGroupsByID(GroupId, RequestHeader);
+            Response_MV = await Group_S.GetGroupById(GroupId, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
@@ -58,71 +58,58 @@ namespace DMS_API.Controllers
         }
 
         [HttpPost]
-        [Route("SearchGroupByName/{Name}")]
-        public async Task<IActionResult> SearchGroupByName([FromRoute] string Name, [FromBody] PaginationModelView Pagination_MV, [FromHeader] RequestHeaderModelView RequestHeader)
+        [Route("SearchGroupByName/{GroupName}")]
+        public async Task<IActionResult> SearchGroupByName([FromRoute] string GroupName, [FromBody] PaginationModelView Pagination_MV, [FromHeader] RequestHeaderModelView RequestHeader)
         {
-            Response_MV = await Group_S.SearchGroupByName(Name, Pagination_MV, RequestHeader);
+            Response_MV = await Group_S.SearchGroupByName(GroupName, Pagination_MV, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
         [HttpGet]
         [Route("GetChildsInGroupByID/{GroupId}")]
-        public async Task<IActionResult> GetChildsInGroupByID([FromRoute] int GroupId, [FromHeader] RequestHeaderModelView RequestHeader)
+        public async Task<IActionResult> GetChildsInGroupByGroupId([FromRoute] int GroupId, [FromHeader] RequestHeaderModelView RequestHeader)
         {
-            Response_MV = await LinkParentChild_S.GetChildInParentByID((int)GlobalService.ClassType.Group, GroupId, RequestHeader);
+            Response_MV = await LinkParentChild_S.GetChildsInGroupByGroupId( GroupId, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
         [HttpPost]
         [Route("GetChildsInGroupByID_Search")]
-        public async Task<IActionResult> GetChildsInGroupByID_Search([FromBody] SearchChildParentModelView SearchChildGroup_MV, [FromHeader] RequestHeaderModelView RequestHeader)
+        public async Task<IActionResult> GetChildsInGroupByGroupId_Search([FromBody] SearchChildsOfGroupModelView SearchChildGroup_MV, [FromHeader] RequestHeaderModelView RequestHeader)
         {
-            Response_MV = await LinkParentChild_S.GetChildInParentByID_Search((int)GlobalService.ClassType.Group, SearchChildGroup_MV, RequestHeader);
+            Response_MV = await LinkParentChild_S.GetChildsInGroupByGroupId_Search(SearchChildGroup_MV, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
-
-
-
-
         [HttpGet]
         [Route("GetChildsNotInGroupByID/{GroupId}")]
-        public async Task<IActionResult> GetChildsNotInGroupByID([FromRoute] int GroupId, [FromHeader] RequestHeaderModelView RequestHeader)
+        public async Task<IActionResult> GetChildNotInGroupByGroupId([FromRoute] int GroupId, [FromHeader] RequestHeaderModelView RequestHeader)
         {
-            Response_MV = await LinkParentChild_S.GetChildNotInGroupByID((int)GlobalService.ClassType.Group, GroupId, RequestHeader);
+            Response_MV = await LinkParentChild_S.GetChildNotInGroupByGroupId(GroupId, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
         [HttpPost]
         [Route("GetChildsNotInGroupByID_Search")]
-        public async Task<IActionResult> GetChildsNotInGroupByID_Search([FromBody] SearchChildParentModelView SearchChildGroup_MV, [FromHeader] RequestHeaderModelView RequestHeader)
+        public async Task<IActionResult> GetChildNotInGroupByGroupId_Search([FromBody] SearchChildsOfGroupModelView SearchChildGroup_MV, [FromHeader] RequestHeaderModelView RequestHeader)
         {
-            Response_MV = await LinkParentChild_S.GetChildNotInGroupByID_Search((int)GlobalService.ClassType.Group, SearchChildGroup_MV, RequestHeader);
+            Response_MV = await LinkParentChild_S.GetChildNotInGroupByGroupId_Search(SearchChildGroup_MV, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
-
-
-
-
-
-
-
-
-
         [HttpPost]
         [Route("AddChildsIntoGroup")]
-        public async Task<IActionResult> AddChildsIntoGroup([FromBody] LinkParentChildModelView LinkParentChild_MV, [FromHeader] RequestHeaderModelView RequestHeader)
+        public async Task<IActionResult> AddChildsIntoGroup([FromBody] LinkGroupChildsModelView LinkGroupChilds_MV, [FromHeader] RequestHeaderModelView RequestHeader)
         {
-            Response_MV = await LinkParentChild_S.AddChildIntoParent((int)GlobalService.ClassType.Group, LinkParentChild_MV, RequestHeader);
+            Response_MV = await LinkParentChild_S.AddChildsIntoGroup(LinkGroupChilds_MV, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
         [HttpPut]
         [Route("RemoveChildsFromGroup")]
-        public async Task<IActionResult> RemoveChildsFromGroup([FromBody] LinkParentChildModelView LinkParentChild_MV, [FromHeader] RequestHeaderModelView RequestHeader)
+        public async Task<IActionResult> RemoveChildsFromGroup([FromBody] LinkGroupChildsModelView LinkGroupChilds_MV, [FromHeader] RequestHeaderModelView RequestHeader)
         {
-            Response_MV = await LinkParentChild_S.RemoveChildFromParent((int)GlobalService.ClassType.Group, LinkParentChild_MV, RequestHeader);
+            Response_MV = await LinkParentChild_S.RemoveChildsFromGroup(LinkGroupChilds_MV, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
         #endregion

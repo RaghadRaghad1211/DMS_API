@@ -1,9 +1,14 @@
-﻿namespace DMS_API.ModelsView
+﻿using System.Text.Json.Serialization;
+
+namespace DMS_API.ModelsView
 {
     public class MoveChildToNewFolderModelView
     {
-        public int CurrentParentID { get; set; }
+        [JsonPropertyName("CurrentParentID")]
+        public int CurrentFolderId { get; set; }
         public List<int> ChildIds { get; set; }
-        public int NewParentID { get; set; }
+
+        [JsonPropertyName("NewParentID")]
+        public int NewFolderId { get; set; }
     }
 }

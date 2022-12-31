@@ -143,13 +143,13 @@ namespace DMS_API.Services
 
             return null;
         }
-        public static string GetQueryLinkPro(LinkParentChildModelView LinkParentChild_MV)
+        public static string GetQueryLinkPro(List<int> ChildIds)
         {
             string Query = "";
-            for (int i = 0; i < LinkParentChild_MV.ChildIds.Count; i++)
+            for (int i = 0; i < ChildIds.Count; i++)
             {
 
-                Query = Query + LinkParentChild_MV.ChildIds[i] + ",";
+                Query = Query + ChildIds[i] + ",";
             }
             Query = Query.Remove(Query.Length - 1, 1);
             return Query;
@@ -535,6 +535,23 @@ namespace DMS_API.Services
             {
                 return null;
             }
+        }
+        public static async Task<string> GetFullPathOfDocumentNameInServerFolder(int DocumentId, int LengthKey, IWebHostEnvironment Environment)
+        {
+            string getDocPath = SecurityService.HostFilesUrl + "/" +
+                                (DocumentId % GlobalService.MoodNum).ToString() + "/" +
+                                 DocumentId.ToString() + "/" +
+                                 Path.GetFileName(
+                                      Directory.GetFiles(
+                                                Path.Combine(
+                                               await GlobalService.GetDocumentLocationInServerFolder(DocumentId, Environment),
+                                                     DocumentId.ToString())).
+                                                                     FirstOrDefault(
+                                                                             x => Path.GetFileName(x).
+                                                                             Remove(0, LengthKey).
+                                                                             StartsWith(DocumentId.ToString())));
+            return getDocPath;
+
         }
         public static async Task<bool> IsFolderOpenableToMoveInsideIt(int FolderId, List<int> ObjectsIds)
         {

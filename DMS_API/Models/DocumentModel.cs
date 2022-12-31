@@ -16,6 +16,5 @@
         public string OrgEnName { get; set; }
         public string OrgArName { get; set; }
         public string OrgKuName { get; set; }
-      //  public string DocumentPath { get; set; }
     }
 }

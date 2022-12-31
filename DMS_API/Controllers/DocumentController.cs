@@ -30,32 +30,6 @@ namespace DMS_API.Controllers
         #endregion
 
         #region Actions
-        [HttpPost]
-        [Route("GetDocumentsList")]
-        public async Task<IActionResult> GetDocumentsList([FromBody] PaginationModelView Pagination_MV, [FromHeader] RequestHeaderModelView RequestHeader)
-        {
-            Response_MV = await Document_S.GetDocumentsList(Pagination_MV, RequestHeader);
-            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
-        }
-
-        [HttpGet]
-        [Route("GetDocumentsByID/{DocumentId}")]
-        public async Task<IActionResult> GetDocumentsByID([FromRoute] int DocumentId, [FromHeader] RequestHeaderModelView RequestHeader)
-        {
-            Response_MV = await Document_S.GetDocumentsByID(DocumentId, RequestHeader);
-            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
-        }
-
-
-
-        [HttpGet]
-        [Route("SearchDocumentByName/{Name}")]
-
-        public async Task<IActionResult> SearchDocumentByName([FromRoute] string Name, [FromHeader] RequestHeaderModelView RequestHeader)
-        {
-            Response_MV = await Document_S.SearchDocumentByName(Name, RequestHeader);
-            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
-        }
 
         [HttpPost]
         [Route("AddDocument")]
@@ -75,20 +49,20 @@ namespace DMS_API.Controllers
 
         [HttpGet]
         [Route("ViewDocumentMetadata/{DocumentId}")]
-        public async Task<IActionResult> ViewDocumentMetadata([FromRoute] int DocumentId, [FromHeader] RequestHeaderModelView RequestHeader)
+        public async Task<IActionResult> GetDocumentMetadata([FromRoute] int DocumentId, [FromHeader] RequestHeaderModelView RequestHeader)
         {
-            Response_MV = await Document_S.ViewDocumentMetadata(DocumentId, RequestHeader);
+            Response_MV = await Document_S.GetDocumentMetadata(DocumentId, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
-        [AllowAnonymous]
-        [HttpPut]
-        [Route("MoveDocumentToNewFolder")]
-        public async Task<IActionResult> MoveDocumentToNewFolder([FromBody] MoveChildToNewFolderModelView MoveChildToNewFolder_MV, [FromHeader] RequestHeaderModelView RequestHeader)
-        {
-            Response_MV = await LinkParentChild_S.MoveChildToNewFolder((int)GlobalService.ClassType.Folder, (int)GlobalService.ClassType.Document, MoveChildToNewFolder_MV, RequestHeader);
-            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
-        }
+        //[AllowAnonymous]
+        //[HttpPut]
+        //[Route("MoveDocumentToNewFolder")]
+        //public async Task<IActionResult> MoveDocumentToNewFolder([FromBody] MoveChildToNewFolderModelView MoveChildToNewFolder_MV, [FromHeader] RequestHeaderModelView RequestHeader)
+        //{
+        //    Response_MV = await LinkParentChild_S.MoveChildToNewFolder((int)GlobalService.ClassType.Folder, (int)GlobalService.ClassType.Document, MoveChildToNewFolder_MV, RequestHeader);
+        //    return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
+        //}
 
         
         #endregion

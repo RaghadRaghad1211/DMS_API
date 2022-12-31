@@ -24,7 +24,6 @@ namespace DMS_API.Controllers
         }
         #endregion
 
-
         #region Actions
         [HttpPost]
         [Route("GetChildInFolderByFolderIdWithPermessions")]

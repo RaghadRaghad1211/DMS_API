@@ -63,8 +63,8 @@
         public static readonly string PhonePasswordIsReset = "PhonePasswordIsReset";
         public static readonly string OldPasswordNotCorrect = "OldPasswordNotCorrect";
         public static readonly string DeblicateKey = "DeblicateKey";
-        public static readonly string GroupNameMustEnter = "GroupNameMustEnter";
-        public static readonly string FolderNameMustEnter = "FolderNameMustEnter";
+        public static readonly string GroupTitleMustEnter = "GroupTitleMustEnter";
+        public static readonly string FolderTitleMustEnter = "FolderTitleMustEnter";
         public static readonly string DocumentTitelMustEnter = "DocumentTitelMustEnter";
         public static readonly string DocumentFileMustUpload = "DocumentFileMustUpload";
         public static readonly string TitelArIsEmpty = "TitelArIsEmpty";
@@ -149,8 +149,8 @@
                      {OldPasswordNotCorrect ,"كلمة المرور القديمة غير صحيحة"},
                      {ChangePasswordSuccess ,"تم تغيير كلمة المرور"},
                      {DeblicateKey ,"الكلمة المفتاحية موجودة في قاعدة البيانات"},
-                     {GroupNameMustEnter ,"يجب ادخال اسم المجموعة"},
-                     {FolderNameMustEnter ,"يجب ادخال اسم الفايل"},
+                     {GroupTitleMustEnter ,"يجب ادخال عنوان المجموعة"},
+                     {FolderTitleMustEnter ,"يجب ادخال عنوان المجلد"},
                      {TitelArIsEmpty ,"يجب ادخال العنوان العربي"},
                      {TitelEnIsEmpty ,"يجب ادخال العنوان الانكليزي"},
                      {MustSelectedObjects ,"يجب اختيار عناصر"},
@@ -221,8 +221,8 @@
                      {OldPasswordNotCorrect ,"The old password is incorrectly"},
                      {ChangePasswordSuccess ,"Password changed"},
                      {DeblicateKey ,"The keyword is exist in database"},
-                     {GroupNameMustEnter ,"Group Name Must Enter"},
-                     {FolderNameMustEnter ,"Folder Name Must Enter"},
+                     {GroupTitleMustEnter ,"Group Title Must Enter"},
+                     {FolderTitleMustEnter ,"Folder Title Must Enter"},
                      {TitelArIsEmpty ,"The Arabic titel must be entered"},
                      {TitelEnIsEmpty ,"The English titel must be entered"},
                      {MustSelectedObjects ,"Must Select Objects"},

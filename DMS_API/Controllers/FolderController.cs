@@ -24,20 +24,12 @@ namespace DMS_API.Controllers
         }
         #endregion
 
-        #region Actions
-        [HttpPost]
-        [Route("GetFoldersList")]
-        public async Task<IActionResult> GetFoldersList([FromBody] PaginationModelView Pagination_MV, [FromHeader] RequestHeaderModelView RequestHeader)
-        {
-            Response_MV = await Folder_S.GetFoldersList(Pagination_MV, RequestHeader);
-            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
-        }
-
+        #region Actions        
         [HttpGet]
-        [Route("GetFoldersByID/{FolderId}")]
-        public async Task<IActionResult> GetFoldersByID([FromRoute] int FolderId, [FromHeader] RequestHeaderModelView RequestHeader)
+        [Route("GetFolderById/{FolderId}")]
+        public async Task<IActionResult> GetFolderById([FromRoute] int FolderId, [FromHeader] RequestHeaderModelView RequestHeader)
         {
-            Response_MV = await Folder_S.GetFoldersByID(FolderId, RequestHeader);
+            Response_MV = await Folder_S.GetFolderById(FolderId, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
@@ -57,43 +49,11 @@ namespace DMS_API.Controllers
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
-        [HttpGet]
-        [Route("SearchFolderByName/{Name}")]
-        public async Task<IActionResult> SearchFolderByName([FromRoute] string Name, [FromHeader] RequestHeaderModelView RequestHeader)
-        {
-            Response_MV = await Folder_S.SearchFolderByName(Name, RequestHeader);
-            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
-        }
-
-        [HttpGet]
-        [Route("GetChildsInFolderByID/{FolderId}")]
-        public async Task<IActionResult> GetChildsInFolderByID([FromRoute] int FolderId, [FromHeader] RequestHeaderModelView RequestHeader)
-        {
-            Response_MV = await LinkParentChild_S.GetChildInParentByID((int)GlobalService.ClassType.Folder, FolderId, RequestHeader);
-            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
-        }
-
-        [HttpPost]
-        [Route("GetChildsInFolderByID_Search")]
-        public async Task<IActionResult> GetChildsInFolderByID_Search([FromBody] SearchChildParentModelView SearchChildFolder_MV, [FromHeader] RequestHeaderModelView RequestHeader)
-        {
-            Response_MV = await LinkParentChild_S.GetChildInParentByID_Search((int)GlobalService.ClassType.Folder, SearchChildFolder_MV, RequestHeader);
-            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
-        }
-
-        [HttpPost]
-        [Route("AddChildsIntoFolder")]
-        public async Task<IActionResult> AddChildsIntoFolder([FromBody] LinkParentChildModelView LinkParentChild_MV, [FromHeader] RequestHeaderModelView RequestHeader)
-        {
-            Response_MV = await LinkParentChild_S.AddChildIntoParent((int)GlobalService.ClassType.Folder, LinkParentChild_MV, RequestHeader);
-            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
-        }
-
         [HttpPut]
         [Route("RemoveChildsFromFolder")]
-        public async Task<IActionResult> RemoveChildsFromFolder([FromBody] LinkParentChildModelView LinkParentChild_MV, [FromHeader] RequestHeaderModelView RequestHeader)
+        public async Task<IActionResult> RemoveChildsFromFolder([FromBody] LinkFolderChildsModelView LinkFolderChilds_MV, [FromHeader] RequestHeaderModelView RequestHeader)
         {
-            Response_MV = await LinkParentChild_S.RemoveChildFromParent((int)GlobalService.ClassType.Folder, LinkParentChild_MV, RequestHeader);
+            Response_MV = await LinkParentChild_S.RemoveChildsFromFolder(LinkFolderChilds_MV, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
@@ -102,7 +62,7 @@ namespace DMS_API.Controllers
         [Route("MoveFolderToNewFolder")]
         public async Task<IActionResult> MoveFolderToNewFolder([FromBody] MoveChildToNewFolderModelView MoveChildToNewFolder_MV, [FromHeader] RequestHeaderModelView RequestHeader)
         {
-            Response_MV = await LinkParentChild_S.MoveChildToNewFolder((int)GlobalService.ClassType.Folder, (int)GlobalService.ClassType.Folder, MoveChildToNewFolder_MV, RequestHeader);
+            Response_MV = await LinkParentChild_S.MoveChildsToNewFolder(MoveChildToNewFolder_MV, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
