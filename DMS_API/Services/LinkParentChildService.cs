@@ -652,7 +652,7 @@ namespace DMS_API.Services
                         int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
                         foreach (var item in MoveChildToNewFolder_MV.ChildIds)
                         {
-                            var result = GlobalService.CheckUserPermissionsFolderAndDocument((SessionModel)ResponseSession.Data, item).Result;
+                            var result = GlobalService.CheckUserPermissionsOnFolderAndDocument((SessionModel)ResponseSession.Data, item).Result;
                             bool checkManagePermission = result == null ? false : result.IsManage;
 
                             if (checkManagePermission == false)
@@ -682,7 +682,7 @@ namespace DMS_API.Services
                         }
                         else
                         {
-                            string Query = GlobalService.GetQueryMoveChilds(MoveChildToNewFolder_MV);
+                            string Query = GlobalService.GetQueryLinkPro(MoveChildToNewFolder_MV.ChildIds);
                             string moveChild2Folder = $"EXEC [Main].[MoveChildToFolderPro] '{MoveChildToNewFolder_MV.CurrentFolderId}','{MoveChildToNewFolder_MV.NewFolderId}', '{(int)GlobalService.ClassType.Folder}', '{Query}' ";
                             var outValue = await Task.Run(() => dam.DoQueryExecProcedure(moveChild2Folder));
                             if (outValue == 0.ToString() || (outValue == null || outValue.Trim() == ""))
@@ -754,7 +754,7 @@ namespace DMS_API.Services
                         int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
                         foreach (var item in LinkFolderChilds_MV.ChildIds)
                         {
-                            var result = GlobalService.CheckUserPermissionsFolderAndDocument((SessionModel)ResponseSession.Data, item).Result;
+                            var result = GlobalService.CheckUserPermissionsOnFolderAndDocument((SessionModel)ResponseSession.Data, item).Result;
                             bool checkManagePermission = result == null ? false : result.IsManage;
 
                             if (checkManagePermission == false)

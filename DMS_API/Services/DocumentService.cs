@@ -193,7 +193,7 @@ namespace DMS_API.Services
                 else
                 {
                     int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
-                    var result = GlobalService.CheckUserPermissionsFolderAndDocument((SessionModel)ResponseSession.Data, Document_MV.DocumentId).Result;
+                    var result = GlobalService.CheckUserPermissionsOnFolderAndDocument((SessionModel)ResponseSession.Data, Document_MV.DocumentId).Result;
                     bool checkManagePermission = result == null ? false : result.IsWrite;
                     if (checkManagePermission == true)
                     {
@@ -347,7 +347,7 @@ namespace DMS_API.Services
                 else
                 {
                     int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
-                    var result = GlobalService.CheckUserPermissionsFolderAndDocument((SessionModel)ResponseSession.Data, DocumentId).Result;
+                    var result = GlobalService.CheckUserPermissionsOnFolderAndDocument((SessionModel)ResponseSession.Data, DocumentId).Result;
                     bool checkManagePermission = result == null ? false : result.IsRead;
                     if (checkManagePermission == true)
                     {

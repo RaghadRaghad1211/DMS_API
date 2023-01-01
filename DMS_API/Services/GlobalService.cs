@@ -33,6 +33,11 @@ namespace DMS_API.Services
         #endregion
 
         #region Functions
+        /// <summary>
+        /// Get column name from Message table in database which depends on language
+        /// </summary>
+        /// <param name="Lang">Language</param>
+        /// <returns></returns>
         public static string GetMessageColumn(string Lang)
         {
             string Mlang = "MesArName";
@@ -53,6 +58,11 @@ namespace DMS_API.Services
             }
             return Mlang;
         }
+        /// <summary>
+        /// Get column name from Translation table in database which depends on language
+        /// </summary>
+        /// <param name="Lang">Language</param>
+        /// <returns></returns>
         public static string GetTranslationColumn(string Lang)
         {
             string Mlang = "TrArName";
@@ -73,6 +83,11 @@ namespace DMS_API.Services
             }
             return Mlang;
         }
+        /// <summary>
+        /// Get column name from Message table in database for search which depends on language
+        /// </summary>
+        /// <param name="Lang">Language</param>
+        /// <returns></returns>
         public static string GetTranslationSearchColumn(string Lang)
         {
             string Mlang = "TrKey";
@@ -96,6 +111,11 @@ namespace DMS_API.Services
             }
             return Mlang;
         }
+        /// <summary>
+        /// Get query for advance Search User 
+        /// </summary>
+        /// <param name="SearchUser_MV">Search Model</param>
+        /// <returns></returns>
         public static string GetUserSearchColumn(SearchUserModelView SearchUser_MV)
         {
             var obj = SearchUser_MV.GetType();
@@ -115,6 +135,11 @@ namespace DMS_API.Services
             string query = where.Remove(where.Length - 4, 4);
             return query;
         }
+        /// <summary>
+        /// Get query for add document
+        /// </summary>
+        /// <param name="Document_MV"></param>
+        /// <returns></returns>
         public static string GetQueryAddDocument(DocumentModelView Document_MV)
         {
             //List<KeyValueModel> KeyValue_Mlist = new List<KeyValueModel>();
@@ -134,28 +159,28 @@ namespace DMS_API.Services
 
             return null;
         }
+        /// <summary>
+        /// Get query for link between parent and childs,
+        /// for add, remove and move.
+        /// </summary>
+        /// <param name="ChildIds">Childs Id</param>
+        /// <returns></returns>
         public static string GetQueryLinkPro(List<int> ChildIds)
         {
             string Query = "";
             for (int i = 0; i < ChildIds.Count; i++)
             {
-
                 Query = Query + ChildIds[i] + ",";
             }
             Query = Query.Remove(Query.Length - 1, 1);
             return Query;
         }
-        public static string GetQueryMoveChilds(MoveChildToNewFolderModelView MoveChildToNewFolder_MV)
-        {
-            string Query = "";
-            for (int i = 0; i < MoveChildToNewFolder_MV.ChildIds.Count; i++)
-            {
-
-                Query = Query + MoveChildToNewFolder_MV.ChildIds[i] + ",";
-            }
-            Query = Query.Remove(Query.Length - 1, 1);
-            return Query;
-        }
+        /// <summary>
+        /// Get tree of organization with childs,
+        /// which depends on user login Id.
+        /// </summary>
+        /// <param name="userLoginID"> user login Id</param>
+        /// <returns></returns>
         public static async Task<List<OrgModel>> GetOrgsParentWithChildsByUserLoginID(int userLoginID)
         {
             try
@@ -198,6 +223,12 @@ namespace DMS_API.Services
                 return null;
             }
         }
+        /// <summary>
+        /// /// Get childs of organization,
+        /// which depends on organization Id.
+        /// </summary>
+        /// <param name="OrgId"></param>
+        /// <returns></returns>
         private static async Task<List<OrgModel>> GetOrgsChilds(int OrgId)
         {
             try
@@ -244,6 +275,12 @@ namespace DMS_API.Services
                 throw;
             }
         }
+        /// <summary>
+        /// Get flat of organization with childs,
+        /// which depends on user login Id.
+        /// </summary>
+        /// <param name="userLoginID">user login Id</param>
+        /// <returns></returns>
         public static async Task<List<OrgTableModel>> GetOrgsParentWithChildsByUserLoginID_Table(int userLoginID)
         {
             try
@@ -293,6 +330,12 @@ namespace DMS_API.Services
                 return null;
             }
         }
+        /// <summary>
+        /// General serach users and groups
+        /// </summary>
+        /// <param name="title">Title Search</param>
+        /// <param name="RequestHeader">Header Parameters</param>
+        /// <returns></returns>
         public static async Task<ResponseModelView> GeneralSearchByTitle(string title, RequestHeaderModelView RequestHeader)
         {
             try
@@ -323,7 +366,9 @@ namespace DMS_API.Services
 
                         string getResult = "SELECT [ObjId], [ObjTitle], [ObjClsId], [ClsName] " +
                                            "FROM   [Main].[V_Objects] " +
-                                          $"WHERE  [ObjOrgOwner] IN ({whereField} FROM [User].GetOrgsbyUserId({userLoginID})) AND ObjTitle LIKE '{title}%' AND ObjIsActive=1 ";
+                                          $"WHERE  [ObjOrgOwner] IN ({whereField} FROM [User].GetOrgsbyUserId({userLoginID})) AND " +
+                                          $"       [ObjClsId] IN ({(int)ClassType.User,(int)ClassType.Group}) " +
+                                          $"ObjTitle LIKE '{title}%' AND ObjIsActive=1 ";
 
                         dt = new DataTable();
                         dt = await Task.Run(() => dam.FireDataTable(getResult));
@@ -384,6 +429,12 @@ namespace DMS_API.Services
                 return Response_MV;
             }
         }
+        /// <summary>
+        /// Get desktop folder, favourites folders and groups of user login 
+        /// </summary>
+        /// <param name="Pagination_MV">Body Parameters</param>
+        /// <param name="RequestHeader">Header Parameters</param>
+        /// <returns></returns>
         public static async Task<ResponseModelView> GetHomeData(PaginationModelView Pagination_MV, RequestHeaderModelView RequestHeader)
         {
             try
@@ -403,7 +454,11 @@ namespace DMS_API.Services
 
                     #region MyDesktopFolder
                     DataTable dtGetDisktopFolder = new DataTable();
-                    dtGetDisktopFolder = await Task.Run(() => dam.FireDataTable($"SELECT FolderId, FolderTitle   FROM   [User].[GetFolderDesktopByUserId]({userLoginID})"));
+                    dtGetDisktopFolder = await Task.Run(() => dam.FireDataTable("SELECT      FolderId, FolderTitle  " +
+                                                                               $"FROM        [User].[GetFolderDesktopByUserId]({userLoginID}) " +
+                                                                                "ORDER BY    FolderId " +
+                                                                               $"OFFSET      ({_PageNumberFav}-1)*{_PageRowsFav} ROWS " +
+                                                                               $"FETCH NEXT   {_PageRowsFav} ROWS ONLY "));
                     MyDesktopFolder MyDesktopFolder = new MyDesktopFolder();
                     List<MyDesktopFolder> MyDesktopFolder_List = new List<MyDesktopFolder>();
                     if (dtGetDisktopFolder.Rows.Count > 0)
@@ -471,7 +526,6 @@ namespace DMS_API.Services
                     }
                     #endregion
 
-
                     Home_M = new HomeModel
                     {
                         MyDesktopFolder = MyDesktopFolder_List,
@@ -498,6 +552,12 @@ namespace DMS_API.Services
                 return Response_MV;
             }
         }
+        /// <summary>
+        /// Get folder location in server where document save it.
+        /// </summary>
+        /// <param name="DocumentId">Document Id</param>
+        /// <param name="Environment">Environment Parameter</param>
+        /// <returns></returns>
         public static async Task<string> GetDocumentLocationInServerFolder(int DocumentId, IWebHostEnvironment Environment)
         {
             try
@@ -511,6 +571,12 @@ namespace DMS_API.Services
                 return null;
             }
         }
+        /// <summary>
+        /// Create and save document in folder server.
+        /// </summary>
+        /// <param name="DocumentId">Document Id</param>
+        /// <param name="Environment">Environment Parameter</param>
+        /// <returns></returns>
         public static async Task<string> CreateDocumentFolderInServerFolder(int DocumentId, IWebHostEnvironment Environment)
         {
             try
@@ -527,6 +593,13 @@ namespace DMS_API.Services
                 return null;
             }
         }
+        /// <summary>
+        /// Get full path of document with name and extintion in folder server.
+        /// </summary>
+        /// <param name="DocumentId">Document Id</param>
+        /// <param name="LengthKey">Length Key encrypted</param>
+        /// <param name="Environment">Environment Parameter</param>
+        /// <returns></returns>
         public static async Task<string> GetFullPathOfDocumentNameInServerFolder(int DocumentId, int LengthKey, IWebHostEnvironment Environment)
         {
             string getDocPath = SecurityService.HostFilesUrl + "/" +
@@ -544,6 +617,12 @@ namespace DMS_API.Services
             return getDocPath;
 
         }
+        /// <summary>
+        /// Check the folder can open for move action.
+        /// </summary>
+        /// <param name="FolderId">Folder Id</param>
+        /// <param name="ObjectsIds">Objects Id you want to move</param>
+        /// <returns></returns>
         public static async Task<bool> IsFolderOpenableToMoveInsideIt(int FolderId, List<int> ObjectsIds)
         {
             if (ObjectsIds.Count > 0)
@@ -559,7 +638,15 @@ namespace DMS_API.Services
             }
             return await Task.FromResult(true);
         }
-        public static async Task<PermissionTypeModel> CheckUserPermissionsFolderAndDocument(SessionModel ResponseSession, int ObjectId)
+        /// <summary>
+        /// Get user permissions (IsRead, IsWrite, IsManage, IsQR) on folder, document. 
+        /// Get full permissions for Admin.
+        /// depends on user login Id
+        /// </summary>
+        /// <param name="ResponseSession">Body Parameter</param>
+        /// <param name="ObjectId">Object Id of folder, document</param>
+        /// <returns></returns>
+        public static async Task<PermissionTypeModel> CheckUserPermissionsOnFolderAndDocument(SessionModel ResponseSession, int ObjectId)
         {
             try
             {
@@ -612,7 +699,14 @@ namespace DMS_API.Services
                 return null;
             }
         }
-        public static async Task<bool> CreateQRcodePNG(int QrId, int DocumentId, IWebHostEnvironment Environment)
+        /// <summary>
+        /// Generate QR code for document 
+        /// </summary>
+        /// <param name="QrId">Qr Id</param>
+        /// <param name="DocumentId">Document Id</param>
+        /// <param name="Environment">Environment parameter</param>
+        /// <returns></returns>
+        public static async Task<bool> GenerateQRcodePNG(int QrId, int DocumentId, IWebHostEnvironment Environment)
         {
             try
             {

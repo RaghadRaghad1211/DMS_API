@@ -49,7 +49,7 @@ namespace DMS_API.Services
                 else
                 {
                     int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
-                    var result = GlobalService.CheckUserPermissionsFolderAndDocument((SessionModel)ResponseSession.Data, FolderChildsPermissions_MV.ParentId).Result;
+                    var result = GlobalService.CheckUserPermissionsOnFolderAndDocument((SessionModel)ResponseSession.Data, FolderChildsPermissions_MV.ParentId).Result;
                     bool checkManagePermission = result == null ? false : result.IsRead;
                     if (checkManagePermission == false)
                     {
@@ -326,7 +326,7 @@ namespace DMS_API.Services
                 else
                 {
                     int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
-                    var result = GlobalService.CheckUserPermissionsFolderAndDocument((SessionModel)ResponseSession.Data, FolderChildsPermissionsSearch_MV.ParentId).Result;
+                    var result = GlobalService.CheckUserPermissionsOnFolderAndDocument((SessionModel)ResponseSession.Data, FolderChildsPermissionsSearch_MV.ParentId).Result;
                     bool checkManagePermission = result == null ? false : result.IsRead;
                     if (checkManagePermission == false)
                     {
@@ -474,7 +474,7 @@ namespace DMS_API.Services
                 else
                 {
                     int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
-                    var result = GlobalService.CheckUserPermissionsFolderAndDocument((SessionModel)ResponseSession.Data, ObjectId).Result;
+                    var result = GlobalService.CheckUserPermissionsOnFolderAndDocument((SessionModel)ResponseSession.Data, ObjectId).Result;
                     bool checkManagePermission = result == null ? false : result.IsRead;
                     if (checkManagePermission == false)
                     {
@@ -581,7 +581,7 @@ namespace DMS_API.Services
                 else
                 {
                     int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
-                    var result = GlobalService.CheckUserPermissionsFolderAndDocument((SessionModel)ResponseSession.Data, AddPermissions_MV.SourObjId).Result;
+                    var result = GlobalService.CheckUserPermissionsOnFolderAndDocument((SessionModel)ResponseSession.Data, AddPermissions_MV.SourObjId).Result;
                     bool checkManagePermission = result == null ? false : result.IsManage;
                     if (checkManagePermission == true)
                     {
@@ -651,7 +651,7 @@ namespace DMS_API.Services
                 else
                 {
                     int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
-                    var result = GlobalService.CheckUserPermissionsFolderAndDocument((SessionModel)ResponseSession.Data, EditPermissions_MV.SourObjId).Result;
+                    var result = GlobalService.CheckUserPermissionsOnFolderAndDocument((SessionModel)ResponseSession.Data, EditPermissions_MV.SourObjId).Result;
                     bool checkManagePermission = result == null ? false : result.IsManage;
 
                     if (checkManagePermission == true)
@@ -723,7 +723,7 @@ namespace DMS_API.Services
                 else
                 {
                     int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
-                    var result = GlobalService.CheckUserPermissionsFolderAndDocument((SessionModel)ResponseSession.Data, ObjectId).Result;
+                    var result = GlobalService.CheckUserPermissionsOnFolderAndDocument((SessionModel)ResponseSession.Data, ObjectId).Result;
                     bool checkManagePermission = result == null ? false : result.IsManage;
                     if (checkManagePermission == true)
                     {
@@ -840,7 +840,7 @@ namespace DMS_API.Services
                 else
                 {
                     int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
-                    var result = GlobalService.CheckUserPermissionsFolderAndDocument((SessionModel)ResponseSession.Data, ObjectId).Result;
+                    var result = GlobalService.CheckUserPermissionsOnFolderAndDocument((SessionModel)ResponseSession.Data, ObjectId).Result;
                     bool checkManagePermission = result == null ? false : result.IsManage;
                     if (checkManagePermission == true)
                     {
