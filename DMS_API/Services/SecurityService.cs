@@ -9,18 +9,15 @@ using System.Net.Mail;
 using System.Net;
 using ArchiveAPI.Services;
 using System.Data;
-using Microsoft.AspNetCore.Cryptography.KeyDerivation;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace DMS_API.Services
 {
     /// <summary>
-    /// Class for set Database Connection 
+    /// Service work with Security
     /// </summary>
     public static class SecurityService
     {
         #region Properteis
-
         public static readonly string ConnectionString =
             "Server=10.55.101.20,1433;Database=DMS_DB;Integrated Security=false;User ID=dms; Password=dms;Connection Timeout=60";
 
@@ -39,32 +36,6 @@ namespace DMS_API.Services
         private static string OtpUrl;
         private static string OtpUsername;
         private static string OtpPassword;
-
-        #region MyRegion
-        //public static readonly string PasswordSalt =
-        //    "MSSH24919831610";
-
-        //public static readonly string JwtKey =
-        //    "Qig5PmxqgqBbVDtVYRorpC55wm8w3ZrL";
-        //public static readonly string JwtIssuer =
-        //    "APIsecurity";
-        //public static readonly string JwtAudience =
-        //    "APIsecurity";
-
-        //public static readonly string MsgEmail = 
-        //    "haelrox1989@gmail.com";
-        //public static readonly string MsgPassword =
-        //    "rfguirfrmutcmbyp";
-
-        //private static readonly string Url =
-        //    "http://109.224.32.124:8003/api/client/mobile_message/send/basic";
-        //private static readonly string Username =
-        //    "21";
-        //private static readonly string Password =
-        //    "T8rJnTtmVctNmqZRZOdBFBluu52Ozj6ubd8v28Ni";
-        #endregion
-
-
         #endregion
 
         #region Functions
@@ -75,7 +46,6 @@ namespace DMS_API.Services
                 DataAccessService dam = new DataAccessService(ConnectionString);
                 DataTable dtKeys = new DataTable();
                 dtKeys = dam.FireDataTable($"SELECT SecKey, SecValue  FROM [Security].[SecureKeys]");
-                // var tt = dtKeys.Select("SecKey = 'PasswordSalt'");
                 PasswordSalt = dtKeys.Select("SecKey = 'PasswordSalt' ")[0]["SecValue"].ToString();
                 JwtKey = dtKeys.Select("SecKey = 'JwtKey' ")[0]["SecValue"].ToString();
                 JwtIssuer = dtKeys.Select("SecKey = 'JwtIssuer' ")[0]["SecValue"].ToString();
@@ -87,26 +57,23 @@ namespace DMS_API.Services
                 OtpPassword = dtKeys.Select("SecKey = 'OtpPassword' ")[0]["SecValue"].ToString();
 
                 return true;
-                //PasswordSalt = dtKeys.Rows[0][0].ToString();
-                //JwtKey = dtKeys.Rows[1][0].ToString();
-                //JwtIssuer = dtKeys.Rows[2][0].ToString();
-                //JwtAudience = dtKeys.Rows[3][0].ToString();
-                //MsgEmail = dtKeys.Rows[4][0].ToString();
-                //MsgPassword = dtKeys.Rows[5][0].ToString();
-                //OtpUrl = dtKeys.Rows[6][0].ToString();
-                //OtpUsername = dtKeys.Rows[7][0].ToString();
-                //OtpPassword = dtKeys.Rows[8][0].ToString();
             }
             catch (Exception)
             {
                 return false;
             }
         }
+        /// <summary>
+        /// Generate Token for user authenticate,
+        /// and return token in string variable.
+        /// </summary>
+        /// <param name="User_M">Body Parameters</param>
+        /// <returns></returns>
         public static JwtToken GeneratTokenAuthenticate(UserModel User_M)
         {
             if (GetSecureKeys() == true)
             {
-                var JwtKeyByte = Encoding.ASCII.GetBytes(JwtKey); // Convert.FromBase64String(JwtKey);
+                var JwtKeyByte = Encoding.ASCII.GetBytes(JwtKey);
                 var SecurityKey = new SymmetricSecurityKey(JwtKeyByte);
                 var SecurityAlgorithm = SecurityAlgorithms.HmacSha256Signature;
                 var TokenHandler = new JwtSecurityTokenHandler();
@@ -122,7 +89,6 @@ namespace DMS_API.Services
                     new Claim("UserInfo", JsonConvert.SerializeObject(User_M)),
                     new Claim(ClaimTypes.NameIdentifier,User_M.UserID.ToString()),
                     new Claim("Username", User_M.UserName),
-                    //new Claim("Password", User_M.Password),
                     new Claim("FullName", User_M.FullName),
                     new Claim(ClaimTypes.Role,User_M.Role),
                     new Claim("IsOrgAdmin",User_M.IsOrgAdmin.ToString()),
@@ -144,13 +110,19 @@ namespace DMS_API.Services
                     UserID = User_M.UserID
                 };
                 return TokenInfo;
-                // return TokenID;
             }
             else
             {
                 return new JwtToken();
             }
         }
+        /// <summary>
+        /// Send Email to user by email address
+        /// </summary>
+        /// <param name="EmailTo"></param>
+        /// <param name="Subject"></param>
+        /// <param name="Body"></param>
+        /// <returns></returns>
         public static bool SendEmail(string EmailTo, string Subject, string Body)
         {
             try
@@ -164,8 +136,7 @@ namespace DMS_API.Services
                         mail.Subject = Subject;
                         mail.Body = Body;
                         mail.IsBodyHtml = true;
-                        //mail.Attachments.Add(new Attachment("D:\\TestFile.txt"));//--Uncomment this to send any attachment  
-                        using (SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587)) // SmtpHost = "smtp.gmail.com"; PortNumber = 587 for Google
+                        using (SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587))
                         {
                             smtp.UseDefaultCredentials = false;
                             smtp.Credentials = new NetworkCredential(MsgEmail, MsgPassword);
@@ -185,6 +156,13 @@ namespace DMS_API.Services
                 return false;
             }
         }
+        /// <summary>
+        /// Send one time password (OTP) to user by phone number.
+        /// </summary>
+        /// <param name="PhoneNumber"></param>
+        /// <param name="Message"></param>
+        /// <param name="Reliable">defult false</param>
+        /// <returns></returns>
         public static async Task<bool> SendOTP(string PhoneNumber, string Message, bool Reliable = false)
         {
             try
@@ -192,13 +170,14 @@ namespace DMS_API.Services
                 if (GetSecureKeys() == true)
                 {
                     using var client = new HttpClient();
-                    client.DefaultRequestHeaders.Add("Authorization", $"Basic {Convert.ToBase64String(Encoding.UTF8.GetBytes($"{OtpUsername}:{OtpPassword}"))}");
+                    client.DefaultRequestHeaders.Add("Authorization", 
+                                                    $"Basic {Convert.ToBase64String(Encoding.UTF8.GetBytes($"{OtpUsername}:{OtpPassword}"))}");
                     var request = new Dictionary<string, string>
-            {
-                {"content", Message},
-                {"phone_num", PhoneNumber},
-                {"reliable", Convert.ToInt16(Reliable).ToString()}
-            };
+                                    {
+                                        {"content", Message},
+                                        {"phone_num", PhoneNumber},
+                                        {"reliable", Convert.ToInt16(Reliable).ToString()}
+                                    };
                     var response = await client.PostAsync(OtpUrl, new FormUrlEncodedContent(request));
                     var content = await response.Content.ReadAsStringAsync();
                     var result = JsonConvert.DeserializeObject(content);
@@ -211,6 +190,12 @@ namespace DMS_API.Services
                 return false;
             }
         }
+        /// <summary>
+        /// Enecrypt Password
+        /// </summary>
+        /// <param name="password"></param>
+        /// <param name="username"></param>
+        /// <returns></returns>
         public static string PasswordEnecrypt(string password, string username)
         {
             if (GetSecureKeys() == true)
@@ -234,6 +219,11 @@ namespace DMS_API.Services
                 return null;
             }
         }
+        /// <summary>
+        /// Roundom Password
+        /// </summary>
+        /// <param name="length"></param>
+        /// <returns></returns>
         public static string RoundomPassword(int length = 10)
         {
             const string valid = "abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ123456789!@#$%^&*?";
@@ -245,6 +235,11 @@ namespace DMS_API.Services
             }
             return res.ToString();
         }
+        /// <summary>
+        /// Roundom Key
+        /// </summary>
+        /// <param name="length"></param>
+        /// <returns></returns>
         public static string RoundomKey(int length = 10)
         {
             const string valid = "abcdefghijkmnopqrstuvwxyzABCDEFGHIJKMNOPQRSTUVWXYZ0123456789";
@@ -258,7 +253,6 @@ namespace DMS_API.Services
         }
         #endregion
     }
-
     public class JwtToken
     {
         public string TokenID { get; set; }

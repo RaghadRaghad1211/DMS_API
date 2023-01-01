@@ -5,6 +5,9 @@ using System.Data;
 using System.Net;
 namespace DMS_API.Services
 {
+    /// <summary>
+    /// Service work with Session
+    /// </summary>
     public class SessionService
     {
         #region Properteis
@@ -22,6 +25,11 @@ namespace DMS_API.Services
         #endregion
 
         #region Functions 
+        /// <summary>
+        /// Check Authorization of user by his token.
+        /// </summary>
+        /// <param name="RequestHeader">Header Parameters</param>
+        /// <returns>Response { (bool)Success, (string)Message, (object)Data}</returns>
         public async Task<ResponseModelView> CheckAuthorizationResponse(RequestHeaderModelView RequestHeader)
         {
             try
@@ -135,6 +143,14 @@ namespace DMS_API.Services
                 return Session_M;
             }
         }
+        /// <summary>
+        /// Add Session in database by user token when user logined,
+        /// return bool variable,
+        /// true: add session is Success.
+        /// false: add session Faild.
+        /// </summary>
+        /// <param name="jwtToken">User Token</param>
+        /// <returns>bool</returns>
         public async Task<bool> AddSession(JwtToken jwtToken)
         {
             try

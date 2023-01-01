@@ -1,11 +1,6 @@
 ﻿using DMS_API.ModelsView;
 using DMS_API.Services;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.ComponentModel.DataAnnotations;
-using System.Security;
 
 namespace DMS_API.Controllers
 {
@@ -30,7 +25,6 @@ namespace DMS_API.Controllers
         #endregion
 
         #region Actions
-
         [HttpPost]
         [Route("AddDocument")]
         public async Task<IActionResult> AddDocument([FromForm] DocumentModelView Document_MV, [FromHeader] RequestHeaderModelView RequestHeader)
@@ -54,17 +48,6 @@ namespace DMS_API.Controllers
             Response_MV = await Document_S.GetDocumentMetadata(DocumentId, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
-
-        //[AllowAnonymous]
-        //[HttpPut]
-        //[Route("MoveDocumentToNewFolder")]
-        //public async Task<IActionResult> MoveDocumentToNewFolder([FromBody] MoveChildToNewFolderModelView MoveChildToNewFolder_MV, [FromHeader] RequestHeaderModelView RequestHeader)
-        //{
-        //    Response_MV = await LinkParentChild_S.MoveChildToNewFolder((int)GlobalService.ClassType.Folder, (int)GlobalService.ClassType.Document, MoveChildToNewFolder_MV, RequestHeader);
-        //    return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
-        //}
-
-        
         #endregion
     }
 }

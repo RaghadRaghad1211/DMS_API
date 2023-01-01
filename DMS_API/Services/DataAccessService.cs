@@ -4,7 +4,8 @@ using System.Data.SqlClient;
 namespace ArchiveAPI.Services
 {
     /// <summary>
-    /// Class Builded By HAEL ROX
+    /// Class Builded By HAEL ROX:
+    /// Service work with Database Queries
     /// </summary>
     public class DataAccessService
     {

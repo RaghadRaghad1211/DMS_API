@@ -5,6 +5,9 @@ using System.Data;
 using System.Net;
 namespace DMS_API.Services
 {
+    /// <summary>
+    /// Service work with Documents
+    /// </summary>
     public class DocumentService
     {
         #region Properteis

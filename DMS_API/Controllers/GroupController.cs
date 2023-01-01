@@ -1,7 +1,5 @@
 ﻿using DMS_API.ModelsView;
 using DMS_API.Services;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DMS_API.Controllers

@@ -3,14 +3,31 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 namespace DMS_API.Services
 {
+    /// <summary>
+    /// Service work with Validations
+    /// </summary>
     public static class ValidationService
     {
         #region Functions
+        /// <summary>
+        /// Check Text is empty or null,
+        /// and return bool variable,
+        /// true: text is empty.
+        /// false: text is not empty.
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
         public static bool IsEmpty(this string str)
         {
             str = str == null ? "" : str;
             return string.IsNullOrEmpty(str.Trim());
         }
+        /// <summary>
+        /// Check class fields are empty or null,
+        /// and return string variable which field is empty.
+        /// </summary>
+        /// <param name="ObjClass"></param>
+        /// <returns></returns>
         public static string IsEmptyList(this object ObjClass)
         {
             var obj = ObjClass.GetType();
@@ -29,15 +46,39 @@ namespace DMS_API.Services
             }
             return msg;
         }
+        /// <summary>
+        /// Check variable is integer or not,
+        /// and return bool variable,
+        /// true: is integer.
+        /// false: is not integer.
+        /// </summary>
+        /// <param name="num"></param>
+        /// <returns></returns>
         public static bool IsInt(this string num)
         {
             return int.TryParse(num.Trim(), out int value);
         }
+        /// <summary>
+        /// Check variable is date or not,
+        /// and return bool variable,
+        /// true: is date.
+        /// false: is not date.
+        /// </summary>
+        /// <param name="date"></param>
+        /// <returns></returns>
         public static bool IsDate(this string date)
         {
             return DateTime.TryParseExact(date.Trim(), new string[] { "dd/MM/yyyy", "MM/dd/yyyy" },
                                           CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime value);
         }
+        /// <summary>
+        /// Check variable is date or not,
+        /// and return bool variable,
+        /// true: is date.
+        /// false: is not date.
+        /// </summary>
+        /// <param name="date"></param>
+        /// <returns></returns>
         public static bool CheckDate(string date)
         {
             try
@@ -50,6 +91,14 @@ namespace DMS_API.Services
                 return false;
             }
         }
+        /// <summary>
+        /// Check variable is phoneNumber or not,
+        /// and return bool variable,
+        /// true: is phoneNumber.
+        /// false: is not phoneNumber.
+        /// </summary>
+        /// <param name="phoneNumber"></param>
+        /// <returns></returns>
         public static bool IsPhoneNumber(this string phoneNumber)
         {
             int count = phoneNumber.Length;
@@ -63,6 +112,14 @@ namespace DMS_API.Services
             }
             return false;
         }
+        /// <summary>
+        /// Check variable is email or not,
+        /// and return bool variable,
+        /// true: is email.
+        /// false: is not email.
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns></returns>
         public static bool IsEmail(this string email)
         {
 
@@ -79,6 +136,14 @@ namespace DMS_API.Services
                 return false;
             }
         }
+        /// <summary>
+        /// Check password strength,
+        /// and return string variable, which level of strength
+        /// true: is phoneNumber.
+        /// false: is not phoneNumber.
+        /// </summary>
+        /// <param name="TxtPassword"></param>
+        /// <returns></returns>
         public static string IsPasswordStrength(this string TxtPassword)
         {
             string[] Strength = { "يجب ادخال 8 احرف", "ضعيف", "متوسط", "قوي", "قوي جداً" };
@@ -129,18 +194,6 @@ namespace DMS_API.Services
                     return Strength[1];
                 }
             }
-        }
-        public static bool IsPasswordStrength1(this string pass)
-        {
-            if (string.IsNullOrWhiteSpace(pass) ||
-                pass.Length < 8 ||
-                pass.Any(char.IsUpper).ToString().Length == 0 ||
-                pass.Any(char.IsLower).ToString().Length == 0 ||
-                pass.Any(char.IsDigit).ToString().Length == 0 ||
-                pass.Any(char.IsLetter).ToString().Length == 0)
-                return false;
-
-            return true;
         }
         #endregion
     }

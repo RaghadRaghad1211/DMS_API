@@ -5,6 +5,9 @@ using System.Data;
 using System.Net;
 namespace DMS_API.Services
 {
+    /// <summary>
+    /// Service work with Groups
+    /// </summary>
     public class GroupService
     {
         #region Properteis
@@ -14,7 +17,6 @@ namespace DMS_API.Services
         private GroupModel Group_M { get; set; }
         private List<GroupModel> Group_Mlist { get; set; }
         private ResponseModelView Response_MV { get; set; }
-
         #endregion
 
         #region Constructor        
@@ -27,7 +29,7 @@ namespace DMS_API.Services
         #region Functions
         /// <summary>
         /// Only Admins To Do:
-        /// Get all Groups which depends on the User Orgnazation
+        /// Get all Groups which depends on the Admin Orgnazation
         /// </summary>
         /// <param name="Pagination_MV">Body Parameters</param>
         /// <param name="RequestHeader">Header Parameters</param>
@@ -414,45 +416,60 @@ namespace DMS_API.Services
                         }
                         else
                         {
-                            int checkDeblicate = Convert.ToInt32(dam.FireSQL("SELECT   COUNT(*)   FROM [User].[V_Groups] " +
-                                                                            $"WHERE    ObjTitle = '{Group_MV.GroupTitle}' AND " +
-                                                                            $"OrgOwner ={Group_MV.GroupOrgOwnerID} AND " +
-                                                                            $"ObjClsId ={(int)GlobalService.ClassType.Group} AND ObjIsActive=1 "));
-                            if (checkDeblicate == 0)
+                            int isGroupAdmins = Convert.ToInt32(dam.FireSQL("SELECT   COUNT(*)     FROM   [User].[V_Groups] " +
+                                                                           $"WHERE    ObjId={Group_MV.GroupId} AND ObjTitle = 'GroupOrgAdmins' ")) ;
+                            if (isGroupAdmins > 0)
                             {
-                                string exeut = $"EXEC [User].[UpdateGroupPro] '{Group_MV.GroupId}','{Group_MV.GroupTitle}', '{Group_MV.GroupIsActive}','{Group_MV.GroupDescription}' ";
-                                var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
-
-                                if (outValue == null || outValue.Trim() == "" || outValue == 0.ToString())
+                                Response_MV = new ResponseModelView
                                 {
-                                    Response_MV = new ResponseModelView
+                                    Success = false,
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GroupUnEditable],
+                                    Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                                };
+                                return Response_MV;
+                            }
+                            else
+                            {
+                                int checkDeblicate = Convert.ToInt32(dam.FireSQL("SELECT   COUNT(*)   FROM [User].[V_Groups] " +
+                                                                                $"WHERE    ObjTitle = '{Group_MV.GroupTitle}' AND " +
+                                                                                $"OrgOwner ={Group_MV.GroupOrgOwnerID} AND " +
+                                                                                $"ObjClsId ={(int)GlobalService.ClassType.Group} AND ObjIsActive=1 "));
+                                if (checkDeblicate == 0)
+                                {
+                                    string exeut = $"EXEC [User].[UpdateGroupPro] '{Group_MV.GroupId}','{Group_MV.GroupTitle}', '{Group_MV.GroupIsActive}','{Group_MV.GroupDescription}' ";
+                                    var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
+
+                                    if (outValue == null || outValue.Trim() == "" || outValue == 0.ToString())
                                     {
-                                        Success = false,
-                                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.UpdateFaild],
-                                        Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
-                                    };
-                                    return Response_MV;
+                                        Response_MV = new ResponseModelView
+                                        {
+                                            Success = false,
+                                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.UpdateFaild],
+                                            Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                                        };
+                                        return Response_MV;
+                                    }
+                                    else
+                                    {
+                                        Response_MV = new ResponseModelView
+                                        {
+                                            Success = true,
+                                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.UpdateSuccess],
+                                            Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
+                                        };
+                                        return Response_MV;
+                                    }
                                 }
                                 else
                                 {
                                     Response_MV = new ResponseModelView
                                     {
-                                        Success = true,
-                                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.UpdateSuccess],
-                                        Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
+                                        Success = false,
+                                        Message = Group_MV.GroupTitle + " " + MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsExist],
+                                        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
                                     };
                                     return Response_MV;
                                 }
-                            }
-                            else
-                            {
-                                Response_MV = new ResponseModelView
-                                {
-                                    Success = false,
-                                    Message = Group_MV.GroupTitle + " " + MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsExist],
-                                    Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
-                                };
-                                return Response_MV;
                             }
                         }
                     }

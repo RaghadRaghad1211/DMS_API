@@ -1,8 +1,6 @@
 ﻿using DMS_API.ModelsView;
 using DMS_API.Services;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Security;
 
 namespace DMS_API.Controllers
 {
@@ -43,12 +41,11 @@ namespace DMS_API.Controllers
 
         [HttpGet]
         [Route("GetPermissionsOnFolderByFolderId/{FolderId}")]
-        public async Task<IActionResult> GetPermissionsOnFolderByObjectId([FromRoute] int FolderId, [FromHeader] RequestHeaderModelView RequestHeader)
+        public async Task<IActionResult> GetPermissionsOnObjectByObjectId([FromRoute] int FolderId, [FromHeader] RequestHeaderModelView RequestHeader)
         {
             Response_MV = await Permissions_S.GetPermissionsOnObjectByObjectId(FolderId, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
-
 
         [HttpPost]
         [Route("AddPermissionsOnObject")]
@@ -66,7 +63,6 @@ namespace DMS_API.Controllers
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
-
         [HttpPost]
         [Route("GetUsersOrGroupsHavePermissionOnObject/{ObjectId}")]
         public async Task<IActionResult> GetUsersOrGroupsHavePermissionOnObject([FromRoute] int ObjectId, [FromBody] PaginationModelView Pagination_MV, [FromHeader] RequestHeaderModelView RequestHeader)
@@ -75,7 +71,6 @@ namespace DMS_API.Controllers
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
-
         [HttpPost]
         [Route("GetUsersOrGroupsNotHavePermissionOnObject/{ObjectId}")]
         public async Task<IActionResult> GetUsersOrGroupsNotHavePermissionOnObject([FromRoute] int ObjectId, [FromBody] PaginationModelView Pagination_MV, [FromHeader] RequestHeaderModelView RequestHeader)
@@ -83,7 +78,6 @@ namespace DMS_API.Controllers
             Response_MV = await Permissions_S.GetUsersOrGroupsNotHavePermissionOnObject(ObjectId, Pagination_MV, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
-
         #endregion
     }
 }

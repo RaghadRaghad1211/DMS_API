@@ -5,6 +5,9 @@ using System.Data;
 using System.Net;
 namespace DMS_API.Services
 {
+    /// <summary>
+    /// Service work with Links Between Parents and Childs
+    /// </summary>
     public class LinkParentChildService
     {
         #region Properteis
@@ -26,7 +29,6 @@ namespace DMS_API.Services
         #endregion
 
         #region Functions
-
         #region Groups
         /// <summary>
         /// Only Admins To Do:
@@ -613,7 +615,6 @@ namespace DMS_API.Services
             }
         }
         #endregion
-
         #region Folders
         /// <summary>
         /// Users Have IsManage & Admins To Do:
@@ -805,8 +806,8 @@ namespace DMS_API.Services
                 return Response_MV;
             }
         }
+      
         #endregion
-
         #endregion
     }
 }

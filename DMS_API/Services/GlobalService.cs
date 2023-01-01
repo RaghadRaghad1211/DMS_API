@@ -1,26 +1,17 @@
 ﻿using ArchiveAPI.Services;
 using DMS_API.Models;
 using DMS_API.ModelsView;
-using iTextSharp.text.pdf;
-using iTextSharp.text.pdf.qrcode;
-using Microsoft.AspNetCore.Hosting.Server;
 using QRCoder;
 using System.Data;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Drawing.Printing;
 using System.Net;
-using System.Net.NetworkInformation;
 using System.Reflection;
-using ZXing.Rendering;
-using ZXing.Common;
-using ZXing.QrCode.Internal;
-using ZXing;
-using ZXing.QrCode;
-using ZXing.Mobile;
-
 namespace DMS_API.Services
 {
+    /// <summary>
+    /// Service work with Different Methods
+    /// </summary>
     public static class GlobalService
     {
         #region Properteis
@@ -165,7 +156,7 @@ namespace DMS_API.Services
             Query = Query.Remove(Query.Length - 1, 1);
             return Query;
         }
-        public static async Task<List<OrgModel>> GetOrgsParentWithChildsByUserLoginID(int userLoginID, bool IsOrgAdmin = false)
+        public static async Task<List<OrgModel>> GetOrgsParentWithChildsByUserLoginID(int userLoginID)
         {
             try
             {
@@ -650,5 +641,4 @@ namespace DMS_API.Services
 
         #endregion
     }
-
 }

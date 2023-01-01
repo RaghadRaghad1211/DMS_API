@@ -5,6 +5,9 @@ using System.Data;
 using System.Net;
 namespace DMS_API.Services
 {
+    /// <summary>
+    /// Service work with Translation Words
+    /// </summary>
     public class TranslationService
     {
         #region Properteis
@@ -23,7 +26,14 @@ namespace DMS_API.Services
         }
         #endregion
 
-        #region Functions        
+        #region Functions
+        /// <summary>
+        /// Only System Admin (Administrator) To Do:
+        /// Get All Translation Words in the system
+        /// </summary>
+        /// <param name="Pagination_MV">Body Parameters</param>
+        /// <param name="RequestHeader">Header Parameters</param>
+        /// <returns>Response { (bool)Success, (string)Message, (object)Data}</returns>
         public async Task<ResponseModelView> GetTranslationList(PaginationModelView Pagination_MV, RequestHeaderModelView RequestHeader)
         {
             try
@@ -156,7 +166,14 @@ namespace DMS_API.Services
                 return Response_MV;
             }
         }
-        public async Task<ResponseModelView> GetTranslationByID(int id, RequestHeaderModelView RequestHeader)
+        /// <summary>
+        /// Only System Admin (Administrator) To Do:
+        /// Get Translation Word in the system by Id
+        /// </summary>
+        /// <param name="TransId">Id of Translation word</param>
+        /// <param name="RequestHeader">Header Parameters</param>
+        /// <returns>Response { (bool)Success, (string)Message, (object)Data}</returns>
+        public async Task<ResponseModelView> GetTranslationByID(int TransId, RequestHeaderModelView RequestHeader)
         {
             try
             {
@@ -181,7 +198,7 @@ namespace DMS_API.Services
                     else
                     {
                         string Mlang = GlobalService.GetMessageColumn(RequestHeader.Lang);
-                        string get = $"SELECT Trid, TrKey, TrArName, TrEnName, TrKrName FROM Main.Translation WHERE Trid={id}";
+                        string get = $"SELECT Trid, TrKey, TrArName, TrEnName, TrKrName FROM Main.Translation WHERE Trid={TransId}";
                         Dt = new DataTable();
                         Dt = await Task.Run(() => dam.FireDataTable(get));
                         if (Dt == null)
@@ -237,6 +254,13 @@ namespace DMS_API.Services
                 return Response_MV;
             }
         }
+        /// <summary>
+        /// Only System Admin (Administrator) To Do:
+        /// Add Translation Words
+        /// </summary>
+        /// <param name="Translation_M">Body Parameters</param>
+        /// <param name="RequestHeader">Header Parameters</param>
+        /// <returns>Response { (bool)Success, (string)Message, (object)Data}</returns>
         public async Task<ResponseModelView> AddTranslationWords(TranslationModel Translation_M, RequestHeaderModelView RequestHeader)
         {
             try
@@ -326,6 +350,13 @@ namespace DMS_API.Services
                 return Response_MV;
             }
         }
+        /// <summary>
+        /// Only System Admin (Administrator) To Do:
+        /// Edit Translation Words
+        /// </summary>
+        /// <param name="Translation_M">Body Parameters</param>
+        /// <param name="RequestHeader">Header Parameters</param>
+        /// <returns>Response { (bool)Success, (string)Message, (object)Data}</returns>
         public async Task<ResponseModelView> EditTranslationWords(TranslationModel Translation_M, RequestHeaderModelView RequestHeader)
         {
             try
@@ -403,6 +434,13 @@ namespace DMS_API.Services
                 return Response_MV;
             }
         }
+        /// <summary>
+        /// Only System Admin (Administrator) To Do:
+        /// Search Translation Words by Key or word
+        /// </summary>
+        /// <param name="SearchTranslation_MV">Body Parameters</param>
+        /// <param name="RequestHeader">Header Parameters</param>
+        /// <returns>Response { (bool)Success, (string)Message, (object)Data}</returns>
         public async Task<ResponseModelView> SearchTranslationWords(SearchTranslationModelView SearchTranslation_MV, RequestHeaderModelView RequestHeader)
         {
             try
@@ -549,6 +587,12 @@ namespace DMS_API.Services
                 return Response_MV;
             }
         }
+        /// <summary>
+        /// Everyone To Do:
+        /// Get all Translation Words in the system
+        /// </summary>
+        /// <param name="Lang">Header Language</param>
+        /// <returns>Response { (bool)Success, (string)Message, (object)Data}</returns>
         public async Task<ResponseModelView> GetTranslationPage(string Lang)
         {
             try
@@ -574,8 +618,6 @@ namespace DMS_API.Services
                     {
                         dict1.Add(Dt.Rows[i]["TrKey"].ToString(), Dt.Rows[i]["Word"].ToString());
                     }
-                    //Dictionary<string, Dictionary<string, string>> dict2 = new();
-                    //dict2.Add("Trans", dict1);
                     Dictionary<string, Dictionary<string, string>> dict2 = new()
                     {
                         { "Trans", dict1 }

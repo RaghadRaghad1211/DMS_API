@@ -5,6 +5,9 @@ using System.Data;
 using System.Net;
 namespace DMS_API.Services
 {
+    /// <summary>
+    /// Service work with Folders
+    /// </summary>
     public class FolderService
     {
         #region Properteis
@@ -143,45 +146,60 @@ namespace DMS_API.Services
                         }
                         else
                         {
-                            int checkDeblicate = Convert.ToInt32(dam.FireSQL($"SELECT  COUNT(*)     FROM    [User].[V_Folders] " +
-                                                                             $"WHERE   ObjTitle = '{Folder_MV.FolderTitle}' AND " +
-                                                                             $"        ObjId IN (SELECT LcChildObjId FROM [Main].[GetChildsInParent]({Folder_MV.FolderPerantId},{(int)GlobalService.ClassType.Folder})) AND " +
-                                                                             $"        ObjClsId ={(int)GlobalService.ClassType.Folder} AND ObjIsActive=1 "));
-                            if (checkDeblicate == 0)
+                            int isDesktopFolder = Convert.ToInt32(dam.FireSQL("SELECT   COUNT(*)     FROM   [User].[V_Folders] " +
+                                                                           $"WHERE    ObjId={Folder_MV.FolderId} AND ObjIsDesktopFolder = 1 "));
+                            if (isDesktopFolder > 0)
                             {
-                                string exeut = $"EXEC [User].[UpdateFolderPro] '{Folder_MV.FolderId}','{Folder_MV.FolderTitle}', '1', '{Folder_MV.FolderDescription}', '{Folder_MV.IsFavoriteFolder}' ";
-                                var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
-
-                                if (outValue == null || outValue.Trim() == "" || outValue == 0.ToString())
+                                Response_MV = new ResponseModelView
                                 {
-                                    Response_MV = new ResponseModelView
+                                    Success = false,
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.FolderUnEditable],
+                                    Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                                };
+                                return Response_MV;
+                            }
+                            else
+                            {
+                                int checkDeblicate = Convert.ToInt32(dam.FireSQL($"SELECT  COUNT(*)     FROM    [User].[V_Folders] " +
+                                                                                 $"WHERE   ObjTitle = '{Folder_MV.FolderTitle}' AND " +
+                                                                                 $"        ObjId IN (SELECT LcChildObjId FROM [Main].[GetChildsInParent]({Folder_MV.FolderPerantId},{(int)GlobalService.ClassType.Folder})) AND " +
+                                                                                 $"        ObjClsId ={(int)GlobalService.ClassType.Folder} AND ObjIsActive=1 "));
+                                if (checkDeblicate == 0)
+                                {
+                                    string exeut = $"EXEC [User].[UpdateFolderPro] '{Folder_MV.FolderId}','{Folder_MV.FolderTitle}', '1', '{Folder_MV.FolderDescription}', '{Folder_MV.IsFavoriteFolder}' ";
+                                    var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
+
+                                    if (outValue == null || outValue.Trim() == "" || outValue == 0.ToString())
                                     {
-                                        Success = false,
-                                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.UpdateFaild],
-                                        Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
-                                    };
-                                    return Response_MV;
+                                        Response_MV = new ResponseModelView
+                                        {
+                                            Success = false,
+                                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.UpdateFaild],
+                                            Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                                        };
+                                        return Response_MV;
+                                    }
+                                    else
+                                    {
+                                        Response_MV = new ResponseModelView
+                                        {
+                                            Success = true,
+                                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.UpdateSuccess],
+                                            Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
+                                        };
+                                        return Response_MV;
+                                    }
                                 }
                                 else
                                 {
                                     Response_MV = new ResponseModelView
                                     {
-                                        Success = true,
-                                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.UpdateSuccess],
-                                        Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
+                                        Success = false,
+                                        Message = Folder_MV.FolderTitle + " " + MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsExist],
+                                        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
                                     };
                                     return Response_MV;
                                 }
-                            }
-                            else
-                            {
-                                Response_MV = new ResponseModelView
-                                {
-                                    Success = false,
-                                    Message = Folder_MV.FolderTitle + " " + MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsExist],
-                                    Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
-                                };
-                                return Response_MV;
                             }
                         }
                     }
@@ -229,7 +247,7 @@ namespace DMS_API.Services
                 else
                 {
                     int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
-                    var result = GlobalService.CheckUserPermissionsFolderAndDocument((SessionModel)ResponseSession.Data, DocumentId).Result;
+                    var result = GlobalService.CheckUserPermissionsFolderAndDocument((SessionModel)ResponseSession.Data, FolderId).Result;
                     bool checkManagePermission = result == null ? false : result.IsRead;
                     if (checkManagePermission == true)
                     {

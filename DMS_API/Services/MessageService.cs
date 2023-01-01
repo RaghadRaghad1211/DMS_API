@@ -1,5 +1,8 @@
 ﻿namespace DMS_API.Services
 {
+    /// <summary>
+    /// Service work with Respons Messages
+    /// </summary>
     public static class MessageService
     {
         #region how use ?
@@ -16,10 +19,10 @@
         public static readonly string PasswordNotStrength = "PasswordNotStrength";
         public static readonly string PasswordMustEnter = "PasswordMustEnter";
         public static readonly string UsernameMustEnter = "UsernameMustEnter";
-        public static readonly string NotPermission = "NotPermission"; // You do not have permission to do this
-        public static readonly string Forbidden = "Forbidden"; // You are Forbidden to do this
-        public static readonly string Unauthorized = "Unauthorized"; // You do not have authoriz to do this
-        public static readonly string ExpiredToken = "ExpiredToken"; // The access token expired
+        public static readonly string NotPermission = "NotPermission";
+        public static readonly string Forbidden = "Forbidden";
+        public static readonly string Unauthorized = "Unauthorized";
+        public static readonly string ExpiredToken = "ExpiredToken";
         public static readonly string ChangePasswordSuccess = "ChangeSuccess";
         public static readonly string ChangePasswordFaild = "ChangePasswordFaild";
         public static readonly string SaveSuccess = "SaveSuccess";
@@ -74,38 +77,12 @@
         public static readonly string ExtensionMustBePFD = "ExtensionMustBePFD";
         public static readonly string NoPermission = "NoPermission";
         public static readonly string FolderUnOpenable = "FolderUnOpenable";
+        public static readonly string GroupUnEditable = "GroupUnEditable";
+        public static readonly string FolderUnEditable = "FolderUnEditable";
 
-
-
-
-
-
-
-
-
-
-        public static readonly string InvalidVerificationCode = "InvalidVerificationCode";
-
-        public static readonly string UserNotExist = "UserNotExist";
-        public static readonly string UserIsDeleted = "UserIsDeleted";
-
-
-
-        public static readonly string VerificationCodeNotCorrect = "VerificationCodeNotCorrect";
-        public static readonly string UsernameOrEmailAlreadyExist = "UsernameOrEmailAlreadyExist";
-        public static readonly string EmailOrVerificationCodeNotCorrect = "EmailOrVerificationCodeNotCorrect";
-
-
-        public static readonly string RegisterFaild = "RegisterFaild";
-        public static readonly string VerificationFaild = "VerificationFaild";
-
-        public static readonly string ForgetPasswordFaild = "ForgetPasswordFaild";
-        public static readonly string FindUserProfileFaild = "FindUserProfileFaild";
-        public static readonly string GetUserAccountsFaild = "GetUserAccountsFaild";
-        public static readonly string UndoDeleteFaild = "UndoDeleteFaild";
-        public static readonly string PermanentlyDeleteFaild = "PermanentlyDeleteFaild";
-
-
+        /// <summary>
+        /// Dictionary of respons messages
+        /// </summary>
         public static readonly Dictionary<string, Dictionary<string, string>> MsgDictionary = new()
         {
             {
@@ -155,7 +132,7 @@
                      {TitelEnIsEmpty ,"يجب ادخال العنوان الانكليزي"},
                      {MustSelectedObjects ,"يجب اختيار عناصر"},
                      {DeleteSuccess, "تمت عملية الحذف" },
-                     {DeleteFaild, "فشل بعملية الحذف" },//OrgNameMustEnter
+                     {DeleteFaild, "فشل بعملية الحذف" },
                      {OrgNameMustEnter, "يجب اضافة اسم الموؤسسة" },
                      { UsernameIsExist, "أسم المستخدم موجود" },
                      { PhoneIsExist, "رقم الهاتف موجود" },
@@ -164,20 +141,12 @@
                      {DocumentTitelMustEnter ,"يجب ادخال عنوان الوثيقة"},
                      {DocumentFileMustUpload ,"يجب اختيار صورة الوثيقة"},
                      {ExtensionMustBePFD ,"يجب اختيار وثيقة بصيغة "+"PDF"},
-                     { NoPermission, "ليس لديك صلاحية لعمل هذا الاجراء" }, 
+                     { NoPermission, "ليس لديك صلاحية لعمل هذا الاجراء" },
                      { FolderUnOpenable, "لايمكن نقل داخل هذا المجلد" },
-
-
-
-
-
-
-
-                    { InvalidUsername, "اسم مستخدم غير صالح" },
-                    { InvalidPassword, "كلمة المرور غير صالحة" },
-                    { InvalidEmail, "" },
-
-
+                     { GroupUnEditable, "لايمكن تعديل هذه المجموعة" },
+                     { FolderUnEditable, "لايمكن تعديل هذا المجلد" },
+                     { InvalidUsername, "اسم مستخدم غير صالح" },
+                     { InvalidPassword, "كلمة المرور غير صالحة" },
                 }
             },
             {
@@ -238,24 +207,10 @@
                       {ExtensionMustBePFD ,"Extension of Document Must be "+"PDF"},
                       { NoPermission, "You don't have permission to do this action" },
                       { FolderUnOpenable, "It is not possible to move inside this folder" },
-
-
-
-
-
-
-
-
-
-
-
-
-
-                    { InvalidUsername, "Invalid Username" },
-                    { InvalidPassword, "Invalid Password" },
-                    { InvalidEmail, "" },
-
-
+                     { GroupUnEditable, "It is not possible to edit this group" },
+                     { FolderUnEditable, "It is not possible to edit this folder" },
+                     { InvalidUsername, "Invalid Username" },
+                     { InvalidPassword, "Invalid Password" },
                 }
             }
         };

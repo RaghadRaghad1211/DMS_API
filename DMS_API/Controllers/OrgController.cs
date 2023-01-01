@@ -1,7 +1,5 @@
 ﻿using DMS_API.ModelsView;
 using DMS_API.Services;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DMS_API.Controllers
@@ -22,8 +20,7 @@ namespace DMS_API.Controllers
         }
         #endregion
 
-
-
+        #region Actions
         [HttpGet]
         [Route("GetOrgsParentWithChilds")]
         public async Task<IActionResult> GetOrgsParentWithChilds([FromHeader] RequestHeaderModelView RequestHeader)
@@ -71,5 +68,6 @@ namespace DMS_API.Controllers
             Response_MV = await Org_S.EditOrg(EditOrg_MV, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
+        #endregion
     }
 }

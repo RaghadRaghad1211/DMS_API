@@ -1,7 +1,5 @@
 ﻿using DMS_API.ModelsView;
 using DMS_API.Services;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DMS_API.Controllers
@@ -57,7 +55,6 @@ namespace DMS_API.Controllers
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
-
         [HttpPut]
         [Route("MoveFolderToNewFolder")]
         public async Task<IActionResult> MoveFolderToNewFolder([FromBody] MoveChildToNewFolderModelView MoveChildToNewFolder_MV, [FromHeader] RequestHeaderModelView RequestHeader)
@@ -65,9 +62,6 @@ namespace DMS_API.Controllers
             Response_MV = await LinkParentChild_S.MoveChildsToNewFolder(MoveChildToNewFolder_MV, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
-
-        
-
         #endregion
     }
 }

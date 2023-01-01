@@ -1,7 +1,6 @@
 ﻿using DMS_API.Models;
 using DMS_API.ModelsView;
 using DMS_API.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 namespace DMS_API.Controllers
 {
@@ -69,7 +68,6 @@ namespace DMS_API.Controllers
             Response_MV = await Translation_S.GetTranslationPage(Lang);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
-
         #endregion
     }
 }
