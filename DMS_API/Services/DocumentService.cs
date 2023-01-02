@@ -19,7 +19,6 @@ namespace DMS_API.Services
         private KeyValueModel KeyValue_M { get; set; }
         private List<KeyValueModel> KeyValue_Mlist { get; set; }
         private ResponseModelView Response_MV { get; set; }
-        private const int LengthKey = 15;
         #endregion 
 
         #region Constructor        
@@ -27,7 +26,6 @@ namespace DMS_API.Services
         {
             Environment = environment;
             dam = new DataAccessService(SecurityService.ConnectionString);
-            //var ddd = GlobalService.CreateQRcodePNG(100, 300, Environment);
         }
         #endregion
 
@@ -127,7 +125,7 @@ namespace DMS_API.Services
                                             // تشفير
 
 
-                                            string DocumentFileName = SecurityService.RoundomKey(LengthKey) + outValue.Rows[0][0].ToString() + SecurityService.RoundomKey(LengthKey) + Path.GetExtension(DocFileNameWithExten).Trim();
+                                            string DocumentFileName = SecurityService.RoundomKey(GlobalService.LengthKey) + outValue.Rows[0][0].ToString() + SecurityService.RoundomKey(GlobalService.LengthKey) + Path.GetExtension(DocFileNameWithExten).Trim();
                                             string fillPath = Path.Combine(DocFolder, DocumentFileName);
                                             using (FileStream filestream = System.IO.File.Create(fillPath))
                                             {
@@ -272,7 +270,7 @@ namespace DMS_API.Services
 
 
 
-                                            string DocumentFileName = SecurityService.RoundomKey(LengthKey) + outValue.Rows[0][0].ToString() + SecurityService.RoundomKey(LengthKey) + Path.GetExtension(DocFileNameWithExten).Trim();
+                                            string DocumentFileName = SecurityService.RoundomKey(GlobalService.LengthKey) + outValue.Rows[0][0].ToString() + SecurityService.RoundomKey(GlobalService.LengthKey) + Path.GetExtension(DocFileNameWithExten).Trim();
                                             string fillPath = Path.Combine(DocFolder, DocumentFileName);
                                             using (FileStream filestream = System.IO.File.Create(fillPath))
                                             {
@@ -399,7 +397,7 @@ namespace DMS_API.Services
                                     ObjId = DocumentId,
                                     ObjClsId = Convert.ToInt32(GlobalService.ClassType.Document),
                                     KeysValues = KeyValue_Mlist,
-                                    DocumentFilePath = await GlobalService.GetFullPathOfDocumentNameInServerFolder(DocumentId, LengthKey, Environment)
+                                    DocumentFilePath = await GlobalService.GetFullPathOfDocumentNameInServerFolder(DocumentId, GlobalService.LengthKey, Environment)
                                     #region old code
                                     //string getDocPath = SecurityService.HostFilesUrl + "/" +
                                     //                      (int.Parse(dt.Rows[0]["ObjId"].ToString()) % GlobalService.MoodNum).ToString() + "/" +

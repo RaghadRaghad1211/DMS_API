@@ -3,8 +3,8 @@
     public class AddPermissionsModelView
     {
         public int SourObjId { get; set; }
-        public int DestObjId { get; set; }
         public int SourClsId { get; set; }
+        public int DestObjId { get; set; }
         public int DestClsId { get; set; }
         public bool PerRead { get; set; }
         public bool PerWrite { get; set; }

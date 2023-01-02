@@ -79,6 +79,7 @@
         public static readonly string FolderUnOpenable = "FolderUnOpenable";
         public static readonly string GroupUnEditable = "GroupUnEditable";
         public static readonly string FolderUnEditable = "FolderUnEditable";
+        public static readonly string GeneratQR = "GeneratQR";
 
         /// <summary>
         /// Dictionary of respons messages
@@ -147,6 +148,7 @@
                      { FolderUnEditable, "لايمكن تعديل هذا المجلد" },
                      { InvalidUsername, "اسم مستخدم غير صالح" },
                      { InvalidPassword, "كلمة المرور غير صالحة" },
+                     { GeneratQR, "تم توليد رمز الوثيقة" },
                 }
             },
             {
@@ -211,6 +213,8 @@
                      { FolderUnEditable, "It is not possible to edit this folder" },
                      { InvalidUsername, "Invalid Username" },
                      { InvalidPassword, "Invalid Password" },
+                     { GeneratQR, "Generat QR code" },
+
                 }
             }
         };

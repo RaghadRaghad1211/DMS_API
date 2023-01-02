@@ -1,6 +1,7 @@
 ﻿using ArchiveAPI.Services;
 using DMS_API.Models;
 using DMS_API.ModelsView;
+using Microsoft.AspNetCore.Http.Headers;
 using QRCoder;
 using System.Data;
 using System.Drawing;
@@ -22,6 +23,7 @@ namespace DMS_API.Services
         private static HomeModel Home_M { get; set; }
         private static ResponseModelView Response_MV { get; set; }
         public static readonly int MoodNum = 999;
+        public const int LengthKey = 15;
         public enum ClassType
         {
             User = 1,
@@ -447,18 +449,18 @@ namespace DMS_API.Services
                 }
                 else
                 {
-                    int _PageNumberFav = Pagination_MV.PageNumber == 0 ? 1 : Pagination_MV.PageNumber;
-                    int _PageRowsFav = Pagination_MV.PageRows == 0 ? 1 : Pagination_MV.PageRows;
-                    int CurrentPageFav = _PageNumberFav; int PageRowsFav = _PageRowsFav;
                     int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
 
                     #region MyDesktopFolder
+                    int _PageNumberDesktop = Pagination_MV.PageNumber == 0 ? 1 : Pagination_MV.PageNumber;
+                    int _PageRowsDesktop = Pagination_MV.PageRows == 0 ? 1 : Pagination_MV.PageRows;
+                    int CurrentPageDesktop = _PageNumberDesktop; int PageRowsDesktop = _PageRowsDesktop;
                     DataTable dtGetDisktopFolder = new DataTable();
                     dtGetDisktopFolder = await Task.Run(() => dam.FireDataTable("SELECT      FolderId, FolderTitle  " +
                                                                                $"FROM        [User].[GetFolderDesktopByUserId]({userLoginID}) " +
                                                                                 "ORDER BY    FolderId " +
-                                                                               $"OFFSET      ({_PageNumberFav}-1)*{_PageRowsFav} ROWS " +
-                                                                               $"FETCH NEXT   {_PageRowsFav} ROWS ONLY "));
+                                                                               $"OFFSET      ({_PageNumberDesktop}-1)*{_PageRowsDesktop} ROWS " +
+                                                                               $"FETCH NEXT   {_PageRowsDesktop} ROWS ONLY "));
                     MyDesktopFolder MyDesktopFolder = new MyDesktopFolder();
                     List<MyDesktopFolder> MyDesktopFolder_List = new List<MyDesktopFolder>();
                     if (dtGetDisktopFolder.Rows.Count > 0)
@@ -476,6 +478,9 @@ namespace DMS_API.Services
                     #endregion
 
                     #region MyFavorite
+                    int _PageNumberFav = Pagination_MV.PageNumber == 0 ? 1 : Pagination_MV.PageNumber;
+                    int _PageRowsFav = Pagination_MV.PageRows == 0 ? 1 : Pagination_MV.PageRows;
+                    int CurrentPageFav = _PageNumberFav; int PageRowsFav = _PageRowsFav;
                     DataTable dtGetFavorite = new DataTable();
                     dtGetFavorite = await Task.Run(() => dam.FireDataTable("SELECT ObjFavId AS 'FavoriteId', ObjTitle AS 'FavoriteTitle', ObjClsId AS 'FavTypeId', ClsName AS 'FavTypeName'  " +
                                                                           $"FROM   [User].[V_Favourites] WHERE [ObjUserId] = {userLoginID} AND [IsActive] = 1 " +
@@ -501,15 +506,14 @@ namespace DMS_API.Services
                     #endregion
 
                     #region MyGroup
+                    int _PageNumberGroup = Pagination_MV.PageNumber == 0 ? 1 : Pagination_MV.PageNumber;
+                    int _PageRowsGroup = Pagination_MV.PageRows == 0 ? 1 : Pagination_MV.PageRows;
+                    int CurrentPageGroup = _PageNumberGroup; int PageRowsGroup = _PageRowsGroup;
                     DataTable dtGetGroup = new DataTable();
-                    //dtGetGroup = await Task.Run(() => dam.FireDataTable($"SELECT      GroupId, GroupName   FROM    [User].[GetMyGroupsbyUserId]({userLoginID}) " +
-                    //                                                    $"ORDER BY    GroupId " +
-                    //                                                    $"OFFSET      ({_PageNumber}-1)*{_PageRows} ROWS " +
-                    //                                                    $"FETCH NEXT   {_PageRows} ROWS ONLY "));
                     dtGetGroup = await Task.Run(() => dam.FireDataTable($"SELECT      GroupId, GroupName   FROM    [User].[GetMyGroupsbyUserId]({userLoginID}) " +
                                                                         $"ORDER BY    GroupId " +
-                                                                        $"OFFSET      ({_PageNumberFav}-1)*{_PageRowsFav} ROWS " +
-                                                                        $"FETCH NEXT   {_PageRowsFav} ROWS ONLY "));
+                                                                        $"OFFSET      ({_PageNumberGroup}-1)*{_PageRowsGroup} ROWS " +
+                                                                        $"FETCH NEXT   {_PageRowsGroup} ROWS ONLY "));
                     MyGroup MyGroup = new MyGroup();
                     List<MyGroup> MyGroup_List = new List<MyGroup>();
                     if (dtGetGroup.Rows.Count > 0)
@@ -536,7 +540,26 @@ namespace DMS_API.Services
                     {
                         Success = true,
                         Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
-                        Data = new { TotalRowsFav = MyFavorite_List.Count, MaxPagFave = Math.Ceiling(MyFavorite_List.Count / (float)_PageRowsFav), CurrentPageFav, PageRowsFav, data = Home_M }//Home_M
+                        Data = new
+                        {
+                            TotalRowsDesktop = MyDesktopFolder_List.Count,
+                            MaxPagDesktop = Math.Ceiling(MyDesktopFolder_List.Count / (float)_PageRowsDesktop),
+                            CurrentPageDesktop,
+                            PageRowsDesktop,
+
+                            TotalRowsFav = MyFavorite_List.Count,
+                            MaxPagFave = Math.Ceiling(MyFavorite_List.Count / (float)_PageRowsFav),
+                            CurrentPageFav,
+                            PageRowsFav,
+
+                            TotalRowsGroup = MyGroup_List.Count,
+                            MaxPagGroup = Math.Ceiling(MyGroup_List.Count / (float)_PageRowsGroup),
+                            CurrentPageGroup,
+                            PageRowsGroup,
+
+
+                            data = Home_M
+                        }
                     };
                     return Response_MV;
                 }
@@ -652,32 +675,48 @@ namespace DMS_API.Services
             {
                 if (ResponseSession.IsOrgAdmin == false && ResponseSession.IsGroupOrgAdmin == false)
                 {
-                    int ParintId = int.Parse(dam.FireSQL($"SELECT LcParentObjId   FROM [User].[V_Links] WHERE [LcChildObjId]={ObjectId}   "));
-                    string getPermissions = "SELECT  [SourObjId], [DestObjId], [IsRead], [IsWrite], [IsManage], [IsQR] " +
-                                           $"FROM    [Document].[GetChildsInParentWithPermissions] ({ResponseSession.UserID}, {ParintId}) WHERE SourObjId={ObjectId} ";
-
-                    DataTable dt = new DataTable();
-                    dt = await Task.Run(() => dam.FireDataTable(getPermissions));
-                    if (dt == null)
+                    string ParentId = dam.FireSQL($"SELECT LcParentObjId   FROM [User].[V_Links] WHERE [LcChildObjId]={ObjectId}   ");
+                    if (ParentId.IsEmpty() == true)
                     {
-                        return null;
+                        PermissionTypeModel PerType_M = new PermissionTypeModel
+                        {
+                            UserId = ResponseSession.UserID,
+                            ObjectId = ObjectId,
+                            IsRead = true,
+                            IsWrite = false,
+                            IsManage = false,
+                            IsQR = false
+                        };
+                        return PerType_M;
                     }
                     else
                     {
-                        if (dt.Rows.Count > 0)
+                        string getPermissions = "SELECT  [SourObjId], [DestObjId], [IsRead], [IsWrite], [IsManage], [IsQR] " +
+                                               $"FROM    [Document].[GetChildsInParentWithPermissions] ({ResponseSession.UserID}, {Convert.ToInt32(ParentId)}) WHERE SourObjId={ObjectId} ";
+
+                        DataTable dt = new DataTable();
+                        dt = await Task.Run(() => dam.FireDataTable(getPermissions));
+                        if (dt == null)
                         {
-                            PermissionTypeModel PerType_M = new PermissionTypeModel
-                            {
-                                UserId = Convert.ToInt32(dt.Rows[0]["DestObjId"].ToString()),
-                                ObjectId = Convert.ToInt32(dt.Rows[0]["SourObjId"].ToString()),
-                                IsRead = bool.Parse(dt.Rows[0]["IsRead"].ToString()),
-                                IsWrite = bool.Parse(dt.Rows[0]["IsWrite"].ToString()),
-                                IsManage = bool.Parse(dt.Rows[0]["IsManage"].ToString()),
-                                IsQR = bool.Parse(dt.Rows[0]["IsQR"].ToString())
-                            };
-                            return PerType_M;
+                            return null;
                         }
-                        return null;
+                        else
+                        {
+                            if (dt.Rows.Count > 0)
+                            {
+                                PermissionTypeModel PerType_M = new PermissionTypeModel
+                                {
+                                    UserId = Convert.ToInt32(dt.Rows[0]["DestObjId"].ToString()),
+                                    ObjectId = Convert.ToInt32(dt.Rows[0]["SourObjId"].ToString()),
+                                    IsRead = bool.Parse(dt.Rows[0]["IsRead"].ToString()),
+                                    IsWrite = bool.Parse(dt.Rows[0]["IsWrite"].ToString()),
+                                    IsManage = bool.Parse(dt.Rows[0]["IsManage"].ToString()),
+                                    IsQR = bool.Parse(dt.Rows[0]["IsQR"].ToString())
+                                };
+                                return PerType_M;
+                            }
+                            return null;
+                        }
                     }
                 }
                 else
@@ -700,36 +739,67 @@ namespace DMS_API.Services
             }
         }
         /// <summary>
-        /// Generate QR code for document 
+        /// Generate PDF file with QR code for document, and return the path of PDF
         /// </summary>
-        /// <param name="QrId">Qr Id</param>
-        /// <param name="DocumentId">Document Id</param>
+        /// <param name="QRLookup_M">Body Parameters</param>
+        /// <param name="RequestHeader">Header Parameters</param>
         /// <param name="Environment">Environment parameter</param>
         /// <returns></returns>
-        public static async Task<bool> GenerateQRcodePNG(int QrId, int DocumentId, IWebHostEnvironment Environment)
+        public static async Task<ResponseModelView> GenerateQRcodePDF(QRLookupModel QRLookup_M, RequestHeaderModelView RequestHeader, IWebHostEnvironment Environment)
         {
             try
             {
-                QRCodeGenerator QrGenerator = new QRCodeGenerator();
-                QRCodeData QrCodeInfo = QrGenerator.CreateQrCode(QrId.ToString(), QRCodeGenerator.ECCLevel.H);
-                QRCoder.QRCode QrCode = new QRCoder.QRCode(QrCodeInfo);
-                Bitmap QrBitmap = QrCode.GetGraphic(60);
-                var path = Path.Combine(await GetDocumentLocationInServerFolder(DocumentId, Environment), DocumentId.ToString());
-                //QrBitmap.Save(path + $"\\{QrId}" + ".png");
-                using (MemoryStream memory = new MemoryStream())
+                string QRquery = "INSERT INTO [Main].[QRLookup] (QrObjId, QrIsPraivet, QrExpiry, QrIsActive) OUTPUT INSERTED.QrId " +
+                                        $"VALUE({QRLookup_M.QrDocumentId}, {QRLookup_M.QrIsPraivet}, '{dam.DoQuery("GETDATE")}', {QRLookup_M.QrIsActive}) ";
+                string outValue = await Task.Run(() => dam.DoQueryAndPutOutValue(QRquery, "QrId"));
+                if (outValue == null || outValue.Trim() == "")
                 {
-                    using (FileStream fs = new FileStream(path + $"\\{QrId}" + ".png", FileMode.Create, FileAccess.ReadWrite))
+                    Response_MV = new ResponseModelView
                     {
-                        QrBitmap.Save(memory, ImageFormat.Png);
-                        byte[] bytes = memory.ToArray();
-                        fs.Write(bytes, 0, bytes.Length);
-                    }
+                        Success = false,
+                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
+                        Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                    };
+                    return Response_MV;
                 }
-                return true;
+                else
+                {
+                    QRCodeGenerator QrGenerator = new QRCodeGenerator();
+                    QRCodeData QrCodeInfo = QrGenerator.CreateQrCode(QRLookup_M.QrId.ToString(), QRCodeGenerator.ECCLevel.H);
+                    QRCoder.QRCode QrCode = new QRCoder.QRCode(QrCodeInfo);
+                    Bitmap QrBitmap = QrCode.GetGraphic(60);
+                    var path = Path.Combine(await GetDocumentLocationInServerFolder(QRLookup_M.QrDocumentId, Environment), QRLookup_M.QrDocumentId.ToString());
+                    string QrFileName = SecurityService.RoundomKey(GlobalService.LengthKey) + QRLookup_M.QrId.ToString() + SecurityService.RoundomKey(GlobalService.LengthKey) + ".png";
+                    string fullPathQR = Path.Combine(path, QrFileName);
+
+                    //QrBitmap.Save(fullPathQR);
+                    using (MemoryStream memory = new MemoryStream())
+                    {
+                        using (FileStream fs = new FileStream(fullPathQR, FileMode.Create, FileAccess.ReadWrite))
+                        {
+                            QrBitmap.Save(memory, ImageFormat.Png);
+                            byte[] bytes = memory.ToArray();
+                            fs.Write(bytes, 0, bytes.Length);
+                        }
+                    }
+                    Response_MV = new ResponseModelView
+                    {
+                        Success = true,
+                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GeneratQR],
+                        Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
+                    };
+                    return Response_MV;
+                }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return false;
+                Response_MV = new ResponseModelView
+                {
+                    Success = false,
+                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError] + " - " + ex.Message,
+                    Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                };
+                return Response_MV;
             }
         }
 

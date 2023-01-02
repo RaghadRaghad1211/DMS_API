@@ -13,12 +13,15 @@ namespace DMS_API.Controllers
         #region Properteis
         private readonly PermissionsService Permissions_S;
         private ResponseModelView Response_MV { get; set; }
+        public IWebHostEnvironment Environment { get; }
+
         #endregion
 
         #region Constructor
-        public PermissionController()
+        public PermissionController(IWebHostEnvironment environment)
         {
-            Permissions_S = new PermissionsService();
+            Environment = environment;
+            Permissions_S = new PermissionsService(environment);
         }
         #endregion
 
@@ -49,9 +52,9 @@ namespace DMS_API.Controllers
 
         [HttpPost]
         [Route("AddPermissionsOnObject")]
-        public async Task<IActionResult> AddPermissionsOnObject([FromBody] AddPermissionsModelView AddPermissions_MV, [FromHeader] RequestHeaderModelView RequestHeader)
+        public async Task<IActionResult> AddPermissionsOnObject([FromBody] List<AddPermissionsModelView> AddPermissions_MVlist, [FromHeader] RequestHeaderModelView RequestHeader)
         {
-            Response_MV = await Permissions_S.AddPermissionsOnObject(AddPermissions_MV, RequestHeader);
+            Response_MV = await Permissions_S.AddPermissionsOnObject(AddPermissions_MVlist, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
