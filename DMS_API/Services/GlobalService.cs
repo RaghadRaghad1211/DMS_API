@@ -786,7 +786,7 @@ namespace DMS_API.Services
                     {
                         Success = true,
                         Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GeneratQR],
-                        Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
+                        Data = "the path of pdf with QR location"
                     };
                     return Response_MV;
                 }
