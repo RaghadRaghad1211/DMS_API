@@ -36,10 +36,10 @@ namespace DMS_API.Services
         /// Users Have IsRead & Admins To Do:
         /// Get (Folders & Documents in Folder) Or (Versions in Document) which depends on the User Permissions
         /// </summary>
-        /// <param name="FolderChildsPermissions_MV">Body Parameter</param>
+        /// <param name="ParentChildsPermissions_MV">Body Parameter</param>
         /// <param name="RequestHeader">Header Parameter</param>
         /// <returns>Response { (bool)Success, (string)Message, (object)Data}</returns>
-        public async Task<ResponseModelView> GetChildsInParentWithPermissions(FolderChildsPermissionsModelView FolderChildsPermissions_MV, RequestHeaderModelView RequestHeader)
+        public async Task<ResponseModelView> GetChildsInParentWithPermissions(ParentChildsPermissionsModelView ParentChildsPermissions_MV, RequestHeaderModelView RequestHeader)
         {
             try
             {
@@ -52,7 +52,7 @@ namespace DMS_API.Services
                 else
                 {
                     int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
-                    var result = GlobalService.CheckUserPermissionsOnFolderAndDocument((SessionModel)ResponseSession.Data, FolderChildsPermissions_MV.ParentId).Result;
+                    var result = GlobalService.CheckUserPermissionsOnFolderAndDocument((SessionModel)ResponseSession.Data, ParentChildsPermissions_MV.ParentId).Result;
                     bool checkManagePermission = result == null ? false : result.IsRead;
                     if (checkManagePermission == false)
                     {
@@ -66,10 +66,10 @@ namespace DMS_API.Services
                     }
                     else
                     {
-                        int _PageNumber = FolderChildsPermissions_MV.PageNumber == 0 ? 1 : FolderChildsPermissions_MV.PageNumber;
-                        int _PageRows = FolderChildsPermissions_MV.PageRows == 0 ? 1 : FolderChildsPermissions_MV.PageRows;
+                        int _PageNumber = ParentChildsPermissions_MV.PageNumber == 0 ? 1 : ParentChildsPermissions_MV.PageNumber;
+                        int _PageRows = ParentChildsPermissions_MV.PageRows == 0 ? 1 : ParentChildsPermissions_MV.PageRows;
                         var MaxTotal = dam.FireDataTable($"SELECT COUNT(*) AS TotalRows, CEILING(COUNT(*) / CAST({_PageRows} AS FLOAT)) AS MaxPage " +
-                                                         $"FROM     [Document].[GetChildsInParentWithPermissions] ({userLoginID}, {FolderChildsPermissions_MV.ParentId}) ");
+                                                         $"FROM     [Document].[GetChildsInParentWithPermissions] ({userLoginID}, {ParentChildsPermissions_MV.ParentId}) ");
                         if (MaxTotal == null)
                         {
                             Response_MV = new ResponseModelView
@@ -82,9 +82,9 @@ namespace DMS_API.Services
                         }
                         else
                         {
-                            if (FolderChildsPermissions_MV.IsMoveAtion == true)
+                            if (ParentChildsPermissions_MV.IsMoveAtion == true)
                             {
-                                if (FolderChildsPermissions_MV.ObjectsMovable.Count <= 0)
+                                if (ParentChildsPermissions_MV.ObjectsMovable.Count <= 0)
                                 {
                                     Response_MV = new ResponseModelView
                                     {
@@ -96,7 +96,7 @@ namespace DMS_API.Services
                                 }
                                 else
                                 {
-                                    bool canOpen = await GlobalService.IsFolderOpenableToMoveInsideIt(FolderChildsPermissions_MV.ParentId, FolderChildsPermissions_MV.ObjectsMovable);
+                                    bool canOpen = await GlobalService.IsFolderOpenableToMoveInsideIt(ParentChildsPermissions_MV.ParentId, ParentChildsPermissions_MV.ObjectsMovable);
                                     if (canOpen == false)
                                     {
                                         Response_MV = new ResponseModelView
@@ -113,7 +113,7 @@ namespace DMS_API.Services
                                                                 "          DestObjId, DestTitle, DestType, DestTypeName, " +
                                                                 "          IsRead, IsWrite, IsManage, IsQR, SourCreationDate, " +
                                                                 "          SourUserName, SourOrgArName, SourOrgEnName, SourOrgKuName  " +
-                                                               $" FROM     [Document].[GetChildsInParentWithPermissions] ({userLoginID}, {FolderChildsPermissions_MV.ParentId}) " +
+                                                               $" FROM     [Document].[GetChildsInParentWithPermissions] ({userLoginID}, {ParentChildsPermissions_MV.ParentId}) " +
                                                                 "ORDER BY  SourObjId " +
                                                                $"OFFSET      ({_PageNumber}-1)*{_PageRows} ROWS " +
                                                                $"FETCH NEXT   {_PageRows} ROWS ONLY ";
@@ -132,7 +132,7 @@ namespace DMS_API.Services
                                         }
                                         List<TrackingPathModel> TrackingPath_Mlist = new List<TrackingPathModel>();
                                         DataTable DtTracking = new DataTable();
-                                        DtTracking = dam.FireDataTable($"SELECT TrackId, TrackName FROM [User].[GetFamilyTreeOfObject]({FolderChildsPermissions_MV.ParentId})");
+                                        DtTracking = dam.FireDataTable($"SELECT TrackId, TrackName FROM [User].[GetFamilyTreeOfObject]({ParentChildsPermissions_MV.ParentId})");
                                         for (int i = 0; i < DtTracking.Rows.Count; i++)
                                         {
                                             TrackingPathModel TrackingPath_M = new TrackingPathModel
@@ -149,7 +149,7 @@ namespace DMS_API.Services
                                             {
                                                 Permessions_M = new PermessionsModel
                                                 {
-                                                    ParentId = FolderChildsPermissions_MV.ParentId,
+                                                    ParentId = ParentChildsPermissions_MV.ParentId,
                                                     SourObjId = Convert.ToInt32(dt.Rows[i]["SourObjId"].ToString()),
                                                     SourTitle = dt.Rows[i]["SourTitle"].ToString(),
                                                     SourType = Convert.ToInt32(dt.Rows[i]["SourType"].ToString()),
@@ -215,7 +215,7 @@ namespace DMS_API.Services
                                                         "          DestObjId, DestTitle, DestType, DestTypeName, " +
                                                         "          IsRead, IsWrite, IsManage, IsQR, SourCreationDate, " +
                                                         "          SourUserName, SourOrgArName, SourOrgEnName, SourOrgKuName  " +
-                                                       $" FROM     [Document].[GetChildsInParentWithPermissions] ({userLoginID}, {FolderChildsPermissions_MV.ParentId}) " +
+                                                       $" FROM     [Document].[GetChildsInParentWithPermissions] ({userLoginID}, {ParentChildsPermissions_MV.ParentId}) " +
                                                        "ORDER BY   SourObjId " +
                                                                $"OFFSET      ({_PageNumber}-1)*{_PageRows} ROWS " +
                                                                $"FETCH NEXT   {_PageRows} ROWS ONLY ";
@@ -234,15 +234,18 @@ namespace DMS_API.Services
                                 }
                                 List<TrackingPathModel> TrackingPath_Mlist = new List<TrackingPathModel>();
                                 DataTable DtTracking = new DataTable();
-                                DtTracking = dam.FireDataTable($"SELECT TrackId, TrackName FROM [User].[GetFamilyTreeOfObject]({FolderChildsPermissions_MV.ParentId})");
-                                for (int i = 0; i < DtTracking.Rows.Count; i++)
+                                DtTracking = dam.FireDataTable($"SELECT TrackId, TrackName FROM [User].[GetFamilyTreeOfObject]({ParentChildsPermissions_MV.ParentId})");
+                                if (DtTracking != null)
                                 {
-                                    TrackingPathModel TrackingPath_M = new TrackingPathModel
+                                    for (int i = 0; i < DtTracking.Rows.Count; i++)
                                     {
-                                        TrackId = Convert.ToInt32(DtTracking.Rows[i]["TrackId"].ToString()),
-                                        TrackName = DtTracking.Rows[i]["TrackName"].ToString()
-                                    };
-                                    TrackingPath_Mlist.Add(TrackingPath_M);
+                                        TrackingPathModel TrackingPath_M = new TrackingPathModel
+                                        {
+                                            TrackId = Convert.ToInt32(DtTracking.Rows[i]["TrackId"].ToString()),
+                                            TrackName = DtTracking.Rows[i]["TrackName"].ToString()
+                                        };
+                                        TrackingPath_Mlist.Add(TrackingPath_M);
+                                    }
                                 }
 
                                 Permessions_Mlist = new List<PermessionsModel>();
@@ -252,7 +255,7 @@ namespace DMS_API.Services
                                     {
                                         Permessions_M = new PermessionsModel
                                         {
-                                            ParentId = FolderChildsPermissions_MV.ParentId,
+                                            ParentId = ParentChildsPermissions_MV.ParentId,
                                             SourObjId = Convert.ToInt32(dt.Rows[i]["SourObjId"].ToString()),
                                             SourTitle = dt.Rows[i]["SourTitle"].ToString(),
                                             SourType = Convert.ToInt32(dt.Rows[i]["SourType"].ToString()),
@@ -327,10 +330,10 @@ namespace DMS_API.Services
         /// Users Have IsRead & Admins To Do:
         /// Search (Folders & Documents in Folder) Or (Versions in Document) which depends on the User Permissions
         /// </summary>
-        /// <param name="FolderChildsPermissionsSearch_MV">Body Parameter</param>
+        /// <param name="ParentChildsPermissionsSearch_MV">Body Parameter</param>
         /// <param name="RequestHeader">Header Parameter</param>
         /// <returns>Response { (bool)Success, (string)Message, (object)Data}</returns>
-        public async Task<ResponseModelView> GetChildsInParentWithPermissions_Search(FolderChildsPermissionsSearchModelView FolderChildsPermissionsSearch_MV, RequestHeaderModelView RequestHeader)
+        public async Task<ResponseModelView> GetChildsInParentWithPermissions_Search(ParentChildsPermissionsSearchModelView ParentChildsPermissionsSearch_MV, RequestHeaderModelView RequestHeader)
         {
             try
             {
@@ -343,7 +346,7 @@ namespace DMS_API.Services
                 else
                 {
                     int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
-                    var result = GlobalService.CheckUserPermissionsOnFolderAndDocument((SessionModel)ResponseSession.Data, FolderChildsPermissionsSearch_MV.ParentId).Result;
+                    var result = GlobalService.CheckUserPermissionsOnFolderAndDocument((SessionModel)ResponseSession.Data, ParentChildsPermissionsSearch_MV.ParentId).Result;
                     bool checkManagePermission = result == null ? false : result.IsRead;
                     if (checkManagePermission == false)
                     {
@@ -357,11 +360,11 @@ namespace DMS_API.Services
                     }
                     else
                     {
-                        int _PageNumber = FolderChildsPermissionsSearch_MV.PageNumber == 0 ? 1 : FolderChildsPermissionsSearch_MV.PageNumber;
-                        int _PageRows = FolderChildsPermissionsSearch_MV.PageRows == 0 ? 1 : FolderChildsPermissionsSearch_MV.PageRows;
+                        int _PageNumber = ParentChildsPermissionsSearch_MV.PageNumber == 0 ? 1 : ParentChildsPermissionsSearch_MV.PageNumber;
+                        int _PageRows = ParentChildsPermissionsSearch_MV.PageRows == 0 ? 1 : ParentChildsPermissionsSearch_MV.PageRows;
                         var MaxTotal = dam.FireDataTable($"SELECT   COUNT(*) AS TotalRows, CEILING(COUNT(*) / CAST({_PageRows} AS FLOAT)) AS MaxPage " +
-                                                         $"FROM     [Document].[GetChildsInParentWithPermissions_Search] ({userLoginID}, {FolderChildsPermissionsSearch_MV.ParentId}) " +
-                                                         $"WHERE    SourTitle LIKE '{FolderChildsPermissionsSearch_MV.ChildTitle}%' ");
+                                                         $"FROM     [Document].[GetChildsInParentWithPermissions_Search] ({userLoginID}, {ParentChildsPermissionsSearch_MV.ParentId}) " +
+                                                         $"WHERE    SourTitle LIKE '{ParentChildsPermissionsSearch_MV.ChildTitle}%' ");
                         if (MaxTotal == null)
                         {
                             Response_MV = new ResponseModelView
@@ -378,8 +381,8 @@ namespace DMS_API.Services
                                                     "          DestObjId, DestTitle, DestType, DestTypeName, " +
                                                     "          IsRead, IsWrite, IsManage, IsQR, SourCreationDate, " +
                                                     "          SourUserName, SourOrgArName, SourOrgEnName, SourOrgKuName  " +
-                                                   $" FROM     [Document].[GetChildsInParentWithPermissions_Search] ({userLoginID}, {FolderChildsPermissionsSearch_MV.ParentId}) " +
-                                                   $" WHERE    SourTitle LIKE '{FolderChildsPermissionsSearch_MV.ChildTitle}%' " +
+                                                   $" FROM     [Document].[GetChildsInParentWithPermissions_Search] ({userLoginID}, {ParentChildsPermissionsSearch_MV.ParentId}) " +
+                                                   $" WHERE    SourTitle LIKE '{ParentChildsPermissionsSearch_MV.ChildTitle}%' " +
                                                    "ORDER BY   SourObjId " +
                                                            $"OFFSET      ({_PageNumber}-1)*{_PageRows} ROWS " +
                                                            $"FETCH NEXT   {_PageRows} ROWS ONLY ";
@@ -398,7 +401,7 @@ namespace DMS_API.Services
                             }
                             List<TrackingPathModel> TrackingPath_Mlist = new List<TrackingPathModel>();
                             DataTable DtTracking = new DataTable();
-                            DtTracking = dam.FireDataTable($"SELECT TrackId, TrackName FROM [User].[GetFamilyTreeOfObject]({FolderChildsPermissionsSearch_MV.ParentId})");
+                            DtTracking = dam.FireDataTable($"SELECT TrackId, TrackName FROM [User].[GetFamilyTreeOfObject]({ParentChildsPermissionsSearch_MV.ParentId})");
                             for (int i = 0; i < DtTracking.Rows.Count; i++)
                             {
                                 TrackingPathModel TrackingPath_M = new TrackingPathModel
@@ -415,7 +418,7 @@ namespace DMS_API.Services
                                 {
                                     Permessions_M = new PermessionsModel
                                     {
-                                        ParentId = FolderChildsPermissionsSearch_MV.ParentId,
+                                        ParentId = ParentChildsPermissionsSearch_MV.ParentId,
                                         SourObjId = Convert.ToInt32(dt.Rows[i]["SourObjId"].ToString()),
                                         SourTitle = dt.Rows[i]["SourTitle"].ToString(),
                                         SourType = Convert.ToInt32(dt.Rows[i]["SourType"].ToString()),
@@ -762,13 +765,13 @@ namespace DMS_API.Services
         }
         /// <summary>
         /// Users Have IsManage & Admins To Do:
-        /// Get (Users & Groups) they -- NOT HAVE -- Permission On Object (Folder & Document) by Object Id
+        /// Get (Users & Groups) they -- NOT HAVE -- Permission On Object (Folder & Document) by Object Id,
+        /// with searchable
         /// </summary>
-        /// <param name="ObjectId">Id of Object want to get the users & groups they -- NOT HAVE -- Permissions on it</param>
-        /// <param name="Pagination_MV">Body Parameter</param>
+        /// <param name="SearchUsersOrGroupsPermissionOnObject_MV">Body Parameter</param>
         /// <param name="RequestHeader">Header Parameter</param>
         /// <returns>Response { (bool)Success, (string)Message, (object)Data}</returns>
-        public async Task<ResponseModelView> GetUsersOrGroupsNotHavePermissionOnObject(int ObjectId, PaginationModelView Pagination_MV, RequestHeaderModelView RequestHeader)
+        public async Task<ResponseModelView> GetUsersOrGroupsNotHavePermissionOnObject(SearchUsersOrGroupsPermissionOnObject SearchUsersOrGroupsPermissionOnObject_MV, RequestHeaderModelView RequestHeader)
         {
             try
             {
@@ -781,14 +784,30 @@ namespace DMS_API.Services
                 else
                 {
                     int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
-                    var result = GlobalService.CheckUserPermissionsOnFolderAndDocument((SessionModel)ResponseSession.Data, ObjectId).Result;
+                    var result = GlobalService.CheckUserPermissionsOnFolderAndDocument((SessionModel)ResponseSession.Data, SearchUsersOrGroupsPermissionOnObject_MV.ObjectId).Result;
                     bool checkManagePermission = result == null ? false : result.IsManage;
                     if (checkManagePermission == true)
                     {
-                        int _PageNumber = Pagination_MV.PageNumber == 0 ? 1 : Pagination_MV.PageNumber;
-                        int _PageRows = Pagination_MV.PageRows == 0 ? 1 : Pagination_MV.PageRows;
-                        var MaxTotal = dam.FireDataTable($"SELECT COUNT(*) AS TotalRows, CEILING(COUNT(*) / CAST({_PageRows} AS FLOAT)) AS MaxPage " +
-                                                         $"FROM     [User].[GetDestObjsNotHavePerOnSourObj] ({userLoginID},{ObjectId}) ");
+                        bool IsSearchable = false;
+                        DataTable MaxTotal = new DataTable();
+                        string? getPermessions;
+                        if (SearchUsersOrGroupsPermissionOnObject_MV.TitleSearch.IsEmpty() == false) { IsSearchable = true; }
+
+                        int _PageNumber = SearchUsersOrGroupsPermissionOnObject_MV.PageNumber == 0 ? 1 : SearchUsersOrGroupsPermissionOnObject_MV.PageNumber;
+                        int _PageRows = SearchUsersOrGroupsPermissionOnObject_MV.PageRows == 0 ? 1 : SearchUsersOrGroupsPermissionOnObject_MV.PageRows;
+
+                        if (IsSearchable == true)
+                        {
+                            MaxTotal = dam.FireDataTable($"SELECT COUNT(*) AS TotalRows, CEILING(COUNT(*) / CAST({_PageRows} AS FLOAT)) AS MaxPage " +
+                                                         $"FROM     [User].[GetDestObjsNotHavePerOnSourObj] ({userLoginID},{SearchUsersOrGroupsPermissionOnObject_MV.ObjectId}) " +
+                                                         $"WHERE    DestTitle LIKE '{SearchUsersOrGroupsPermissionOnObject_MV.TitleSearch}%'  ");
+                        }
+                        else
+                        {
+                            MaxTotal = dam.FireDataTable($"SELECT COUNT(*) AS TotalRows, CEILING(COUNT(*) / CAST({_PageRows} AS FLOAT)) AS MaxPage " +
+                                                         $"FROM     [User].[GetDestObjsNotHavePerOnSourObj] ({userLoginID},{SearchUsersOrGroupsPermissionOnObject_MV.ObjectId}) ");
+                        }
+
                         if (MaxTotal == null)
                         {
                             Response_MV = new ResponseModelView
@@ -801,11 +820,23 @@ namespace DMS_API.Services
                         }
                         else
                         {
-                            string getPermessions = " SELECT   DestObjId, DestTitle, DestTypeId, DestTypeName" +
-                                                   $" FROM     [User].[GetDestObjsNotHavePerOnSourObj] ({userLoginID},{ObjectId}) " +
-                                                                "ORDER BY  DestTypeId " +
-                                                               $"OFFSET      ({_PageNumber}-1)*{_PageRows} ROWS " +
-                                                               $"FETCH NEXT   {_PageRows} ROWS ONLY ";
+                            if (IsSearchable == true)
+                            {
+                                getPermessions = " SELECT      DestObjId, DestTitle, DestTypeId, DestTypeName" +
+                                                 $" FROM       [User].[GetDestObjsNotHavePerOnSourObj] ({userLoginID},{SearchUsersOrGroupsPermissionOnObject_MV.ObjectId}) " +
+                                                 $" WHERE      DestTitle LIKE '{SearchUsersOrGroupsPermissionOnObject_MV.TitleSearch}%' " +
+                                                  "ORDER BY    DestTypeId " +
+                                                 $"OFFSET      ({_PageNumber}-1)*{_PageRows} ROWS " +
+                                                 $"FETCH NEXT   {_PageRows} ROWS ONLY ";
+                            }
+                            else
+                            {
+                                getPermessions = " SELECT    DestObjId, DestTitle, DestTypeId, DestTypeName" +
+                                               $" FROM       [User].[GetDestObjsNotHavePerOnSourObj] ({userLoginID},{SearchUsersOrGroupsPermissionOnObject_MV.ObjectId}) " +
+                                                "ORDER BY    DestTypeId " +
+                                               $"OFFSET      ({_PageNumber}-1)*{_PageRows} ROWS " +
+                                               $"FETCH NEXT   {_PageRows} ROWS ONLY ";
+                            }
                             dt = new DataTable();
                             dt = await Task.Run(() => dam.FireDataTable(getPermessions));
                             if (dt == null)
@@ -896,14 +927,14 @@ namespace DMS_API.Services
         }
         /// <summary>
         /// Users Have IsManage & Admins To Do:
-        /// Get (Users & Groups) they -- HAVE -- Permission On Object (Folder & Document) by Object Id
+        /// Get (Users & Groups) they -- HAVE -- Permission On Object (Folder & Document) by Object Id,
+        /// with searchable
         /// </summary>
-        /// <param name="ObjectId">Id of Object want to get the users & groups they -- HAVE -- Permissions on it</param>
-        /// <param name="Pagination_MV">Body Parameter</param>
+        /// <param name="SearchUsersOrGroupsPermissionOnObject_MV">Body Parameter</param>
         /// <param name="RequestHeader">Header Parameter</param>
         /// <returns>Response { (bool)Success, (string)Message, (object)Data}</returns>
         /// <returns></returns>
-        public async Task<ResponseModelView> GetUsersOrGroupsHavePermissionOnObject(int ObjectId, PaginationModelView Pagination_MV, RequestHeaderModelView RequestHeader)
+        public async Task<ResponseModelView> GetUsersOrGroupsHavePermissionOnObject(SearchUsersOrGroupsPermissionOnObject SearchUsersOrGroupsPermissionOnObject_MV, RequestHeaderModelView RequestHeader)
         {
             try
             {
@@ -916,14 +947,29 @@ namespace DMS_API.Services
                 else
                 {
                     int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
-                    var result = GlobalService.CheckUserPermissionsOnFolderAndDocument((SessionModel)ResponseSession.Data, ObjectId).Result;
+                    var result = GlobalService.CheckUserPermissionsOnFolderAndDocument((SessionModel)ResponseSession.Data, SearchUsersOrGroupsPermissionOnObject_MV.ObjectId).Result;
                     bool checkManagePermission = result == null ? false : result.IsManage;
                     if (checkManagePermission == true)
                     {
-                        int _PageNumber = Pagination_MV.PageNumber == 0 ? 1 : Pagination_MV.PageNumber;
-                        int _PageRows = Pagination_MV.PageRows == 0 ? 1 : Pagination_MV.PageRows;
-                        var MaxTotal = dam.FireDataTable($"SELECT COUNT(*) AS TotalRows, CEILING(COUNT(*) / CAST({_PageRows} AS FLOAT)) AS MaxPage " +
-                                                         $"FROM     [User].[GetDestObjsHavePerOnSourObj] ({userLoginID},{ObjectId}) ");
+                        bool IsSearchable = false;
+                        DataTable MaxTotal = new DataTable();
+                        string? getPermessions;
+                        if (SearchUsersOrGroupsPermissionOnObject_MV.TitleSearch.IsEmpty() == false) { IsSearchable = true; }
+
+                        int _PageNumber = SearchUsersOrGroupsPermissionOnObject_MV.PageNumber == 0 ? 1 : SearchUsersOrGroupsPermissionOnObject_MV.PageNumber;
+                        int _PageRows = SearchUsersOrGroupsPermissionOnObject_MV.PageRows == 0 ? 1 : SearchUsersOrGroupsPermissionOnObject_MV.PageRows;
+                        if (IsSearchable == true)
+                        {
+                            MaxTotal = dam.FireDataTable($"SELECT COUNT(*) AS TotalRows, CEILING(COUNT(*) / CAST({_PageRows} AS FLOAT)) AS MaxPage " +
+                                                        $"FROM     [User].[GetDestObjsHavePerOnSourObj] ({userLoginID},{SearchUsersOrGroupsPermissionOnObject_MV.ObjectId}) " +
+                                                        $"WHERE    DestTitle LIKE '{SearchUsersOrGroupsPermissionOnObject_MV.TitleSearch}%'  ");
+                        }
+                        else
+                        {
+                            MaxTotal = dam.FireDataTable($"SELECT COUNT(*) AS TotalRows, CEILING(COUNT(*) / CAST({_PageRows} AS FLOAT)) AS MaxPage " +
+                                                         $"FROM     [User].[GetDestObjsHavePerOnSourObj] ({userLoginID},{SearchUsersOrGroupsPermissionOnObject_MV.ObjectId}) ");
+                        }
+
                         if (MaxTotal == null)
                         {
                             Response_MV = new ResponseModelView
@@ -936,12 +982,26 @@ namespace DMS_API.Services
                         }
                         else
                         {
-                            string getPermessions = " SELECT   DestObjId, DestTitle, DestTypeId, DestTypeName, " +
+                            if (IsSearchable == true)
+                            {
+                                getPermessions = " SELECT    DestObjId, DestTitle, DestTypeId, DestTypeName, " +
                                                     "          IsRead, IsWrite, IsManage, IsQR " +
-                                                   $" FROM     [User].[GetDestObjsHavePerOnSourObj] ({userLoginID},{ObjectId}) " +
-                                                                "ORDER BY  DestTypeId " +
-                                                               $"OFFSET      ({_PageNumber}-1)*{_PageRows} ROWS " +
-                                                               $"FETCH NEXT   {_PageRows} ROWS ONLY ";
+                                                   $" FROM     [User].[GetDestObjsHavePerOnSourObj] ({userLoginID},{SearchUsersOrGroupsPermissionOnObject_MV.ObjectId}) " +
+                                                   $" WHERE     DestTitle LIKE '{SearchUsersOrGroupsPermissionOnObject_MV.TitleSearch}%' " +
+                                                    "ORDER BY  DestTypeId " +
+                                                   $"OFFSET      ({_PageNumber}-1)*{_PageRows} ROWS " +
+                                                   $"FETCH NEXT   {_PageRows} ROWS ONLY ";
+                            }
+                            else
+                            {
+                                getPermessions = " SELECT   DestObjId, DestTitle, DestTypeId, DestTypeName, " +
+                                                 "          IsRead, IsWrite, IsManage, IsQR " +
+                                                $" FROM     [User].[GetDestObjsHavePerOnSourObj] ({userLoginID},{SearchUsersOrGroupsPermissionOnObject_MV.ObjectId}) " +
+                                                 "ORDER BY  DestTypeId " +
+                                                $"OFFSET      ({_PageNumber}-1)*{_PageRows} ROWS " +
+                                                $"FETCH NEXT   {_PageRows} ROWS ONLY ";
+                            }
+
 
                             dt = new DataTable();
                             dt = await Task.Run(() => dam.FireDataTable(getPermessions));

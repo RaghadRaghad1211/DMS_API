@@ -28,7 +28,7 @@ namespace DMS_API.Controllers
         #region Actions
         [HttpPost]
         [Route("GetChildInFolderByFolderIdWithPermessions")]
-        public async Task<IActionResult> GetChildInFolderByIdWithPermessions([FromBody] FolderChildsPermissionsModelView FolderChildsPermissions_MV, [FromHeader] RequestHeaderModelView RequestHeader)
+        public async Task<IActionResult> GetChildInFolderByIdWithPermessions([FromBody] ParentChildsPermissionsModelView FolderChildsPermissions_MV, [FromHeader] RequestHeaderModelView RequestHeader)
         {
             Response_MV = await Permissions_S.GetChildsInParentWithPermissions(FolderChildsPermissions_MV, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
@@ -36,7 +36,7 @@ namespace DMS_API.Controllers
 
         [HttpPost]
         [Route("GetChildInFolderByFolderIdWithPermessions_Search")]
-        public async Task<IActionResult> GetChildInFolderByIdWithPermessions_Search([FromBody] FolderChildsPermissionsSearchModelView FolderChildsPermissionsSearch_MV, [FromHeader] RequestHeaderModelView RequestHeader)
+        public async Task<IActionResult> GetChildInFolderByIdWithPermessions_Search([FromBody] ParentChildsPermissionsSearchModelView FolderChildsPermissionsSearch_MV, [FromHeader] RequestHeaderModelView RequestHeader)
         {
             Response_MV = await Permissions_S.GetChildsInParentWithPermissions_Search(FolderChildsPermissionsSearch_MV, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
@@ -67,18 +67,18 @@ namespace DMS_API.Controllers
         }
 
         [HttpPost]
-        [Route("GetUsersOrGroupsHavePermissionOnObject/{ObjectId}")]
-        public async Task<IActionResult> GetUsersOrGroupsHavePermissionOnObject([FromRoute] int ObjectId, [FromBody] PaginationModelView Pagination_MV, [FromHeader] RequestHeaderModelView RequestHeader)
+        [Route("GetUsersOrGroupsHavePermissionOnObject")]
+        public async Task<IActionResult> GetUsersOrGroupsHavePermissionOnObject([FromBody] SearchUsersOrGroupsPermissionOnObject SearchUsersOrGroupsPermissionOnObject_MV, [FromHeader] RequestHeaderModelView RequestHeader)
         {
-            Response_MV = await Permissions_S.GetUsersOrGroupsHavePermissionOnObject(ObjectId, Pagination_MV, RequestHeader);
+            Response_MV = await Permissions_S.GetUsersOrGroupsHavePermissionOnObject(SearchUsersOrGroupsPermissionOnObject_MV, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
         [HttpPost]
-        [Route("GetUsersOrGroupsNotHavePermissionOnObject/{ObjectId}")]
-        public async Task<IActionResult> GetUsersOrGroupsNotHavePermissionOnObject([FromRoute] int ObjectId, [FromBody] PaginationModelView Pagination_MV, [FromHeader] RequestHeaderModelView RequestHeader)
+        [Route("GetUsersOrGroupsNotHavePermissionOnObject")]
+        public async Task<IActionResult> GetUsersOrGroupsNotHavePermissionOnObject([FromBody] SearchUsersOrGroupsPermissionOnObject SearchUsersOrGroupsPermissionOnObject_MV, [FromHeader] RequestHeaderModelView RequestHeader)
         {
-            Response_MV = await Permissions_S.GetUsersOrGroupsNotHavePermissionOnObject(ObjectId, Pagination_MV, RequestHeader);
+            Response_MV = await Permissions_S.GetUsersOrGroupsNotHavePermissionOnObject(SearchUsersOrGroupsPermissionOnObject_MV, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
         #endregion
