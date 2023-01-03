@@ -119,12 +119,9 @@ namespace DMS_API.Services
                     {
                         int _PageNumber = Pagination_MV.PageNumber == 0 ? 1 : Pagination_MV.PageNumber;
                         int _PageRows = Pagination_MV.PageRows == 0 ? 1 : Pagination_MV.PageRows;
-                        int CurrentPage = _PageNumber; int PageRows = _PageRows;
-
-                        List<OrgTableModel> OrgTable_Mlist = new List<OrgTableModel>();
-                        OrgTable_Mlist = await GlobalService.GetOrgsParentWithChildsByUserLoginID_Table(userLoginID);
-
-                        if (OrgTable_Mlist == null)
+                        var MaxTotal = dam.FireDataTable($"SELECT COUNT(*) AS TotalRows, CEILING(COUNT(*) / CAST({_PageRows} AS FLOAT)) AS MaxPage " +
+                                                         $"FROM [User].[GetOrgsbyUserIdTable]({userLoginID}) ");
+                        if (MaxTotal == null)
                         {
                             Response_MV = new ResponseModelView
                             {
@@ -136,25 +133,40 @@ namespace DMS_API.Services
                         }
                         else
                         {
-                            Response_MV = new ResponseModelView
+                            List<OrgTableModel> OrgTable_Mlist = new List<OrgTableModel>();
+                            OrgTable_Mlist = await GlobalService.GetOrgsParentWithChildsByUserLoginID_Table(userLoginID);
+                            if (OrgTable_Mlist == null)
                             {
-                                Success = true,
-                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
-                                Data = new
+                                Response_MV = new ResponseModelView
                                 {
-                                    TotalRows = OrgTable_Mlist.Count,
-                                    MaxPage = Math.Ceiling(OrgTable_Mlist.Count / (float)_PageRows),
-                                    CurrentPage = _PageNumber,
-                                    PageRows = _PageRows,
-                                    data = new
+                                    Success = false,
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
+                                    Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                                };
+                                return Response_MV;
+                            }
+                            else
+                            {
+                                Response_MV = new ResponseModelView
+                                {
+                                    Success = true,
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
+                                    Data = new
                                     {
-                                        Parent = OrgTable_Mlist[0],
-                                        Child = OrgTable_Mlist.Where(x => x.OrgId != OrgTable_Mlist[0].OrgId)
-                                                          .Skip((_PageNumber - 1) * _PageRows).Take(_PageRows)
+                                        TotalRows = MaxTotal.Rows[0]["TotalRows"],
+                                        MaxPage = MaxTotal.Rows[0]["MaxPage"],
+                                        CurrentPage = _PageNumber,
+                                        PageRows = _PageRows,
+                                        data = new
+                                        {
+                                            Parent = OrgTable_Mlist[0],
+                                            Child = OrgTable_Mlist.Where(x => x.OrgId != OrgTable_Mlist[0].OrgId)
+                                                              .Skip((_PageNumber - 1) * _PageRows).Take(_PageRows)
+                                        }
                                     }
-                                }
-                            };
-                            return Response_MV;
+                                };
+                                return Response_MV;
+                            }
                         }
                     }
                 }

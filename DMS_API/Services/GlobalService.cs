@@ -1,7 +1,6 @@
 ﻿using ArchiveAPI.Services;
 using DMS_API.Models;
 using DMS_API.ModelsView;
-using Microsoft.AspNetCore.Http.Headers;
 using QRCoder;
 using System.Data;
 using System.Drawing;
@@ -288,7 +287,7 @@ namespace DMS_API.Services
             try
             {
                 string getOrgInfo = "SELECT OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName , OrgArNameUp, OrgEnNameUp, OrgKuNameUp, OrgIsActive, ObjDescription  " +
-                                   $"FROM [User].[GetOrgsbyUserIdTable]({userLoginID}) ORDER BY OrgId "; // WHERE {whereField} !={OrgOwnerID}
+                                   $"FROM [User].[GetOrgsbyUserIdTable]({userLoginID}) ORDER BY OrgId "; 
                 DataTable dt = new DataTable();
                 dt = await Task.Run(() => dam.FireDataTable(getOrgInfo));
                 if (dt == null)
@@ -297,7 +296,6 @@ namespace DMS_API.Services
                 }
                 List<OrgTableModel> OrgTable_Mlist = new List<OrgTableModel>();
                 OrgTableModel OrgTable_M = new OrgTableModel();
-
 
                 if (dt.Rows.Count > 0)
                 {
@@ -319,7 +317,6 @@ namespace DMS_API.Services
                         };
                         OrgTable_Mlist.Add(OrgTable_M);
                     }
-
                     return OrgTable_Mlist;
                 }
                 else
@@ -454,7 +451,9 @@ namespace DMS_API.Services
                     #region MyDesktopFolder
                     int _PageNumberDesktop = Pagination_MV.PageNumber == 0 ? 1 : Pagination_MV.PageNumber;
                     int _PageRowsDesktop = Pagination_MV.PageRows == 0 ? 1 : Pagination_MV.PageRows;
-                    int CurrentPageDesktop = _PageNumberDesktop; int PageRowsDesktop = _PageRowsDesktop;
+                    var MaxTotalDesktop = dam.FireDataTable($"SELECT COUNT(*) AS TotalRowsDesktop, CEILING(COUNT(*) / CAST({_PageRowsDesktop} AS FLOAT)) AS MaxPageDesktop " +
+                                                         $"FROM        [User].[GetFolderDesktopByUserId]({userLoginID}) ");
+
                     DataTable dtGetDisktopFolder = new DataTable();
                     dtGetDisktopFolder = await Task.Run(() => dam.FireDataTable("SELECT      FolderId, FolderTitle  " +
                                                                                $"FROM        [User].[GetFolderDesktopByUserId]({userLoginID}) " +
@@ -480,7 +479,8 @@ namespace DMS_API.Services
                     #region MyFavorite
                     int _PageNumberFav = Pagination_MV.PageNumber == 0 ? 1 : Pagination_MV.PageNumber;
                     int _PageRowsFav = Pagination_MV.PageRows == 0 ? 1 : Pagination_MV.PageRows;
-                    int CurrentPageFav = _PageNumberFav; int PageRowsFav = _PageRowsFav;
+                    var MaxTotalFav = dam.FireDataTable($"SELECT COUNT(*) AS TotalRowsFav, CEILING(COUNT(*) / CAST({_PageRowsFav} AS FLOAT)) AS MaxPageFav " +
+                                                         $"FROM   [User].[V_Favourites] WHERE [ObjUserId] = {userLoginID} AND [IsActive] = 1  ");
                     DataTable dtGetFavorite = new DataTable();
                     dtGetFavorite = await Task.Run(() => dam.FireDataTable("SELECT ObjFavId AS 'FavoriteId', ObjTitle AS 'FavoriteTitle', ObjClsId AS 'FavTypeId', ClsName AS 'FavTypeName'  " +
                                                                           $"FROM   [User].[V_Favourites] WHERE [ObjUserId] = {userLoginID} AND [IsActive] = 1 " +
@@ -508,7 +508,8 @@ namespace DMS_API.Services
                     #region MyGroup
                     int _PageNumberGroup = Pagination_MV.PageNumber == 0 ? 1 : Pagination_MV.PageNumber;
                     int _PageRowsGroup = Pagination_MV.PageRows == 0 ? 1 : Pagination_MV.PageRows;
-                    int CurrentPageGroup = _PageNumberGroup; int PageRowsGroup = _PageRowsGroup;
+                    var MaxTotalGroup = dam.FireDataTable($"SELECT COUNT(*) AS TotalRowsGroup, CEILING(COUNT(*) / CAST({_PageRowsGroup} AS FLOAT)) AS MaxPageGroup " +
+                                                         $"FROM    [User].[GetMyGroupsbyUserId]({userLoginID}) ");
                     DataTable dtGetGroup = new DataTable();
                     dtGetGroup = await Task.Run(() => dam.FireDataTable($"SELECT      GroupId, GroupName   FROM    [User].[GetMyGroupsbyUserId]({userLoginID}) " +
                                                                         $"ORDER BY    GroupId " +
@@ -542,21 +543,20 @@ namespace DMS_API.Services
                         Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
                         Data = new
                         {
-                            TotalRowsDesktop = MyDesktopFolder_List.Count,
-                            MaxPagDesktop = Math.Ceiling(MyDesktopFolder_List.Count / (float)_PageRowsDesktop),
-                            CurrentPageDesktop,
-                            PageRowsDesktop,
+                            TotalRowsDesktop = MaxTotalDesktop.Rows[0]["TotalRowsDesktop"],
+                            MaxPageDesktop = MaxTotalDesktop.Rows[0]["MaxPageDesktop"],
+                            CurrentPageDesktop = _PageNumberDesktop,
+                            PageRowsDesktop = _PageRowsDesktop,
 
-                            TotalRowsFav = MyFavorite_List.Count,
-                            MaxPagFave = Math.Ceiling(MyFavorite_List.Count / (float)_PageRowsFav),
-                            CurrentPageFav,
-                            PageRowsFav,
+                            TotalRowsFav = MaxTotalFav.Rows[0]["TotalRowsFav"],
+                            MaxPagFav = MaxTotalFav.Rows[0]["MaxPageFav"],
+                            CurrentPageFav = _PageNumberFav,
+                            PageRowsFav = _PageRowsFav,
 
-                            TotalRowsGroup = MyGroup_List.Count,
-                            MaxPagGroup = Math.Ceiling(MyGroup_List.Count / (float)_PageRowsGroup),
-                            CurrentPageGroup,
-                            PageRowsGroup,
-
+                            TotalRowsGroup = MaxTotalGroup.Rows[0]["TotalRowsGroup"],
+                            MaxPagGroup = MaxTotalGroup.Rows[0]["MaxPageGroup"],
+                            CurrentPageGroup = _PageNumberGroup,
+                            PageRowsGroup = _PageRowsGroup,
 
                             data = Home_M
                         }

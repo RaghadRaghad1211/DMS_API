@@ -60,9 +60,9 @@ namespace DMS_API.Controllers
 
         [HttpPut]
         [Route("EditPermissionsOnObject")]
-        public async Task<IActionResult> EditPermissionsOnObject([FromBody] EditPermissionsModelView EditPermissions_MV, [FromHeader] RequestHeaderModelView RequestHeader)
+        public async Task<IActionResult> EditPermissionsOnObject([FromBody] List<EditPermissionsModelView> EditPermissions_MVlist, [FromHeader] RequestHeaderModelView RequestHeader)
         {
-            Response_MV = await Permissions_S.EditPermissionsOnObject(EditPermissions_MV, RequestHeader);
+            Response_MV = await Permissions_S.EditPermissionsOnObject(EditPermissions_MVlist, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 

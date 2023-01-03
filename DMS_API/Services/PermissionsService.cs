@@ -1,11 +1,8 @@
 ﻿using ArchiveAPI.Services;
 using DMS_API.Models;
 using DMS_API.ModelsView;
-using Newtonsoft.Json.Linq;
-using System;
 using System.Data;
 using System.Net;
-using static iTextSharp.text.pdf.PdfReader;
 
 namespace DMS_API.Services
 {
@@ -181,14 +178,12 @@ namespace DMS_API.Services
                                                 Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
                                                 Data = new
                                                 {
-                                                    TotalRows = Permessions_Mlist.Count,
-                                                    MaxPage = Math.Ceiling(Permessions_Mlist.Count / (float)_PageRows),
+                                                    TotalRows = MaxTotal.Rows[0]["TotalRows"],
+                                                    MaxPage = MaxTotal.Rows[0]["MaxPage"],
                                                     CurrentPage = _PageNumber,
                                                     PageRows = _PageRows,
                                                     TrackingPath = TrackingPath_Mlist,
                                                     data = Permessions_Mlist
-
-                                                    // TotalRows = MaxTotal.Rows[0]["TotalRows"], MaxPage = MaxTotal.Rows[0]["MaxPage"], CurrentPage, PageRows, data = User_Mlist
                                                 }
                                             };
                                             return Response_MV;
@@ -201,8 +196,8 @@ namespace DMS_API.Services
                                                 Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoData],
                                                 Data = new
                                                 {
-                                                    TotalRows = Permessions_Mlist.Count,
-                                                    MaxPage = Math.Ceiling(Permessions_Mlist.Count / (float)_PageRows),
+                                                    TotalRows = MaxTotal.Rows[0]["TotalRows"],
+                                                    MaxPage = MaxTotal.Rows[0]["MaxPage"],
                                                     CurrentPage = _PageNumber,
                                                     PageRows = _PageRows,
                                                     TrackingPath = TrackingPath_Mlist,
@@ -601,7 +596,7 @@ namespace DMS_API.Services
         /// Users Have IsManage & Admins To Do:
         /// Add Permissions on object (Folder & Document) for Users & Groups
         /// </summary>
-        /// <param name="AddPermissions_MV">Body Parameter</param>
+        /// <param name="AddPermissions_MVlist">Body Parameter</param>
         /// <param name="RequestHeader">Header Parameter</param>
         /// <returns>Response { (bool)Success, (string)Message, (object)Data}</returns>
         public async Task<ResponseModelView> AddPermissionsOnObject(List<AddPermissionsModelView> AddPermissions_MVlist, RequestHeaderModelView RequestHeader)
@@ -667,43 +662,6 @@ namespace DMS_API.Services
                             };
                             return Response_MV;
                         }
-                        //var result = GlobalService.CheckUserPermissionsOnFolderAndDocument((SessionModel)ResponseSession.Data, AddPermissions_MV.SourObjId).Result;
-                        //bool checkManagePermission = result == null ? false : result.IsManage;
-                        //if (checkManagePermission == true)
-                        //{
-                        //    string exeut = $"EXEC [User].[AddPermissionPro] '{AddPermissions_MV.SourObjId}','{AddPermissions_MV.SourClsId}', '{AddPermissions_MV.DestObjId}', '{AddPermissions_MV.DestClsId}','{AddPermissions_MV.PerRead}', '{AddPermissions_MV.PerWrite}', '{AddPermissions_MV.PerManage}', '{AddPermissions_MV.PerQR}' ";
-                        //    var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
-                        //    if (outValue == 0.ToString() || outValue == null || outValue.Trim() == "")
-                        //    {
-                        //        Response_MV = new ResponseModelView
-                        //        {
-                        //            Success = false,
-                        //            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.InsertFaild],
-                        //            Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
-                        //        };
-                        //        return Response_MV;
-                        //    }
-                        //    else
-                        //    {
-                        //        Response_MV = new ResponseModelView
-                        //        {
-                        //            Success = true,
-                        //            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.InsertSuccess],
-                        //            Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
-                        //        };
-                        //        return Response_MV;
-                        //    }
-                        //}
-                        //else
-                        //{
-                        //    Response_MV = new ResponseModelView
-                        //    {
-                        //        Success = false,
-                        //        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoPermission],
-                        //        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
-                        //    };
-                        //    return Response_MV;
-                        //}
                     }
                 }
             }
@@ -722,10 +680,10 @@ namespace DMS_API.Services
         /// Users Have IsManage & Admins To Do:
         /// Edit Permissions on object (Folder & Document) for Users & Groups
         /// </summary>
-        /// <param name="EditPermissions_MV">Body Parameter</param>
+        /// <param name="EditPermissions_MVlist">Body Parameter</param>
         /// <param name="RequestHeader">Header Parameter</param>
         /// <returns>Response { (bool)Success, (string)Message, (object)Data}</returns>
-        public async Task<ResponseModelView> EditPermissionsOnObject(EditPermissionsModelView EditPermissions_MV, RequestHeaderModelView RequestHeader)
+        public async Task<ResponseModelView> EditPermissionsOnObject(List<EditPermissionsModelView> EditPermissions_MVlist, RequestHeaderModelView RequestHeader)
         {
             try
             {
@@ -738,20 +696,43 @@ namespace DMS_API.Services
                 else
                 {
                     int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
-                    var result = GlobalService.CheckUserPermissionsOnFolderAndDocument((SessionModel)ResponseSession.Data, EditPermissions_MV.SourObjId).Result;
-                    bool checkManagePermission = result == null ? false : result.IsManage;
-
-                    if (checkManagePermission == true)
+                    if (EditPermissions_MVlist.Count == 0)
                     {
-                        string exeut = $"EXEC [User].[UpdatePermissionPro]  '{EditPermissions_MV.SourObjId}', '{EditPermissions_MV.DestObjId}', '{EditPermissions_MV.PerRead}', '{EditPermissions_MV.PerWrite}', '{EditPermissions_MV.PerManage}', '{EditPermissions_MV.PerQR}' ";
-                        var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
-                        if (outValue == 0.ToString() || outValue == null || outValue.Trim() == "")
+                        Response_MV = new ResponseModelView
+                        {
+                            Success = false,
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.MustSelectedObjects],
+                            Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                        };
+                        return Response_MV;
+                    }
+                    else
+                    {
+                        foreach (var item in EditPermissions_MVlist)
+                        {
+                            var result = GlobalService.CheckUserPermissionsOnFolderAndDocument((SessionModel)ResponseSession.Data, item.SourObjId).Result;
+                            bool checkManagePermission = result == null ? false : result.IsManage;
+                            if (checkManagePermission == false)
+                            {
+                                EditPermissions_MVlist.Remove(item);
+                            }
+                            else
+                            {
+                                string exeut = $"EXEC [User].[UpdatePermissionPro] '{item.SourObjId}', '{item.DestObjId}', '{item.PerRead}', '{item.PerWrite}', '{item.PerManage}', '{item.PerQR}' ";
+                                var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
+                                if (outValue == 0.ToString() || outValue == null || outValue.Trim() == "")
+                                {
+                                    EditPermissions_MVlist.Remove(item);
+                                }
+                            }
+                        }
+                        if (EditPermissions_MVlist.Count == 0)
                         {
                             Response_MV = new ResponseModelView
                             {
                                 Success = false,
-                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.EditFaild],
-                                Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoPermission],
+                                Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
                             };
                             return Response_MV;
                         }
@@ -765,16 +746,6 @@ namespace DMS_API.Services
                             };
                             return Response_MV;
                         }
-                    }
-                    else
-                    {
-                        Response_MV = new ResponseModelView
-                        {
-                            Success = false,
-                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoPermission],
-                            Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
-                        };
-                        return Response_MV;
                     }
                 }
             }
@@ -816,15 +787,9 @@ namespace DMS_API.Services
                     {
                         int _PageNumber = Pagination_MV.PageNumber == 0 ? 1 : Pagination_MV.PageNumber;
                         int _PageRows = Pagination_MV.PageRows == 0 ? 1 : Pagination_MV.PageRows;
-                        int CurrentPage = _PageNumber;
-                        string getPermessions = " SELECT   DestObjId, DestTitle, DestTypeId, DestTypeName" +
-                                               $" FROM     [User].[GetDestObjsNotHavePerOnSourObj] ({userLoginID},{ObjectId}) " +
-                                                            "ORDER BY  DestTypeId " +
-                                                           $"OFFSET      ({_PageNumber}-1)*{_PageRows} ROWS " +
-                                                           $"FETCH NEXT   {_PageRows} ROWS ONLY ";
-                        dt = new DataTable();
-                        dt = await Task.Run(() => dam.FireDataTable(getPermessions));
-                        if (dt == null)
+                        var MaxTotal = dam.FireDataTable($"SELECT COUNT(*) AS TotalRows, CEILING(COUNT(*) / CAST({_PageRows} AS FLOAT)) AS MaxPage " +
+                                                         $"FROM     [User].[GetDestObjsNotHavePerOnSourObj] ({userLoginID},{ObjectId}) ");
+                        if (MaxTotal == null)
                         {
                             Response_MV = new ResponseModelView
                             {
@@ -834,52 +799,76 @@ namespace DMS_API.Services
                             };
                             return Response_MV;
                         }
-                        DestNotHavePer_MVlist = new List<GetDestPerOnObjectModelView>();
-                        if (dt.Rows.Count > 0)
-                        {
-                            for (int i = 0; i < dt.Rows.Count; i++)
-                            {
-                                DestNotHavePer_MV = new GetDestPerOnObjectModelView
-                                {
-
-                                    DestObjId = Convert.ToInt32(dt.Rows[i]["DestObjId"].ToString()),
-                                    DestObjTitle = dt.Rows[i]["DestTitle"].ToString(),
-                                    DestTypeId = Convert.ToInt32(dt.Rows[i]["DestTypeId"].ToString()),
-                                    DestTypeName = dt.Rows[i]["DestTypeName"].ToString()
-                                };
-                                DestNotHavePer_MVlist.Add(DestNotHavePer_MV);
-                            }
-                            Response_MV = new ResponseModelView
-                            {
-                                Success = true,
-                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
-                                Data = new
-                                {
-                                    TotalRows = DestNotHavePer_MVlist.Count,
-                                    MaxPage = Math.Ceiling(DestNotHavePer_MVlist.Count / (float)_PageRows),
-                                    CurrentPage = _PageNumber,
-                                    PageRows = _PageRows,
-                                    data = DestNotHavePer_MVlist
-                                }
-                            };
-                            return Response_MV;
-                        }
                         else
                         {
-                            Response_MV = new ResponseModelView
+                            string getPermessions = " SELECT   DestObjId, DestTitle, DestTypeId, DestTypeName" +
+                                                   $" FROM     [User].[GetDestObjsNotHavePerOnSourObj] ({userLoginID},{ObjectId}) " +
+                                                                "ORDER BY  DestTypeId " +
+                                                               $"OFFSET      ({_PageNumber}-1)*{_PageRows} ROWS " +
+                                                               $"FETCH NEXT   {_PageRows} ROWS ONLY ";
+                            dt = new DataTable();
+                            dt = await Task.Run(() => dam.FireDataTable(getPermessions));
+                            if (dt == null)
                             {
-                                Success = true,
-                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoData],
-                                Data = new
+                                Response_MV = new ResponseModelView
                                 {
-                                    TotalRows = DestNotHavePer_MVlist.Count,
-                                    MaxPage = Math.Ceiling(DestNotHavePer_MVlist.Count / (float)_PageRows),
-                                    CurrentPage = _PageNumber,
-                                    PageRows = _PageRows,
-                                    data = DestNotHavePer_MVlist
+                                    Success = false,
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
+                                    Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                                };
+                                return Response_MV;
+                            }
+                            DestNotHavePer_MVlist = new List<GetDestPerOnObjectModelView>();
+                            if (dt.Rows.Count > 0)
+                            {
+                                for (int i = 0; i < dt.Rows.Count; i++)
+                                {
+                                    DestNotHavePer_MV = new GetDestPerOnObjectModelView
+                                    {
+
+                                        DestObjId = Convert.ToInt32(dt.Rows[i]["DestObjId"].ToString()),
+                                        DestObjTitle = dt.Rows[i]["DestTitle"].ToString(),
+                                        DestTypeId = Convert.ToInt32(dt.Rows[i]["DestTypeId"].ToString()),
+                                        DestTypeName = dt.Rows[i]["DestTypeName"].ToString(),
+                                        IsRead = false,
+                                        IsWrite = false,
+                                        IsManage = false,
+                                        IsQR = false
+                                    };
+                                    DestNotHavePer_MVlist.Add(DestNotHavePer_MV);
                                 }
-                            };
-                            return Response_MV;
+                                Response_MV = new ResponseModelView
+                                {
+                                    Success = true,
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
+                                    Data = new
+                                    {
+                                        TotalRows = MaxTotal.Rows[0]["TotalRows"],
+                                        MaxPage = MaxTotal.Rows[0]["MaxPage"],
+                                        CurrentPage = _PageNumber,
+                                        PageRows = _PageRows,
+                                        data = DestNotHavePer_MVlist
+                                    }
+                                };
+                                return Response_MV;
+                            }
+                            else
+                            {
+                                Response_MV = new ResponseModelView
+                                {
+                                    Success = true,
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoData],
+                                    Data = new
+                                    {
+                                        TotalRows = MaxTotal.Rows[0]["TotalRows"],
+                                        MaxPage = MaxTotal.Rows[0]["MaxPage"],
+                                        CurrentPage = _PageNumber,
+                                        PageRows = _PageRows,
+                                        data = DestNotHavePer_MVlist
+                                    }
+                                };
+                                return Response_MV;
+                            }
                         }
                     }
                     else
@@ -933,16 +922,9 @@ namespace DMS_API.Services
                     {
                         int _PageNumber = Pagination_MV.PageNumber == 0 ? 1 : Pagination_MV.PageNumber;
                         int _PageRows = Pagination_MV.PageRows == 0 ? 1 : Pagination_MV.PageRows;
-                        int CurrentPage = _PageNumber;
-                        string getPermessions = " SELECT   DestObjId, DestTitle, DestTypeId, DestTypeName" +
-                                               $" FROM     [User].[GetDestObjsHavePerOnSourObj] ({userLoginID},{ObjectId}) " +
-                                                            "ORDER BY  DestTypeId " +
-                                                           $"OFFSET      ({_PageNumber}-1)*{_PageRows} ROWS " +
-                                                           $"FETCH NEXT   {_PageRows} ROWS ONLY ";
-
-                        dt = new DataTable();
-                        dt = await Task.Run(() => dam.FireDataTable(getPermessions));
-                        if (dt == null)
+                        var MaxTotal = dam.FireDataTable($"SELECT COUNT(*) AS TotalRows, CEILING(COUNT(*) / CAST({_PageRows} AS FLOAT)) AS MaxPage " +
+                                                         $"FROM     [User].[GetDestObjsHavePerOnSourObj] ({userLoginID},{ObjectId}) ");
+                        if (MaxTotal == null)
                         {
                             Response_MV = new ResponseModelView
                             {
@@ -952,52 +934,78 @@ namespace DMS_API.Services
                             };
                             return Response_MV;
                         }
-                        DestNotHavePer_MVlist = new List<GetDestPerOnObjectModelView>();
-                        if (dt.Rows.Count > 0)
-                        {
-                            for (int i = 0; i < dt.Rows.Count; i++)
-                            {
-                                DestNotHavePer_MV = new GetDestPerOnObjectModelView
-                                {
-
-                                    DestObjId = Convert.ToInt32(dt.Rows[i]["DestObjId"].ToString()),
-                                    DestObjTitle = dt.Rows[i]["DestTitle"].ToString(),
-                                    DestTypeId = Convert.ToInt32(dt.Rows[i]["DestTypeId"].ToString()),
-                                    DestTypeName = dt.Rows[i]["DestTypeName"].ToString()
-                                };
-                                DestNotHavePer_MVlist.Add(DestNotHavePer_MV);
-                            }
-                            Response_MV = new ResponseModelView
-                            {
-                                Success = true,
-                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
-                                Data = new
-                                {
-                                    TotalRows = DestNotHavePer_MVlist.Count,
-                                    MaxPage = Math.Ceiling(DestNotHavePer_MVlist.Count / (float)_PageRows),
-                                    CurrentPage = _PageNumber,
-                                    PageRows = _PageRows,
-                                    data = DestNotHavePer_MVlist
-                                }
-                            };
-                            return Response_MV;
-                        }
                         else
                         {
-                            Response_MV = new ResponseModelView
+                            string getPermessions = " SELECT   DestObjId, DestTitle, DestTypeId, DestTypeName, " +
+                                                    "          IsRead, IsWrite, IsManage, IsQR " +
+                                                   $" FROM     [User].[GetDestObjsHavePerOnSourObj] ({userLoginID},{ObjectId}) " +
+                                                                "ORDER BY  DestTypeId " +
+                                                               $"OFFSET      ({_PageNumber}-1)*{_PageRows} ROWS " +
+                                                               $"FETCH NEXT   {_PageRows} ROWS ONLY ";
+
+                            dt = new DataTable();
+                            dt = await Task.Run(() => dam.FireDataTable(getPermessions));
+                            if (dt == null)
                             {
-                                Success = true,
-                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoData],
-                                Data = new
+                                Response_MV = new ResponseModelView
                                 {
-                                    TotalRows = DestNotHavePer_MVlist.Count,
-                                    MaxPage = Math.Ceiling(DestNotHavePer_MVlist.Count / (float)_PageRows),
-                                    CurrentPage = _PageNumber,
-                                    PageRows = _PageRows,
-                                    data = DestNotHavePer_MVlist
+                                    Success = false,
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
+                                    Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                                };
+                                return Response_MV;
+                            }
+                            DestNotHavePer_MVlist = new List<GetDestPerOnObjectModelView>();
+                            if (dt.Rows.Count > 0)
+                            {
+                                for (int i = 0; i < dt.Rows.Count; i++)
+                                {
+                                    DestNotHavePer_MV = new GetDestPerOnObjectModelView
+                                    {
+
+                                        DestObjId = Convert.ToInt32(dt.Rows[i]["DestObjId"].ToString()),
+                                        DestObjTitle = dt.Rows[i]["DestTitle"].ToString(),
+                                        DestTypeId = Convert.ToInt32(dt.Rows[i]["DestTypeId"].ToString()),
+                                        DestTypeName = dt.Rows[i]["DestTypeName"].ToString(),
+                                        IsRead = bool.Parse(dt.Rows[i]["IsRead"].ToString()),
+                                        IsWrite = bool.Parse(dt.Rows[i]["IsWrite"].ToString()),
+                                        IsManage = bool.Parse(dt.Rows[i]["IsManage"].ToString()),
+                                        IsQR = bool.Parse(dt.Rows[i]["IsQR"].ToString())
+                                    };
+                                    DestNotHavePer_MVlist.Add(DestNotHavePer_MV);
                                 }
-                            };
-                            return Response_MV;
+                                Response_MV = new ResponseModelView
+                                {
+                                    Success = true,
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
+                                    Data = new
+                                    {
+                                        TotalRows = MaxTotal.Rows[0]["TotalRows"],
+                                        MaxPage = MaxTotal.Rows[0]["MaxPage"],
+                                        CurrentPage = _PageNumber,
+                                        PageRows = _PageRows,
+                                        data = DestNotHavePer_MVlist
+                                    }
+                                };
+                                return Response_MV;
+                            }
+                            else
+                            {
+                                Response_MV = new ResponseModelView
+                                {
+                                    Success = true,
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoData],
+                                    Data = new
+                                    {
+                                        TotalRows = MaxTotal.Rows[0]["TotalRows"],
+                                        MaxPage = MaxTotal.Rows[0]["MaxPage"],
+                                        CurrentPage = _PageNumber,
+                                        PageRows = _PageRows,
+                                        data = DestNotHavePer_MVlist
+                                    }
+                                };
+                                return Response_MV;
+                            }
                         }
                     }
                     else
