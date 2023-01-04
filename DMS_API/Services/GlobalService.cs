@@ -814,7 +814,7 @@ namespace DMS_API.Services
                 //اضافة نوع خط للغة العربية
                 Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
                 FontSelector selector = new FontSelector();
-                string fontLoc = @"C:\Windows\Fonts\Arial.ttf";//@"C:\Users\pc\source\repos\WindowsFormsApp1\WindowsFormsApp1\Fonts\Scheherazade-Bold.ttf"; // make sure to have the correct path to the font file 
+                string fontLoc = "F:\\TestProjects\\DMS_API\\DMS_API\\wwwroot\\Fonts\\ARIAL.TTF";
                 // "C:\Users\pc\source\repos\WindowsFormsApp1\WindowsFormsApp1\Fonts\Scheherazade-Regular.ttf"              
                 BaseFont bf = BaseFont.CreateFont(fontLoc, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
 
