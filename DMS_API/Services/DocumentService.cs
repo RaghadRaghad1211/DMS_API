@@ -26,6 +26,7 @@ namespace DMS_API.Services
         {
             Environment = environment;
             dam = new DataAccessService(SecurityService.ConnectionString);
+            GlobalService.PrintReceipt();
         }
         #endregion
 

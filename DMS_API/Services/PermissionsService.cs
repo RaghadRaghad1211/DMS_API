@@ -110,7 +110,6 @@ namespace DMS_API.Services
                                     else
                                     {
                                         string getPermessions = " SELECT   SourObjId, SourTitle, SourType, SourTypeName," +
-                                                                "          DestObjId, DestTitle, DestType, DestTypeName, " +
                                                                 "          IsRead, IsWrite, IsManage, IsQR, SourCreationDate, " +
                                                                 "          SourUserName, SourOrgArName, SourOrgEnName, SourOrgKuName  " +
                                                                $" FROM     [Document].[GetChildsInParentWithPermissions] ({userLoginID}, {ParentChildsPermissions_MV.ParentId}) " +
@@ -154,10 +153,6 @@ namespace DMS_API.Services
                                                     SourTitle = dt.Rows[i]["SourTitle"].ToString(),
                                                     SourType = Convert.ToInt32(dt.Rows[i]["SourType"].ToString()),
                                                     SourTypeName = dt.Rows[i]["SourTypeName"].ToString(),
-                                                    DestObjId = Convert.ToInt32(dt.Rows[i]["DestObjId"].ToString()),
-                                                    DestTitle = dt.Rows[i]["DestTitle"].ToString(),
-                                                    DestType = Convert.ToInt32(dt.Rows[i]["DestType"].ToString()),
-                                                    DestTypeName = dt.Rows[i]["DestTypeName"].ToString(),
                                                     IsRead = bool.Parse(dt.Rows[i]["IsRead"].ToString()),
                                                     IsWrite = bool.Parse(dt.Rows[i]["IsWrite"].ToString()),
                                                     IsManage = bool.Parse(dt.Rows[i]["IsManage"].ToString()),
@@ -212,7 +207,6 @@ namespace DMS_API.Services
                             else
                             {
                                 string getPermessions = " SELECT   SourObjId, SourTitle, SourType, SourTypeName," +
-                                                        "          DestObjId, DestTitle, DestType, DestTypeName, " +
                                                         "          IsRead, IsWrite, IsManage, IsQR, SourCreationDate, " +
                                                         "          SourUserName, SourOrgArName, SourOrgEnName, SourOrgKuName  " +
                                                        $" FROM     [Document].[GetChildsInParentWithPermissions] ({userLoginID}, {ParentChildsPermissions_MV.ParentId}) " +
@@ -260,10 +254,10 @@ namespace DMS_API.Services
                                             SourTitle = dt.Rows[i]["SourTitle"].ToString(),
                                             SourType = Convert.ToInt32(dt.Rows[i]["SourType"].ToString()),
                                             SourTypeName = dt.Rows[i]["SourTypeName"].ToString(),
-                                            DestObjId = Convert.ToInt32(dt.Rows[i]["DestObjId"].ToString()),
-                                            DestTitle = dt.Rows[i]["DestTitle"].ToString(),
-                                            DestType = Convert.ToInt32(dt.Rows[i]["DestType"].ToString()),
-                                            DestTypeName = dt.Rows[i]["DestTypeName"].ToString(),
+                                            //DestObjId = Convert.ToInt32(dt.Rows[i]["DestObjId"].ToString()),
+                                            //DestTitle = dt.Rows[i]["DestTitle"].ToString(),
+                                            //DestType = Convert.ToInt32(dt.Rows[i]["DestType"].ToString()),
+                                            //DestTypeName = dt.Rows[i]["DestTypeName"].ToString(),
                                             IsRead = bool.Parse(dt.Rows[i]["IsRead"].ToString()),
                                             IsWrite = bool.Parse(dt.Rows[i]["IsWrite"].ToString()),
                                             IsManage = bool.Parse(dt.Rows[i]["IsManage"].ToString()),
@@ -378,7 +372,6 @@ namespace DMS_API.Services
                         else
                         {
                             string getPermessions = " SELECT   SourObjId, SourTitle, SourType, SourTypeName," +
-                                                    "          DestObjId, DestTitle, DestType, DestTypeName, " +
                                                     "          IsRead, IsWrite, IsManage, IsQR, SourCreationDate, " +
                                                     "          SourUserName, SourOrgArName, SourOrgEnName, SourOrgKuName  " +
                                                    $" FROM     [Document].[GetChildsInParentWithPermissions_Search] ({userLoginID}, {ParentChildsPermissionsSearch_MV.ParentId}) " +
@@ -423,10 +416,6 @@ namespace DMS_API.Services
                                         SourTitle = dt.Rows[i]["SourTitle"].ToString(),
                                         SourType = Convert.ToInt32(dt.Rows[i]["SourType"].ToString()),
                                         SourTypeName = dt.Rows[i]["SourTypeName"].ToString(),
-                                        DestObjId = Convert.ToInt32(dt.Rows[i]["DestObjId"].ToString()),
-                                        DestTitle = dt.Rows[i]["DestTitle"].ToString(),
-                                        DestType = Convert.ToInt32(dt.Rows[i]["DestType"].ToString()),
-                                        DestTypeName = dt.Rows[i]["DestTypeName"].ToString(),
                                         IsRead = bool.Parse(dt.Rows[i]["IsRead"].ToString()),
                                         IsWrite = bool.Parse(dt.Rows[i]["IsWrite"].ToString()),
                                         IsManage = bool.Parse(dt.Rows[i]["IsManage"].ToString()),
@@ -523,7 +512,6 @@ namespace DMS_API.Services
                     else
                     {
                         string getPermessions = " SELECT   SourObjId, SourTitle, SourType, SourTypeName," +
-                                                "          DestObjId, DestTitle, DestType, DestTypeName, " +
                                                 "          IsRead, IsWrite, IsManage, IsQR " +
                                                 " FROM     [User].[V_Permission]" +
                                                $" WHERE    SourObjId= {ObjectId} AND DestObjId= {userLoginID} ";
@@ -549,10 +537,10 @@ namespace DMS_API.Services
                                 SourTitle = dt.Rows[0]["SourTitle"].ToString(),
                                 SourType = Convert.ToInt32(dt.Rows[0]["SourType"].ToString()),
                                 SourTypeName = dt.Rows[0]["SourTypeName"].ToString(),
-                                DestObjId = Convert.ToInt32(dt.Rows[0]["DestObjId"].ToString()),
-                                DestTitle = dt.Rows[0]["DestTitle"].ToString(),
-                                DestType = Convert.ToInt32(dt.Rows[0]["DestType"].ToString()),
-                                DestTypeName = dt.Rows[0]["DestTypeName"].ToString(),
+                                //DestObjId = Convert.ToInt32(dt.Rows[0]["DestObjId"].ToString()),
+                                //DestTitle = dt.Rows[0]["DestTitle"].ToString(),
+                                //DestType = Convert.ToInt32(dt.Rows[0]["DestType"].ToString()),
+                                //DestTypeName = dt.Rows[0]["DestTypeName"].ToString(),
                                 IsRead = bool.Parse(dt.Rows[0]["IsRead"].ToString()),
                                 IsWrite = bool.Parse(dt.Rows[0]["IsWrite"].ToString()),
                                 IsManage = bool.Parse(dt.Rows[0]["IsManage"].ToString()),
@@ -629,6 +617,10 @@ namespace DMS_API.Services
                     {
                         foreach (var item in AddPermissions_MVlist)
                         {
+                            if (item.PerRead == false && item.PerWrite == false && item.PerManage == false && item.PerQR == false)
+                            {
+                                AddPermissions_MVlist.Remove(item);
+                            }
                             var result = GlobalService.CheckUserPermissionsOnFolderAndDocument((SessionModel)ResponseSession.Data, item.SourObjId).Result;
                             bool checkManagePermission = result == null ? false : result.IsManage;
                             if (checkManagePermission == false)
@@ -637,7 +629,7 @@ namespace DMS_API.Services
                             }
                             else
                             {
-                                string exeut = $"EXEC [User].[AddPermissionPro] '{item.SourObjId}','{item.SourClsId}', '{item.DestObjId}', '{item.DestClsId}','{item.PerRead}', '{item.PerWrite}', '{item.PerManage}', '{item.PerQR}' ";
+                                string exeut = $"EXEC [User].[AddPermissionPro] '{item.SourObjId}','{item.SourClsId}', '{item.DestObjId}', '{item.DestClsId}','{true}', '{item.PerWrite}', '{item.PerManage}', '{item.PerQR}' ";
                                 var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
                                 if (outValue == 0.ToString() || outValue == null || outValue.Trim() == "")
                                 {
@@ -727,6 +719,27 @@ namespace DMS_API.Services
                                 {
                                     EditPermissions_MVlist.Remove(item);
                                 }
+                                else
+                                {
+                                    if (item.PerRead == false)
+                                    {
+                                        int checkFav = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) [User].[V_Favourites] WHERE [ObjUserId]={item.DestObjId} AND [ObjFavId]={item.SourObjId} AND [IsActive]=1"));
+                                        if (checkFav > 0)
+                                        {
+                                            dam.DoQuery($"Update [User].[Favourites] set [IsActive]=0 where [ObjUserId]={item.DestObjId} and [ObjFavId]={item.SourObjId}");
+                                        }
+                                    }
+                                }
+                            }
+                            if (EditPermissions_MVlist.Count == 0)
+                            {
+                                Response_MV = new ResponseModelView
+                                {
+                                    Success = false,
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoPermission],
+                                    Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                                };
+                                return Response_MV;
                             }
                         }
                         if (EditPermissions_MVlist.Count == 0)

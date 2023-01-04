@@ -80,6 +80,7 @@
         public static readonly string GroupUnEditable = "GroupUnEditable";
         public static readonly string FolderUnEditable = "FolderUnEditable";
         public static readonly string GeneratQR = "GeneratQR";
+        public static readonly string MustSelectPermissionForObject = "MustSelectedPermissionForObject";
 
         /// <summary>
         /// Dictionary of respons messages
@@ -149,6 +150,7 @@
                      { InvalidUsername, "اسم مستخدم غير صالح" },
                      { InvalidPassword, "كلمة المرور غير صالحة" },
                      { GeneratQR, "تم توليد رمز الوثيقة" },
+                     { MustSelectPermissionForObject, "يجب اختيار صلاحية واحدة على الاقل للعنصر " },
                 }
             },
             {
@@ -214,6 +216,8 @@
                      { InvalidUsername, "Invalid Username" },
                      { InvalidPassword, "Invalid Password" },
                      { GeneratQR, "Generat QR code" },
+                     { MustSelectPermissionForObject, "Must Select Permission For Object " },
+
 
                 }
             }

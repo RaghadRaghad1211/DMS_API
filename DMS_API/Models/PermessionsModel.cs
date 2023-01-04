@@ -18,10 +18,10 @@ namespace DMS_API.Models
         [JsonPropertyName("ChildClassType")]
         public string SourTypeName { get; set; }
 
-        public int DestObjId { get; set; }
-        public string DestTitle { get; set; }
-        public int DestType { get; set; }
-        public string DestTypeName { get; set; }
+        //public int DestObjId { get; set; }
+        //public string DestTitle { get; set; }
+        //public int DestType { get; set; }
+        //public string DestTypeName { get; set; }
         public bool IsRead { get; set; }
         public bool IsWrite { get; set; }
         public bool IsManage { get; set; }
