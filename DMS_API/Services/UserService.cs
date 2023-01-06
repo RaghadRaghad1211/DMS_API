@@ -23,6 +23,8 @@ namespace DMS_API.Services
         public UserService()
         {
             dam = new DataAccessService(SecurityService.ConnectionString);
+            dam.Connection_State_ifCLOSE();
+            var ii = dam.Connection_Check();
         }
         #endregion
 

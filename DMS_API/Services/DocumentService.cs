@@ -26,7 +26,7 @@ namespace DMS_API.Services
         {
             Environment = environment;
             dam = new DataAccessService(SecurityService.ConnectionString);
-            GlobalService.PrintReceipt();
+           // GlobalService.DesignPDF(Environment);
         }
         #endregion
 
@@ -399,19 +399,6 @@ namespace DMS_API.Services
                                     ObjClsId = Convert.ToInt32(GlobalService.ClassType.Document),
                                     KeysValues = KeyValue_Mlist,
                                     DocumentFilePath = await GlobalService.GetFullPathOfDocumentNameInServerFolder(DocumentId, GlobalService.LengthKey, Environment)
-                                    #region old code
-                                    //string getDocPath = SecurityService.HostFilesUrl + "/" +
-                                    //                      (int.Parse(dt.Rows[0]["ObjId"].ToString()) % GlobalService.MoodNum).ToString() + "/" +
-                                    //                       dt.Rows[0]["ObjId"].ToString() + "/" +
-                                    //                       Path.GetFileName(Directory.GetFiles(
-                                    //                                                  Path.Combine(
-                                    //                                                       await GlobalService.GetDocumentLocationInServerFolder
-                                    //                                                             (Convert.ToInt32(dt.Rows[0]["ObjId"].ToString()), Environment),
-                                    //                                                              Convert.ToInt32(dt.Rows[0]["ObjId"].ToString()).ToString())).
-                                    //                                                                                                  FirstOrDefault(x => Path.GetFileName(x).
-                                    //                                                                                                                 Remove(0, LengthKey).
-                                    //                                                                                                                 StartsWith(dt.Rows[0]["ObjId"].ToString())));
-                                    #endregion
                                 };
 
                                 Response_MV = new ResponseModelView

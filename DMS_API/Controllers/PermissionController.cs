@@ -1,4 +1,5 @@
-﻿using DMS_API.ModelsView;
+﻿using DMS_API.Models;
+using DMS_API.ModelsView;
 using DMS_API.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -79,6 +80,14 @@ namespace DMS_API.Controllers
         public async Task<IActionResult> GetUsersOrGroupsNotHavePermissionOnObject([FromBody] SearchUsersOrGroupsPermissionOnObject SearchUsersOrGroupsPermissionOnObject_MV, [FromHeader] RequestHeaderModelView RequestHeader)
         {
             Response_MV = await Permissions_S.GetUsersOrGroupsNotHavePermissionOnObject(SearchUsersOrGroupsPermissionOnObject_MV, RequestHeader);
+            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
+        }
+
+        [HttpPost]
+        [Route("GetQRcodePDFofDocument")]
+        public async Task<IActionResult> GetQRcodePDFofDocument([FromBody] QRLookupModel QRLookup_M, [FromHeader] RequestHeaderModelView RequestHeader)
+        {
+            Response_MV = await Permissions_S.GetQRcodePDFofDocument(QRLookup_M, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
         #endregion

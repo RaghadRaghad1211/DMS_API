@@ -1104,7 +1104,13 @@ namespace DMS_API.Services
                 return Response_MV;
             }
         }
-
+        /// <summary>
+        /// Users Have IsQR & Admins To Do:
+        /// Generate PFD of document with QR code.
+        /// </summary>
+        /// <param name="QRLookup_M">Body Parameter</param>
+        /// <param name="RequestHeader">Header Parameter</param>
+        /// <returns>Response { (bool)Success, (string)Message, (object)Data}</returns>
         public async Task<ResponseModelView> GetQRcodePDFofDocument(QRLookupModel QRLookup_M, RequestHeaderModelView RequestHeader)
         {
             try
