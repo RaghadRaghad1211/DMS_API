@@ -9,8 +9,6 @@ namespace DMS_API.Controllers
     [ApiController]
     public class PermissionController : ControllerBase
     {
-
-
         #region Properteis
         private readonly PermissionsService Permissions_S;
         private ResponseModelView Response_MV { get; set; }

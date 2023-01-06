@@ -1,6 +1,10 @@
-﻿using DMS_API.ModelsView;
+﻿using ArchiveAPI.Services;
+using DMS_API.ModelsView;
 using DMS_API.Services;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using System;
+
 namespace DMS_API.Controllers
 {
     [Route("api/[controller]")]
@@ -108,5 +112,14 @@ namespace DMS_API.Controllers
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
         #endregion
+
+        [HttpGet]
+        [Route("TestGet")]
+        public async Task<IActionResult> TestGet()
+        {
+            DataAccessService dam = new DataAccessService(SecurityService.ConnectionString);
+            return await Task.FromResult(Ok(dam.FireSQL("SELECT COUNT(*) FROM [User].Users")));
+        }
+
     }
 }

@@ -54,6 +54,7 @@
         public static readonly string IsNotExist = "IsNotExist";
         public static readonly string MustFillInformation = "MustFillInformation";
         public static readonly string ServerError = "Server Error";
+        public static readonly string ServiceUnavailable = "ServiceUnavailable";
         public static readonly string ExceptionError = "Exception Error";
         public static readonly string TokenEmpty = "Token Empty";
         public static readonly string ConfirmPasswordIsIncorrect = "ConfirmPasswordIsIncorrect";
@@ -115,6 +116,7 @@
                      { ExpiredToken, "انتهت صلاحية رمز الوصول" },
                      { ExceptionError, "فشل - استثناء" },
                      {ServerError ,"خطأ في الخادم"},
+                     { ServiceUnavailable, "حدث خطأ اثناء الاتصال في الخادم" },
                      {IsInt ,"يجب ادخال رقم"},
                      {TokenEmpty ,"رمز الوصول فارغ"},
                      {ConfirmPasswordIsIncorrect ,"تأكيد كلمة المرور غير صحيحة"},
@@ -151,6 +153,7 @@
                      { InvalidPassword, "كلمة المرور غير صالحة" },
                      { GeneratQR, "تم توليد رمز الوثيقة" },
                      { MustSelectPermissionForObject, "يجب اختيار صلاحية واحدة على الاقل للعنصر " },
+
                 }
             },
             {
@@ -181,6 +184,7 @@
                      { ExpiredToken, "The access token expired" },
                      { ExceptionError, "Faild - Exception" },
                      {ServerError ,"Server Error"},
+                     { ServiceUnavailable, "An error occurred while connecting to the server" },
                      {IsInt ,"Must enter Number"},
                      {TokenEmpty ,"Token Is Empty"},
                      {ConfirmPasswordIsIncorrect ,"Confirm Password Is Incorrect"},

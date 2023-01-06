@@ -19,10 +19,12 @@ namespace DMS_API.Services
     {
         #region Properteis
         public static readonly string ConnectionString =
-            "Server=10.55.101.20,1433;Database=DMS_DB;Integrated Security=false;User ID=dms; Password=dms;Connection Timeout=60";
+        //"Server=10.55.101.20,1433;Database=DMS_DB;Integrated Security=false;User ID=dms; Password=dms;Connection Timeout=60;";
+        "Server=HAEL\\SQL2022;Database=DMS_DB;Integrated Security=false;User ID=dms; Password=dms;";
 
-        public static readonly string HostFilesUrl =
-            "http://10.55.101.10:90/DMSserver";
+       public static readonly string HostFilesUrl =
+            //"http://10.55.101.10:90/DMSserver";
+            "http://192.168.43.39:90/DMSserver";
 
         private static string PasswordSalt;
 
@@ -170,7 +172,7 @@ namespace DMS_API.Services
                 if (GetSecureKeys() == true)
                 {
                     using var client = new HttpClient();
-                    client.DefaultRequestHeaders.Add("Authorization", 
+                    client.DefaultRequestHeaders.Add("Authorization",
                                                     $"Basic {Convert.ToBase64String(Encoding.UTF8.GetBytes($"{OtpUsername}:{OtpPassword}"))}");
                     var request = new Dictionary<string, string>
                                     {

@@ -1123,7 +1123,7 @@ namespace DMS_API.Services
                 }
                 else
                 {
-                    int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
+                   // int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
                     var result = GlobalService.CheckUserPermissionsOnFolderAndDocument((SessionModel)ResponseSession.Data, QRLookup_M.QrDocumentId).Result;
                     bool checkManagePermission = result == null ? false : result.IsQR;
                     if (checkManagePermission == true)

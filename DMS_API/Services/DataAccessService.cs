@@ -155,6 +155,24 @@ namespace ArchiveAPI.Services
             }
         }
 
+        
+        public bool CheckConnectionNetwork()
+        {
+            try
+            {
+                if (this.CON.State == ConnectionState.Closed)
+                {
+                    this.CON.Open();
+                    this.CON.Close();
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
         /// <summary>
         /// Method Doing Query { Select } and Return The Values in DataSet if The Query Was (SELECT) You Must Define Object DataSet Type For Recieve The DataSet From Method ,
         /// if The Query Was (INSERT , DELETE , UPDATE , ets...) You Don't Have to Define Any Object .
@@ -283,7 +301,7 @@ namespace ArchiveAPI.Services
                     SqlDataReader myReader = this.CMD.ExecuteReader();
 
                     OutValue = myReader.RecordsAffected.ToString();
-                   // var fff = myReader["ObjId"].ToString();
+                    // var fff = myReader["ObjId"].ToString();
                     myReader.Close();
                 }
 

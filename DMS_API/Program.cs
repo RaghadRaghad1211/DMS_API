@@ -28,8 +28,8 @@ try
     Log.Information("API is Starting");
 
     #region Create Server Folder
-    // string path = Path.Combine(builder.Environment.WebRootPath, "DMSserver");
-    string path = $@"{Directory.GetCurrentDirectory()}\wwwroot\DMSserver";
+     string path = Path.Combine(builder.Environment.WebRootPath, "DMSserver");
+    //string path = $@"{Directory.GetCurrentDirectory()}\wwwroot\DMSserver";
     if (!Directory.Exists(path))
     {
         Directory.CreateDirectory(path);
@@ -163,6 +163,8 @@ try
     app.UseAuthorization();
 
     app.UseStaticFiles();
+
+    app.UseDirectoryBrowser();
 
     app.MapControllers();
 

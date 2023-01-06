@@ -8,8 +8,10 @@ namespace DMS_API.Models
         public static readonly BaseColor RED = new BaseColor(255, 0, 0);
         public static readonly BaseColor BLUE = new BaseColor(0, 0, 255);
         public static readonly BaseColor ORANGE = new BaseColor(255, 200, 0);
+        public static readonly BaseColor Other1 = new BaseColor(60, 42, 33);
         public enum FontSize
         {
+            VeryMini=8,
             Mini = 10,
             VerySmall = 12,
             Small = 14,
@@ -23,9 +25,7 @@ namespace DMS_API.Models
         public static readonly string ParagraphBeforQRLine2 = "نؤيد صحة صدور الوثيقة الالكترونية بعد مطابقتها مع الوثيقة الورقية";
         public static readonly string ParagraphAfterQRLine1 = "عزيزي المواطن في حالة حدوث أي تلكؤ أو مشكلة في قراءة رمز الوصول السريع" + "\n" + "يرجى الاتصال على الرقم المجاني 5599";
         public static readonly string ParagraphAfterQRLine2 = "لمزيد من المعلومات عن الخدمات الحكومية الالكترونية، بالأمكان زيارة الرابط التالي" + "\n" + "https://ur.gov.iq";
-        public static readonly string ParagraphFooterLine1 = "Text 1";
-        public static readonly string ParagraphFooterLine2 = "Text 2";
-        public static readonly string ParagraphFooterLine3 = "Text 3";
+        public static readonly string ParagraphFooterLine1 = "NDC of Iraq";
 
     }
 }
