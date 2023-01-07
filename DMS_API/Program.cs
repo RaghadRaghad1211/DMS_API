@@ -27,15 +27,22 @@ try
     #endregion
     Log.Information("API is Starting");
 
-    #region Create Server Folder
-     string path = Path.Combine(builder.Environment.WebRootPath, "DMSserver");
-    //string path = $@"{Directory.GetCurrentDirectory()}\wwwroot\DMSserver";
-    if (!Directory.Exists(path))
+    #region Create Server Folder & QR temp Folder
+    string pathDMSserver = Path.Combine(builder.Environment.WebRootPath, "DMSserver");
+    if (!Directory.Exists(pathDMSserver))
     {
-        Directory.CreateDirectory(path);
+        Directory.CreateDirectory(pathDMSserver);
         for (int i = 0; i <= 1000; i++)
-            System.IO.Directory.CreateDirectory($"{path}\\{i}");
+        { Directory.CreateDirectory($"{pathDMSserver}\\{i}"); }
     }
+
+    string pathNewTempQR = Path.Combine(pathDMSserver, $"QRtemp_{DateTime.Now.ToString("dd-MM-yyyy")}");
+    if (!Directory.Exists(pathNewTempQR))
+    { Directory.CreateDirectory(pathNewTempQR); }
+
+    string pathOldTempQR = Path.Combine(pathDMSserver, $"QRtemp_{DateTime.Now.AddDays(-1).ToString("dd-MM-yyyy")}");
+    if (Directory.Exists(pathOldTempQR))
+    { Directory.Delete(pathOldTempQR, true); }
     #endregion
     #region Cors
     builder.Services.AddCors(options =>

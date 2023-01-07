@@ -28,7 +28,7 @@ namespace DMS_API.Services
         private static HomeModel Home_M { get; set; }
         private static ResponseModelView Response_MV { get; set; }
         public static readonly int MoodNum = 999;
-        public const int LengthKey = 15;
+        public const int LengthKey = 10;
         public enum ClassType
         {
             User = 1,
@@ -591,10 +591,26 @@ namespace DMS_API.Services
         {
             try
             {
-                // var fileProvider = new PhysicalFileProvider(Path.Combine(Environment.WebRootPath, "DMSserver"));
                 var path = await Task.Run(() => Environment.WebRootPath + "\\DMSserver");
                 int currectFolderDoc = DocumentId % MoodNum;
                 return path + "\\" + currectFolderDoc.ToString();
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+        /// <summary>
+        /// Get temp folder location in server where QR PDF save it.
+        /// </summary>
+        /// <param name="Environment">Environment Parameter</param>
+        /// <returns></returns>
+        public static async Task<string> GetTempQrLocationInServerFolder(IWebHostEnvironment Environment)
+        {
+            try
+            {
+                var path = await Task.Run(() => Path.Combine(Environment.WebRootPath, "DMSserver", $"QRtemp_{DateTime.Now.ToString("dd-MM-yyyy")}"));
+                return path;
             }
             catch (Exception)
             {
@@ -630,23 +646,60 @@ namespace DMS_API.Services
         /// <param name="LengthKey">Length Key encrypted</param>
         /// <param name="Environment">Environment Parameter</param>
         /// <returns></returns>
-        public static async Task<string> GetFullPathOfORcodeOrDocumentNameInServerFolder(int DocumentId, int LengthKey, IWebHostEnvironment Environment, int QRcodeId = 0)
+        public static async Task<string> GetFullPathOfDocumentNameInServerFolder(int DocumentId, int LengthKey, IWebHostEnvironment Environment)
         {
-            int DOC_QR = QRcodeId != 0 ? QRcodeId : DocumentId;
-            string getPath = SecurityService.HostFilesUrl + "/" +
-                                (DocumentId % GlobalService.MoodNum).ToString() + "/" +
-                                 DocumentId.ToString() + "/" +
-                                 Path.GetFileName(
-                                      Directory.GetFiles(
-                                                Path.Combine(
-                                               await GlobalService.GetDocumentLocationInServerFolder(DocumentId, Environment),
-                                                     DocumentId.ToString())).
-                                                                     FirstOrDefault(
-                                                                             x => Path.GetFileName(x).
-                                                                             Remove(0, LengthKey).
-                                                                             StartsWith(DOC_QR.ToString())));
-            return getPath;
-
+            try
+            {
+                string getParentFolder = SecurityService.HostFilesUrl + "/" + (DocumentId % GlobalService.MoodNum).ToString() + "/" + DocumentId.ToString();
+                string[] getFiles = Directory.GetFiles(
+                                              Path.Combine(
+                                             await GlobalService.GetDocumentLocationInServerFolder(DocumentId, Environment),
+                                                   DocumentId.ToString()), "*.pdf");
+                foreach (var file in getFiles)
+                {
+                    string fileName = Path.GetFileNameWithoutExtension(file);
+                    if (fileName.Contains(SecurityService.EnecryptText(DocumentId.ToString())) && fileName.Length == LengthKey * 2 + SecurityService.EnecryptText(DocumentId.ToString()).Length)
+                    {
+                        return getParentFolder + "/" + Path.GetFileName(file);
+                    }
+                }
+                return null;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+            #region OldCode
+            //string getPath = SecurityService.HostFilesUrl + "/" +
+            //                    (DocumentId % GlobalService.MoodNum).ToString() + "/" +
+            //                     DocumentId.ToString() + "/" +
+            //                     Path.GetFileName(
+            //                          Directory.GetFiles(
+            //                                    Path.Combine(
+            //                                   await GlobalService.GetDocumentLocationInServerFolder(DocumentId, Environment),
+            //                                         DocumentId.ToString())).
+            //                                                         SingleOrDefault(
+            //                                                                 x => Path.GetFileName(x).
+            //                                                                 Remove(0, LengthKey).
+            //                                                                 StartsWith(SecurityService.EnecryptText(DOC_QR.ToString()))));
+            #endregion
+        }
+        /// <summary>
+        /// Get full path of QR PDF with name and extintion in folder server.
+        /// </summary>
+        /// <param name="QrFileName">Qr File Name</param>
+        /// <returns></returns>
+        public static async Task<string> GetFullPathOfQrPdfNameInServerFolder(string QrFileName)
+        {
+            try
+            {
+                string getQR_PDF = await Task.Run(() => SecurityService.HostFilesUrl + "/" + $"QRtemp_{DateTime.Now.ToString("dd-MM-yyyy")}" + "/" + QrFileName + ".pdf");
+                return getQR_PDF;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
         /// <summary>
         /// Check the folder can open for move action.
@@ -983,9 +1036,9 @@ namespace DMS_API.Services
                                  }
                     };
 
-                    var path = Path.Combine(await GetDocumentLocationInServerFolder(QRLookup_M.QrDocumentId, Environment), QRLookup_M.QrDocumentId.ToString());
-                    string QrFileName = SecurityService.RoundomKey(GlobalService.LengthKey) + outValueQRcodeId.ToString() + SecurityService.RoundomKey(GlobalService.LengthKey) + ".pdf";
-                    string fullPathQR = Path.Combine(path, QrFileName);
+                    var path = await GetTempQrLocationInServerFolder(Environment);
+                    string QrFileName = SecurityService.RoundomKey(GlobalService.LengthKey) + SecurityService.EnecryptText(outValueQRcodeId.ToString()) + SecurityService.RoundomKey(GlobalService.LengthKey);
+                    string fullPathQR = Path.Combine(path, QrFileName) + ".pdf";
                     QRCodeGenerator QrGenerator = new QRCodeGenerator();
                     //  Bitmap QrBitmap1 = new Bitmap(imageURL);
                     QRCodeData QrCodeInfo = QrGenerator.CreateQrCode(QrFileName, QRCodeGenerator.ECCLevel.H);
@@ -1169,7 +1222,7 @@ namespace DMS_API.Services
                     {
                         Success = true,
                         Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GeneratQR],
-                        Data = await GlobalService.GetFullPathOfORcodeOrDocumentNameInServerFolder(QRLookup_M.QrDocumentId, GlobalService.LengthKey, Environment, int.Parse(outValueQRcodeId))
+                        Data = new { QrPdfFilePath = GetFullPathOfQrPdfNameInServerFolder(QrFileName) }
                     };
                     return Response_MV;
                 }

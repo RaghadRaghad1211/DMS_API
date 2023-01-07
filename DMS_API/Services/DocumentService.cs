@@ -1,7 +1,12 @@
 ﻿using ArchiveAPI.Services;
 using DMS_API.Models;
 using DMS_API.ModelsView;
+using Org.BouncyCastle.Crypto.Tls;
+using QRCoder;
+using System;
 using System.Data;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.Net;
 namespace DMS_API.Services
 {
@@ -125,7 +130,7 @@ namespace DMS_API.Services
                                             // تشفير
 
 
-                                            string DocumentFileName = SecurityService.RoundomKey(GlobalService.LengthKey) + outValue.Rows[0][0].ToString() + SecurityService.RoundomKey(GlobalService.LengthKey) + Path.GetExtension(DocFileNameWithExten).Trim();
+                                            string DocumentFileName = SecurityService.RoundomKey(GlobalService.LengthKey) + SecurityService.EnecryptText(outValue.Rows[0][0].ToString()) + SecurityService.RoundomKey(GlobalService.LengthKey) + Path.GetExtension(DocFileNameWithExten).Trim();
                                             string fillPath = Path.Combine(DocFolder, DocumentFileName);
                                             using (FileStream filestream = System.IO.File.Create(fillPath))
                                             {
@@ -270,7 +275,7 @@ namespace DMS_API.Services
 
 
 
-                                            string DocumentFileName = SecurityService.RoundomKey(GlobalService.LengthKey) + outValue.Rows[0][0].ToString() + SecurityService.RoundomKey(GlobalService.LengthKey) + Path.GetExtension(DocFileNameWithExten).Trim();
+                                            string DocumentFileName = SecurityService.RoundomKey(GlobalService.LengthKey) + SecurityService.EnecryptText(outValue.Rows[0][0].ToString()) + SecurityService.RoundomKey(GlobalService.LengthKey) + Path.GetExtension(DocFileNameWithExten).Trim();
                                             string fillPath = Path.Combine(DocFolder, DocumentFileName);
                                             using (FileStream filestream = System.IO.File.Create(fillPath))
                                             {
@@ -397,7 +402,7 @@ namespace DMS_API.Services
                                     ObjId = DocumentId,
                                     ObjClsId = Convert.ToInt32(GlobalService.ClassType.Document),
                                     KeysValues = KeyValue_Mlist,
-                                    DocumentFilePath = await GlobalService.GetFullPathOfORcodeOrDocumentNameInServerFolder(DocumentId, GlobalService.LengthKey, Environment)
+                                    DocumentFilePath = await GlobalService.GetFullPathOfDocumentNameInServerFolder(DocumentId, GlobalService.LengthKey, Environment)
                                 };
 
                                 Response_MV = new ResponseModelView

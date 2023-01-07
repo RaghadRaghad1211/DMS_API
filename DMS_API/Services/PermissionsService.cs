@@ -1111,7 +1111,7 @@ namespace DMS_API.Services
         /// <param name="QRLookup_M">Body Parameter</param>
         /// <param name="RequestHeader">Header Parameter</param>
         /// <returns>Response { (bool)Success, (string)Message, (object)Data}</returns>
-        public async Task<ResponseModelView> GetQRcodePDFofDocument(QRLookupModel QRLookup_M, RequestHeaderModelView RequestHeader)
+        public async Task<ResponseModelView> GenerateQRcodePDFofDocument(QRLookupModel QRLookup_M, RequestHeaderModelView RequestHeader)
         {
             try
             {
@@ -1123,7 +1123,6 @@ namespace DMS_API.Services
                 }
                 else
                 {
-                   // int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
                     var result = GlobalService.CheckUserPermissionsOnFolderAndDocument((SessionModel)ResponseSession.Data, QRLookup_M.QrDocumentId).Result;
                     bool checkManagePermission = result == null ? false : result.IsQR;
                     if (checkManagePermission == true)

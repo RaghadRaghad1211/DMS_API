@@ -9,6 +9,7 @@ using System.Net.Mail;
 using System.Net;
 using ArchiveAPI.Services;
 using System.Data;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
 
 namespace DMS_API.Services
 {
@@ -22,11 +23,12 @@ namespace DMS_API.Services
         //"Server=10.55.101.20,1433;Database=DMS_DB;Integrated Security=false;User ID=dms; Password=dms;Connection Timeout=60;";
         "Server=HAEL\\SQL2022;Database=DMS_DB;Integrated Security=false;User ID=dms; Password=dms;";
 
-       public static readonly string HostFilesUrl =
-            //"http://10.55.101.10:90/DMSserver";
-            "http://192.168.43.39:90/DMSserver";
+        public static readonly string HostFilesUrl =
+             //"http://10.55.101.10:90/DMSserver";
+             "http://192.168.43.39:90/DMSserver";
 
         private static string PasswordSalt;
+        private static string DocumentSalt;
 
         private static string JwtKey;
         private static string JwtIssuer;
@@ -49,6 +51,7 @@ namespace DMS_API.Services
                 DataTable dtKeys = new DataTable();
                 dtKeys = dam.FireDataTable($"SELECT SecKey, SecValue  FROM [Security].[SecureKeys]");
                 PasswordSalt = dtKeys.Select("SecKey = 'PasswordSalt' ")[0]["SecValue"].ToString();
+                DocumentSalt = dtKeys.Select("SecKey = 'DocumentSalt' ")[0]["SecValue"].ToString();
                 JwtKey = dtKeys.Select("SecKey = 'JwtKey' ")[0]["SecValue"].ToString();
                 JwtIssuer = dtKeys.Select("SecKey = 'JwtIssuer' ")[0]["SecValue"].ToString();
                 JwtAudience = dtKeys.Select("SecKey = 'JwtAudience' ")[0]["SecValue"].ToString();
@@ -215,6 +218,85 @@ namespace DMS_API.Services
                     hashString += String.Format("{0:x2}", x);
                 }
                 return hashString;
+            }
+            else
+            {
+                return null;
+            }
+        }
+        /// <summary>
+        /// Enecrypt document name
+        /// </summary>
+        /// <param name="DocumentId"></param>
+        /// <returns></returns>
+        public static string EnecryptText(string text)
+        {
+            if (GetSecureKeys() == true)
+            {
+                byte[] bytesToBeEncrypted = Encoding.UTF8.GetBytes(text);
+                byte[] passwordBytes = Encoding.UTF8.GetBytes(DocumentSalt);
+                passwordBytes = SHA256.Create().ComputeHash(passwordBytes);
+                byte[] encryptedBytes = null;
+                byte[] saltBytes = new byte[] { 2, 1, 1, 2, 1, 9, 8, 9 };
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    using (RijndaelManaged AES = new RijndaelManaged())
+                    {
+                        AES.KeySize = 256;
+                        AES.BlockSize = 128;
+                        var key = new Rfc2898DeriveBytes(passwordBytes, saltBytes, 1000);
+                        AES.Key = key.GetBytes(AES.KeySize / 8);
+                        AES.IV = key.GetBytes(AES.BlockSize / 8);
+                        AES.Mode = CipherMode.CBC;
+                        using (var cs = new CryptoStream(ms, AES.CreateEncryptor(), CryptoStreamMode.Write))
+                        {
+                            cs.Write(bytesToBeEncrypted, 0, bytesToBeEncrypted.Length);
+                            cs.Close();
+                        }
+                        encryptedBytes = ms.ToArray();
+                    }
+                }
+                return Convert.ToHexString(encryptedBytes);
+            }
+            else
+            {
+                return null;
+            }
+        }
+        /// <summary>
+        /// Decrypt document name
+        /// </summary>
+        /// <param name="DocumentIdencrypted"></param>
+        /// <returns></returns>
+        public static string DecryptText(string TextEncrypted)
+        {
+            if (GetSecureKeys() == true)
+            {
+                byte[] bytesToBeDecrypted = Convert.FromHexString(TextEncrypted);
+                byte[] passwordBytesdecrypt = Encoding.UTF8.GetBytes(DocumentSalt);
+                passwordBytesdecrypt = SHA256.Create().ComputeHash(passwordBytesdecrypt);
+                byte[] decryptedBytes = null;
+                byte[] saltBytes = new byte[] { 2, 1, 1, 2, 1, 9, 8, 9 };
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    using (RijndaelManaged AES = new RijndaelManaged())
+                    {
+                        AES.KeySize = 256;
+                        AES.BlockSize = 128;
+                        var key = new Rfc2898DeriveBytes(passwordBytesdecrypt, saltBytes, 1000);
+                        AES.Key = key.GetBytes(AES.KeySize / 8);
+                        AES.IV = key.GetBytes(AES.BlockSize / 8);
+                        AES.Mode = CipherMode.CBC;
+                        using (var cs = new CryptoStream(ms, AES.CreateDecryptor(), CryptoStreamMode.Write))
+                        {
+                            cs.Write(bytesToBeDecrypted, 0, bytesToBeDecrypted.Length);
+                            cs.Close();
+                        }
+                        decryptedBytes = ms.ToArray();
+                    }
+                }
+                string decryptedResult = Encoding.UTF8.GetString(decryptedBytes);
+                return decryptedResult;
             }
             else
             {

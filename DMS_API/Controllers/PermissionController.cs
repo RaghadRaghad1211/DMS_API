@@ -82,10 +82,10 @@ namespace DMS_API.Controllers
         }
 
         [HttpPost]
-        [Route("GetQRcodePDFofDocument")]
-        public async Task<IActionResult> GetQRcodePDFofDocument([FromBody] QRLookupModel QRLookup_M, [FromHeader] RequestHeaderModelView RequestHeader)
+        [Route("GenerateQRcodePDFofDocument")]
+        public async Task<IActionResult> GenerateQRcodePDFofDocument([FromBody] QRLookupModel QRLookup_M, [FromHeader] RequestHeaderModelView RequestHeader)
         {
-            Response_MV = await Permissions_S.GetQRcodePDFofDocument(QRLookup_M, RequestHeader);
+            Response_MV = await Permissions_S.GenerateQRcodePDFofDocument(QRLookup_M, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
         #endregion
