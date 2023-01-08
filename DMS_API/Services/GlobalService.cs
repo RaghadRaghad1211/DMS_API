@@ -29,6 +29,7 @@ namespace DMS_API.Services
         private static ResponseModelView Response_MV { get; set; }
         public static readonly int MoodNum = 999;
         public const int LengthKey = 10;
+        public static readonly string MaxFileSize = ((100 / 1024f) * 1024f).ToString("0.00");
         public enum ClassType
         {
             User = 1,

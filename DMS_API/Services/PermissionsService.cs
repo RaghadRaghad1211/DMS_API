@@ -608,7 +608,7 @@ namespace DMS_API.Services
                         Response_MV = new ResponseModelView
                         {
                             Success = false,
-                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.MustSelectedObjects],
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.MustSelectPermissionForObject],
                             Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
                         };
                         return Response_MV;
@@ -629,34 +629,37 @@ namespace DMS_API.Services
                             }
                             else
                             {
+                                if (AddPermissions_MVlist.Count == 0)
+                                {
+                                    Response_MV = new ResponseModelView
+                                    {
+                                        Success = false,
+                                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.MustSelectPermissionForObject],
+                                        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                                    };
+                                    return Response_MV;
+                                }
                                 string exeut = $"EXEC [User].[AddPermissionPro] '{item.SourObjId}','{item.SourClsId}', '{item.DestObjId}', '{item.DestClsId}','{true}', '{item.PerWrite}', '{item.PerManage}', '{item.PerQR}' ";
                                 var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
                                 if (outValue == 0.ToString() || outValue == null || outValue.Trim() == "")
                                 {
-                                    AddPermissions_MVlist.Remove(item);
+                                    Response_MV = new ResponseModelView
+                                    {
+                                        Success = true,
+                                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.InsertFaild],
+                                        Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                                    };
+                                    return Response_MV;
                                 }
                             }
                         }
-                        if (AddPermissions_MVlist.Count == 0)
+                        Response_MV = new ResponseModelView
                         {
-                            Response_MV = new ResponseModelView
-                            {
-                                Success = false,
-                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoPermission],
-                                Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
-                            };
-                            return Response_MV;
-                        }
-                        else
-                        {
-                            Response_MV = new ResponseModelView
-                            {
-                                Success = true,
-                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.InsertSuccess],
-                                Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
-                            };
-                            return Response_MV;
-                        }
+                            Success = true,
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.InsertSuccess],
+                            Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
+                        };
+                        return Response_MV;
                     }
                 }
             }

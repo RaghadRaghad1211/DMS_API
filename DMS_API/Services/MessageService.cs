@@ -10,6 +10,7 @@
         //var msgE = MessageService.MsgDictionary["En"][MessageService.InvalidUsername];
         #endregion
 
+        public static readonly string InvalidFileSize = "InvalidFileSize";
         public static readonly string InvalidEmail = "InvalidEmail";
         public static readonly string InvalidUsername = "InvalidUsername";
         public static readonly string InvalidPassword = "InvalidPassword";
@@ -82,6 +83,7 @@
         public static readonly string FolderUnEditable = "FolderUnEditable";
         public static readonly string GeneratQR = "GeneratQR";
         public static readonly string MustSelectPermissionForObject = "MustSelectedPermissionForObject";
+        public static readonly string FileSize = "MustSelectedPermissionForObject";
 
         /// <summary>
         /// Dictionary of respons messages
@@ -153,6 +155,8 @@
                      { InvalidPassword, "كلمة المرور غير صالحة" },
                      { GeneratQR, "تم توليد رمز الوثيقة" },
                      { MustSelectPermissionForObject, "يجب اختيار صلاحية واحدة على الاقل للعنصر " },
+                     { InvalidFileSize, $"يجب ان يكون حجم الملف اقل من {GlobalService.MaxFileSize}" },
+
 
                 }
             },
@@ -221,6 +225,7 @@
                      { InvalidPassword, "Invalid Password" },
                      { GeneratQR, "Generat QR code" },
                      { MustSelectPermissionForObject, "Must Select Permission For Object " },
+                     { InvalidFileSize, $"File size must be less than {GlobalService.MaxFileSize}" },
 
 
                 }

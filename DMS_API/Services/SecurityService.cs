@@ -20,12 +20,15 @@ namespace DMS_API.Services
     {
         #region Properteis
         public static readonly string ConnectionString =
-        //"Server=10.55.101.20,1433;Database=DMS_DB;Integrated Security=false;User ID=dms; Password=dms;Connection Timeout=60;";
-        "Server=HAEL\\SQL2022;Database=DMS_DB;Integrated Security=false;User ID=dms; Password=dms;";
+        "Server=10.55.101.20,1433;Database=DMS_DB;Integrated Security=false;User ID=dms; Password=dms;Connection Timeout=60;";
+        //"Server=HAEL\\SQL2022;Database=DMS_DB;Integrated Security=false;User ID=dms; Password=dms;"; // البيت
+       // "Server=NDC-8RW6WC3\\SQL2014;Database=DMS_DB;Integrated Security=false;User ID=dms; Password=dms;"; // الدائرة
+
 
         public static readonly string HostFilesUrl =
-             //"http://10.55.101.10:90/DMSserver";
-             "http://192.168.43.39:90/DMSserver";
+             "http://10.55.101.10:90/DMSserver"; 
+        // "http://192.168.43.39:90/DMSserver"; //  البيت
+        // "http://10.92.92.239:90/DMSserver"; // الدائرة
 
         private static string PasswordSalt;
         private static string DocumentSalt;
@@ -51,7 +54,7 @@ namespace DMS_API.Services
                 DataTable dtKeys = new DataTable();
                 dtKeys = dam.FireDataTable($"SELECT SecKey, SecValue  FROM [Security].[SecureKeys]");
                 PasswordSalt = dtKeys.Select("SecKey = 'PasswordSalt' ")[0]["SecValue"].ToString();
-                DocumentSalt = dtKeys.Select("SecKey = 'DocumentSalt' ")[0]["SecValue"].ToString();
+               // DocumentSalt = dtKeys.Select("SecKey = 'DocumentSalt' ")[0]["SecValue"].ToString();
                 JwtKey = dtKeys.Select("SecKey = 'JwtKey' ")[0]["SecValue"].ToString();
                 JwtIssuer = dtKeys.Select("SecKey = 'JwtIssuer' ")[0]["SecValue"].ToString();
                 JwtAudience = dtKeys.Select("SecKey = 'JwtAudience' ")[0]["SecValue"].ToString();

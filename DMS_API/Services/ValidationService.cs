@@ -195,6 +195,24 @@ namespace DMS_API.Services
                 }
             }
         }
+        /// <summary>
+        /// Check file size of document is valid or not,
+        /// and return bool variable,
+        /// true: size is valid.
+        /// false: size is not valid.
+        /// </summary>
+        /// <param name="DocumentSize"></param>
+        /// <returns></returns>
+        public static bool FileSizeIsValid(this long DocumentSize)
+        {
+            float fileSizeMB = float.Parse((DocumentSize / (1024f * 1024f)).ToString("0.00"));
+            float maxFileSizeMB = float.Parse(GlobalService.MaxFileSize);
+            if (fileSizeMB > maxFileSizeMB)
+            {
+                return false;
+            }
+            return true;
+        }
         #endregion
     }
 }

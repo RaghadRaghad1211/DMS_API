@@ -74,6 +74,16 @@ namespace DMS_API.Services
                         };
                         return Response_MV;
                     }
+                    else if (!Document_MV.DocumentFile.Length.FileSizeIsValid())
+                    {
+                        Response_MV = new ResponseModelView
+                        {
+                            Success = false,
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.InvalidFileSize],
+                            Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                        };
+                        return Response_MV;
+                    }
                     else
                     {
                         int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
@@ -220,9 +230,19 @@ namespace DMS_API.Services
                             };
                             return Response_MV;
                         }
+                        else if (!Document_MV.DocumentFile.Length.FileSizeIsValid())
+                        {
+                            Response_MV = new ResponseModelView
+                            {
+                                Success = false,
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.InvalidFileSize],
+                                Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                            };
+                            return Response_MV;
+                        }
                         else
                         {
-                            int checkDeblicate = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) FROM [Document].[V_Documents] WHERE ObjTitle = '{Document_MV.DocumentTitle}' AND ObjId != {Document_MV.DocumentId} " +
+                            int checkDeblicate = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) FROM [Document].[V_Documents] WHERE ObjTitle = '{Document_MV.DocumentTitle}' AND ObjId != {Document_MV.DocumentId} AND " +
                                                                              $"ObjId IN (SELECT LcChildObjId FROM [Main].[GetChildsInParent]({Document_MV.DocumentPerantId},{(int)GlobalService.ClassType.Folder})) AND ObjClsId ={Convert.ToInt32(GlobalService.ClassType.Document)} AND ObjIsActive=1 "));
                             if (checkDeblicate == 0)
                             {
