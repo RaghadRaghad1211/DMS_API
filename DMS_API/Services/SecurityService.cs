@@ -20,13 +20,13 @@ namespace DMS_API.Services
     {
         #region Properteis
         public static readonly string ConnectionString =
-        "Server=10.55.101.20,1433;Database=DMS_DB;Integrated Security=false;User ID=dms; Password=dms;Connection Timeout=60;";
+        "Server=10.55.101.20,1433;Database=DMS_DB;Integrated Security=false;User ID=dms; Password=dms;Connection Timeout=60;"; // السيرفر
         //"Server=HAEL\\SQL2022;Database=DMS_DB;Integrated Security=false;User ID=dms; Password=dms;"; // البيت
         //"Server=NDC-8RW6WC3\\SQL2014;Database=DMS_DB;Integrated Security=false;User ID=dms; Password=dms;"; // الدائرة
 
 
         public static readonly string HostFilesUrl =
-             "http://10.55.101.10:90/DMSserver"; 
+             "http://10.55.101.10:90/DMSserver";  // السيرفر
         // "http://192.168.43.39:90/DMSserver"; //  البيت
         // "http://10.92.92.239:90/DMSserver"; // الدائرة
 
