@@ -639,7 +639,7 @@ namespace DMS_API.Services
                                     };
                                     return Response_MV;
                                 }
-                                string exeut = $"EXEC [User].[AddPermissionPro] '{item.SourObjId}','{item.SourClsId}', '{item.DestObjId}', '{item.DestClsId}','{true}', '{item.PerWrite}', '{item.PerManage}', '{item.PerQR}' ";
+                                string exeut = $"EXEC [User].[AddPermissionPro] '{item.SourObjId}','{item.SourClsId}', '{item.DestObjId}', '{item.DestClsId}','{true}', '{item.PerWrite}', '{item.PerManage}', '{item.PerQR}', '{item.PerToAllChilds}' ";
                                 var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
                                 if (outValue == 0.ToString() || outValue == null || outValue.Trim() == "")
                                 {
@@ -716,7 +716,7 @@ namespace DMS_API.Services
                             }
                             else
                             {
-                                string exeut = $"EXEC [User].[UpdatePermissionPro] '{item.SourObjId}', '{item.DestObjId}', '{item.PerRead}', '{item.PerWrite}', '{item.PerManage}', '{item.PerQR}' ";
+                                string exeut = $"EXEC [User].[UpdatePermissionPro] '{item.SourObjId}', '{item.DestObjId}', '{item.PerRead}', '{item.PerWrite}', '{item.PerManage}', '{item.PerQR}', '{item.PerToAllChilds}' ";
                                 var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
                                 if (outValue == 0.ToString() || outValue == null || outValue.Trim() == "")
                                 {

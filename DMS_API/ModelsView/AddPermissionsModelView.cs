@@ -10,5 +10,6 @@
         public bool PerWrite { get; set; }
         public bool PerManage { get; set; }
         public bool PerQR { get; set; }
+        public bool PerToAllChilds { get; set; }
     }
 }
