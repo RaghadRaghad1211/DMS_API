@@ -812,7 +812,7 @@ namespace DMS_API.Services
             try
             {
                 string QRquery = "INSERT INTO [Main].[QRLookup] (QrObjId, QrIsPraivet, QrExpiry, QrIsActive) OUTPUT INSERTED.QrId " +
-                                        $"VALUES({QRLookup_M.QrDocumentId}, {Convert.ToInt16(QRLookup_M.QrIsPraivet)}, '{DateTime.Now}', {Convert.ToInt16(QRLookup_M.QrIsActive)}) ";
+                                        $"VALUES({QRLookup_M.QrDocumentId}, {Convert.ToInt16(QRLookup_M.QrIsPraivet)}, '{DateTime.Now}', {1}) ";
                 string outValueQRcodeId = await Task.Run(() => dam.DoQueryAndPutOutValue(QRquery, "QrId"));
                 if (outValueQRcodeId == null || outValueQRcodeId.Trim() == "")
                 {
