@@ -917,8 +917,8 @@ namespace DMS_API.Services
                     CellHeaderCreateQR.AddElement(new Phrase(ParHeaderCreateQR));
 
 
-                    string imageURL = Environment.WebRootPath + "\\Logos\\DefultLogo.png";
-                    iTextSharp.text.Image LogoPNG = iTextSharp.text.Image.GetInstance(imageURL);
+                    string imageDefoltLogo = Environment.WebRootPath + "\\Logos\\DefultLogo.png";
+                    iTextSharp.text.Image LogoPNG = iTextSharp.text.Image.GetInstance(imageDefoltLogo);
                     LogoPNG.ScaleToFit(100f, 100f);
                     LogoPNG.ScalePercent(5f);
                     LogoPNG.SpacingBefore = 2f;
@@ -1057,12 +1057,12 @@ namespace DMS_API.Services
                     var path = await GetTempQrLocationInServerFolder(Environment);
                     string QrFileName = SecurityService.RoundomKey(GlobalService.LengthKey) + SecurityService.EnecryptText(outValueQRcodeId.ToString()) + SecurityService.RoundomKey(GlobalService.LengthKey);
                     string fullPathQR = Path.Combine(path, QrFileName) + ".pdf";
-                    QRCodeGenerator QrGenerator = new QRCodeGenerator();
-                    //  Bitmap QrBitmap1 = new Bitmap(imageURL);
+                    QRCodeGenerator QrGenerator = new QRCodeGenerator();                    
                     QRCodeData QrCodeInfo = QrGenerator.CreateQrCode(QrFileName, QRCodeGenerator.ECCLevel.H);
                     QRCoder.QRCode QrCode = new QRCoder.QRCode(QrCodeInfo);
-                    //Bitmap QrBitmap = QrCode.GetGraphic(60,Color.Black,Color.White, QrBitmap1);
-                    Bitmap QrBitmap = QrCode.GetGraphic(PdfSettingsModel.QRsize, Color.Black,Color.White,true);
+                    Bitmap UrBitmap = new Bitmap(Environment.WebRootPath + "\\Logos\\URlogo.png");
+                    Bitmap QrBitmap = QrCode.GetGraphic(60,Color.Black,Color.White, UrBitmap,30);
+                    //Bitmap QrBitmap = QrCode.GetGraphic(PdfSettingsModel.QRsize, Color.Black,Color.White,true);
                     byte[] bytes;
                     using (MemoryStream memory = new MemoryStream())
                     {
