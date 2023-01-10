@@ -22,9 +22,9 @@ namespace DMS_API.Controllers
 
         [HttpPost]
         [Route("GetHomeData")]
-        public async Task<IActionResult> GetHomeData([FromBody]PaginationModelView Pagination_MV, [FromHeader] RequestHeaderModelView RequestHeader)
+        public async Task<IActionResult> GetHomeData([FromBody]PaginationHomeModelView PaginationHome_MV, [FromHeader] RequestHeaderModelView RequestHeader)
         {
-            Response_MV = await GlobalService.GetHomeData(Pagination_MV,RequestHeader);
+            Response_MV = await GlobalService.GetHomeData(PaginationHome_MV, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 

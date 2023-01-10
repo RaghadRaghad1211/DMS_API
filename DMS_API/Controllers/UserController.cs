@@ -117,8 +117,9 @@ namespace DMS_API.Controllers
         [Route("TestGet")]
         public async Task<IActionResult> TestGet()
         {
+            string GG = "GSCOM-NDC" + "©" + DateTime.Now.Year;
             DataAccessService dam = new DataAccessService(SecurityService.ConnectionString);
-            return await Task.FromResult(Ok(dam.FireSQL("SELECT COUNT(*) FROM [User].Users")));
+            return await Task.FromResult(Ok(dam.FireSQL("SELECT COUNT(*) FROM [User].Users") + $" {GG}"));
         }
 
     }

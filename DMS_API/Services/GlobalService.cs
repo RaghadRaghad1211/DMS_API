@@ -441,7 +441,7 @@ namespace DMS_API.Services
         /// <param name="Pagination_MV">Body Parameters</param>
         /// <param name="RequestHeader">Header Parameters</param>
         /// <returns></returns>
-        public static async Task<ResponseModelView> GetHomeData(PaginationModelView Pagination_MV, RequestHeaderModelView RequestHeader)
+        public static async Task<ResponseModelView> GetHomeData(PaginationHomeModelView Pagination_MV, RequestHeaderModelView RequestHeader)
         {
             try
             {
@@ -456,8 +456,8 @@ namespace DMS_API.Services
                     int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
 
                     #region MyDesktopFolder
-                    int _PageNumberDesktop = Pagination_MV.PageNumber == 0 ? 1 : Pagination_MV.PageNumber;
-                    int _PageRowsDesktop = Pagination_MV.PageRows == 0 ? 1 : Pagination_MV.PageRows;
+                    int _PageNumberDesktop = Pagination_MV.PageNumberDesktop == 0 ? 1 : Pagination_MV.PageNumberDesktop;
+                    int _PageRowsDesktop = Pagination_MV.PageRowsDesktop == 0 ? 1 : Pagination_MV.PageRowsDesktop;
                     var MaxTotalDesktop = dam.FireDataTable($"SELECT COUNT(*) AS TotalRowsDesktop, CEILING(COUNT(*) / CAST({_PageRowsDesktop} AS FLOAT)) AS MaxPageDesktop " +
                                                          $"FROM        [User].[GetFolderDesktopByUserId]({userLoginID}) ");
 
@@ -484,8 +484,8 @@ namespace DMS_API.Services
                     #endregion
 
                     #region MyFavorite
-                    int _PageNumberFav = Pagination_MV.PageNumber == 0 ? 1 : Pagination_MV.PageNumber;
-                    int _PageRowsFav = Pagination_MV.PageRows == 0 ? 1 : Pagination_MV.PageRows;
+                    int _PageNumberFav = Pagination_MV.PageNumberFav == 0 ? 1 : Pagination_MV.PageNumberFav;
+                    int _PageRowsFav = Pagination_MV.PageRowsFav == 0 ? 1 : Pagination_MV.PageRowsFav;
                     var MaxTotalFav = dam.FireDataTable($"SELECT COUNT(*) AS TotalRowsFav, CEILING(COUNT(*) / CAST({_PageRowsFav} AS FLOAT)) AS MaxPageFav " +
                                                          $"FROM   [User].[V_Favourites] WHERE [ObjUserId] = {userLoginID} AND [IsActive] = 1  ");
                     DataTable dtGetFavorite = new DataTable();
@@ -513,8 +513,8 @@ namespace DMS_API.Services
                     #endregion
 
                     #region MyGroup
-                    int _PageNumberGroup = Pagination_MV.PageNumber == 0 ? 1 : Pagination_MV.PageNumber;
-                    int _PageRowsGroup = Pagination_MV.PageRows == 0 ? 1 : Pagination_MV.PageRows;
+                    int _PageNumberGroup = Pagination_MV.PageNumberGroup == 0 ? 1 : Pagination_MV.PageNumberGroup;
+                    int _PageRowsGroup = Pagination_MV.PageRowsGroup == 0 ? 1 : Pagination_MV.PageRowsGroup;
                     var MaxTotalGroup = dam.FireDataTable($"SELECT COUNT(*) AS TotalRowsGroup, CEILING(COUNT(*) / CAST({_PageRowsGroup} AS FLOAT)) AS MaxPageGroup " +
                                                          $"FROM    [User].[GetMyGroupsbyUserId]({userLoginID}) ");
                     DataTable dtGetGroup = new DataTable();
@@ -845,7 +845,7 @@ namespace DMS_API.Services
                         WidthPercentage = 100f,
                         HorizontalAlignment = Element.ALIGN_CENTER,
                         RunDirection = Element.ALIGN_RIGHT,
-                        SpacingBefore = 20,
+                        SpacingBefore = 10,
                         DefaultCell =
                     {
                         HorizontalAlignment = Element.ALIGN_CENTER,
@@ -975,7 +975,7 @@ namespace DMS_API.Services
                         WidthPercentage = 100f,
                         HorizontalAlignment = Element.ALIGN_CENTER,
                         RunDirection = Element.ALIGN_RIGHT,
-                        SpacingBefore = 20,
+                        SpacingBefore = 10,
                         DefaultCell =
                     {
                         HorizontalAlignment = Element.ALIGN_CENTER,
@@ -987,7 +987,7 @@ namespace DMS_API.Services
 
                     Paragraph ParBeforQRLine1 = new Paragraph(PdfSettingsModel.ParagraphBeforQRLine1)
                     {
-                        Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.Large, 0, PdfSettingsModel.BLACK),
+                        Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.Medium, 0, PdfSettingsModel.BLACK),
                         Alignment = Element.ALIGN_CENTER,
                     };
                     PdfPCell CellBeforQRLine1 = new PdfPCell
@@ -1002,7 +1002,7 @@ namespace DMS_API.Services
 
                     Paragraph ParBeforQRLine2 = new Paragraph(PdfSettingsModel.ParagraphBeforQRLine2)
                     {
-                        Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.Xlarg, 0, PdfSettingsModel.RED),
+                        Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.Medium, 0, PdfSettingsModel.BLACK),
                         Alignment = Element.ALIGN_CENTER,
                     };
                     PdfPCell CellBeforQRLine2 = new PdfPCell
@@ -1015,10 +1015,27 @@ namespace DMS_API.Services
                     };
                     CellBeforQRLine2.AddElement(ParBeforQRLine2);
 
+                    Paragraph ParBeforQRLine3 = new Paragraph(PdfSettingsModel.ParagraphBeforQRLine3)
+                    {
+                        Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.Larg, 0, PdfSettingsModel.RED),
+                        Alignment = Element.ALIGN_CENTER,
+                    };
+                    PdfPCell CellBeforQRLine3 = new PdfPCell
+                    {
+                        HorizontalAlignment = Element.ALIGN_CENTER,
+                        VerticalAlignment = Element.ALIGN_CENTER,
+                        RunDirection = Element.ALIGN_RIGHT,
+                        Border = 0,
+                        BorderWidthBottom = 0,
+                    };
+                    CellBeforQRLine3.AddElement(ParBeforQRLine3);
+
 
                     BeforQRTable.AddCell(CellBeforQRLine1);
                     BeforQRTable.AddCell("\n");
                     BeforQRTable.AddCell(CellBeforQRLine2);
+                    BeforQRTable.AddCell("\n");
+                    BeforQRTable.AddCell(CellBeforQRLine3);
                     #endregion
 
                     #region QR
@@ -1027,7 +1044,7 @@ namespace DMS_API.Services
                         WidthPercentage = 100f,
                         HorizontalAlignment = Element.ALIGN_CENTER,
                         RunDirection = Element.ALIGN_RIGHT,
-                        SpacingBefore = 20,
+                        SpacingBefore = 10,
                         DefaultCell =
                                 {
                         HorizontalAlignment = Element.ALIGN_CENTER,
@@ -1045,7 +1062,7 @@ namespace DMS_API.Services
                     QRCodeData QrCodeInfo = QrGenerator.CreateQrCode(QrFileName, QRCodeGenerator.ECCLevel.H);
                     QRCoder.QRCode QrCode = new QRCoder.QRCode(QrCodeInfo);
                     //Bitmap QrBitmap = QrCode.GetGraphic(60,Color.Black,Color.White, QrBitmap1);
-                    Bitmap QrBitmap = QrCode.GetGraphic(60);
+                    Bitmap QrBitmap = QrCode.GetGraphic(PdfSettingsModel.QRsize, Color.Black,Color.White,true);
                     byte[] bytes;
                     using (MemoryStream memory = new MemoryStream())
                     {
@@ -1066,7 +1083,7 @@ namespace DMS_API.Services
                     };
                     Paragraph ParQRcode = new Paragraph(QrFileName)
                     {
-                        Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.Medium, 0, PdfSettingsModel.BLUE),
+                        Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.VerySmall, 0, PdfSettingsModel.BLACK),
                         Alignment = Element.ALIGN_CENTER,
                     };
                     PdfPCell CellQRcode = new PdfPCell
@@ -1090,7 +1107,7 @@ namespace DMS_API.Services
                         WidthPercentage = 100f,
                         HorizontalAlignment = Element.ALIGN_CENTER,
                         RunDirection = Element.ALIGN_RIGHT,
-                        SpacingBefore = 20,
+                        SpacingBefore = 10,
                         DefaultCell =
                     {
                         HorizontalAlignment = Element.ALIGN_CENTER,
@@ -1102,7 +1119,7 @@ namespace DMS_API.Services
 
                     Paragraph ParAfterQRLine1 = new Paragraph(PdfSettingsModel.ParagraphAfterQRLine1)
                     {
-                        Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.Medium, 0, PdfSettingsModel.BLACK),
+                        Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.Small, 0, PdfSettingsModel.BLUE),
                         Alignment = Element.ALIGN_CENTER,
                     };
                     PdfPCell CellAfterQRLine1 = new PdfPCell
@@ -1117,7 +1134,7 @@ namespace DMS_API.Services
 
                     Paragraph ParAfterQRLine2 = new Paragraph(PdfSettingsModel.ParagraphAfterQRLine2)
                     {
-                        Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.Medium, 0, PdfSettingsModel.BLACK),
+                        Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.Small, 0, PdfSettingsModel.BLUE),
                         Alignment = Element.ALIGN_CENTER,
                     };
                     PdfPCell CellAfterQRLine2 = new PdfPCell
@@ -1141,7 +1158,7 @@ namespace DMS_API.Services
                         WidthPercentage = 100f,
                         HorizontalAlignment = Element.ALIGN_LEFT,
                         RunDirection = Element.ALIGN_RIGHT,
-                        SpacingBefore = 20,
+                        SpacingBefore = 10,
                         DefaultCell =
                     {
                         HorizontalAlignment = Element.ALIGN_LEFT,
@@ -1153,7 +1170,7 @@ namespace DMS_API.Services
 
                     Paragraph ParFooterLine1 = new Paragraph(PdfSettingsModel.ParagraphFooterLine1)
                     {
-                        Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.Mini, 0, PdfSettingsModel.Other1),
+                        Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.VeryMini, 0, PdfSettingsModel.RED),
                         Alignment = Element.ALIGN_LEFT,
                     };
                     PdfPCell CellFooterLine1 = new PdfPCell
@@ -1168,7 +1185,7 @@ namespace DMS_API.Services
 
                     Paragraph ParFooterLine2 = new Paragraph(getUserLoginInfo.Rows[0]["UsUserName"].ToString())
                     {
-                        Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.Mini, 0, PdfSettingsModel.Other1),
+                        Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.VeryMini, 0, PdfSettingsModel.RED),
                         Alignment = Element.ALIGN_LEFT,
                     };
                     PdfPCell CellFooterLine2 = new PdfPCell
@@ -1183,7 +1200,7 @@ namespace DMS_API.Services
 
                     Paragraph ParFooterLine3 = new Paragraph(getUserLoginInfo.Rows[0]["FullName"].ToString())
                     {
-                        Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.Mini, 0, PdfSettingsModel.Other1),
+                        Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.VeryMini, 0, PdfSettingsModel.RED),
                         Alignment = Element.ALIGN_LEFT,
                     };
                     PdfPCell CellFooterLine3 = new PdfPCell
