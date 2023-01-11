@@ -1240,7 +1240,7 @@ namespace DMS_API.Services
                     {
                         Success = true,
                         Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GeneratQR],
-                        Data = new { QrPdfFilePath = GetFullPathOfQrPdfNameInServerFolder(QrFileName) }
+                        Data = new { QrPdfFilePath = GetFullPathOfQrPdfNameInServerFolder(QrFileName).Result }
                     };
                     return Response_MV;
                 }

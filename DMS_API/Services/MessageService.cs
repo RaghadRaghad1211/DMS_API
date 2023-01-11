@@ -84,6 +84,7 @@
         public static readonly string GeneratQR = "GeneratQR";
         public static readonly string MustSelectPermissionForObject = "MustSelectedPermissionForObject";
         public static readonly string FileSize = "MustSelectedPermissionForObject";
+       // public static readonly string FileSize = "MustSelectedPermissionForObject";
 
         /// <summary>
         /// Dictionary of respons messages

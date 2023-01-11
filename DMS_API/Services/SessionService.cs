@@ -15,6 +15,7 @@ namespace DMS_API.Services
         private DataTable Dt { get; set; }
         private SessionModel Session_M { get; set; }
         private ResponseModelView Response_MV { get; set; }
+        private readonly string GroupOrgAdmins = "GroupOrgAdmins";
         #endregion
 
         #region Constructor        
@@ -125,7 +126,7 @@ namespace DMS_API.Services
                 }
                 else
                 {
-                    int inGroupAdmins = int.Parse(dam.FireSQL($"SELECT  COUNT(*)   FROM    [User].[GetMyGroupsbyUserId]({Convert.ToInt32(Dt.Rows[0]["UserID"].ToString())}) WHERE GroupName= 'GroupOrgAdmins'   "));
+                    int inGroupAdmins = int.Parse(dam.FireSQL($"SELECT  COUNT(*)   FROM    [User].[GetMyGroupsbyUserId]({Convert.ToInt32(Dt.Rows[0]["UserID"].ToString())}) WHERE GroupName= '{GroupOrgAdmins}'   "));
                     Session_M = new SessionModel
                     {
                         UserID = Convert.ToInt32(Dt.Rows[0]["UserID"].ToString()),

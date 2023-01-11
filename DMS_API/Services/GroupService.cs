@@ -585,20 +585,20 @@ namespace DMS_API.Services
                                     {
                                         Group_M = new GroupModel
                                         {
-                                            ObjId = Convert.ToInt32(dt.Rows[0]["ObjId"].ToString()),
-                                            ObjTitle = dt.Rows[0]["ObjTitle"].ToString(),
-                                            ObjClsId = Convert.ToInt32(dt.Rows[0]["ObjClsId"].ToString()),
-                                            ClsName = dt.Rows[0]["ClsName"].ToString(),
-                                            ObjIsActive = bool.Parse(dt.Rows[0]["ObjIsActive"].ToString()),
+                                            ObjId = Convert.ToInt32(dt.Rows[i]["ObjId"].ToString()),
+                                            ObjTitle = dt.Rows[i]["ObjTitle"].ToString(),
+                                            ObjClsId = Convert.ToInt32(dt.Rows[i]["ObjClsId"].ToString()),
+                                            ClsName = dt.Rows[i]["ClsName"].ToString(),
+                                            ObjIsActive = bool.Parse(dt.Rows[i]["ObjIsActive"].ToString()),
                                             ObjCreationDate = DateTime.Parse(dt.Rows[0]["ObjCreationDate"].ToString()).ToShortDateString(),
-                                            ObjDescription = dt.Rows[0]["ObjDescription"].ToString(),
+                                            ObjDescription = dt.Rows[i]["ObjDescription"].ToString(),
                                             UserOwnerID = Convert.ToInt32(dt.Rows[0]["UserOwnerID"].ToString()),
-                                            OwnerFullName = dt.Rows[0]["OwnerFullName"].ToString(),
-                                            OwnerUserName = dt.Rows[0]["OwnerUserName"].ToString(),
-                                            OrgOwner = dt.Rows[0]["OrgOwner"].ToString(),
-                                            OrgEnName = dt.Rows[0]["OrgEnName"].ToString(),
-                                            OrgArName = dt.Rows[0]["OrgArName"].ToString(),
-                                            OrgKuName = dt.Rows[0]["OrgKuName"].ToString(),
+                                            OwnerFullName = dt.Rows[i]["OwnerFullName"].ToString(),
+                                            OwnerUserName = dt.Rows[i]["OwnerUserName"].ToString(),
+                                            OrgOwner = dt.Rows[i]["OrgOwner"].ToString(),
+                                            OrgEnName = dt.Rows[i]["OrgEnName"].ToString(),
+                                            OrgArName = dt.Rows[i]["OrgArName"].ToString(),
+                                            OrgKuName = dt.Rows[i]["OrgKuName"].ToString(),
                                         };
                                         Group_Mlist.Add(Group_M);
                                     }

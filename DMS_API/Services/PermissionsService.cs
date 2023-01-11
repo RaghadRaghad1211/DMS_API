@@ -623,33 +623,96 @@ namespace DMS_API.Services
                             }
                             var result = GlobalService.CheckUserPermissionsOnFolderAndDocument((SessionModel)ResponseSession.Data, item.SourObjId).Result;
                             bool checkManagePermission = result == null ? false : result.IsManage;
-                            if (checkManagePermission == false)
+                            if (checkManagePermission == false) { AddPermissions_MVlist.Remove(item); }
+                            if (AddPermissions_MVlist.Count == 0)
                             {
-                                AddPermissions_MVlist.Remove(item);
+                                Response_MV = new ResponseModelView
+                                {
+                                    Success = false,
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.MustSelectPermissionForObject],
+                                    Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                                };
+                                return Response_MV;
                             }
                             else
                             {
-                                if (AddPermissions_MVlist.Count == 0)
-                                {
-                                    Response_MV = new ResponseModelView
-                                    {
-                                        Success = false,
-                                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.MustSelectPermissionForObject],
-                                        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
-                                    };
-                                    return Response_MV;
-                                }
                                 string exeut = $"EXEC [User].[AddPermissionPro] '{item.SourObjId}','{item.SourClsId}', '{item.DestObjId}', '{item.DestClsId}','{true}', '{item.PerWrite}', '{item.PerManage}', '{item.PerQR}', '{item.PerToAllChilds}' ";
                                 var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
                                 if (outValue == 0.ToString() || outValue == null || outValue.Trim() == "")
                                 {
                                     Response_MV = new ResponseModelView
                                     {
-                                        Success = true,
+                                        Success = false,
                                         Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.InsertFaild],
                                         Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
                                     };
                                     return Response_MV;
+                                }
+                                else
+                                {
+                                    if (item.PerToAllChilds == true)
+                                    {
+                                        string getTreePermessions = " SELECT   SourObjId, SourTitle, SourType, SourTypeName," +
+                                                                "          IsRead, IsWrite, IsManage, IsQR, SourCreationDate, " +
+                                                               $" FROM     [Document].[GetChildsTreeInParentWithPermissions] ({userLoginID}, {item.SourObjId}) " +
+                                                                " ORDER BY  SourObjId ";
+
+                                        dt = new DataTable();
+                                        dt = await Task.Run(() => dam.FireDataTable(getTreePermessions));
+                                        if (dt == null)
+                                        {
+                                            Response_MV = new ResponseModelView
+                                            {
+                                                Success = false,
+                                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
+                                                Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                                            };
+                                            return Response_MV;
+                                        }
+                                        else
+                                        {
+                                            if (dt.Rows.Count > 0)
+                                            {
+                                                for (int i = 0; i < dt.Rows.Count; i++)
+                                                {
+                                                    string exeutTree = $"EXEC [User].[AddPermissionPro] '{dt.Rows[i]["SourObjId"]}','{dt.Rows[i]["SourType"]}', '{item.DestObjId}', '{item.DestClsId}','{true}', '{item.PerWrite}', '{item.PerManage}', '{item.PerQR}' ";
+                                                    var outValueTree = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
+                                                    if (outValue == 0.ToString() || outValue == null || outValue.Trim() == "")
+                                                    { dt.Rows[i].Delete(); }
+                                                }
+                                                if (dt.Rows.Count <= 0)
+                                                {
+                                                    Response_MV = new ResponseModelView
+                                                    {
+                                                        Success = false,
+                                                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.InsertFaild],
+                                                        Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                                                    };
+                                                    return Response_MV;
+                                                }
+                                                else
+                                                {
+                                                    Response_MV = new ResponseModelView
+                                                    {
+                                                        Success = true,
+                                                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.InsertSuccess],
+                                                        Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
+                                                    };
+                                                    return Response_MV;
+                                                }
+                                            }
+                                            else
+                                            {
+                                                Response_MV = new ResponseModelView
+                                                {
+                                                    Success = false,
+                                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsEmpty],
+                                                    Data = new HttpResponseMessage(HttpStatusCode.NoContent).StatusCode
+                                                };
+                                                return Response_MV;
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
