@@ -855,7 +855,7 @@ namespace DMS_API.Services
                     }
                     };
 
-                    Paragraph ParHeaderTitle = new Paragraph($"عنوان الوثيقة: {getDocInfo.Rows[0]["ObjTitle"].ToString()}")
+                    Paragraph ParHeaderTitle = new Paragraph($"الموضوع: {getDocInfo.Rows[0]["ObjTitle"].ToString()}")
                     {
                         Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.VerySmall, 0, PdfSettingsModel.BLACK),
                         Alignment = Element.ALIGN_CENTER,
