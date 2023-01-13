@@ -636,7 +636,7 @@ namespace DMS_API.Services
                             }
                             else
                             {
-                                string exeut = $"EXEC [User].[AddPermissionPro] '{item.SourObjId}','{item.SourClsId}', '{item.DestObjId}', '{item.DestClsId}','{true}', '{item.PerWrite}', '{item.PerManage}', '{item.PerQR}', '{item.PerToAllChilds}' ";
+                                string exeut = $"EXEC [User].[AddPermissionPro] '{userLoginID}','{item.SourObjId}','{item.SourClsId}', '{item.DestObjId}', '{item.DestClsId}','{true}', '{item.PerWrite}', '{item.PerManage}', '{item.PerQR}', '{item.PerToAllChilds}' ";
                                 var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
                                 if (outValue == 0.ToString() || outValue == null || outValue.Trim() == "")
                                 {
