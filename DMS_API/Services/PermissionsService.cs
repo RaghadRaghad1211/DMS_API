@@ -1,6 +1,8 @@
 ﻿using ArchiveAPI.Services;
 using DMS_API.Models;
 using DMS_API.ModelsView;
+using Microsoft.AspNetCore.Http.Headers;
+using Microsoft.AspNetCore.Mvc;
 using System.Data;
 using System.Net;
 
@@ -648,74 +650,6 @@ namespace DMS_API.Services
                                     };
                                     return Response_MV;
                                 }
-                                #region MyRegion
-                                //else
-                                //{
-                                //    if (item.PerToAllChilds == true)
-                                //    {
-                                //        string getTreePermessions = " SELECT   SourObjId, SourTitle, SourType, SourTypeName," +
-                                //                                "          IsRead, IsWrite, IsManage, IsQR, SourCreationDate " +
-                                //                               $" FROM     [Document].[GetChildsTreeInParentWithPermissions] ({userLoginID}, {item.SourObjId}) " +
-                                //                                " ORDER BY  SourObjId ";
-
-                                //        dt = new DataTable();
-                                //        dt = await Task.Run(() => dam.FireDataTable(getTreePermessions));
-                                //        if (dt == null)
-                                //        {
-                                //            Response_MV = new ResponseModelView
-                                //            {
-                                //                Success = false,
-                                //                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
-                                //                Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
-                                //            };
-                                //            return Response_MV;
-                                //        }
-                                //        else
-                                //        {
-                                //            if (dt.Rows.Count > 0)
-                                //            {
-                                //                for (int i = 0; i < dt.Rows.Count; i++)
-                                //                {
-                                //                    string exeutTree = $"EXEC [User].[AddPermissionPro] '{dt.Rows[i]["SourObjId"]}','{dt.Rows[i]["SourType"]}', '{item.DestObjId}', '{item.DestClsId}','{true}', '{item.PerWrite}', '{item.PerManage}', '{item.PerQR}',{false} ";
-                                //                    var outValueTree = await Task.Run(() => dam.DoQueryExecProcedure(exeutTree));
-                                //                    if (outValueTree == 0.ToString() || outValueTree == null || outValueTree.Trim() == "")
-                                //                    { dt.Rows[i].Delete(); }
-                                //                }
-                                //                //if (dt.Rows.Count <= 0)
-                                //                //{
-                                //                //    Response_MV = new ResponseModelView
-                                //                //    {
-                                //                //        Success = false,
-                                //                //        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.InsertFaild],
-                                //                //        Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
-                                //                //    };
-                                //                //    return Response_MV;
-                                //                //}
-                                //                //else
-                                //                //{
-                                //                //    Response_MV = new ResponseModelView
-                                //                //    {
-                                //                //        Success = true,
-                                //                //        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.InsertSuccess],
-                                //                //        Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
-                                //                //    };
-                                //                //    return Response_MV;
-                                //                //}
-                                //            }
-                                //            //else
-                                //            //{
-                                //            //    Response_MV = new ResponseModelView
-                                //            //    {
-                                //            //        Success = false,
-                                //            //        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsEmpty],
-                                //            //        Data = new HttpResponseMessage(HttpStatusCode.NoContent).StatusCode
-                                //            //    };
-                                //            //    return Response_MV;
-                                //            //}
-                                //        }
-                                //    }
-                                //}
-                                #endregion
                             }
                         }
                         Response_MV = new ResponseModelView
@@ -779,9 +713,19 @@ namespace DMS_API.Services
                             {
                                 EditPermissions_MVlist.Remove(item);
                             }
+                            if (EditPermissions_MVlist.Count == 0)
+                            {
+                                Response_MV = new ResponseModelView
+                                {
+                                    Success = false,
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoPermission],
+                                    Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                                };
+                                return Response_MV;
+                            }
                             else
                             {
-                                string exeut = $"EXEC [User].[UpdatePermissionPro] '{item.SourObjId}', '{item.DestObjId}', '{item.PerRead}', '{item.PerWrite}', '{item.PerManage}', '{item.PerQR}', '{item.PerToAllChilds}' ";
+                                string exeut = $"EXEC [User].[UpdatePermissionPro] '{item.SourObjId}', '{item.DestObjId}', '{item.PerRead}', '{item.PerWrite}', '{item.PerManage}', '{item.PerQR}', '{false}' ";
                                 var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
                                 if (outValue == 0.ToString() || outValue == null || outValue.Trim() == "")
                                 {
@@ -1219,6 +1163,102 @@ namespace DMS_API.Services
                 };
                 return Response_MV;
             }
+        }
+        /// <summary>
+        /// Everyone To Do:
+        /// Read public QR code
+        /// </summary>
+        /// <param name="QRcode">QR code</param>
+        /// <param name="Lang">Header Language</param>
+        /// <returns>Response { (bool)Success, (string)Message, (object)Data}</returns>
+        public async Task<ResponseModelView> ReadQRcodePDFofDocument(string QRcode, string Lang)
+        {
+            if (QRcode.IsEmpty() == true)
+            {
+                Response_MV = new ResponseModelView
+                {
+                    Success = false,
+                    Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.QrCodeIsEmpty],
+                    Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                };
+                return Response_MV;
+            }
+            else
+            {
+                string getQrInfo = $"SELECT [QrObjId], [QrIsPraivet], [QrIsActive]  FROM [Main].[QRLookup] WHERE [QrId]='{QRcode}'  ";
+                DataTable dt = new DataTable();
+                dt = await Task.Run(() => dam.FireDataTable(getQrInfo));
+                if (dt == null)
+                {
+                    Response_MV = new ResponseModelView
+                    {
+                        Success = false,
+                        Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.ExceptionError],
+                        Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                    };
+                    return Response_MV;
+
+                }
+                else
+                {
+                    if (dt.Rows.Count <= 0)
+                    {
+                        Response_MV = new ResponseModelView
+                        {
+                            Success = false,
+                            Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.QrCodeIsWrong],
+                            Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                        };
+                        return Response_MV;
+                    }
+                    else
+                    {
+                        if (bool.Parse(dt.Rows[0]["QrIsActive"].ToString()) == false)
+                        {
+                            Response_MV = new ResponseModelView
+                            {
+                                Success = false,
+                                Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.NotActive],
+                                Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                            };
+                            return Response_MV;
+                        }
+                        else if (bool.Parse(dt.Rows[0]["QrIsPraivet"].ToString()) == true)
+                        {
+                            Response_MV = new ResponseModelView
+                            {
+                                Success = true,
+                                Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.QrCodeIsPraivet],
+                                Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                            };
+                            return Response_MV;
+                        }
+                        else
+                        {
+                            Response_MV = new ResponseModelView
+                            {
+                                Success = true,
+                                Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.GetSuccess],
+                                Data = new { DocumentFilePath = await GlobalService.GetFullPathOfDocumentNameInServerFolder(Convert.ToInt32(dt.Rows[0]["QrObjId"].ToString()), Environment) }
+                            };
+                            return Response_MV;
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Everyone have account in the system To Do:
+        /// Read private QR code
+        /// </summary>
+        /// <param name="QRcode">QR code</param>
+        /// <param name="Login_MV">Body Parameters</param>
+        /// <param name="Lang">Header Language</param>
+        /// <returns>Response { (bool)Success, (string)Message, (object)Data}</returns>
+        public async Task<ResponseModelView> ReadQRcodePDFofDocumentPrivate(string QRcode, LoginModelView Login_MV, string Lang)
+        {
+            return Response_MV;
         }
 
         #endregion

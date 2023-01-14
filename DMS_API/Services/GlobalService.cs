@@ -647,7 +647,7 @@ namespace DMS_API.Services
         /// <param name="LengthKey">Length Key encrypted</param>
         /// <param name="Environment">Environment Parameter</param>
         /// <returns></returns>
-        public static async Task<string> GetFullPathOfDocumentNameInServerFolder(int DocumentId, int LengthKey, IWebHostEnvironment Environment)
+        public static async Task<string> GetFullPathOfDocumentNameInServerFolder(int DocumentId, IWebHostEnvironment Environment)
         {
             try
             {
@@ -811,10 +811,13 @@ namespace DMS_API.Services
         {
             try
             {
-                string QRquery = "INSERT INTO [Main].[QRLookup] (QrObjId, QrIsPraivet, QrExpiry, QrIsActive) OUTPUT INSERTED.QrId " +
-                                        $"VALUES({QRLookup_M.QrDocumentId}, {Convert.ToInt16(QRLookup_M.QrIsPraivet)}, '{DateTime.Now}', {1}) ";
-                string outValueQRcodeId = await Task.Run(() => dam.DoQueryAndPutOutValue(QRquery, "QrId"));
-                if (outValueQRcodeId == null || outValueQRcodeId.Trim() == "")
+                Session_S = new SessionService();
+                var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
+                DataTable getUserLoginInfo = new DataTable();
+                getUserLoginInfo = dam.FireDataTable($"SELECT  FullName, UsUserName  FROM [User].[V_Users] WHERE UserID={((SessionModel)ResponseSession.Data).UserID} ");
+                DataTable getDocInfo = new DataTable();
+                getDocInfo = dam.FireDataTable($"SELECT  ObjTitle, ObjCreationDate, OrgArName  FROM [Document].[V_Documents] WHERE ObjId={QRLookup_M.QrDocumentId} ");
+                if (getUserLoginInfo == null || getUserLoginInfo.Rows.Count == 0 || getDocInfo == null || getDocInfo.Rows.Count == 0)
                 {
                     Response_MV = new ResponseModelView
                     {
@@ -824,426 +827,428 @@ namespace DMS_API.Services
                     };
                     return Response_MV;
                 }
-                else
+
+                #region Design PDF
+                Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+                string MyFont = Environment.WebRootPath + "\\Fonts\\ARIALBD.TTF";
+                BaseFont bf = BaseFont.CreateFont(MyFont, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+
+                #region Header
+                PdfPTable HeaderTable = new PdfPTable(3)
                 {
-                    Session_S = new SessionService();
-                    var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
-                    DataTable getUserLoginInfo = new DataTable();
-                    getUserLoginInfo = dam.FireDataTable($"SELECT  FullName, UsUserName  FROM [User].[V_Users] WHERE UserID={((SessionModel)ResponseSession.Data).UserID} ");
-
-                    DataTable getDocInfo = new DataTable();
-                    getDocInfo = dam.FireDataTable($"SELECT  ObjTitle, ObjCreationDate, OrgArName  FROM [Document].[V_Documents] WHERE ObjId={QRLookup_M.QrDocumentId} ");
-
-                    #region Design PDF
-                    Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-                    string MyFont = Environment.WebRootPath + "\\Fonts\\ARIALBD.TTF";
-                    BaseFont bf = BaseFont.CreateFont(MyFont, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
-
-                    #region Header
-                    PdfPTable HeaderTable = new PdfPTable(3)
-                    {
-                        WidthPercentage = 100f,
-                        HorizontalAlignment = Element.ALIGN_CENTER,
-                        RunDirection = Element.ALIGN_RIGHT,
-                        SpacingBefore = 10,
-                        DefaultCell =
+                    WidthPercentage = 100f,
+                    HorizontalAlignment = Element.ALIGN_CENTER,
+                    RunDirection = Element.ALIGN_RIGHT,
+                    SpacingBefore = 10,
+                    DefaultCell =
                     {
                         HorizontalAlignment = Element.ALIGN_CENTER,
                         VerticalAlignment = Element.ALIGN_CENTER,
                         RunDirection = Element.ALIGN_RIGHT,
                         Border=0, BorderWidth=0
                     }
-                    };
+                };
 
-                    Paragraph ParHeaderTitle = new Paragraph($"الموضوع: {getDocInfo.Rows[0]["ObjTitle"].ToString()}")
-                    {
-                        Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.VerySmall, 0, PdfSettingsModel.BLACK),
-                        Alignment = Element.ALIGN_CENTER,
-                    };
-                    PdfPCell CellHeaderTitle = new PdfPCell
-                    {
-                        HorizontalAlignment = Element.ALIGN_CENTER,
-                        VerticalAlignment = Element.ALIGN_CENTER,
-                        RunDirection = Element.ALIGN_RIGHT,
-                        Border = 0,
-                        BorderWidthBottom = 0,
-                    };
-                    CellHeaderTitle.AddElement(ParHeaderTitle);
+                Paragraph ParHeaderTitle = new Paragraph($"الموضوع: {getDocInfo.Rows[0]["ObjTitle"].ToString()}")
+                {
+                    Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.VerySmall, 0, PdfSettingsModel.BLACK),
+                    Alignment = Element.ALIGN_CENTER,
+                };
+                PdfPCell CellHeaderTitle = new PdfPCell
+                {
+                    HorizontalAlignment = Element.ALIGN_CENTER,
+                    VerticalAlignment = Element.ALIGN_CENTER,
+                    RunDirection = Element.ALIGN_RIGHT,
+                    Border = 0,
+                    BorderWidthBottom = 0,
+                };
+                CellHeaderTitle.AddElement(ParHeaderTitle);
 
-                    Paragraph ParHeaderOrg = new Paragraph($"التشكيل: {getDocInfo.Rows[0]["OrgArName"].ToString()}")
-                    {
-                        Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.VerySmall, 0, PdfSettingsModel.BLACK),
-                        Alignment = Element.ALIGN_CENTER,
-                    };
-                    PdfPCell CellHeaderOrg = new PdfPCell
-                    {
-                        HorizontalAlignment = Element.ALIGN_CENTER,
-                        VerticalAlignment = Element.ALIGN_CENTER,
-                        RunDirection = Element.ALIGN_RIGHT,
-                        Border = 0,
-                        BorderWidthBottom = 0
-                    };
-                    CellHeaderOrg.AddElement(ParHeaderOrg);
+                Paragraph ParHeaderOrg = new Paragraph($"التشكيل: {getDocInfo.Rows[0]["OrgArName"].ToString()}")
+                {
+                    Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.VerySmall, 0, PdfSettingsModel.BLACK),
+                    Alignment = Element.ALIGN_CENTER,
+                };
+                PdfPCell CellHeaderOrg = new PdfPCell
+                {
+                    HorizontalAlignment = Element.ALIGN_CENTER,
+                    VerticalAlignment = Element.ALIGN_CENTER,
+                    RunDirection = Element.ALIGN_RIGHT,
+                    Border = 0,
+                    BorderWidthBottom = 0
+                };
+                CellHeaderOrg.AddElement(ParHeaderOrg);
 
-                    Paragraph ParHeaderCreationDate = new Paragraph($"تاريخ انشاء الوثيقة: {DateTime.Parse(getDocInfo.Rows[0]["ObjCreationDate"].ToString()).ToShortDateString()}")
-                    {
-                        Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.VerySmall, 0, PdfSettingsModel.BLACK),
-                        Alignment = Element.ALIGN_CENTER
-                    };
-                    PdfPCell CellHeaderCreationDate = new PdfPCell
-                    {
-                        HorizontalAlignment = Element.ALIGN_CENTER,
-                        VerticalAlignment = Element.ALIGN_CENTER,
-                        RunDirection = Element.ALIGN_CENTER,
-                        Border = 0,
-                        BorderWidthBottom = 0
-                    };
-                    CellHeaderCreationDate.AddElement(new Phrase(ParHeaderCreationDate));
-
-
-                    Paragraph ParHeaderCreateQR = new Paragraph($"تاريخ رمز التحقق: {DateTime.Now}")
-                    {
-                        Font = new iTextSharp.text.Font(bf, 11, 0, PdfSettingsModel.BLACK),
-                        Alignment = Element.ALIGN_CENTER
-                    };
-                    PdfPCell CellHeaderCreateQR = new PdfPCell
-                    {
-                        HorizontalAlignment = Element.ALIGN_CENTER,
-                        VerticalAlignment = Element.ALIGN_CENTER,
-                        RunDirection = Element.ALIGN_LEFT,
-                        Border = 0,
-                        BorderWidthBottom = 0
-                    };
-                    CellHeaderCreateQR.AddElement(new Phrase(ParHeaderCreateQR));
+                Paragraph ParHeaderCreationDate = new Paragraph($"تاريخ انشاء الوثيقة: {DateTime.Parse(getDocInfo.Rows[0]["ObjCreationDate"].ToString()).ToShortDateString()}")
+                {
+                    Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.VerySmall, 0, PdfSettingsModel.BLACK),
+                    Alignment = Element.ALIGN_CENTER
+                };
+                PdfPCell CellHeaderCreationDate = new PdfPCell
+                {
+                    HorizontalAlignment = Element.ALIGN_CENTER,
+                    VerticalAlignment = Element.ALIGN_CENTER,
+                    RunDirection = Element.ALIGN_CENTER,
+                    Border = 0,
+                    BorderWidthBottom = 0
+                };
+                CellHeaderCreationDate.AddElement(new Phrase(ParHeaderCreationDate));
 
 
-                    string imageDefoltLogo = Environment.WebRootPath + "\\Logos\\DefultLogo.png";
-                    iTextSharp.text.Image LogoPNG = iTextSharp.text.Image.GetInstance(imageDefoltLogo);
-                    LogoPNG.ScaleToFit(100f, 100f);
-                    LogoPNG.ScalePercent(5f);
-                    LogoPNG.SpacingBefore = 2f;
-                    LogoPNG.SpacingAfter = 2f;
-                    LogoPNG.Alignment = Element.ALIGN_CENTER;
-                    PdfPCell CellHeaderLogo = new PdfPCell(LogoPNG)
-                    {
-                        HorizontalAlignment = Element.ALIGN_CENTER,
-                        VerticalAlignment = Element.ALIGN_CENTER,
-                        RunDirection = Element.ALIGN_RIGHT,
-                        Colspan = 1,
-                        Border = 0,
-                        BorderWidthBottom = 0
-                    };
+                Paragraph ParHeaderCreateQR = new Paragraph($"تاريخ رمز التحقق: {DateTime.Now}")
+                {
+                    Font = new iTextSharp.text.Font(bf, 11, 0, PdfSettingsModel.BLACK),
+                    Alignment = Element.ALIGN_CENTER
+                };
+                PdfPCell CellHeaderCreateQR = new PdfPCell
+                {
+                    HorizontalAlignment = Element.ALIGN_CENTER,
+                    VerticalAlignment = Element.ALIGN_CENTER,
+                    RunDirection = Element.ALIGN_LEFT,
+                    Border = 0,
+                    BorderWidthBottom = 0
+                };
+                CellHeaderCreateQR.AddElement(new Phrase(ParHeaderCreateQR));
 
 
-                    PdfPCell CellEmpty = new PdfPCell(new Phrase(" ")) { Border = 0 };
+                string imageDefoltLogo = Environment.WebRootPath + "\\Logos\\DefultLogo.png";
+                iTextSharp.text.Image LogoPNG = iTextSharp.text.Image.GetInstance(imageDefoltLogo);
+                LogoPNG.ScaleToFit(100f, 100f);
+                LogoPNG.ScalePercent(5f);
+                LogoPNG.SpacingBefore = 2f;
+                LogoPNG.SpacingAfter = 2f;
+                LogoPNG.Alignment = Element.ALIGN_CENTER;
+                PdfPCell CellHeaderLogo = new PdfPCell(LogoPNG)
+                {
+                    HorizontalAlignment = Element.ALIGN_CENTER,
+                    VerticalAlignment = Element.ALIGN_CENTER,
+                    RunDirection = Element.ALIGN_RIGHT,
+                    Colspan = 1,
+                    Border = 0,
+                    BorderWidthBottom = 0
+                };
 
-                    HeaderTable.AddCell(CellEmpty);
-                    HeaderTable.AddCell(CellEmpty);
-                    HeaderTable.AddCell(CellEmpty);
-                    HeaderTable.AddCell(CellHeaderCreateQR);
-                    HeaderTable.AddCell(CellEmpty);
-                    HeaderTable.AddCell(CellHeaderTitle);
-                    HeaderTable.AddCell(CellEmpty);
-                    HeaderTable.AddCell(CellEmpty);
-                    HeaderTable.AddCell(CellEmpty);
-                    HeaderTable.AddCell(CellHeaderCreationDate);
-                    HeaderTable.AddCell(CellHeaderLogo);
-                    HeaderTable.AddCell(CellHeaderOrg);
-                    #endregion
 
-                    #region Line
-                    PdfPTable LineTable = new PdfPTable(1)
-                    {
-                        WidthPercentage = 100f,
-                        HorizontalAlignment = Element.ALIGN_CENTER,
-                        RunDirection = Element.ALIGN_RIGHT,
-                        SpacingBefore = 20,
-                        DefaultCell =
+                PdfPCell CellEmpty = new PdfPCell(new Phrase(" ")) { Border = 0 };
+
+                HeaderTable.AddCell(CellEmpty);
+                HeaderTable.AddCell(CellEmpty);
+                HeaderTable.AddCell(CellEmpty);
+                HeaderTable.AddCell(CellHeaderCreateQR);
+                HeaderTable.AddCell(CellEmpty);
+                HeaderTable.AddCell(CellHeaderTitle);
+                HeaderTable.AddCell(CellEmpty);
+                HeaderTable.AddCell(CellEmpty);
+                HeaderTable.AddCell(CellEmpty);
+                HeaderTable.AddCell(CellHeaderCreationDate);
+                HeaderTable.AddCell(CellHeaderLogo);
+                HeaderTable.AddCell(CellHeaderOrg);
+                #endregion
+
+                #region Line
+                PdfPTable LineTable = new PdfPTable(1)
+                {
+                    WidthPercentage = 100f,
+                    HorizontalAlignment = Element.ALIGN_CENTER,
+                    RunDirection = Element.ALIGN_RIGHT,
+                    SpacingBefore = 20,
+                    DefaultCell =
                     {
                         HorizontalAlignment = Element.ALIGN_CENTER,
                         VerticalAlignment = Element.ALIGN_CENTER,
                         RunDirection = Element.ALIGN_RIGHT,
                         Border=2, BorderWidth=2
                     }
-                    };
-                    LineTable.AddCell("");
-                    #endregion
+                };
+                LineTable.AddCell("");
+                #endregion
 
-                    #region BeforQR
-                    PdfPTable BeforQRTable = new PdfPTable(1)
-                    {
-                        WidthPercentage = 100f,
-                        HorizontalAlignment = Element.ALIGN_CENTER,
-                        RunDirection = Element.ALIGN_RIGHT,
-                        SpacingBefore = 10,
-                        DefaultCell =
+                #region BeforQR
+                PdfPTable BeforQRTable = new PdfPTable(1)
+                {
+                    WidthPercentage = 100f,
+                    HorizontalAlignment = Element.ALIGN_CENTER,
+                    RunDirection = Element.ALIGN_RIGHT,
+                    SpacingBefore = 10,
+                    DefaultCell =
                     {
                         HorizontalAlignment = Element.ALIGN_CENTER,
                         VerticalAlignment = Element.ALIGN_CENTER,
                         RunDirection = Element.ALIGN_RIGHT,
                         Border=0, BorderWidth=0
                     }
-                    };
+                };
 
-                    Paragraph ParBeforQRLine1 = new Paragraph(PdfSettingsModel.ParagraphBeforQRLine1)
-                    {
-                        Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.Medium, 0, PdfSettingsModel.BLACK),
-                        Alignment = Element.ALIGN_CENTER,
-                    };
-                    PdfPCell CellBeforQRLine1 = new PdfPCell
-                    {
-                        HorizontalAlignment = Element.ALIGN_CENTER,
-                        VerticalAlignment = Element.ALIGN_CENTER,
-                        RunDirection = Element.ALIGN_RIGHT,
-                        Border = 0,
-                        BorderWidthBottom = 0,
-                    };
-                    CellBeforQRLine1.AddElement(ParBeforQRLine1);
+                Paragraph ParBeforQRLine1 = new Paragraph(PdfSettingsModel.ParagraphBeforQRLine1)
+                {
+                    Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.Medium, 0, PdfSettingsModel.BLACK),
+                    Alignment = Element.ALIGN_CENTER,
+                };
+                PdfPCell CellBeforQRLine1 = new PdfPCell
+                {
+                    HorizontalAlignment = Element.ALIGN_CENTER,
+                    VerticalAlignment = Element.ALIGN_CENTER,
+                    RunDirection = Element.ALIGN_RIGHT,
+                    Border = 0,
+                    BorderWidthBottom = 0,
+                };
+                CellBeforQRLine1.AddElement(ParBeforQRLine1);
 
-                    Paragraph ParBeforQRLine2 = new Paragraph(PdfSettingsModel.ParagraphBeforQRLine2)
-                    {
-                        Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.Medium, 0, PdfSettingsModel.BLACK),
-                        Alignment = Element.ALIGN_CENTER,
-                    };
-                    PdfPCell CellBeforQRLine2 = new PdfPCell
-                    {
-                        HorizontalAlignment = Element.ALIGN_CENTER,
-                        VerticalAlignment = Element.ALIGN_CENTER,
-                        RunDirection = Element.ALIGN_RIGHT,
-                        Border = 0,
-                        BorderWidthBottom = 0,
-                    };
-                    CellBeforQRLine2.AddElement(ParBeforQRLine2);
+                Paragraph ParBeforQRLine2 = new Paragraph(PdfSettingsModel.ParagraphBeforQRLine2)
+                {
+                    Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.Medium, 0, PdfSettingsModel.BLACK),
+                    Alignment = Element.ALIGN_CENTER,
+                };
+                PdfPCell CellBeforQRLine2 = new PdfPCell
+                {
+                    HorizontalAlignment = Element.ALIGN_CENTER,
+                    VerticalAlignment = Element.ALIGN_CENTER,
+                    RunDirection = Element.ALIGN_RIGHT,
+                    Border = 0,
+                    BorderWidthBottom = 0,
+                };
+                CellBeforQRLine2.AddElement(ParBeforQRLine2);
 
-                    Paragraph ParBeforQRLine3 = new Paragraph(PdfSettingsModel.ParagraphBeforQRLine3)
-                    {
-                        Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.Larg, 0, PdfSettingsModel.RED),
-                        Alignment = Element.ALIGN_CENTER,
-                    };
-                    PdfPCell CellBeforQRLine3 = new PdfPCell
-                    {
-                        HorizontalAlignment = Element.ALIGN_CENTER,
-                        VerticalAlignment = Element.ALIGN_CENTER,
-                        RunDirection = Element.ALIGN_RIGHT,
-                        Border = 0,
-                        BorderWidthBottom = 0,
-                    };
-                    CellBeforQRLine3.AddElement(ParBeforQRLine3);
+                Paragraph ParBeforQRLine3 = new Paragraph(PdfSettingsModel.ParagraphBeforQRLine3)
+                {
+                    Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.Larg, 0, PdfSettingsModel.RED),
+                    Alignment = Element.ALIGN_CENTER,
+                };
+                PdfPCell CellBeforQRLine3 = new PdfPCell
+                {
+                    HorizontalAlignment = Element.ALIGN_CENTER,
+                    VerticalAlignment = Element.ALIGN_CENTER,
+                    RunDirection = Element.ALIGN_RIGHT,
+                    Border = 0,
+                    BorderWidthBottom = 0,
+                };
+                CellBeforQRLine3.AddElement(ParBeforQRLine3);
 
 
-                    BeforQRTable.AddCell(CellBeforQRLine1);
-                    BeforQRTable.AddCell("\n");
-                    BeforQRTable.AddCell(CellBeforQRLine2);
-                    BeforQRTable.AddCell("\n");
-                    BeforQRTable.AddCell(CellBeforQRLine3);
-                    #endregion
+                BeforQRTable.AddCell(CellBeforQRLine1);
+                BeforQRTable.AddCell("\n");
+                BeforQRTable.AddCell(CellBeforQRLine2);
+                BeforQRTable.AddCell("\n");
+                BeforQRTable.AddCell(CellBeforQRLine3);
+                #endregion
 
-                    #region QR
-                    PdfPTable QRTable = new PdfPTable(1)
-                    {
-                        WidthPercentage = 100f,
-                        HorizontalAlignment = Element.ALIGN_CENTER,
-                        RunDirection = Element.ALIGN_RIGHT,
-                        SpacingBefore = 10,
-                        DefaultCell =
+                #region QR
+                PdfPTable QRTable = new PdfPTable(1)
+                {
+                    WidthPercentage = 100f,
+                    HorizontalAlignment = Element.ALIGN_CENTER,
+                    RunDirection = Element.ALIGN_RIGHT,
+                    SpacingBefore = 10,
+                    DefaultCell =
                                 {
                         HorizontalAlignment = Element.ALIGN_CENTER,
                         VerticalAlignment = Element.ALIGN_CENTER,
                         RunDirection = Element.ALIGN_RIGHT,
                         Border=0, BorderWidth=0
                                  }
-                    };
+                };
 
-                    var path = await GetTempQrLocationInServerFolder(Environment);
-                    string QrFileName = SecurityService.RoundomKey(GlobalService.LengthKey) + SecurityService.EnecryptText(outValueQRcodeId.ToString()) + SecurityService.RoundomKey(GlobalService.LengthKey);
-                    string fullPathQR = Path.Combine(path, QrFileName) + ".pdf";
-                    QRCodeGenerator QrGenerator = new QRCodeGenerator();                    
-                    QRCodeData QrCodeInfo = QrGenerator.CreateQrCode(QrFileName, QRCodeGenerator.ECCLevel.H);
-                    QRCoder.QRCode QrCode = new QRCoder.QRCode(QrCodeInfo);
-                    Bitmap UrBitmap = new Bitmap(Environment.WebRootPath + "\\Logos\\URlogo.png");
-                    Bitmap QrBitmap = QrCode.GetGraphic(60,Color.Black,Color.White, UrBitmap,30);
-                    //Bitmap QrBitmap = QrCode.GetGraphic(PdfSettingsModel.QRsize, Color.Black,Color.White,true);
-                    byte[] bytes;
-                    using (MemoryStream memory = new MemoryStream())
-                    {
-                        QrBitmap.Save(memory, ImageFormat.Png);
-                        bytes = memory.ToArray();
-                    }
-                    iTextSharp.text.Image QRpng = iTextSharp.text.Image.GetInstance(bytes);
-                    QRpng.ScaleToFit(100f, 100f);
-                    QRpng.ScalePercent(8f);
-                    QRpng.Alignment = Element.ALIGN_CENTER;
-                    PdfPCell CellQRimage = new PdfPCell(QRpng)
-                    {
-                        HorizontalAlignment = Element.ALIGN_CENTER,
-                        VerticalAlignment = Element.ALIGN_CENTER,
-                        RunDirection = Element.ALIGN_CENTER,
-                        Colspan = 1,
-                        Border = 0
-                    };
-                    Paragraph ParQRcode = new Paragraph(QrFileName)
-                    {
-                        Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.VerySmall, 0, PdfSettingsModel.BLACK),
-                        Alignment = Element.ALIGN_CENTER,
-                    };
-                    PdfPCell CellQRcode = new PdfPCell
-                    {
-                        HorizontalAlignment = Element.ALIGN_CENTER,
-                        VerticalAlignment = Element.ALIGN_CENTER,
-                        RunDirection = Element.ALIGN_RIGHT,
-                        Border = 0,
-                        BorderWidthBottom = 0,
-                    };
-                    CellQRcode.AddElement(ParQRcode);
-
-                    QRTable.AddCell(CellQRimage);
-                    QRTable.AddCell(CellQRcode);
-                    QRTable.AddCell("\n");
-                    #endregion
-
-                    #region AfterQR
-                    PdfPTable AfterQRTable = new PdfPTable(1)
-                    {
-                        WidthPercentage = 100f,
-                        HorizontalAlignment = Element.ALIGN_CENTER,
-                        RunDirection = Element.ALIGN_RIGHT,
-                        SpacingBefore = 10,
-                        DefaultCell =
-                    {
-                        HorizontalAlignment = Element.ALIGN_CENTER,
-                        VerticalAlignment = Element.ALIGN_CENTER,
-                        RunDirection = Element.ALIGN_RIGHT,
-                        Border=0, BorderWidth=0
-                    }
-                    };
-
-                    Paragraph ParAfterQRLine1 = new Paragraph(PdfSettingsModel.ParagraphAfterQRLine1)
-                    {
-                        Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.Small, 0, PdfSettingsModel.BLUE),
-                        Alignment = Element.ALIGN_CENTER,
-                    };
-                    PdfPCell CellAfterQRLine1 = new PdfPCell
-                    {
-                        HorizontalAlignment = Element.ALIGN_CENTER,
-                        VerticalAlignment = Element.ALIGN_CENTER,
-                        RunDirection = Element.ALIGN_RIGHT,
-                        Border = 0,
-                        BorderWidthBottom = 0,
-                    };
-                    CellAfterQRLine1.AddElement(ParAfterQRLine1);
-
-                    Paragraph ParAfterQRLine2 = new Paragraph(PdfSettingsModel.ParagraphAfterQRLine2)
-                    {
-                        Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.Small, 0, PdfSettingsModel.BLUE),
-                        Alignment = Element.ALIGN_CENTER,
-                    };
-                    PdfPCell CellAfterQRLine2 = new PdfPCell
-                    {
-                        HorizontalAlignment = Element.ALIGN_CENTER,
-                        VerticalAlignment = Element.ALIGN_CENTER,
-                        RunDirection = Element.ALIGN_RIGHT,
-                        Border = 0,
-                        BorderWidthBottom = 0,
-                    };
-                    CellAfterQRLine2.AddElement(ParAfterQRLine2);
-
-                    AfterQRTable.AddCell(CellAfterQRLine1);
-                    AfterQRTable.AddCell("\n");
-                    AfterQRTable.AddCell(CellAfterQRLine2);
-                    #endregion
-
-                    #region Footer
-                    PdfPTable FooterTable = new PdfPTable(1)
-                    {
-                        WidthPercentage = 100f,
-                        HorizontalAlignment = Element.ALIGN_LEFT,
-                        RunDirection = Element.ALIGN_RIGHT,
-                        SpacingBefore = 10,
-                        DefaultCell =
-                    {
-                        HorizontalAlignment = Element.ALIGN_LEFT,
-                        VerticalAlignment = Element.ALIGN_LEFT,
-                        RunDirection = Element.ALIGN_RIGHT,
-                        Border=0, BorderWidth=0
-                    }
-                    };
-
-                    Paragraph ParFooterLine1 = new Paragraph(PdfSettingsModel.ParagraphFooterLine1)
-                    {
-                        Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.VeryMini, 0, PdfSettingsModel.RED),
-                        Alignment = Element.ALIGN_LEFT,
-                    };
-                    PdfPCell CellFooterLine1 = new PdfPCell
-                    {
-                        HorizontalAlignment = Element.ALIGN_LEFT,
-                        VerticalAlignment = Element.ALIGN_LEFT,
-                        RunDirection = Element.ALIGN_RIGHT,
-                        Border = 0,
-                        BorderWidthBottom = 0,
-                    };
-                    CellFooterLine1.AddElement(ParFooterLine1);
-
-                    Paragraph ParFooterLine2 = new Paragraph(getUserLoginInfo.Rows[0]["UsUserName"].ToString())
-                    {
-                        Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.VeryMini, 0, PdfSettingsModel.RED),
-                        Alignment = Element.ALIGN_LEFT,
-                    };
-                    PdfPCell CellFooterLine2 = new PdfPCell
-                    {
-                        HorizontalAlignment = Element.ALIGN_LEFT,
-                        VerticalAlignment = Element.ALIGN_LEFT,
-                        RunDirection = Element.ALIGN_RIGHT,
-                        Border = 0,
-                        BorderWidthBottom = 0,
-                    };
-                    CellFooterLine2.AddElement(ParFooterLine2);
-
-                    Paragraph ParFooterLine3 = new Paragraph(getUserLoginInfo.Rows[0]["FullName"].ToString())
-                    {
-                        Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.VeryMini, 0, PdfSettingsModel.RED),
-                        Alignment = Element.ALIGN_LEFT,
-                    };
-                    PdfPCell CellFooterLine3 = new PdfPCell
-                    {
-                        HorizontalAlignment = Element.ALIGN_LEFT,
-                        VerticalAlignment = Element.ALIGN_LEFT,
-                        RunDirection = Element.ALIGN_RIGHT,
-                        Border = 0,
-                        BorderWidthBottom = 0,
-                    };
-                    CellFooterLine3.AddElement(ParFooterLine3);
-
-                    FooterTable.AddCell("\n");
-                    FooterTable.AddCell(CellFooterLine1);
-                    FooterTable.AddCell(CellFooterLine2);
-                    FooterTable.AddCell(CellFooterLine3);
-                    #endregion
-
-                    using (FileStream stream = new FileStream(fullPathQR, FileMode.Create, FileAccess.ReadWrite))
-                    {
-                        iTextSharp.text.Document pdfDoc = new iTextSharp.text.Document(PageSize.A4, 10f, 10f, 10f, 10f);
-                        PdfWriter.GetInstance(pdfDoc, stream);
-                        pdfDoc.Open();
-                        pdfDoc.Add(HeaderTable);
-                        pdfDoc.Add(LineTable);
-                        pdfDoc.Add(BeforQRTable);
-                        pdfDoc.Add(QRTable);
-                        pdfDoc.Add(AfterQRTable);
-                        pdfDoc.Add(FooterTable);
-                        pdfDoc.NewPage();
-                        pdfDoc.Close();
-                        stream.Close();
-                    }
-                    #endregion
-
+                var path = await GetTempQrLocationInServerFolder(Environment);
+                string QrFileName = SecurityService.RoundomKey(30);
+                string QRquery = "INSERT INTO [Main].[QRLookup] (QrId, QrObjId, QrIsPraivet, QrExpiry, QrIsActive) OUTPUT INSERTED.QrId " +
+                                $"VALUES('{QrFileName}', {QRLookup_M.QrDocumentId}, {Convert.ToInt16(QRLookup_M.QrIsPraivet)}, '{DateTime.Now}', {1}) ";
+                var outValueQRcodeId = await Task.Run(() => dam.DoQueryAndPutOutValue(QRquery, "QrId"));
+                if (outValueQRcodeId == null || outValueQRcodeId.Trim()=="")
+                {
                     Response_MV = new ResponseModelView
                     {
-                        Success = true,
-                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GeneratQR],
-                        Data = new { QrPdfFilePath = GetFullPathOfQrPdfNameInServerFolder(QrFileName).Result }
+                        Success = false,
+                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError]+"hhhhhh",
+                        Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
                     };
                     return Response_MV;
                 }
+                string fullPathQR = Path.Combine(path, QrFileName) + ".pdf";
+                QRCodeGenerator QrGenerator = new QRCodeGenerator();
+                QRCodeData QrCodeInfo = QrGenerator.CreateQrCode(QrFileName, QRCodeGenerator.ECCLevel.H);
+                QRCoder.QRCode QrCode = new QRCoder.QRCode(QrCodeInfo);
+                Bitmap UrBitmap = new Bitmap(Environment.WebRootPath + "\\Logos\\URlogo.png");
+                Bitmap QrBitmap = QrCode.GetGraphic(60, Color.Black, Color.White, UrBitmap, 30);
+                byte[] bytes;
+                using (MemoryStream memory = new MemoryStream())
+                {
+                    QrBitmap.Save(memory, ImageFormat.Png);
+                    bytes = memory.ToArray();
+                }
+                iTextSharp.text.Image QRpng = iTextSharp.text.Image.GetInstance(bytes);
+                QRpng.ScaleToFit(100f, 100f);
+                QRpng.ScalePercent(8f);
+                QRpng.Alignment = Element.ALIGN_CENTER;
+                PdfPCell CellQRimage = new PdfPCell(QRpng)
+                {
+                    HorizontalAlignment = Element.ALIGN_CENTER,
+                    VerticalAlignment = Element.ALIGN_CENTER,
+                    RunDirection = Element.ALIGN_CENTER,
+                    Colspan = 1,
+                    Border = 0
+                };
+                Paragraph ParQRcode = new Paragraph(QrFileName)
+                {
+                    Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.VerySmall, 0, PdfSettingsModel.BLACK),
+                    Alignment = Element.ALIGN_CENTER,
+                };
+                PdfPCell CellQRcode = new PdfPCell
+                {
+                    HorizontalAlignment = Element.ALIGN_CENTER,
+                    VerticalAlignment = Element.ALIGN_CENTER,
+                    RunDirection = Element.ALIGN_RIGHT,
+                    Border = 0,
+                    BorderWidthBottom = 0,
+                };
+                CellQRcode.AddElement(ParQRcode);
+
+                QRTable.AddCell(CellQRimage);
+                QRTable.AddCell(CellQRcode);
+                QRTable.AddCell("\n");
+                #endregion
+
+                #region AfterQR
+                PdfPTable AfterQRTable = new PdfPTable(1)
+                {
+                    WidthPercentage = 100f,
+                    HorizontalAlignment = Element.ALIGN_CENTER,
+                    RunDirection = Element.ALIGN_RIGHT,
+                    SpacingBefore = 10,
+                    DefaultCell =
+                    {
+                        HorizontalAlignment = Element.ALIGN_CENTER,
+                        VerticalAlignment = Element.ALIGN_CENTER,
+                        RunDirection = Element.ALIGN_RIGHT,
+                        Border=0, BorderWidth=0
+                    }
+                };
+
+                Paragraph ParAfterQRLine1 = new Paragraph(PdfSettingsModel.ParagraphAfterQRLine1)
+                {
+                    Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.Small, 0, PdfSettingsModel.BLUE),
+                    Alignment = Element.ALIGN_CENTER,
+                };
+                PdfPCell CellAfterQRLine1 = new PdfPCell
+                {
+                    HorizontalAlignment = Element.ALIGN_CENTER,
+                    VerticalAlignment = Element.ALIGN_CENTER,
+                    RunDirection = Element.ALIGN_RIGHT,
+                    Border = 0,
+                    BorderWidthBottom = 0,
+                };
+                CellAfterQRLine1.AddElement(ParAfterQRLine1);
+
+                Paragraph ParAfterQRLine2 = new Paragraph(PdfSettingsModel.ParagraphAfterQRLine2)
+                {
+                    Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.Small, 0, PdfSettingsModel.BLUE),
+                    Alignment = Element.ALIGN_CENTER,
+                };
+                PdfPCell CellAfterQRLine2 = new PdfPCell
+                {
+                    HorizontalAlignment = Element.ALIGN_CENTER,
+                    VerticalAlignment = Element.ALIGN_CENTER,
+                    RunDirection = Element.ALIGN_RIGHT,
+                    Border = 0,
+                    BorderWidthBottom = 0,
+                };
+                CellAfterQRLine2.AddElement(ParAfterQRLine2);
+
+                AfterQRTable.AddCell(CellAfterQRLine1);
+                AfterQRTable.AddCell("\n");
+                AfterQRTable.AddCell(CellAfterQRLine2);
+                #endregion
+
+                #region Footer
+                PdfPTable FooterTable = new PdfPTable(1)
+                {
+                    WidthPercentage = 100f,
+                    HorizontalAlignment = Element.ALIGN_LEFT,
+                    RunDirection = Element.ALIGN_RIGHT,
+                    SpacingBefore = 10,
+                    DefaultCell =
+                    {
+                        HorizontalAlignment = Element.ALIGN_LEFT,
+                        VerticalAlignment = Element.ALIGN_LEFT,
+                        RunDirection = Element.ALIGN_RIGHT,
+                        Border=0, BorderWidth=0
+                    }
+                };
+
+                Paragraph ParFooterLine1 = new Paragraph(PdfSettingsModel.ParagraphFooterLine1)
+                {
+                    Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.VeryMini, 0, PdfSettingsModel.RED),
+                    Alignment = Element.ALIGN_LEFT,
+                };
+                PdfPCell CellFooterLine1 = new PdfPCell
+                {
+                    HorizontalAlignment = Element.ALIGN_LEFT,
+                    VerticalAlignment = Element.ALIGN_LEFT,
+                    RunDirection = Element.ALIGN_RIGHT,
+                    Border = 0,
+                    BorderWidthBottom = 0,
+                };
+                CellFooterLine1.AddElement(ParFooterLine1);
+
+                Paragraph ParFooterLine2 = new Paragraph(getUserLoginInfo.Rows[0]["UsUserName"].ToString())
+                {
+                    Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.VeryMini, 0, PdfSettingsModel.RED),
+                    Alignment = Element.ALIGN_LEFT,
+                };
+                PdfPCell CellFooterLine2 = new PdfPCell
+                {
+                    HorizontalAlignment = Element.ALIGN_LEFT,
+                    VerticalAlignment = Element.ALIGN_LEFT,
+                    RunDirection = Element.ALIGN_RIGHT,
+                    Border = 0,
+                    BorderWidthBottom = 0,
+                };
+                CellFooterLine2.AddElement(ParFooterLine2);
+
+                Paragraph ParFooterLine3 = new Paragraph(getUserLoginInfo.Rows[0]["FullName"].ToString())
+                {
+                    Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.VeryMini, 0, PdfSettingsModel.RED),
+                    Alignment = Element.ALIGN_LEFT,
+                };
+                PdfPCell CellFooterLine3 = new PdfPCell
+                {
+                    HorizontalAlignment = Element.ALIGN_LEFT,
+                    VerticalAlignment = Element.ALIGN_LEFT,
+                    RunDirection = Element.ALIGN_RIGHT,
+                    Border = 0,
+                    BorderWidthBottom = 0,
+                };
+                CellFooterLine3.AddElement(ParFooterLine3);
+
+                FooterTable.AddCell("\n");
+                FooterTable.AddCell(CellFooterLine1);
+                FooterTable.AddCell(CellFooterLine2);
+                FooterTable.AddCell(CellFooterLine3);
+                #endregion
+
+                using (FileStream stream = new FileStream(fullPathQR, FileMode.Create, FileAccess.ReadWrite))
+                {
+                    iTextSharp.text.Document pdfDoc = new iTextSharp.text.Document(PageSize.A4, 10f, 10f, 10f, 10f);
+                    PdfWriter.GetInstance(pdfDoc, stream);
+                    pdfDoc.Open();
+                    pdfDoc.Add(HeaderTable);
+                    pdfDoc.Add(LineTable);
+                    pdfDoc.Add(BeforQRTable);
+                    pdfDoc.Add(QRTable);
+                    pdfDoc.Add(AfterQRTable);
+                    pdfDoc.Add(FooterTable);
+                    pdfDoc.NewPage();
+                    pdfDoc.Close();
+                    stream.Close();
+                }
+                #endregion
+
+                Response_MV = new ResponseModelView
+                {
+                    Success = true,
+                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GeneratQR],
+                    Data = new { QrPdfFilePath = GetFullPathOfQrPdfNameInServerFolder(QrFileName).Result }
+                };
+                return Response_MV;
             }
             catch (Exception ex)
             {

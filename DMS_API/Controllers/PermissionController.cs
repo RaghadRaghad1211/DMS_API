@@ -2,6 +2,7 @@
 using DMS_API.ModelsView;
 using DMS_API.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel;
 
 namespace DMS_API.Controllers
 {
@@ -86,6 +87,22 @@ namespace DMS_API.Controllers
         public async Task<IActionResult> GenerateQRcodePDFofDocument([FromBody] QRLookupModel QRLookup_M, [FromHeader] RequestHeaderModelView RequestHeader)
         {
             Response_MV = await Permissions_S.GenerateQRcodePDFofDocument(QRLookup_M, RequestHeader);
+            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
+        }
+
+        [HttpGet]
+        [Route("ReadQRcodePDFofDocument/{QRcode}")]
+        public async Task<IActionResult> ReadQRcodePDFofDocument([FromRoute] string QRcode, [FromHeader] string? Lang = "Ar")
+        {
+            Response_MV = await Permissions_S.ReadQRcodePDFofDocument(QRcode, Lang);
+            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
+        }
+
+        [HttpPost]
+        [Route("ReadQRcodePDFofDocumentPrivate/{QRcode}")]
+        public async Task<IActionResult> ReadQRcodePDFofDocumentPrivate([FromRoute] string QRcode, [FromBody] LoginModelView Login_MV, [FromHeader] string? Lang = "Ar")
+        {
+            Response_MV = await Permissions_S.ReadQRcodePDFofDocumentPrivate(QRcode, Login_MV, Lang);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
         #endregion

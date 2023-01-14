@@ -21,17 +21,17 @@ namespace DMS_API.Services
         #region Properteis
         public static readonly string ConnectionString =
         "Server=10.55.101.20,1433;Database=DMS_DB;Integrated Security=false;User ID=dms; Password=dms;Connection Timeout=60;"; // السيرفر
-        //"Server=HAEL\\SQL2022;Database=DMS_DB;Integrated Security=false;User ID=dms; Password=dms;"; // البيت
-       // "Server=NDC-8RW6WC3\\SQL2014;Database=DMS_DB;Integrated Security=false;User ID=dms; Password=dms;"; // الدائرة
+      // "Server=HAEL\\SQL2022;Database=DMS_DB;Integrated Security=false;User ID=dms; Password=dms;"; // البيت
+        // "Server=NDC-8RW6WC3\\SQL2014;Database=DMS_DB;Integrated Security=false;User ID=dms; Password=dms;"; // الدائرة
 
 
         public static readonly string HostFilesUrl =
-             "http://10.55.101.10:90/DMSserver";  // السيرفر
-        // "http://192.168.43.39:90/DMSserver"; //  البيت
-       //  "http://10.92.92.239:90/DMSserver"; // الدائرة
+            "http://10.55.101.10:90/DMSserver";  // السيرفر
+            //  "http://192.168.43.39:90/DMSserver"; //  البيت
+            //  "http://10.92.92.239:90/DMSserver"; // الدائرة
 
         private static string PasswordSalt;
-        private static string DocumentSalt;
+        private static string CrypticSalt;
 
         private static string JwtKey;
         private static string JwtIssuer;
@@ -54,7 +54,7 @@ namespace DMS_API.Services
                 DataTable dtKeys = new DataTable();
                 dtKeys = dam.FireDataTable($"SELECT SecKey, SecValue  FROM [Security].[SecureKeys]");
                 PasswordSalt = dtKeys.Select("SecKey = 'PasswordSalt' ")[0]["SecValue"].ToString();
-                DocumentSalt = dtKeys.Select("SecKey = 'DocumentSalt' ")[0]["SecValue"].ToString();
+                CrypticSalt = dtKeys.Select("SecKey = 'CrypticSalt' ")[0]["SecValue"].ToString();
                 JwtKey = dtKeys.Select("SecKey = 'JwtKey' ")[0]["SecValue"].ToString();
                 JwtIssuer = dtKeys.Select("SecKey = 'JwtIssuer' ")[0]["SecValue"].ToString();
                 JwtAudience = dtKeys.Select("SecKey = 'JwtAudience' ")[0]["SecValue"].ToString();
@@ -228,16 +228,16 @@ namespace DMS_API.Services
             }
         }
         /// <summary>
-        /// Enecrypt document name
+        /// Enecrypt text
         /// </summary>
-        /// <param name="DocumentId"></param>
+        /// <param name="text"> the string want encryption</param>
         /// <returns></returns>
         public static string EnecryptText(string text)
         {
             if (GetSecureKeys() == true)
             {
                 byte[] bytesToBeEncrypted = Encoding.UTF8.GetBytes(text);
-                byte[] passwordBytes = Encoding.UTF8.GetBytes(DocumentSalt);
+                byte[] passwordBytes = Encoding.UTF8.GetBytes(CrypticSalt);
                 passwordBytes = SHA256.Create().ComputeHash(passwordBytes);
                 byte[] encryptedBytes = null;
                 byte[] saltBytes = new byte[] { 2, 1, 1, 2, 1, 9, 8, 9 };
@@ -259,7 +259,7 @@ namespace DMS_API.Services
                         encryptedBytes = ms.ToArray();
                     }
                 }
-                return Convert.ToHexString(encryptedBytes).Substring(0,GlobalService.LengthKey);
+                return Convert.ToHexString(encryptedBytes).Substring(0, GlobalService.LengthKey);
             }
             else
             {
@@ -267,16 +267,16 @@ namespace DMS_API.Services
             }
         }
         /// <summary>
-        /// Decrypt document name
+        /// Decrypt text encrypted
         /// </summary>
-        /// <param name="DocumentIdencrypted"></param>
+        /// <param name="TextEncrypted">the string want decryption</param>
         /// <returns></returns>
         public static string DecryptText(string TextEncrypted)
         {
             if (GetSecureKeys() == true)
             {
-                byte[] bytesToBeDecrypted = Convert.FromHexString(TextEncrypted);
-                byte[] passwordBytesdecrypt = Encoding.UTF8.GetBytes(DocumentSalt);
+                byte[] bytesToBeDecrypted = Convert.FromBase64String(TextEncrypted);
+                byte[] passwordBytesdecrypt = Encoding.UTF8.GetBytes(CrypticSalt);
                 passwordBytesdecrypt = SHA256.Create().ComputeHash(passwordBytesdecrypt);
                 byte[] decryptedBytes = null;
                 byte[] saltBytes = new byte[] { 2, 1, 1, 2, 1, 9, 8, 9 };
@@ -305,6 +305,7 @@ namespace DMS_API.Services
             {
                 return null;
             }
+
         }
         /// <summary>
         /// Roundom Password

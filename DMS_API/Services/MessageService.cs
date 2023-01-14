@@ -84,7 +84,11 @@
         public static readonly string GeneratQR = "GeneratQR";
         public static readonly string MustSelectPermissionForObject = "MustSelectedPermissionForObject";
         public static readonly string FileSize = "MustSelectedPermissionForObject";
-       // public static readonly string FileSize = "MustSelectedPermissionForObject";
+        public static readonly string QrCodeIsEmpty = "QrCodeIsEmpty";
+        public static readonly string QrCodeIsWrong = "QrCodeIsWrong";
+        public static readonly string QrCodeIsPraivet = "QrCodeIsPraivet";
+
+        // public static readonly string FileSize = "MustSelectedPermissionForObject";
 
         /// <summary>
         /// Dictionary of respons messages
@@ -157,6 +161,9 @@
                      { GeneratQR, "تم توليد رمز الوثيقة" },
                      { MustSelectPermissionForObject, "يجب اختيار صلاحية واحدة على الاقل للعنصر " },
                      { InvalidFileSize, $"يجب ان يكون حجم الملف اقل من {GlobalService.MaxFileSize}" },
+                     {QrCodeIsEmpty ,"يجب ادخال رمز التحقق"},
+                     {QrCodeIsWrong ,"رمز التحقق خطأ"},
+                     {QrCodeIsPraivet ,"يجب ادخال اسم المستخدم وكلمة المرور لقراءة رمز التحقق"},
 
 
                 }
@@ -227,6 +234,10 @@
                      { GeneratQR, "Generat QR code" },
                      { MustSelectPermissionForObject, "Must Select Permission For Object " },
                      { InvalidFileSize, $"File size must be less than {GlobalService.MaxFileSize}" },
+                     {QrCodeIsEmpty ,"QR code must be entered"},
+                    { QrCodeIsWrong ,"QR code is wrong"},
+                     {QrCodeIsPraivet ,"Must enter your username and password to read the QR code"},
+
 
 
                 }

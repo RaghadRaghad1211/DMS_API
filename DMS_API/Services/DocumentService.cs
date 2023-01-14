@@ -422,7 +422,7 @@ namespace DMS_API.Services
                                     ObjId = DocumentId,
                                     ObjClsId = Convert.ToInt32(GlobalService.ClassType.Document),
                                     KeysValues = KeyValue_Mlist,
-                                    DocumentFilePath = await GlobalService.GetFullPathOfDocumentNameInServerFolder(DocumentId, GlobalService.LengthKey, Environment)
+                                    DocumentFilePath = await GlobalService.GetFullPathOfDocumentNameInServerFolder(DocumentId, Environment)
                                 };
 
                                 Response_MV = new ResponseModelView
