@@ -859,7 +859,7 @@ namespace DMS_API.Services
 
                 Paragraph ParHeaderDocTitle = new Paragraph($"الموضوع: {getQrPdfInfo.Rows[0]["DocTitle"].ToString()}")
                 {
-                    Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.Mini, 0, PdfSettingsModel.BLACK),
+                    Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.VerySmall, 0, PdfSettingsModel.BLACK),
                     Alignment = Element.ALIGN_RIGHT,
                 };
                 PdfPCell CellHeaderDocTitle = new PdfPCell
@@ -875,7 +875,7 @@ namespace DMS_API.Services
 
                 Paragraph ParHeaderDocNo = new Paragraph($"الرقم: {getQrPdfInfo.Rows[0]["DocNo"].ToString()}")
                 {
-                    Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.Mini, 0, PdfSettingsModel.BLACK),
+                    Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.VerySmall, 0, PdfSettingsModel.BLACK),
                     Alignment = Element.ALIGN_RIGHT,
                 };
                 PdfPCell CellHeaderDocNo = new PdfPCell
@@ -891,7 +891,7 @@ namespace DMS_API.Services
 
                 Paragraph ParHeaderDocDate = new Paragraph($"التاريخ: {getQrPdfInfo.Rows[0]["DocDate"].ToString()}")
                 {
-                    Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.Mini, 0, PdfSettingsModel.BLACK),
+                    Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.VerySmall, 0, PdfSettingsModel.BLACK),
                     Alignment = Element.ALIGN_RIGHT,
                 };
                 PdfPCell CellHeaderDocDate = new PdfPCell
@@ -905,9 +905,9 @@ namespace DMS_API.Services
                 };
                 CellHeaderDocDate.AddElement(ParHeaderDocDate);
 
-                Paragraph ParHeaderMinistry = new Paragraph($"الوزارة: {getQrPdfInfo.Rows[0]["Ministry"].ToString() + "\n" + getQrPdfInfo.Rows[0]["Organization"].ToString()}")
+                Paragraph ParHeaderMinistry = new Paragraph($"{getQrPdfInfo.Rows[0]["Ministry"].ToString() + "\n" + getQrPdfInfo.Rows[0]["Organization"].ToString()}")
                 {
-                    Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.Mini, 0, PdfSettingsModel.BLACK),
+                    Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.VerySmall, 0, PdfSettingsModel.BLACK),
                     Alignment = Element.ALIGN_LEFT,
                 };
                 PdfPCell CellHeaderMinistry = new PdfPCell
@@ -921,25 +921,25 @@ namespace DMS_API.Services
                 };
                 CellHeaderMinistry.AddElement(ParHeaderMinistry);
 
-                Paragraph ParHeaderOrg = new Paragraph($"التشكيل: {getQrPdfInfo.Rows[0]["Organization"].ToString()}")
-                {
-                    Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.Mini, 0, PdfSettingsModel.BLACK),
-                    Alignment = Element.ALIGN_LEFT,
-                };
-                PdfPCell CellHeaderOrg = new PdfPCell
-                {
-                    HorizontalAlignment = Element.ALIGN_LEFT,
-                    VerticalAlignment = Element.ALIGN_CENTER,
-                    RunDirection = Element.ALIGN_RIGHT,
-                    Border = 0,
-                    BorderWidthBottom = 0,
-                    Rowspan = 1
-                };
-                CellHeaderOrg.AddElement(ParHeaderOrg);
+                //Paragraph ParHeaderOrg = new Paragraph($"التشكيل: {getQrPdfInfo.Rows[0]["Organization"].ToString()}")
+                //{
+                //    Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.VerySmall, 0, PdfSettingsModel.BLACK),
+                //    Alignment = Element.ALIGN_LEFT,
+                //};
+                //PdfPCell CellHeaderOrg = new PdfPCell
+                //{
+                //    HorizontalAlignment = Element.ALIGN_LEFT,
+                //    VerticalAlignment = Element.ALIGN_CENTER,
+                //    RunDirection = Element.ALIGN_RIGHT,
+                //    Border = 0,
+                //    BorderWidthBottom = 0,
+                //    Rowspan = 1
+                //};
+                //CellHeaderOrg.AddElement(ParHeaderOrg);
 
                 Paragraph ParHeaderCreationDate = new Paragraph($"تاريخ انشاء الوثيقة: {DateTime.Parse(getQrPdfInfo.Rows[0]["DocCreationDate"].ToString()).ToShortDateString()}")
                 {
-                    Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.Mini, 0, PdfSettingsModel.BLACK),
+                    Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.VerySmall, 0, PdfSettingsModel.BLACK),
                     Alignment = Element.ALIGN_LEFT
                 };
                 PdfPCell CellHeaderCreationDate = new PdfPCell
@@ -954,9 +954,9 @@ namespace DMS_API.Services
                 CellHeaderCreationDate.AddElement(new Phrase(ParHeaderCreationDate));
 
 
-                Paragraph ParHeaderCreateQR = new Paragraph($"تاريخ رمز التحقق: {DateTime.Now}")
+                Paragraph ParHeaderCreateQR = new Paragraph($"تاريخ رمز التحقق: {DateTime.Now.ToString("dd/MM/yyyy hh:mm tt")}")
                 {
-                    Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.Mini, 0, PdfSettingsModel.BLACK),
+                    Font = new iTextSharp.text.Font(bf, 11, 0, PdfSettingsModel.BLACK),
                     Alignment = Element.ALIGN_LEFT
                 };
                 PdfPCell CellHeaderCreateQR = new PdfPCell
