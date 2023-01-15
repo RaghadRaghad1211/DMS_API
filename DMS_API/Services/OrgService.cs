@@ -36,7 +36,7 @@ namespace DMS_API.Services
         /// </summary>
         /// <param name="RequestHeader">Header Parameters</param>
         /// <returns>Response { (bool)Success, (string)Message, (object)Data}</returns>
-        public async Task<ResponseModelView> GetOrgsParentWithChilds(RequestHeaderModelView RequestHeader)
+        public async Task<ResponseModelView> GetOrgsParentWithChilds(RequestHeaderModelView RequestHeader, bool IsGeneral = false)
         {
             try
             {
@@ -50,7 +50,7 @@ namespace DMS_API.Services
                 {
                     int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
                     List<OrgModel> Org_Mlist = new List<OrgModel>();
-                    Org_Mlist = await GlobalService.GetOrgsParentWithChildsByUserLoginID(userLoginID);
+                    Org_Mlist = await GlobalService.GetOrgsParentWithChildsByUserLoginID(userLoginID, IsGeneral);
 
                     if (Org_Mlist == null)
                     {

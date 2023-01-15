@@ -1173,81 +1173,93 @@ namespace DMS_API.Services
         /// <returns>Response { (bool)Success, (string)Message, (object)Data}</returns>
         public async Task<ResponseModelView> ReadQRcodePDFofDocument(string QRcode, string Lang)
         {
-            if (QRcode.IsEmpty() == true)
+            try
             {
-                Response_MV = new ResponseModelView
-                {
-                    Success = false,
-                    Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.QrCodeIsEmpty],
-                    Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
-                };
-                return Response_MV;
-            }
-            else
-            {
-                string getQrInfo = $"SELECT [QrObjId], [QrIsPraivet], [QrIsActive]  FROM [Main].[QRLookup] WHERE [QrId]='{QRcode}'  ";
-                DataTable dt = new DataTable();
-                dt = await Task.Run(() => dam.FireDataTable(getQrInfo));
-                if (dt == null)
+                if (QRcode.IsEmpty() == true)
                 {
                     Response_MV = new ResponseModelView
                     {
                         Success = false,
-                        Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.ExceptionError],
-                        Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                        Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.QrCodeIsEmpty],
+                        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
                     };
                     return Response_MV;
-
                 }
                 else
                 {
-                    if (dt.Rows.Count <= 0)
+                    string getQrInfo = $"SELECT [QrObjId], [QrIsPraivet], [QrIsActive]  FROM [Main].[QRLookup] WHERE [QrId]='{QRcode}'  ";
+                    DataTable dt = new DataTable();
+                    dt = await Task.Run(() => dam.FireDataTable(getQrInfo));
+                    if (dt == null)
                     {
                         Response_MV = new ResponseModelView
                         {
                             Success = false,
-                            Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.QrCodeIsWrong],
-                            Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                            Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.ExceptionError],
+                            Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
                         };
                         return Response_MV;
+
                     }
                     else
                     {
-                        if (bool.Parse(dt.Rows[0]["QrIsActive"].ToString()) == false)
+                        if (dt.Rows.Count <= 0)
                         {
                             Response_MV = new ResponseModelView
                             {
                                 Success = false,
-                                Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.NotActive],
-                                Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
-                            };
-                            return Response_MV;
-                        }
-                        else if (bool.Parse(dt.Rows[0]["QrIsPraivet"].ToString()) == true)
-                        {
-                            Response_MV = new ResponseModelView
-                            {
-                                Success = true,
-                                Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.QrCodeIsPraivet],
+                                Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.QrCodeIsWrong],
                                 Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
                             };
                             return Response_MV;
                         }
                         else
                         {
-                            Response_MV = new ResponseModelView
+                            if (bool.Parse(dt.Rows[0]["QrIsActive"].ToString()) == false)
                             {
-                                Success = true,
-                                Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.GetSuccess],
-                                Data = new { DocumentFilePath = await GlobalService.GetFullPathOfDocumentNameInServerFolder(Convert.ToInt32(dt.Rows[0]["QrObjId"].ToString()), Environment) }
-                            };
-                            return Response_MV;
+                                Response_MV = new ResponseModelView
+                                {
+                                    Success = false,
+                                    Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.NotActive],
+                                    Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                                };
+                                return Response_MV;
+                            }
+                            else if (bool.Parse(dt.Rows[0]["QrIsPraivet"].ToString()) == true)
+                            {
+                                Response_MV = new ResponseModelView
+                                {
+                                    Success = true,
+                                    Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.QrCodeIsPraivet],
+                                    Data = new HttpResponseMessage(HttpStatusCode.NotAcceptable).StatusCode
+                                };
+                                return Response_MV;
+                            }
+                            else
+                            {
+                                Response_MV = new ResponseModelView
+                                {
+                                    Success = true,
+                                    Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.GetSuccess],
+                                    Data = new { DocumentFilePath = await GlobalService.GetFullPathOfDocumentNameInServerFolder(Convert.ToInt32(dt.Rows[0]["QrObjId"].ToString()), Environment) }
+                                };
+                                return Response_MV;
+                            }
                         }
                     }
                 }
             }
+            catch (Exception ex)
+            {
+                Response_MV = new ResponseModelView
+                {
+                    Success = false,
+                    Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.ExceptionError] + " - " + ex.Message,
+                    Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                };
+                return Response_MV;
+            }
         }
-
         /// <summary>
         /// Everyone have account in the system To Do:
         /// Read private QR code
@@ -1258,7 +1270,149 @@ namespace DMS_API.Services
         /// <returns>Response { (bool)Success, (string)Message, (object)Data}</returns>
         public async Task<ResponseModelView> ReadQRcodePDFofDocumentPrivate(string QRcode, LoginModelView Login_MV, string Lang)
         {
-            return Response_MV;
+            try
+            {
+                if (QRcode.IsEmpty() == true)
+                {
+                    Response_MV = new ResponseModelView
+                    {
+                        Success = false,
+                        Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.QrCodeIsEmpty],
+                        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                    };
+                    return Response_MV;
+                }
+                else
+                {
+                    string getQrInfo = $"SELECT [QrObjId], [QrIsPraivet], [QrIsActive]  FROM [Main].[QRLookup] WHERE [QrId]='{QRcode}'  ";
+                    DataTable dt = new DataTable();
+                    dt = await Task.Run(() => dam.FireDataTable(getQrInfo));
+                    if (dt == null)
+                    {
+                        Response_MV = new ResponseModelView
+                        {
+                            Success = false,
+                            Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.ExceptionError],
+                            Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                        };
+                        return Response_MV;
+
+                    }
+                    else
+                    {
+                        if (dt.Rows.Count <= 0)
+                        {
+                            Response_MV = new ResponseModelView
+                            {
+                                Success = false,
+                                Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.QrCodeIsWrong],
+                                Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                            };
+                            return Response_MV;
+                        }
+                        else
+                        {
+                            if (bool.Parse(dt.Rows[0]["QrIsActive"].ToString()) == false)
+                            {
+                                Response_MV = new ResponseModelView
+                                {
+                                    Success = false,
+                                    Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.NotActive],
+                                    Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                                };
+                                return Response_MV;
+                            }
+                            else
+                            {
+                                if (bool.Parse(dt.Rows[0]["QrIsPraivet"].ToString()) == true)
+                                {
+                                    string validation = ValidationService.IsEmptyList(Login_MV);
+                                    if (ValidationService.IsEmpty(validation) == false)
+                                    {
+                                        Response_MV = new ResponseModelView
+                                        {
+                                            Success = false,
+                                            Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.MustFillInformation] + "  " + $"({validation})",
+                                            Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                                        };
+                                        return Response_MV;
+                                    }
+                                    else
+                                    {
+                                        int checkUsername = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) FROM [User].Users WHERE UsUserName = '{Login_MV.Username}' "));
+                                        if (checkUsername == 0)
+                                        {
+                                            Response_MV = new ResponseModelView
+                                            {
+                                                Success = false,
+                                                Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.InvalidUsername],
+                                                Data = new HttpResponseMessage(HttpStatusCode.NotAcceptable).StatusCode
+                                            };
+                                            return Response_MV;
+                                        }
+                                        else
+                                        {
+                                            int checkPassword = Convert.ToInt32(dam.FireSQL("SELECT  COUNT(*)   FROM    [User].Users " +
+                                                                                       $"WHERE   UsUserName = '{Login_MV.Username}' AND " +
+                                                                                       $"        UsPassword = '{SecurityService.PasswordEnecrypt(Login_MV.Password.Trim(), Login_MV.Username.Trim())}' "));
+                                            if (checkPassword == 0)
+                                            {
+                                                Response_MV = new ResponseModelView
+                                                {
+                                                    Success = false,
+                                                    Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.InvalidPassword],
+                                                    Data = new HttpResponseMessage(HttpStatusCode.NotAcceptable).StatusCode
+                                                };
+                                                return Response_MV;
+                                            }
+                                            else
+                                            {
+                                                Response_MV = new ResponseModelView
+                                                {
+                                                    Success = true,
+                                                    Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.GetSuccess],
+                                                    Data = new { DocumentFilePath = await GlobalService.GetFullPathOfDocumentNameInServerFolder(Convert.ToInt32(dt.Rows[0]["QrObjId"].ToString()), Environment) }
+                                                };
+                                                return Response_MV;
+                                            }
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    Response_MV = new ResponseModelView
+                                    {
+                                        Success = true,
+                                        Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.GetSuccess],
+                                        Data = new { DocumentFilePath = await GlobalService.GetFullPathOfDocumentNameInServerFolder(Convert.ToInt32(dt.Rows[0]["QrObjId"].ToString()), Environment) }
+                                    };
+                                    return Response_MV;
+                                }
+                            }
+                            //else
+                            //{
+                            //    Response_MV = new ResponseModelView
+                            //    {
+                            //        Success = true,
+                            //        Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.GetSuccess],
+                            //        Data = new { DocumentFilePath = await GlobalService.GetFullPathOfDocumentNameInServerFolder(Convert.ToInt32(dt.Rows[0]["QrObjId"].ToString()), Environment) }
+                            //    };
+                            //    return Response_MV;
+                            //}
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Response_MV = new ResponseModelView
+                {
+                    Success = false,
+                    Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.ExceptionError] + " - " + ex.Message,
+                    Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                };
+                return Response_MV;
+            }
         }
 
         #endregion

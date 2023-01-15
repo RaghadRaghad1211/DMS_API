@@ -29,6 +29,14 @@ namespace DMS_API.Controllers
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
+        [HttpGet]
+        [Route("GetOrgsParentWithChilds_General")]
+        public async Task<IActionResult> GetOrgsParentWithChilds_General([FromHeader] RequestHeaderModelView RequestHeader)
+        {
+            Response_MV = await Org_S.GetOrgsParentWithChilds(RequestHeader,true);
+            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
+        }
+
         [HttpPost]
         [Route("GetOrgsParentWithChilds_Table")]
         public async Task<IActionResult> GetOrgsParentWithChilds_Table([FromBody] PaginationModelView Pagination_MV, [FromHeader] RequestHeaderModelView RequestHeader)

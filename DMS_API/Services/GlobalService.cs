@@ -186,16 +186,25 @@ namespace DMS_API.Services
         /// <summary>
         /// Get tree of organization with childs,
         /// which depends on user login Id.
+        /// if IsGeneral=true then get all organization without depends on user login Id.
         /// </summary>
         /// <param name="userLoginID"> user login Id</param>
         /// <returns></returns>
-        public static async Task<List<OrgModel>> GetOrgsParentWithChildsByUserLoginID(int userLoginID)
+        public static async Task<List<OrgModel>> GetOrgsParentWithChildsByUserLoginID(int userLoginID, bool IsGeneral = false)
         {
             try
             {
                 int OrgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {userLoginID} "));
                 string whereField = OrgOwnerID == 0 ? "OrgUp" : "OrgId";
-                string getOrgInfo = $"SELECT OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName, OrgIsActive FROM [User].[V_Org]  WHERE {whereField}= {OrgOwnerID} AND OrgIsActive=1";
+                string? getOrgInfo;
+                if (IsGeneral == true)
+                {
+                    getOrgInfo = $"SELECT OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName, OrgIsActive FROM [User].[V_Org]  WHERE OrgUp= 0 AND OrgIsActive=1";
+                }
+                else
+                {
+                    getOrgInfo = $"SELECT OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName, OrgIsActive FROM [User].[V_Org]  WHERE {whereField}= {OrgOwnerID} AND OrgIsActive=1";
+                }
                 //string getOrgInfo = $"SELECT TOP 1 OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName FROM [User].[GetOrgsbyUserId]({userLoginID}) ";
                 DataTable dt = new DataTable();
                 dt = await Task.Run(() => dam.FireDataTable(getOrgInfo));
@@ -813,11 +822,10 @@ namespace DMS_API.Services
             {
                 Session_S = new SessionService();
                 var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
-                DataTable getUserLoginInfo = new DataTable();
-                getUserLoginInfo = dam.FireDataTable($"SELECT  FullName, UsUserName  FROM [User].[V_Users] WHERE UserID={((SessionModel)ResponseSession.Data).UserID} ");
-                DataTable getDocInfo = new DataTable();
-                getDocInfo = dam.FireDataTable($"SELECT  ObjTitle, ObjCreationDate, OrgArName  FROM [Document].[V_Documents] WHERE ObjId={QRLookup_M.QrDocumentId} ");
-                if (getUserLoginInfo == null || getUserLoginInfo.Rows.Count == 0 || getDocInfo == null || getDocInfo.Rows.Count == 0)
+                DataTable getQrPdfInfo = new DataTable();
+                getQrPdfInfo = dam.FireDataTable("SELECT  DocTitle, DocNo, DocDate, DocCreationDate, Organization, Ministry, FullName, UsUserName  " +
+                                                $"FROM  [Document].[GetQRPdfInfo]({((SessionModel)ResponseSession.Data).UserID},{QRLookup_M.QrDocumentId})  ");
+                if (getQrPdfInfo == null || getQrPdfInfo.Rows.Count == 0)
                 {
                     Response_MV = new ResponseModelView
                     {
@@ -849,64 +857,116 @@ namespace DMS_API.Services
                     }
                 };
 
-                Paragraph ParHeaderTitle = new Paragraph($"الموضوع: {getDocInfo.Rows[0]["ObjTitle"].ToString()}")
+                Paragraph ParHeaderDocTitle = new Paragraph($"الموضوع: {getQrPdfInfo.Rows[0]["DocTitle"].ToString()}")
                 {
-                    Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.VerySmall, 0, PdfSettingsModel.BLACK),
-                    Alignment = Element.ALIGN_CENTER,
+                    Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.Mini, 0, PdfSettingsModel.BLACK),
+                    Alignment = Element.ALIGN_RIGHT,
                 };
-                PdfPCell CellHeaderTitle = new PdfPCell
+                PdfPCell CellHeaderDocTitle = new PdfPCell
                 {
-                    HorizontalAlignment = Element.ALIGN_CENTER,
+                    HorizontalAlignment = Element.ALIGN_RIGHT,
+                    VerticalAlignment = Element.ALIGN_BOTTOM,
+                    RunDirection = Element.ALIGN_RIGHT,
+                    Border = 0,
+                    BorderWidthBottom = 0,
+                    Rowspan = 1
+                };
+                CellHeaderDocTitle.AddElement(ParHeaderDocTitle);
+
+                Paragraph ParHeaderDocNo = new Paragraph($"الرقم: {getQrPdfInfo.Rows[0]["DocNo"].ToString()}")
+                {
+                    Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.Mini, 0, PdfSettingsModel.BLACK),
+                    Alignment = Element.ALIGN_RIGHT,
+                };
+                PdfPCell CellHeaderDocNo = new PdfPCell
+                {
+                    HorizontalAlignment = Element.ALIGN_RIGHT,
                     VerticalAlignment = Element.ALIGN_CENTER,
                     RunDirection = Element.ALIGN_RIGHT,
                     Border = 0,
                     BorderWidthBottom = 0,
+                    Rowspan = 1
                 };
-                CellHeaderTitle.AddElement(ParHeaderTitle);
+                CellHeaderDocNo.AddElement(ParHeaderDocNo);
 
-                Paragraph ParHeaderOrg = new Paragraph($"التشكيل: {getDocInfo.Rows[0]["OrgArName"].ToString()}")
+                Paragraph ParHeaderDocDate = new Paragraph($"التاريخ: {getQrPdfInfo.Rows[0]["DocDate"].ToString()}")
                 {
-                    Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.VerySmall, 0, PdfSettingsModel.BLACK),
-                    Alignment = Element.ALIGN_CENTER,
+                    Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.Mini, 0, PdfSettingsModel.BLACK),
+                    Alignment = Element.ALIGN_RIGHT,
                 };
-                PdfPCell CellHeaderOrg = new PdfPCell
+                PdfPCell CellHeaderDocDate = new PdfPCell
                 {
-                    HorizontalAlignment = Element.ALIGN_CENTER,
+                    HorizontalAlignment = Element.ALIGN_RIGHT,
                     VerticalAlignment = Element.ALIGN_CENTER,
                     RunDirection = Element.ALIGN_RIGHT,
                     Border = 0,
-                    BorderWidthBottom = 0
+                    BorderWidthBottom = 0,
+                    Rowspan = 1
+                };
+                CellHeaderDocDate.AddElement(ParHeaderDocDate);
+
+                Paragraph ParHeaderMinistry = new Paragraph($"الوزارة: {getQrPdfInfo.Rows[0]["Ministry"].ToString() + "\n" + getQrPdfInfo.Rows[0]["Organization"].ToString()}")
+                {
+                    Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.Mini, 0, PdfSettingsModel.BLACK),
+                    Alignment = Element.ALIGN_LEFT,
+                };
+                PdfPCell CellHeaderMinistry = new PdfPCell
+                {
+                    HorizontalAlignment = Element.ALIGN_LEFT,
+                    VerticalAlignment = Element.ALIGN_CENTER,
+                    RunDirection = Element.ALIGN_RIGHT,
+                    Border = 0,
+                    BorderWidthBottom = 0,
+                    Rowspan = 1
+                };
+                CellHeaderMinistry.AddElement(ParHeaderMinistry);
+
+                Paragraph ParHeaderOrg = new Paragraph($"التشكيل: {getQrPdfInfo.Rows[0]["Organization"].ToString()}")
+                {
+                    Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.Mini, 0, PdfSettingsModel.BLACK),
+                    Alignment = Element.ALIGN_LEFT,
+                };
+                PdfPCell CellHeaderOrg = new PdfPCell
+                {
+                    HorizontalAlignment = Element.ALIGN_LEFT,
+                    VerticalAlignment = Element.ALIGN_CENTER,
+                    RunDirection = Element.ALIGN_RIGHT,
+                    Border = 0,
+                    BorderWidthBottom = 0,
+                    Rowspan = 1
                 };
                 CellHeaderOrg.AddElement(ParHeaderOrg);
 
-                Paragraph ParHeaderCreationDate = new Paragraph($"تاريخ انشاء الوثيقة: {DateTime.Parse(getDocInfo.Rows[0]["ObjCreationDate"].ToString()).ToShortDateString()}")
+                Paragraph ParHeaderCreationDate = new Paragraph($"تاريخ انشاء الوثيقة: {DateTime.Parse(getQrPdfInfo.Rows[0]["DocCreationDate"].ToString()).ToShortDateString()}")
                 {
-                    Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.VerySmall, 0, PdfSettingsModel.BLACK),
-                    Alignment = Element.ALIGN_CENTER
+                    Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.Mini, 0, PdfSettingsModel.BLACK),
+                    Alignment = Element.ALIGN_LEFT
                 };
                 PdfPCell CellHeaderCreationDate = new PdfPCell
                 {
-                    HorizontalAlignment = Element.ALIGN_CENTER,
+                    HorizontalAlignment = Element.ALIGN_LEFT,
                     VerticalAlignment = Element.ALIGN_CENTER,
-                    RunDirection = Element.ALIGN_CENTER,
+                    RunDirection = Element.ALIGN_RIGHT,
                     Border = 0,
-                    BorderWidthBottom = 0
+                    BorderWidthBottom = 0,
+                    Rowspan = 1
                 };
                 CellHeaderCreationDate.AddElement(new Phrase(ParHeaderCreationDate));
 
 
                 Paragraph ParHeaderCreateQR = new Paragraph($"تاريخ رمز التحقق: {DateTime.Now}")
                 {
-                    Font = new iTextSharp.text.Font(bf, 11, 0, PdfSettingsModel.BLACK),
-                    Alignment = Element.ALIGN_CENTER
+                    Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.Mini, 0, PdfSettingsModel.BLACK),
+                    Alignment = Element.ALIGN_LEFT
                 };
                 PdfPCell CellHeaderCreateQR = new PdfPCell
                 {
-                    HorizontalAlignment = Element.ALIGN_CENTER,
+                    HorizontalAlignment = Element.ALIGN_LEFT,
                     VerticalAlignment = Element.ALIGN_CENTER,
                     RunDirection = Element.ALIGN_LEFT,
                     Border = 0,
-                    BorderWidthBottom = 0
+                    BorderWidthBottom = 0,
+                    Rowspan = 1
                 };
                 CellHeaderCreateQR.AddElement(new Phrase(ParHeaderCreateQR));
 
@@ -922,10 +982,11 @@ namespace DMS_API.Services
                 {
                     HorizontalAlignment = Element.ALIGN_CENTER,
                     VerticalAlignment = Element.ALIGN_CENTER,
-                    RunDirection = Element.ALIGN_RIGHT,
+                    RunDirection = Element.ALIGN_CENTER,                   
                     Colspan = 1,
                     Border = 0,
-                    BorderWidthBottom = 0
+                    BorderWidthBottom = 0,
+                    Rowspan = 1
                 };
 
 
@@ -934,15 +995,32 @@ namespace DMS_API.Services
                 HeaderTable.AddCell(CellEmpty);
                 HeaderTable.AddCell(CellEmpty);
                 HeaderTable.AddCell(CellEmpty);
-                HeaderTable.AddCell(CellHeaderCreateQR);
+
+                HeaderTable.AddCell(CellHeaderMinistry);
                 HeaderTable.AddCell(CellEmpty);
-                HeaderTable.AddCell(CellHeaderTitle);
-                HeaderTable.AddCell(CellEmpty);
-                HeaderTable.AddCell(CellEmpty);
-                HeaderTable.AddCell(CellEmpty);
+                HeaderTable.AddCell(CellHeaderDocTitle);
+
                 HeaderTable.AddCell(CellHeaderCreationDate);
+                HeaderTable.AddCell(CellEmpty);
+                HeaderTable.AddCell(CellHeaderDocNo);
+
+                HeaderTable.AddCell(CellHeaderCreateQR);
                 HeaderTable.AddCell(CellHeaderLogo);
-                HeaderTable.AddCell(CellHeaderOrg);
+                HeaderTable.AddCell(CellHeaderDocDate);
+
+
+                //HeaderTable.AddCell(CellEmpty);
+                //HeaderTable.AddCell(CellEmpty);
+
+                //HeaderTable.AddCell(CellEmpty);
+
+                //HeaderTable.AddCell(CellEmpty);
+                //HeaderTable.AddCell(CellEmpty);
+                //HeaderTable.AddCell(CellEmpty);
+
+
+
+
                 #endregion
 
                 #region Line
@@ -1053,12 +1131,12 @@ namespace DMS_API.Services
                 string QRquery = "INSERT INTO [Main].[QRLookup] (QrId, QrObjId, QrIsPraivet, QrExpiry, QrIsActive) OUTPUT INSERTED.QrId " +
                                 $"VALUES('{QrFileName}', {QRLookup_M.QrDocumentId}, {Convert.ToInt16(QRLookup_M.QrIsPraivet)}, '{DateTime.Now}', {1}) ";
                 var outValueQRcodeId = await Task.Run(() => dam.DoQueryAndPutOutValue(QRquery, "QrId"));
-                if (outValueQRcodeId == null || outValueQRcodeId.Trim()=="")
+                if (outValueQRcodeId == null || outValueQRcodeId.Trim() == "")
                 {
                     Response_MV = new ResponseModelView
                     {
                         Success = false,
-                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError]+"hhhhhh",
+                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError] + "hhhhhh",
                         Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
                     };
                     return Response_MV;
@@ -1189,7 +1267,7 @@ namespace DMS_API.Services
                 };
                 CellFooterLine1.AddElement(ParFooterLine1);
 
-                Paragraph ParFooterLine2 = new Paragraph(getUserLoginInfo.Rows[0]["UsUserName"].ToString())
+                Paragraph ParFooterLine2 = new Paragraph(getQrPdfInfo.Rows[0]["UsUserName"].ToString())
                 {
                     Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.VeryMini, 0, PdfSettingsModel.RED),
                     Alignment = Element.ALIGN_LEFT,
@@ -1204,7 +1282,7 @@ namespace DMS_API.Services
                 };
                 CellFooterLine2.AddElement(ParFooterLine2);
 
-                Paragraph ParFooterLine3 = new Paragraph(getUserLoginInfo.Rows[0]["FullName"].ToString())
+                Paragraph ParFooterLine3 = new Paragraph(getQrPdfInfo.Rows[0]["FullName"].ToString())
                 {
                     Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.VeryMini, 0, PdfSettingsModel.RED),
                     Alignment = Element.ALIGN_LEFT,
