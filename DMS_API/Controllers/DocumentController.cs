@@ -10,7 +10,6 @@ namespace DMS_API.Controllers
     {
         #region Properteis
         private DocumentService Document_S;
-        private readonly LinkParentChildService LinkParentChild_S;
         private ResponseModelView Response_MV { get; set; }
         public IWebHostEnvironment Environment { get; }
         #endregion
@@ -20,7 +19,6 @@ namespace DMS_API.Controllers
         {
             Environment = environment;
             Document_S = new DocumentService(environment);
-            LinkParentChild_S = new LinkParentChildService();
         }
         #endregion
 

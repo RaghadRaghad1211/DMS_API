@@ -9,6 +9,7 @@ using System.Net.Mail;
 using System.Net;
 using ArchiveAPI.Services;
 using System.Data;
+using System.Runtime.CompilerServices;
 
 namespace DMS_API.Services
 {
@@ -20,17 +21,18 @@ namespace DMS_API.Services
         #region Properteis
         public static readonly string ConnectionString =
         "Server=10.55.101.20,1433;Database=DMS_DB;Integrated Security=false;User ID=dms; Password=dms;Connection Timeout=60;"; // السيرفر
-      // "Server=HAEL\\SQL2022;Database=DMS_DB;Integrated Security=false;User ID=dms; Password=dms;"; // البيت
-        // "Server=NDC-8RW6WC3\\SQL2014;Database=DMS_DB;Integrated Security=false;User ID=dms; Password=dms;"; // الدائرة
+                                                                                                                               // "Server=HAEL\\SQL2022;Database=DMS_DB;Integrated Security=false;User ID=dms; Password=dms;"; // البيت
+                                                                                                                               // "Server=NDC-8RW6WC3\\SQL2014;Database=DMS_DB;Integrated Security=false;User ID=dms; Password=dms;"; // الدائرة
 
 
         public static readonly string HostFilesUrl =
             "http://10.55.101.10:90/DMSserver";  // السيرفر
-            //  "http://192.168.43.39:90/DMSserver"; //  البيت
-            //  "http://10.92.92.239:90/DMSserver"; // الدائرة
+                                                 //  "http://192.168.43.39:90/DMSserver"; //  البيت
+                                                 //  "http://10.92.92.239:90/DMSserver"; // الدائرة
 
         private static string PasswordSalt;
         private static string CrypticSalt;
+        private static string DocumentSalt;
 
         private static string JwtKey;
         private static string JwtIssuer;
@@ -54,6 +56,7 @@ namespace DMS_API.Services
                 dtKeys = dam.FireDataTable($"SELECT SecKey, SecValue  FROM [Security].[SecureKeys]");
                 PasswordSalt = dtKeys.Select("SecKey = 'PasswordSalt' ")[0]["SecValue"].ToString();
                 CrypticSalt = dtKeys.Select("SecKey = 'CrypticSalt' ")[0]["SecValue"].ToString();
+                DocumentSalt = dtKeys.Select("SecKey = 'DocumentSalt' ")[0]["SecValue"].ToString();
                 JwtKey = dtKeys.Select("SecKey = 'JwtKey' ")[0]["SecValue"].ToString();
                 JwtIssuer = dtKeys.Select("SecKey = 'JwtIssuer' ")[0]["SecValue"].ToString();
                 JwtAudience = dtKeys.Select("SecKey = 'JwtAudience' ")[0]["SecValue"].ToString();
@@ -338,6 +341,232 @@ namespace DMS_API.Services
             }
             return res.ToString();
         }
+
+
+
+
+
+
+
+
+        public static string EncryptDocument(string SourcePdfFile, string DestFilePath, string UserPassword)
+        {
+            try
+            {
+                string? MasterKey = null;
+
+                string sEncFile = DestFilePath + Path.GetFileName(SourcePdfFile) + ".enc";
+
+                using (Aes aes = Aes.Create())
+                {
+                    aes.KeySize = 256;
+                    aes.Mode = CipherMode.CBC;
+                    aes.Padding = PaddingMode.PKCS7;
+                    aes.GenerateIV();
+                    aes.GenerateKey();
+
+                    MasterKey = DocumentSalt + Convert.ToBase64String(aes.IV) + "$" + Convert.ToBase64String(aes.Key);
+                    using (FileStream fsIn = new FileStream(SourcePdfFile, FileMode.Open, FileAccess.Read, FileShare.None))
+                    {
+                        using (FileStream fsOut = new FileStream(sEncFile, FileMode.Create, FileAccess.Write, FileShare.None))
+                        {
+                            ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
+                            CryptoStream csEncrypt = new CryptoStream(fsOut, encryptor, CryptoStreamMode.Write);
+
+                            int data;
+                            while ((data = fsIn.ReadByte()) != -1)
+                                csEncrypt.WriteByte((byte)data);
+                            csEncrypt.FlushFinalBlock();
+
+                            fsOut.Flush();
+                            fsOut.Close();
+                        }
+                        fsIn.Close();
+                    }
+                    aes.Clear();
+                }
+                if (File.Exists(SourcePdfFile))
+                {
+                    File.Delete(SourcePdfFile);
+                }
+                return Encrypt(MasterKey, UserPassword);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+        private static string Encrypt(string MasterKey, string UserPassword)
+        {
+            try
+            {
+                UTF8Encoding utf8 = new UTF8Encoding();
+                byte[] passwordBytes = utf8.GetBytes(UserPassword);
+                byte[] plainBytes = utf8.GetBytes(MasterKey);
+                byte[] aesKey = SHA256.Create().ComputeHash(passwordBytes);
+                byte[] aesIV = MD5.Create().ComputeHash(passwordBytes);
+
+                using (Aes aes = Aes.Create())
+                {
+                    aes.Key = aesKey;
+                    aes.IV = aesIV;
+                    aes.Mode = CipherMode.CBC;
+                    aes.Padding = PaddingMode.PKCS7;
+
+                    using (MemoryStream memoryStream = new MemoryStream())
+                    {
+                        CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateEncryptor(), CryptoStreamMode.Write);
+
+                        cryptoStream.Write(plainBytes, 0, plainBytes.Length);
+                        cryptoStream.FlushFinalBlock();
+
+                        byte[] bEnc = memoryStream.ToArray();
+                        return Convert.ToBase64String(bEnc);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+
+        public static string DecryptDocument(string SourceFile, string UserKeyRing, string UserId, string UserPassword)
+        {
+            try
+            {
+                UTF8Encoding utf8 = new UTF8Encoding();
+                byte[] passwordBytes = utf8.GetBytes(UserPassword);
+                byte[] encBytes = Convert.FromBase64String(UserKeyRing);
+                byte[] aesKey = SHA256.Create().ComputeHash(passwordBytes);
+                byte[] aesIV = MD5.Create().ComputeHash(passwordBytes);
+
+                using (Aes aes = Aes.Create())
+                {
+                    aes.Key = aesKey;
+                    aes.IV = aesIV;
+                    aes.Mode = CipherMode.CBC;
+                    aes.Padding = PaddingMode.PKCS7;
+
+                    using (MemoryStream memoryStream = new MemoryStream())
+                    {
+                        CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateDecryptor(), CryptoStreamMode.Write);
+
+                        cryptoStream.Write(encBytes, 0, encBytes.Length);
+                        cryptoStream.FlushFinalBlock();
+
+                        byte[] bClear = memoryStream.ToArray();
+                        var MasterKey = utf8.GetString(bClear);
+                        return Decrypt(SourceFile, MasterKey,UserId);
+                    }
+
+                }
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+        private static string Decrypt(string SourceFile, string MasterKey, string UserId)
+        {
+            try
+            {
+                string newSourceFile = Path.Combine(Path.GetDirectoryName(SourceFile), $"{UserId}_" + Path.GetFileName(SourceFile));
+                File.Copy(SourceFile, newSourceFile);
+
+                byte[] IV = new byte[1];
+                byte[] Key = new byte[1];
+                if (MasterKey.StartsWith(DocumentSalt))
+                {
+                    string[] sParts = MasterKey.Split("$");
+                    if (sParts.Count() != 3)
+                    {
+                        throw new Exception("V1 Key provided is not valid does not have 3 parts");
+                    }
+                    IV = Convert.FromBase64String(sParts[1]);
+                    Key = Convert.FromBase64String(sParts[2]);
+                }
+                else
+                {
+                    throw new Exception("Key provided is not valid/ not recognised by this system");
+                }
+
+                string sClearFile = newSourceFile.Substring(0, newSourceFile.Length - 4);
+                if (File.Exists(sClearFile))
+                {
+                    File.Delete(sClearFile);
+                }
+
+                using (Aes aes = Aes.Create())
+                {
+                    aes.KeySize = 256;
+                    aes.Mode = CipherMode.CBC;
+                    aes.Padding = PaddingMode.PKCS7;
+                    aes.IV = IV;
+                    aes.Key = Key;
+
+                    using (FileStream fsIn = new FileStream(newSourceFile, FileMode.Open, FileAccess.Read, FileShare.None))
+                    {
+                        using (FileStream fsOut = new FileStream(sClearFile, FileMode.Create, FileAccess.Write, FileShare.None))
+                        {
+                            ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
+                            CryptoStream csDecrypt = new CryptoStream(fsOut, decryptor, CryptoStreamMode.Write);
+
+                            int data;
+                            while ((data = fsIn.ReadByte()) != -1)
+                                csDecrypt.WriteByte((byte)data);
+                            csDecrypt.FlushFinalBlock();
+                            csDecrypt.Flush();
+                            fsOut.Flush();
+                            fsOut.Close();
+                        }
+                        fsIn.Close();
+                    }
+
+                    aes.Clear();
+                }
+                if (File.Exists(newSourceFile))
+                {
+                    File.Delete(newSourceFile);
+                }
+                return sClearFile;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         #endregion
     }
     public class JwtToken

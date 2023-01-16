@@ -12,6 +12,7 @@ using System.Reflection;
 using System.Text;
 using System.Reflection.Metadata;
 using Microsoft.Extensions.FileProviders;
+using System.Globalization;
 
 namespace DMS_API.Services
 {
@@ -889,7 +890,7 @@ namespace DMS_API.Services
                 };
                 CellHeaderDocNo.AddElement(ParHeaderDocNo);
 
-                Paragraph ParHeaderDocDate = new Paragraph($"التاريخ: {getQrPdfInfo.Rows[0]["DocDate"].ToString()}")
+                Paragraph ParHeaderDocDate = new Paragraph($"التاريخ: {DateTime.Parse(getQrPdfInfo.Rows[0]["DocDate"].ToString()).ToString("dd/MM/yyyy", new CultureInfo("ar-AE"))}")
                 {
                     Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.VerySmall, 0, PdfSettingsModel.BLACK),
                     Alignment = Element.ALIGN_RIGHT,
@@ -905,10 +906,11 @@ namespace DMS_API.Services
                 };
                 CellHeaderDocDate.AddElement(ParHeaderDocDate);
 
-                Paragraph ParHeaderMinistry = new Paragraph($"{getQrPdfInfo.Rows[0]["Ministry"].ToString() + "\n" + getQrPdfInfo.Rows[0]["Organization"].ToString()}")
+                string MinistryText = getQrPdfInfo.Rows[0]["Ministry"].ToString().IsEmpty() == true ? "جمهورية العراق" : getQrPdfInfo.Rows[0]["Ministry"].ToString();
+                Paragraph ParHeaderMinistry = new Paragraph($"{MinistryText + "\n" + getQrPdfInfo.Rows[0]["Organization"].ToString()}")
                 {
                     Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.VerySmall, 0, PdfSettingsModel.BLACK),
-                    Alignment = Element.ALIGN_LEFT,
+                    Alignment = Element.ALIGN_CENTER,
                 };
                 PdfPCell CellHeaderMinistry = new PdfPCell
                 {
@@ -921,26 +923,11 @@ namespace DMS_API.Services
                 };
                 CellHeaderMinistry.AddElement(ParHeaderMinistry);
 
-                //Paragraph ParHeaderOrg = new Paragraph($"التشكيل: {getQrPdfInfo.Rows[0]["Organization"].ToString()}")
-                //{
-                //    Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.VerySmall, 0, PdfSettingsModel.BLACK),
-                //    Alignment = Element.ALIGN_LEFT,
-                //};
-                //PdfPCell CellHeaderOrg = new PdfPCell
-                //{
-                //    HorizontalAlignment = Element.ALIGN_LEFT,
-                //    VerticalAlignment = Element.ALIGN_CENTER,
-                //    RunDirection = Element.ALIGN_RIGHT,
-                //    Border = 0,
-                //    BorderWidthBottom = 0,
-                //    Rowspan = 1
-                //};
-                //CellHeaderOrg.AddElement(ParHeaderOrg);
 
-                Paragraph ParHeaderCreationDate = new Paragraph($"تاريخ انشاء الوثيقة: {DateTime.Parse(getQrPdfInfo.Rows[0]["DocCreationDate"].ToString()).ToShortDateString()}")
+                Paragraph ParHeaderCreationDate = new Paragraph($"تاريخ انشاء الوثيقة: {DateTime.Parse(getQrPdfInfo.Rows[0]["DocCreationDate"].ToString()).ToString("dd/MM/yyyy", new CultureInfo("ar-AE"))}")
                 {
                     Font = new iTextSharp.text.Font(bf, (float)PdfSettingsModel.FontSize.VerySmall, 0, PdfSettingsModel.BLACK),
-                    Alignment = Element.ALIGN_LEFT
+                    Alignment = Element.ALIGN_CENTER
                 };
                 PdfPCell CellHeaderCreationDate = new PdfPCell
                 {
@@ -954,16 +941,16 @@ namespace DMS_API.Services
                 CellHeaderCreationDate.AddElement(new Phrase(ParHeaderCreationDate));
 
 
-                Paragraph ParHeaderCreateQR = new Paragraph($"تاريخ رمز التحقق: {DateTime.Now.ToString("dd/MM/yyyy hh:mm tt")}")
+                Paragraph ParHeaderCreateQR = new Paragraph($"تاريخ رمز التحقق: {DateTime.Now.ToString("dd/MM/yyyy hh:mm tt", new CultureInfo("ar-AE"))}")
                 {
                     Font = new iTextSharp.text.Font(bf, 11, 0, PdfSettingsModel.BLACK),
-                    Alignment = Element.ALIGN_LEFT
+                    Alignment = Element.ALIGN_CENTER
                 };
                 PdfPCell CellHeaderCreateQR = new PdfPCell
                 {
                     HorizontalAlignment = Element.ALIGN_LEFT,
                     VerticalAlignment = Element.ALIGN_CENTER,
-                    RunDirection = Element.ALIGN_LEFT,
+                    RunDirection = Element.ALIGN_RIGHT,
                     Border = 0,
                     BorderWidthBottom = 0,
                     Rowspan = 1
@@ -982,11 +969,11 @@ namespace DMS_API.Services
                 {
                     HorizontalAlignment = Element.ALIGN_CENTER,
                     VerticalAlignment = Element.ALIGN_CENTER,
-                    RunDirection = Element.ALIGN_CENTER,                   
+                    RunDirection = Element.ALIGN_CENTER,
                     Colspan = 1,
                     Border = 0,
                     BorderWidthBottom = 0,
-                    Rowspan = 1
+                    Rowspan = 3
                 };
 
 
@@ -997,29 +984,14 @@ namespace DMS_API.Services
                 HeaderTable.AddCell(CellEmpty);
 
                 HeaderTable.AddCell(CellHeaderMinistry);
-                HeaderTable.AddCell(CellEmpty);
+                HeaderTable.AddCell(CellHeaderLogo);
                 HeaderTable.AddCell(CellHeaderDocTitle);
 
                 HeaderTable.AddCell(CellHeaderCreationDate);
-                HeaderTable.AddCell(CellEmpty);
                 HeaderTable.AddCell(CellHeaderDocNo);
 
                 HeaderTable.AddCell(CellHeaderCreateQR);
-                HeaderTable.AddCell(CellHeaderLogo);
                 HeaderTable.AddCell(CellHeaderDocDate);
-
-
-                //HeaderTable.AddCell(CellEmpty);
-                //HeaderTable.AddCell(CellEmpty);
-
-                //HeaderTable.AddCell(CellEmpty);
-
-                //HeaderTable.AddCell(CellEmpty);
-                //HeaderTable.AddCell(CellEmpty);
-                //HeaderTable.AddCell(CellEmpty);
-
-
-
 
                 #endregion
 
@@ -1136,7 +1108,7 @@ namespace DMS_API.Services
                     Response_MV = new ResponseModelView
                     {
                         Success = false,
-                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError] + "hhhhhh",
+                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
                         Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
                     };
                     return Response_MV;
@@ -1155,7 +1127,7 @@ namespace DMS_API.Services
                 }
                 iTextSharp.text.Image QRpng = iTextSharp.text.Image.GetInstance(bytes);
                 QRpng.ScaleToFit(100f, 100f);
-                QRpng.ScalePercent(8f);
+                QRpng.ScalePercent(12f);
                 QRpng.Alignment = Element.ALIGN_CENTER;
                 PdfPCell CellQRimage = new PdfPCell(QRpng)
                 {
@@ -1300,7 +1272,7 @@ namespace DMS_API.Services
                 FooterTable.AddCell("\n");
                 FooterTable.AddCell(CellFooterLine1);
                 FooterTable.AddCell(CellFooterLine2);
-                FooterTable.AddCell(CellFooterLine3);
+                // FooterTable.AddCell(CellFooterLine3);
                 #endregion
 
                 using (FileStream stream = new FileStream(fullPathQR, FileMode.Create, FileAccess.ReadWrite))
