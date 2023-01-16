@@ -353,43 +353,48 @@ namespace DMS_API.Services
         {
             try
             {
-                string? MasterKey = null;
-
-                string sEncFile = DestFilePath + Path.GetFileName(SourcePdfFile) + ".enc";
-
-                using (Aes aes = Aes.Create())
+                if (GetSecureKeys() == true)
                 {
-                    aes.KeySize = 256;
-                    aes.Mode = CipherMode.CBC;
-                    aes.Padding = PaddingMode.PKCS7;
-                    aes.GenerateIV();
-                    aes.GenerateKey();
-
-                    MasterKey = DocumentSalt + Convert.ToBase64String(aes.IV) + "$" + Convert.ToBase64String(aes.Key);
-                    using (FileStream fsIn = new FileStream(SourcePdfFile, FileMode.Open, FileAccess.Read, FileShare.None))
+                    string? MasterKey = null;
+                    string sEncFile = DestFilePath + Path.GetFileName(SourcePdfFile) + ".enc";
+                    using (Aes aes = Aes.Create())
                     {
-                        using (FileStream fsOut = new FileStream(sEncFile, FileMode.Create, FileAccess.Write, FileShare.None))
+                        aes.KeySize = 256;
+                        aes.Mode = CipherMode.CBC;
+                        aes.Padding = PaddingMode.PKCS7;
+                        aes.GenerateIV();
+                        aes.GenerateKey();
+
+                        MasterKey = DocumentSalt + "$" + Convert.ToBase64String(aes.IV) + "$" + Convert.ToBase64String(aes.Key);
+                        using (FileStream fsIn = new FileStream(SourcePdfFile, FileMode.Open, FileAccess.Read, FileShare.None))
                         {
-                            ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
-                            CryptoStream csEncrypt = new CryptoStream(fsOut, encryptor, CryptoStreamMode.Write);
+                            using (FileStream fsOut = new FileStream(sEncFile, FileMode.Create, FileAccess.Write, FileShare.None))
+                            {
+                                ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
+                                CryptoStream csEncrypt = new CryptoStream(fsOut, encryptor, CryptoStreamMode.Write);
 
-                            int data;
-                            while ((data = fsIn.ReadByte()) != -1)
-                                csEncrypt.WriteByte((byte)data);
-                            csEncrypt.FlushFinalBlock();
+                                int data;
+                                while ((data = fsIn.ReadByte()) != -1)
+                                    csEncrypt.WriteByte((byte)data);
+                                csEncrypt.FlushFinalBlock();
 
-                            fsOut.Flush();
-                            fsOut.Close();
+                                fsOut.Flush();
+                                fsOut.Close();
+                            }
+                            fsIn.Close();
                         }
-                        fsIn.Close();
+                        aes.Clear();
                     }
-                    aes.Clear();
+                    if (File.Exists(SourcePdfFile))
+                    {
+                        File.Delete(SourcePdfFile);
+                    }
+                    return Encrypt(MasterKey, UserPassword);
                 }
-                if (File.Exists(SourcePdfFile))
+                else
                 {
-                    File.Delete(SourcePdfFile);
+                    return null;
                 }
-                return Encrypt(MasterKey, UserPassword);
             }
             catch (Exception)
             {
@@ -458,7 +463,7 @@ namespace DMS_API.Services
 
                         byte[] bClear = memoryStream.ToArray();
                         var MasterKey = utf8.GetString(bClear);
-                        return Decrypt(SourceFile, MasterKey,UserId);
+                        return Decrypt(SourceFile, MasterKey, UserId);
                     }
 
                 }
@@ -472,65 +477,72 @@ namespace DMS_API.Services
         {
             try
             {
-                string newSourceFile = Path.Combine(Path.GetDirectoryName(SourceFile), $"{UserId}_" + Path.GetFileName(SourceFile));
-                File.Copy(SourceFile, newSourceFile);
-
-                byte[] IV = new byte[1];
-                byte[] Key = new byte[1];
-                if (MasterKey.StartsWith(DocumentSalt))
+                if (GetSecureKeys() == true)
                 {
-                    string[] sParts = MasterKey.Split("$");
-                    if (sParts.Count() != 3)
+                    string newSourceFile = Path.Combine(Path.GetDirectoryName(SourceFile), $"{UserId}_" + Path.GetFileName(SourceFile));
+                    File.Copy(SourceFile, newSourceFile);
+
+                    byte[] IV = new byte[1];
+                    byte[] Key = new byte[1];
+                    if (MasterKey.StartsWith(DocumentSalt))
                     {
-                        throw new Exception("V1 Key provided is not valid does not have 3 parts");
+                        string[] sParts = MasterKey.Split("$");
+                        if (sParts.Count() != 3)
+                        {
+                            throw new Exception("V1 Key provided is not valid does not have 3 parts");
+                        }
+                        IV = Convert.FromBase64String(sParts[1]);
+                        Key = Convert.FromBase64String(sParts[2]);
                     }
-                    IV = Convert.FromBase64String(sParts[1]);
-                    Key = Convert.FromBase64String(sParts[2]);
+                    else
+                    {
+                        throw new Exception("Key provided is not valid/ not recognised by this system");
+                    }
+
+                    string sClearFile = newSourceFile.Substring(0, newSourceFile.Length - 4);
+                    if (File.Exists(sClearFile))
+                    {
+                        File.Delete(sClearFile);
+                    }
+
+                    using (Aes aes = Aes.Create())
+                    {
+                        aes.KeySize = 256;
+                        aes.Mode = CipherMode.CBC;
+                        aes.Padding = PaddingMode.PKCS7;
+                        aes.IV = IV;
+                        aes.Key = Key;
+
+                        using (FileStream fsIn = new FileStream(newSourceFile, FileMode.Open, FileAccess.Read, FileShare.None))
+                        {
+                            using (FileStream fsOut = new FileStream(sClearFile, FileMode.Create, FileAccess.Write, FileShare.None))
+                            {
+                                ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
+                                CryptoStream csDecrypt = new CryptoStream(fsOut, decryptor, CryptoStreamMode.Write);
+
+                                int data;
+                                while ((data = fsIn.ReadByte()) != -1)
+                                    csDecrypt.WriteByte((byte)data);
+                                csDecrypt.FlushFinalBlock();
+                                csDecrypt.Flush();
+                                fsOut.Flush();
+                                fsOut.Close();
+                            }
+                            fsIn.Close();
+                        }
+
+                        aes.Clear();
+                    }
+                    if (File.Exists(newSourceFile))
+                    {
+                        File.Delete(newSourceFile);
+                    }
+                    return sClearFile;
                 }
                 else
                 {
-                    throw new Exception("Key provided is not valid/ not recognised by this system");
+                    return null;
                 }
-
-                string sClearFile = newSourceFile.Substring(0, newSourceFile.Length - 4);
-                if (File.Exists(sClearFile))
-                {
-                    File.Delete(sClearFile);
-                }
-
-                using (Aes aes = Aes.Create())
-                {
-                    aes.KeySize = 256;
-                    aes.Mode = CipherMode.CBC;
-                    aes.Padding = PaddingMode.PKCS7;
-                    aes.IV = IV;
-                    aes.Key = Key;
-
-                    using (FileStream fsIn = new FileStream(newSourceFile, FileMode.Open, FileAccess.Read, FileShare.None))
-                    {
-                        using (FileStream fsOut = new FileStream(sClearFile, FileMode.Create, FileAccess.Write, FileShare.None))
-                        {
-                            ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
-                            CryptoStream csDecrypt = new CryptoStream(fsOut, decryptor, CryptoStreamMode.Write);
-
-                            int data;
-                            while ((data = fsIn.ReadByte()) != -1)
-                                csDecrypt.WriteByte((byte)data);
-                            csDecrypt.FlushFinalBlock();
-                            csDecrypt.Flush();
-                            fsOut.Flush();
-                            fsOut.Close();
-                        }
-                        fsIn.Close();
-                    }
-
-                    aes.Clear();
-                }
-                if (File.Exists(newSourceFile))
-                {
-                    File.Delete(newSourceFile);
-                }
-                return sClearFile;
             }
             catch (Exception)
             {

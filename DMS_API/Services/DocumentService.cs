@@ -31,6 +31,10 @@ namespace DMS_API.Services
         {
             Environment = environment;
             dam = new DataAccessService(SecurityService.ConnectionString);
+            //var hh = SecurityService.EncryptDocument("F:\\IIS\\DMS\\dm.pdf", "F:\\IIS\\DMS\\","12345678");
+            string keyring = "mpd2lXu2/jC2ffzOVs6mq4sI8JBAMUbyzDcGUpCCEBg0iFZual8ZNdEi7DwkPz11O5cPXblrJt6xrxyMxhwM4MYFoP2pqdiCKp79dxSyTaaoBLa3IZrBF6r96mlH6LJ/";
+
+            var ee = SecurityService.DecryptDocument("F:\\IIS\\DMS\\dm.pdf.enc", keyring,"55", "12345678");
         }
         #endregion
 
