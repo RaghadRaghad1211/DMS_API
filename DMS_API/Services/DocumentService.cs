@@ -30,11 +30,11 @@ namespace DMS_API.Services
         public DocumentService(IWebHostEnvironment environment)
         {
             Environment = environment;
-            dam = new DataAccessService(SecurityService.ConnectionString);
-            //var hh = SecurityService.EncryptDocument("F:\\IIS\\DMS\\dm.pdf", "F:\\IIS\\DMS\\","12345678");
-            string keyring = "mpd2lXu2/jC2ffzOVs6mq4sI8JBAMUbyzDcGUpCCEBg0iFZual8ZNdEi7DwkPz11O5cPXblrJt6xrxyMxhwM4MYFoP2pqdiCKp79dxSyTaaoBLa3IZrBF6r96mlH6LJ/";
+           // dam = new DataAccessService(SecurityService.ConnectionString);
+          //  var keyring = SecurityService.EncryptDocument("F:\\IIS\\DMS\\dm.pdf", "F:\\IIS\\DMS\\", "12345678");
+            //  string keyring = "mpd2lXu2/jC2ffzOVs6mq4sI8JBAMUbyzDcGUpCCEBg0iFZual8ZNdEi7DwkPz11O5cPXblrJt6xrxyMxhwM4MYFoP2pqdiCKp79dxSyTaaoBLa3IZrBF6r96mlH6LJ/";
 
-            var ee = SecurityService.DecryptDocument("F:\\IIS\\DMS\\dm.pdf.enc", keyring,"55", "12345678");
+          //  var ee = SecurityService.DecryptDocument("F:\\IIS\\DMS\\dm.pdf.enc", keyring, "55", "12345678");
         }
         #endregion
 
@@ -141,17 +141,29 @@ namespace DMS_API.Services
                                         var DocFolder = await GlobalService.CreateDocumentFolderInServerFolder(Convert.ToInt32(outValue.Rows[0][0].ToString()), Environment);
                                         if (DocFolder != null)
                                         {
-                                            // تشفير
-
-
                                             string DocumentFileName = SecurityService.RoundomKey(GlobalService.LengthKey) + SecurityService.EnecryptText(outValue.Rows[0][0].ToString()) + SecurityService.RoundomKey(GlobalService.LengthKey) + Path.GetExtension(DocFileNameWithExten).Trim();
-                                            string fillPath = Path.Combine(DocFolder, DocumentFileName);
-                                            using (FileStream filestream = System.IO.File.Create(fillPath))
+                                            string FilePath = Path.Combine(DocFolder, DocumentFileName);
+                                            using (FileStream filestream = System.IO.File.Create(FilePath))
                                             {
                                                 Document_MV.DocumentFile.CopyTo(filestream);
                                                 filestream.Flush();
                                                 filestream.Close();
                                             }
+
+                                            // تشفير
+                                            var UserFolder = Path.Combine(DocFolder, userLoginID.ToString());
+                                            if (!Directory.Exists(UserFolder))
+                                            {
+                                                Directory.CreateDirectory(UserFolder);
+                                            }
+
+
+                                            var MasterKey = SecurityService.EncryptDocument(FilePath, UserFolder);
+
+                                            var UserPass = dam.FireSQL($"SELECT UsPassword FROM [User].Users WHERE UsId ={userLoginID}");
+                                            var Keyring = SecurityService.Encrypt(MasterKey, UserPass);
+
+
                                         }
                                     }
                                     Response_MV = new ResponseModelView

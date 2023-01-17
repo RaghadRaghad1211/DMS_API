@@ -348,8 +348,13 @@ namespace DMS_API.Services
 
 
 
-
-        public static string EncryptDocument(string SourcePdfFile, string DestFilePath, string UserPassword)
+        /// <summary>
+        /// Encrypt Document and return master key.
+        /// </summary>
+        /// <param name="SourcePdfFile"></param>
+        /// <param name="DestFilePath"></param>
+        /// <returns></returns>
+        public static string EncryptDocument(string SourcePdfFile, string DestFilePath)
         {
             try
             {
@@ -389,7 +394,9 @@ namespace DMS_API.Services
                     {
                         File.Delete(SourcePdfFile);
                     }
-                    return Encrypt(MasterKey, UserPassword);
+
+                    return MasterKey;
+                  //  return Encrypt(MasterKey, UserPassword);
                 }
                 else
                 {
@@ -401,7 +408,13 @@ namespace DMS_API.Services
                 return null;
             }
         }
-        private static string Encrypt(string MasterKey, string UserPassword)
+        /// <summary>
+        /// Mwthod return key ring.
+        /// </summary>
+        /// <param name="MasterKey"></param>
+        /// <param name="UserPassword"></param>
+        /// <returns></returns>
+        public static string Encrypt(string MasterKey, string UserPassword)
         {
             try
             {

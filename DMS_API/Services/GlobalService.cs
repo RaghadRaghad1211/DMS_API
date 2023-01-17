@@ -145,30 +145,6 @@ namespace DMS_API.Services
             return query;
         }
         /// <summary>
-        /// Get query for add document
-        /// </summary>
-        /// <param name="Document_MV"></param>
-        /// <returns></returns>
-        public static string GetQueryAddDocument(DocumentModelView Document_MV)
-        {
-            //List<KeyValueModel> KeyValue_Mlist = new List<KeyValueModel>();
-            //for (int i = 0; i < Document_MV.KeysValues.Count; i++)
-            //{
-            //    KeyValueModel KeyValue_M = new KeyValueModel()
-            //    { Key = Document_MV.KeysValues[i].Key, Value = Document_MV.KeysValues[i].Value };
-            //    KeyValue_Mlist.Add(KeyValue_M);
-            //}
-            //string Query = "";
-            //foreach (var item in KeyValue_Mlist)
-            //{
-            //    Query = Query + item.Key + ":" + item.Value + ",";
-            //}
-            //Query = Query.Remove(Query.Length - 1, 1);
-            //return Query;
-
-            return null;
-        }
-        /// <summary>
         /// Get query for link between parent and childs,
         /// for add, remove and move.
         /// </summary>
@@ -680,20 +656,6 @@ namespace DMS_API.Services
             {
                 return null;
             }
-            #region OldCode
-            //string getPath = SecurityService.HostFilesUrl + "/" +
-            //                    (DocumentId % GlobalService.MoodNum).ToString() + "/" +
-            //                     DocumentId.ToString() + "/" +
-            //                     Path.GetFileName(
-            //                          Directory.GetFiles(
-            //                                    Path.Combine(
-            //                                   await GlobalService.GetDocumentLocationInServerFolder(DocumentId, Environment),
-            //                                         DocumentId.ToString())).
-            //                                                         SingleOrDefault(
-            //                                                                 x => Path.GetFileName(x).
-            //                                                                 Remove(0, LengthKey).
-            //                                                                 StartsWith(SecurityService.EnecryptText(DOC_QR.ToString()))));
-            #endregion
         }
         /// <summary>
         /// Get full path of QR PDF with name and extintion in folder server.
