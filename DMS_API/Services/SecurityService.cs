@@ -26,9 +26,9 @@ namespace DMS_API.Services
 
 
         public static readonly string HostFilesUrl =
-           // "http://10.55.101.10:90/DMSserver";  // السيرفر
+            "http://10.55.101.10:90/DMSserver";  // السيرفر
                                                  //  "http://192.168.43.39:90/DMSserver"; //  البيت
-                                                   "http://10.92.92.239:90/DMSserver"; // الدائرة
+                                                 //  "http://10.92.92.239:90/DMSserver"; // الدائرة
 
         private static string PasswordSalt;
         private static string CrypticSalt;
