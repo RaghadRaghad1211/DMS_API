@@ -707,53 +707,7 @@ namespace DMS_API.Services
         {
             try
             {
-                if (ResponseSession.IsOrgAdmin == false && ResponseSession.IsGroupOrgAdmin == false)
-                {
-                    string ParentId = dam.FireSQL($"SELECT LcParentObjId   FROM [User].[V_Links] WHERE [LcChildObjId]={ObjectId}   ");
-                    if (ParentId.IsEmpty() == true)
-                    {
-                        PermissionTypeModel PerType_M = new PermissionTypeModel
-                        {
-                            UserId = ResponseSession.UserID,
-                            ObjectId = ObjectId,
-                            IsRead = true,
-                            IsWrite = false,
-                            IsManage = false,
-                            IsQR = false
-                        };
-                        return PerType_M;
-                    }
-                    else
-                    {
-                        string getPermissions = "SELECT  [SourObjId], [IsRead], [IsWrite], [IsManage], [IsQR] " +
-                                               $"FROM    [Document].[GetChildsInParentWithPermissions] ({ResponseSession.UserID}, {Convert.ToInt32(ParentId)}) WHERE SourObjId={ObjectId} ";
-
-                        DataTable dt = new DataTable();
-                        dt = await Task.Run(() => dam.FireDataTable(getPermissions));
-                        if (dt == null)
-                        {
-                            return null;
-                        }
-                        else
-                        {
-                            if (dt.Rows.Count > 0)
-                            {
-                                PermissionTypeModel PerType_M = new PermissionTypeModel
-                                {
-                                    UserId = ResponseSession.UserID,//Convert.ToInt32(dt.Rows[0]["DestObjId"].ToString()),
-                                    ObjectId = Convert.ToInt32(dt.Rows[0]["SourObjId"].ToString()),
-                                    IsRead = bool.Parse(dt.Rows[0]["IsRead"].ToString()),
-                                    IsWrite = bool.Parse(dt.Rows[0]["IsWrite"].ToString()),
-                                    IsManage = bool.Parse(dt.Rows[0]["IsManage"].ToString()),
-                                    IsQR = bool.Parse(dt.Rows[0]["IsQR"].ToString())
-                                };
-                                return PerType_M;
-                            }
-                            return null;
-                        }
-                    }
-                }
-                else
+                if (ResponseSession.IsAdministrator == true)
                 {
                     PermissionTypeModel PerType_M = new PermissionTypeModel
                     {
@@ -765,6 +719,68 @@ namespace DMS_API.Services
                         IsQR = true
                     };
                     return PerType_M;
+                }
+                else
+                {
+                    if (ResponseSession.IsOrgAdmin == false && ResponseSession.IsGroupOrgAdmin == false)
+                    {
+                        string ParentId = dam.FireSQL($"SELECT LcParentObjId   FROM [User].[V_Links] WHERE [LcChildObjId]={ObjectId}   ");
+                        if (ParentId.IsEmpty() == true)
+                        {
+                            PermissionTypeModel PerType_M = new PermissionTypeModel
+                            {
+                                UserId = ResponseSession.UserID,
+                                ObjectId = ObjectId,
+                                IsRead = true,
+                                IsWrite = false,
+                                IsManage = false,
+                                IsQR = false
+                            };
+                            return PerType_M;
+                        }
+                        else
+                        {
+                            string getPermissions = "SELECT  [SourObjId], [IsRead], [IsWrite], [IsManage], [IsQR] " +
+                                                   $"FROM    [Document].[GetChildsInParentWithPermissions] ({ResponseSession.UserID}, {Convert.ToInt32(ParentId)}) WHERE SourObjId={ObjectId} ";
+
+                            DataTable dt = new DataTable();
+                            dt = await Task.Run(() => dam.FireDataTable(getPermissions));
+                            if (dt == null)
+                            {
+                                return null;
+                            }
+                            else
+                            {
+                                if (dt.Rows.Count > 0)
+                                {
+                                    PermissionTypeModel PerType_M = new PermissionTypeModel
+                                    {
+                                        UserId = ResponseSession.UserID,//Convert.ToInt32(dt.Rows[0]["DestObjId"].ToString()),
+                                        ObjectId = Convert.ToInt32(dt.Rows[0]["SourObjId"].ToString()),
+                                        IsRead = bool.Parse(dt.Rows[0]["IsRead"].ToString()),
+                                        IsWrite = bool.Parse(dt.Rows[0]["IsWrite"].ToString()),
+                                        IsManage = bool.Parse(dt.Rows[0]["IsManage"].ToString()),
+                                        IsQR = bool.Parse(dt.Rows[0]["IsQR"].ToString())
+                                    };
+                                    return PerType_M;
+                                }
+                                return null;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        PermissionTypeModel PerType_M = new PermissionTypeModel
+                        {
+                            UserId = ResponseSession.UserID,
+                            ObjectId = ObjectId,
+                            IsRead = true,
+                            IsWrite = true,
+                            IsManage = true,
+                            IsQR = true
+                        };
+                        return PerType_M;
+                    }
                 }
             }
             catch (Exception)

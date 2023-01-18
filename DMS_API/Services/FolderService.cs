@@ -161,7 +161,7 @@ namespace DMS_API.Services
                             else
                             {
                                 int checkDeblicate = Convert.ToInt32(dam.FireSQL($"SELECT  COUNT(*)     FROM    [User].[V_Folders] " +
-                                                                                 $"WHERE   ObjTitle = '{Folder_MV.FolderTitle}' AND AND ObjId != {Folder_MV.FolderId} AND " +
+                                                                                 $"WHERE   ObjTitle = '{Folder_MV.FolderTitle}' AND ObjId != {Folder_MV.FolderId} AND " +
                                                                                  $"        ObjId IN (SELECT LcChildObjId FROM [Main].[GetChildsInParent]({Folder_MV.FolderPerantId},{(int)GlobalService.ClassType.Folder})) AND " +
                                                                                  $"        ObjClsId ={(int)GlobalService.ClassType.Folder} AND ObjIsActive=1 "));
                                 if (checkDeblicate == 0)

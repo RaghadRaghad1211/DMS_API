@@ -1390,6 +1390,86 @@ namespace DMS_API.Services
                 return Response_MV;
             }
         }
+        /// <summary>
+        /// Only Admins To Do:
+        /// Get User's Groups .
+        /// </summary>
+        /// <param name="UserId">Body Parameters</param>
+        /// <param name="RequestHeader">Header Parameters</param>
+        /// <returns>Response { (bool)Success, (string)Message, (object)Data}</returns>
+        public async Task<ResponseModelView> GetGroupsOfUser(int UserId , RequestHeaderModelView RequestHeader)
+        {
+            if (UserId == 0 || UserId.ToString().IsInt() == false)
+            {
+                Response_MV = new ResponseModelView
+                {
+                    Success = false,
+                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsInt],
+                    Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                };
+                return Response_MV;
+            }
+            else
+            {
+                Session_S = new SessionService();
+                var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
+                if (ResponseSession.Success == false)
+                {
+                    return ResponseSession;
+                }
+                else
+                {
+                    if (((SessionModel)ResponseSession.Data).IsOrgAdmin == false && ((SessionModel)ResponseSession.Data).IsGroupOrgAdmin == false)
+                    {
+                        Response_MV = new ResponseModelView
+                        {
+                            Success = false,
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoPermission],
+                            Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                        };
+                        return Response_MV;
+                    }
+                    else
+                    {
+                        DataTable dtGetGroup = new DataTable();
+                        dtGetGroup = await Task.Run(() => dam.FireDataTable("SELECT      GroupId, GroupName   " +
+                                                                           $"FROM        [User].[GetMyGroupsbyUserId]({UserId}) " +
+                                                                            $"ORDER BY   GroupId "));
+                        MyGroup MyGroup = new MyGroup();
+                        List<MyGroup> MyGroup_List = new List<MyGroup>();
+                        if (dtGetGroup.Rows.Count > 0)
+                        {
+                            for (int i = 0; i < dtGetGroup.Rows.Count; i++)
+                            {
+                                MyGroup = new MyGroup
+                                {
+                                    GroupId = Convert.ToInt32(dtGetGroup.Rows[i]["GroupId"].ToString()),
+                                    GroupName = dtGetGroup.Rows[i]["GroupName"].ToString()
+                                };
+                                MyGroup_List.Add(MyGroup);
+                            }
+                            Response_MV = new ResponseModelView
+                            {
+                                Success = true,
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
+                                Data = MyGroup_List
+                            };
+                            return Response_MV;
+                        }
+                        else
+                        {
+                            Response_MV = new ResponseModelView
+                            {
+                                Success = false,
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoData],
+                                Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                            };
+                            return Response_MV;
+                        }
+                    }
+                }
+            }
+        }
         #endregion
     }
 }

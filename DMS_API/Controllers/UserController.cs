@@ -80,6 +80,14 @@ namespace DMS_API.Controllers
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
+        [HttpGet]
+        [Route("GetGroupsOfUser/{UserId}")]
+        public async Task<IActionResult> GetGroupsOfUser([FromRoute] int UserId, [FromHeader] RequestHeaderModelView RequestHeader)
+        {
+            Response_MV = await User_S.GetGroupsOfUser(UserId, RequestHeader);
+            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
+        }
+
         [HttpPost]
         [Route("AddUser")]
         public async Task<IActionResult> AddUser([FromBody] AddUserModelView AddUser_MV, [FromHeader] RequestHeaderModelView RequestHeader)

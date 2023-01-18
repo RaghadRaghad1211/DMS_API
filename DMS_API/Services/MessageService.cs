@@ -133,7 +133,7 @@
                      {IsReset ,"تم اعادة تعيين كلمة المرور"},
                      {EmailSubjectPasswordIsReset, "إعادة تعيين كلمة المرور" },//
                      {EmailBodyPasswordIsReset ,"تم إعادة تعيين كلمة المرور لنظام ادارة الوثائق .. كلمة المرور الجديدة : "},//
-                     {PhonePasswordIsReset ,"تم إعادة تعيين كلمة المرور  لنظام ادارة الوثائق : "},//
+                     {PhonePasswordIsReset ,"تم إعادة تعيين كلمة المرور لنظام ادارة الوثائق : "},//
                      {OldPasswordNotCorrect ,"كلمة المرور القديمة غير صحيحة"},
                      {ChangePasswordSuccess ,"تم تغيير كلمة المرور"},
                      {DeblicateKey ,"الكلمة المفتاحية موجودة في قاعدة البيانات"},

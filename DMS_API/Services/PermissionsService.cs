@@ -735,10 +735,10 @@ namespace DMS_API.Services
                                 {
                                     if (item.PerRead == false)
                                     {
-                                        int checkFav = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) [User].[V_Favourites] WHERE [ObjUserId]={item.DestObjId} AND [ObjFavId]={item.SourObjId} AND [IsActive]=1"));
+                                        int checkFav = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) FROM [User].[V_Favourites] WHERE [ObjUserId]={item.DestObjId} AND [ObjFavId]={item.SourObjId} AND [IsActive]=1"));
                                         if (checkFav > 0)
                                         {
-                                            dam.DoQuery($"Update [User].[Favourites] set [IsActive]=0 where [ObjUserId]={item.DestObjId} and [ObjFavId]={item.SourObjId}");
+                                            dam.DoQuery($"UPDATE [User].[Favourites] SET [IsActive]=0  WHERE [ObjUserId]={item.DestObjId} AND [ObjFavId]={item.SourObjId}");
                                         }
                                     }
                                 }
