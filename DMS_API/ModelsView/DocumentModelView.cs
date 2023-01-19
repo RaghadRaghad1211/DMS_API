@@ -15,6 +15,3 @@ namespace DMS_API.ModelsView
         public IFormFile? DocumentFile { get; set; }
     }
 }
-
-
-

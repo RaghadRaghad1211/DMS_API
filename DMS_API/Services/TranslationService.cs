@@ -1,6 +1,7 @@
 ﻿using ArchiveAPI.Services;
 using DMS_API.Models;
 using DMS_API.ModelsView;
+using System;
 using System.Data;
 using System.Net;
 namespace DMS_API.Services
@@ -177,68 +178,81 @@ namespace DMS_API.Services
         {
             try
             {
-                Session_S = new SessionService();
-                var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
-                if (ResponseSession.Success == false)
+                if (TransId == 0 || TransId.ToString().IsInt() == false)
                 {
-                    return ResponseSession;
+                    Response_MV = new ResponseModelView
+                    {
+                        Success = false,
+                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsInt],
+                        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                    };
+                    return Response_MV;
                 }
                 else
                 {
-                    if (((SessionModel)ResponseSession.Data).IsAdministrator == false)
+                    Session_S = new SessionService();
+                    var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
+                    if (ResponseSession.Success == false)
                     {
-                        Response_MV = new ResponseModelView
-                        {
-                            Success = false,
-                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoPermission],
-                            Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
-                        };
-                        return Response_MV;
+                        return ResponseSession;
                     }
                     else
                     {
-                        string Mlang = GlobalService.GetMessageColumn(RequestHeader.Lang);
-                        string get = $"SELECT Trid, TrKey, TrArName, TrEnName, TrKrName FROM Main.Translation WHERE Trid={TransId}";
-                        Dt = new DataTable();
-                        Dt = await Task.Run(() => dam.FireDataTable(get));
-                        if (Dt == null)
+                        if (((SessionModel)ResponseSession.Data).IsAdministrator == false)
                         {
                             Response_MV = new ResponseModelView
                             {
                                 Success = false,
-                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
-                                Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
-                            };
-                            return Response_MV;
-                        }
-                        if (Dt.Rows.Count > 0)
-                        {
-                            Translation_M = new TranslationModel
-                            {
-                                Trid = Convert.ToInt32(Dt.Rows[0]["Trid"].ToString()),
-                                TrKey = Dt.Rows[0]["TrKey"].ToString(),
-                                TrArName = Dt.Rows[0]["TrArName"].ToString(),
-                                TrEnName = Dt.Rows[0]["TrEnName"].ToString(),
-                                TrKrName = Dt.Rows[0]["TrKrName"].ToString()
-                            };
-
-                            Response_MV = new ResponseModelView
-                            {
-                                Success = true,
-                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
-                                Data = Translation_M
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoPermission],
+                                Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
                             };
                             return Response_MV;
                         }
                         else
                         {
-                            Response_MV = new ResponseModelView
+                            string Mlang = GlobalService.GetMessageColumn(RequestHeader.Lang);
+                            string get = $"SELECT Trid, TrKey, TrArName, TrEnName, TrKrName FROM Main.Translation WHERE Trid={TransId}";
+                            Dt = new DataTable();
+                            Dt = await Task.Run(() => dam.FireDataTable(get));
+                            if (Dt == null)
                             {
-                                Success = false,
-                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoData],
-                                Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
-                            };
-                            return Response_MV;
+                                Response_MV = new ResponseModelView
+                                {
+                                    Success = false,
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
+                                    Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                                };
+                                return Response_MV;
+                            }
+                            if (Dt.Rows.Count > 0)
+                            {
+                                Translation_M = new TranslationModel
+                                {
+                                    Trid = Convert.ToInt32(Dt.Rows[0]["Trid"].ToString()),
+                                    TrKey = Dt.Rows[0]["TrKey"].ToString(),
+                                    TrArName = Dt.Rows[0]["TrArName"].ToString(),
+                                    TrEnName = Dt.Rows[0]["TrEnName"].ToString(),
+                                    TrKrName = Dt.Rows[0]["TrKrName"].ToString()
+                                };
+
+                                Response_MV = new ResponseModelView
+                                {
+                                    Success = true,
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
+                                    Data = Translation_M
+                                };
+                                return Response_MV;
+                            }
+                            else
+                            {
+                                Response_MV = new ResponseModelView
+                                {
+                                    Success = false,
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoData],
+                                    Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                                };
+                                return Response_MV;
+                            }
                         }
                     }
                 }

@@ -1,6 +1,7 @@
 ﻿using ArchiveAPI.Services;
 using DMS_API.Models;
 using DMS_API.ModelsView;
+using Microsoft.AspNetCore.Http.Headers;
 using System.Data;
 using System.Net;
 namespace DMS_API.Services
@@ -224,67 +225,80 @@ namespace DMS_API.Services
         {
             try
             {
-                Session_S = new SessionService();
-                var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
-                if (ResponseSession.Success == false)
+                if (UserId == 0 || UserId.ToString().IsInt() == false)
                 {
-                    return ResponseSession;
+                    Response_MV = new ResponseModelView
+                    {
+                        Success = false,
+                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsInt],
+                        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                    };
+                    return Response_MV;
                 }
                 else
                 {
-                    if (((SessionModel)ResponseSession.Data).IsOrgAdmin == false && ((SessionModel)ResponseSession.Data).IsGroupOrgAdmin == false)
+                    Session_S = new SessionService();
+                    var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
+                    if (ResponseSession.Success == false)
                     {
-                        Response_MV = new ResponseModelView
-                        {
-                            Success = false,
-                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoPermission],
-                            Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
-                        };
-                        return Response_MV;
+                        return ResponseSession;
                     }
                     else
                     {
-                        DataTable dtEmail = new DataTable();
-                        dtEmail = await Task.Run(() => dam.FireDataTable($"SELECT UsUserName, UsPhoneNo, UsEmail FROM [User].Users WHERE UsId ={UserId} "));
-                        if (dtEmail.Rows.Count > 0)
+                        if (((SessionModel)ResponseSession.Data).IsOrgAdmin == false && ((SessionModel)ResponseSession.Data).IsGroupOrgAdmin == false)
                         {
-                            string RounPass = SecurityService.RoundomPassword(10);
-                            bool isResetEmail = SecurityService.SendEmail(dtEmail.Rows[0]["UsEmail"].ToString(),
-                                 MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.EmailSubjectPasswordIsReset],
-                                 MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.EmailBodyPasswordIsReset] + RounPass);
-                            bool isResetOTP = await SecurityService.SendOTP(dtEmail.Rows[0]["UsPhoneNo"].ToString(), MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.PhonePasswordIsReset] + RounPass);
-                            if (isResetEmail == true && isResetOTP == true)
+                            Response_MV = new ResponseModelView
                             {
-                                string reset = $"UPDATE [User].Users SET UsPassword='{SecurityService.PasswordEnecrypt(RounPass, dtEmail.Rows[0]["UsUserName"].ToString())}' WHERE UsId ={UserId} ";
-                                await Task.Run(() => dam.DoQuery(reset));
-                                Response_MV = new ResponseModelView
+                                Success = false,
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoPermission],
+                                Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                            };
+                            return Response_MV;
+                        }
+                        else
+                        {
+                            DataTable dtEmail = new DataTable();
+                            dtEmail = await Task.Run(() => dam.FireDataTable($"SELECT UsUserName, UsPhoneNo, UsEmail FROM [User].Users WHERE UsId ={UserId} "));
+                            if (dtEmail.Rows.Count > 0)
+                            {
+                                string RounPass = SecurityService.RoundomPassword(10);
+                                bool isResetEmail = SecurityService.SendEmail(dtEmail.Rows[0]["UsEmail"].ToString(),
+                                     MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.EmailSubjectPasswordIsReset],
+                                     MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.EmailBodyPasswordIsReset] + RounPass);
+                                bool isResetOTP = await SecurityService.SendOTP(dtEmail.Rows[0]["UsPhoneNo"].ToString(), MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.PhonePasswordIsReset] + RounPass);
+                                if (isResetEmail == true && isResetOTP == true)
                                 {
-                                    Success = true,
-                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsReset],
-                                    Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
-                                };
-                                return Response_MV;
+                                    string reset = $"UPDATE [User].Users SET UsPassword='{SecurityService.PasswordEnecrypt(RounPass, dtEmail.Rows[0]["UsUserName"].ToString())}' WHERE UsId ={UserId} ";
+                                    await Task.Run(() => dam.DoQuery(reset));
+                                    Response_MV = new ResponseModelView
+                                    {
+                                        Success = true,
+                                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsReset],
+                                        Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
+                                    };
+                                    return Response_MV;
+                                }
+                                else
+                                {
+                                    Response_MV = new ResponseModelView
+                                    {
+                                        Success = false,
+                                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
+                                        Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                                    };
+                                    return Response_MV;
+                                }
                             }
                             else
                             {
                                 Response_MV = new ResponseModelView
                                 {
                                     Success = false,
-                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
-                                    Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsExist],
+                                    Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
                                 };
                                 return Response_MV;
                             }
-                        }
-                        else
-                        {
-                            Response_MV = new ResponseModelView
-                            {
-                                Success = false,
-                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsExist],
-                                Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
-                            };
-                            return Response_MV;
                         }
                     }
                 }
@@ -311,47 +325,60 @@ namespace DMS_API.Services
         {
             try
             {
-                DataTable dtEmail = new DataTable();
-                dtEmail = await Task.Run(() => dam.FireDataTable($"SELECT UsPhoneNo, UsEmail FROM [User].Users WHERE UsUserName ='{Username}' "));
-                if (dtEmail.Rows.Count > 0)
+                if (Username.IsEmpty() == true)
                 {
-                    string RounPass = SecurityService.RoundomPassword(10);
-                    bool isResetEmail = SecurityService.SendEmail(dtEmail.Rows[0]["UsEmail"].ToString(),
-                         MessageService.MsgDictionary[Lang.ToLower()][MessageService.EmailSubjectPasswordIsReset],
-                         MessageService.MsgDictionary[Lang.ToLower()][MessageService.EmailBodyPasswordIsReset] + RounPass);
-                    bool isResetOTP = await SecurityService.SendOTP(dtEmail.Rows[0]["UsPhoneNo"].ToString(), MessageService.MsgDictionary[Lang.ToLower()][MessageService.PhonePasswordIsReset] + RounPass);
-                    if (isResetEmail == true && isResetOTP == true)
+                    Response_MV = new ResponseModelView
                     {
-                        string reset = $"UPDATE [User].Users SET UsPassword='{SecurityService.PasswordEnecrypt(RounPass, Username)}' WHERE UsUserName ='{Username}' ";
-                        await Task.Run(() => dam.DoQuery(reset));
-                        Response_MV = new ResponseModelView
+                        Success = false,
+                        Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.UsernameMustEnter],
+                        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                    };
+                    return Response_MV;
+                }
+                else
+                {
+                    DataTable dtEmail = new DataTable();
+                    dtEmail = await Task.Run(() => dam.FireDataTable($"SELECT UsPhoneNo, UsEmail FROM [User].Users WHERE UsUserName ='{Username}' "));
+                    if (dtEmail.Rows.Count > 0)
+                    {
+                        string RounPass = SecurityService.RoundomPassword(10);
+                        bool isResetEmail = SecurityService.SendEmail(dtEmail.Rows[0]["UsEmail"].ToString(),
+                             MessageService.MsgDictionary[Lang.ToLower()][MessageService.EmailSubjectPasswordIsReset],
+                             MessageService.MsgDictionary[Lang.ToLower()][MessageService.EmailBodyPasswordIsReset] + RounPass);
+                        bool isResetOTP = await SecurityService.SendOTP(dtEmail.Rows[0]["UsPhoneNo"].ToString(), MessageService.MsgDictionary[Lang.ToLower()][MessageService.PhonePasswordIsReset] + RounPass);
+                        if (isResetEmail == true && isResetOTP == true)
                         {
-                            Success = true,
-                            Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.IsReset],
-                            Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
-                        };
-                        return Response_MV;
+                            string reset = $"UPDATE [User].Users SET UsPassword='{SecurityService.PasswordEnecrypt(RounPass, Username)}' WHERE UsUserName ='{Username}' ";
+                            await Task.Run(() => dam.DoQuery(reset));
+                            Response_MV = new ResponseModelView
+                            {
+                                Success = true,
+                                Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.IsReset],
+                                Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
+                            };
+                            return Response_MV;
+                        }
+                        else
+                        {
+                            Response_MV = new ResponseModelView
+                            {
+                                Success = false,
+                                Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.ExceptionError],
+                                Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                            };
+                            return Response_MV;
+                        }
                     }
                     else
                     {
                         Response_MV = new ResponseModelView
                         {
                             Success = false,
-                            Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.ExceptionError],
-                            Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                            Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.IsExist],
+                            Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
                         };
                         return Response_MV;
                     }
-                }
-                else
-                {
-                    Response_MV = new ResponseModelView
-                    {
-                        Success = false,
-                        Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.IsExist],
-                        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
-                    };
-                    return Response_MV;
                 }
             }
             catch (Exception ex)
@@ -613,86 +640,99 @@ namespace DMS_API.Services
         {
             try
             {
-                Session_S = new SessionService();
-                var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
-                if (ResponseSession.Success == false)
+                if (UserId == 0 || UserId.ToString().IsInt() == false)
                 {
-                    return ResponseSession;
+                    Response_MV = new ResponseModelView
+                    {
+                        Success = false,
+                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsInt],
+                        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                    };
+                    return Response_MV;
                 }
                 else
                 {
-                    int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
-                    if (((SessionModel)ResponseSession.Data).IsOrgAdmin == false && ((SessionModel)ResponseSession.Data).IsGroupOrgAdmin == false)
+                    Session_S = new SessionService();
+                    var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
+                    if (ResponseSession.Success == false)
                     {
-                        Response_MV = new ResponseModelView
-                        {
-                            Success = false,
-                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoPermission],
-                            Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
-                        };
-                        return Response_MV;
+                        return ResponseSession;
                     }
                     else
                     {
-                        string getUserInfo = "SELECT   UserID, UsFirstName, UsSecondName, UsThirdName, UsLastName, FullName, UsUserName, Role, IsOrgAdmin, UserIsActive, UsPhoneNo, UsEmail, " +
-                                             "         UsUserEmpNo, UsUserIdintNo, UsIsOnLine, OrgOwner, OrgArName, OrgEnName, OrgKuName, Note " +
-                                            $"FROM     [User].V_Users WHERE UserID={UserId} ";
-
-                        dt = new DataTable();
-                        dt = await Task.Run(() => dam.FireDataTable(getUserInfo));
-                        if (dt == null)
+                        int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
+                        if (((SessionModel)ResponseSession.Data).IsOrgAdmin == false && ((SessionModel)ResponseSession.Data).IsGroupOrgAdmin == false)
                         {
                             Response_MV = new ResponseModelView
                             {
                                 Success = false,
-                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
-                                Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
-                            };
-                            return Response_MV;
-                        }
-                        User_Mlist = new List<UserModel>();
-                        if (dt.Rows.Count > 0)
-                        {
-                            User_M = new UserModel
-                            {
-                                UserID = Convert.ToInt32(dt.Rows[0]["UserID"].ToString()),
-                                FirstName = dt.Rows[0]["UsFirstName"].ToString(),
-                                SecondName = dt.Rows[0]["UsSecondName"].ToString(),
-                                ThirdName = dt.Rows[0]["UsThirdName"].ToString(),
-                                LastName = dt.Rows[0]["UsLastName"].ToString(),
-                                FullName = dt.Rows[0]["FullName"].ToString(),
-                                UserName = dt.Rows[0]["UsUserName"].ToString(),
-                                Role = dt.Rows[0]["Role"].ToString(),
-                                IsOrgAdmin = bool.Parse(dt.Rows[0]["IsOrgAdmin"].ToString()),
-                                IsActive = bool.Parse(dt.Rows[0]["UserIsActive"].ToString()),
-                                PhoneNo = dt.Rows[0]["UsPhoneNo"].ToString(),
-                                Email = dt.Rows[0]["UsEmail"].ToString(),
-                                UserEmpNo = dt.Rows[0]["UsUserEmpNo"].ToString(),
-                                UserIdintNo = dt.Rows[0]["UsUserIdintNo"].ToString(),
-                                IsOnLine = bool.Parse(dt.Rows[0]["UsIsOnLine"].ToString()),
-                                OrgOwnerID = Convert.ToInt32(dt.Rows[0]["OrgOwner"].ToString()),
-                                OrgArName = dt.Rows[0]["OrgArName"].ToString(),
-                                OrgEnName = dt.Rows[0]["OrgEnName"].ToString(),
-                                OrgKuName = dt.Rows[0]["OrgKuName"].ToString(),
-                                Note = dt.Rows[0]["Note"].ToString()
-                            };
-                            Response_MV = new ResponseModelView
-                            {
-                                Success = true,
-                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
-                                Data = User_M
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoPermission],
+                                Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
                             };
                             return Response_MV;
                         }
                         else
                         {
-                            Response_MV = new ResponseModelView
+                            string getUserInfo = "SELECT   UserID, UsFirstName, UsSecondName, UsThirdName, UsLastName, FullName, UsUserName, Role, IsOrgAdmin, UserIsActive, UsPhoneNo, UsEmail, " +
+                                                 "         UsUserEmpNo, UsUserIdintNo, UsIsOnLine, OrgOwner, OrgArName, OrgEnName, OrgKuName, Note " +
+                                                $"FROM     [User].V_Users WHERE UserID={UserId} ";
+
+                            dt = new DataTable();
+                            dt = await Task.Run(() => dam.FireDataTable(getUserInfo));
+                            if (dt == null)
                             {
-                                Success = false,
-                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoData],
-                                Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
-                            };
-                            return Response_MV;
+                                Response_MV = new ResponseModelView
+                                {
+                                    Success = false,
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
+                                    Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                                };
+                                return Response_MV;
+                            }
+                            User_Mlist = new List<UserModel>();
+                            if (dt.Rows.Count > 0)
+                            {
+                                User_M = new UserModel
+                                {
+                                    UserID = Convert.ToInt32(dt.Rows[0]["UserID"].ToString()),
+                                    FirstName = dt.Rows[0]["UsFirstName"].ToString(),
+                                    SecondName = dt.Rows[0]["UsSecondName"].ToString(),
+                                    ThirdName = dt.Rows[0]["UsThirdName"].ToString(),
+                                    LastName = dt.Rows[0]["UsLastName"].ToString(),
+                                    FullName = dt.Rows[0]["FullName"].ToString(),
+                                    UserName = dt.Rows[0]["UsUserName"].ToString(),
+                                    Role = dt.Rows[0]["Role"].ToString(),
+                                    IsOrgAdmin = bool.Parse(dt.Rows[0]["IsOrgAdmin"].ToString()),
+                                    IsActive = bool.Parse(dt.Rows[0]["UserIsActive"].ToString()),
+                                    PhoneNo = dt.Rows[0]["UsPhoneNo"].ToString(),
+                                    Email = dt.Rows[0]["UsEmail"].ToString(),
+                                    UserEmpNo = dt.Rows[0]["UsUserEmpNo"].ToString(),
+                                    UserIdintNo = dt.Rows[0]["UsUserIdintNo"].ToString(),
+                                    IsOnLine = bool.Parse(dt.Rows[0]["UsIsOnLine"].ToString()),
+                                    OrgOwnerID = Convert.ToInt32(dt.Rows[0]["OrgOwner"].ToString()),
+                                    OrgArName = dt.Rows[0]["OrgArName"].ToString(),
+                                    OrgEnName = dt.Rows[0]["OrgEnName"].ToString(),
+                                    OrgKuName = dt.Rows[0]["OrgKuName"].ToString(),
+                                    Note = dt.Rows[0]["Note"].ToString()
+                                };
+                                Response_MV = new ResponseModelView
+                                {
+                                    Success = true,
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
+                                    Data = User_M
+                                };
+                                return Response_MV;
+                            }
+                            else
+                            {
+                                Response_MV = new ResponseModelView
+                                {
+                                    Success = false,
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoData],
+                                    Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                                };
+                                return Response_MV;
+                            }
                         }
                     }
                 }
@@ -1052,27 +1092,26 @@ namespace DMS_API.Services
         {
             try
             {
-                Session_S = new SessionService();
-                var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
-                if (ResponseSession.Success == false)
+                if (Username.IsEmpty() == true)
                 {
-                    return ResponseSession;
+                    Response_MV = new ResponseModelView
+                    {
+                        Success = false,
+                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.UsernameMustEnter],
+                        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                    };
+                    return Response_MV;
                 }
                 else
                 {
-                    if (ValidationService.IsEmpty(Username) == true)
+                    Session_S = new SessionService();
+                    var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
+                    if (ResponseSession.Success == false)
                     {
-                        Response_MV = new ResponseModelView
-                        {
-                            Success = false,
-                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.UsernameMustEnter],
-                            Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
-                        };
-                        return Response_MV;
+                        return ResponseSession;
                     }
                     else
                     {
-                        //int OrgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {ResponseSession.Data} "));
                         int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
                         string getUserInfo = "SELECT   UserID, UsFirstName, UsSecondName, UsThirdName, UsLastName, FullName, UsUserName, Role, IsOrgAdmin, UserIsActive, UsPhoneNo, UsEmail, " +
                                              "         UsUserEmpNo, UsUserIdintNo, UsIsOnLine, OrgArName, OrgEnName, OrgKuName, Note " +
@@ -1397,7 +1436,7 @@ namespace DMS_API.Services
         /// <param name="UserId">Body Parameters</param>
         /// <param name="RequestHeader">Header Parameters</param>
         /// <returns>Response { (bool)Success, (string)Message, (object)Data}</returns>
-        public async Task<ResponseModelView> GetGroupsOfUser(int UserId , RequestHeaderModelView RequestHeader)
+        public async Task<ResponseModelView> GetGroupsOfUser(int UserId, RequestHeaderModelView RequestHeader)
         {
             if (UserId == 0 || UserId.ToString().IsInt() == false)
             {

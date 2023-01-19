@@ -3,6 +3,7 @@ using DMS_API.Models;
 using DMS_API.ModelsView;
 using System.Data;
 using System.Net;
+using System.Text.RegularExpressions;
 
 namespace DMS_API.Services
 {
@@ -193,70 +194,83 @@ namespace DMS_API.Services
         {
             try
             {
-                Session_S = new SessionService();
-                var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
-                if (ResponseSession.Success == false)
+                if (OrgID == 0 || OrgID.ToString().IsInt() == false)
                 {
-                    return ResponseSession;
+                    Response_MV = new ResponseModelView
+                    {
+                        Success = false,
+                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsInt],
+                        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                    };
+                    return Response_MV;
                 }
                 else
                 {
-                    int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
-                    if (((SessionModel)ResponseSession.Data).IsOrgAdmin == false && ((SessionModel)ResponseSession.Data).IsGroupOrgAdmin == false)
+                    Session_S = new SessionService();
+                    var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
+                    if (ResponseSession.Success == false)
                     {
-                        Response_MV = new ResponseModelView
-                        {
-                            Success = false,
-                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoPermission],
-                            Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
-                        };
-                        return Response_MV;
+                        return ResponseSession;
                     }
                     else
                     {
-                        string getOrgInfo = "SELECT OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName, " +
-                                        "       OrgArNameUp, OrgEnNameUp, OrgKuNameUp, OrgIsActive, ObjDescription  " +
-                                       $"FROM  [User].[V_OrgTable]  WHERE OrgId= {OrgID} ";
-                        DataTable dt = new DataTable();
-                        dt = await Task.Run(() => dam.FireDataTable(getOrgInfo));
-                        if (dt == null)
+                        int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
+                        if (((SessionModel)ResponseSession.Data).IsOrgAdmin == false && ((SessionModel)ResponseSession.Data).IsGroupOrgAdmin == false)
                         {
-                            return null;
-                        }
-                        OrgTableModel OrgTable_M = new OrgTableModel();
-                        if (dt.Rows.Count > 0)
-                        {
-                            OrgTable_M = new OrgTableModel
-                            {
-                                OrgId = Convert.ToInt32(dt.Rows[0]["OrgId"].ToString()),
-                                OrgUp = Convert.ToInt32(dt.Rows[0]["OrgUp"].ToString()),
-                                OrgLevel = Convert.ToInt32(dt.Rows[0]["OrgLevel"].ToString()),
-                                OrgArName = dt.Rows[0]["OrgArName"].ToString(),
-                                OrgEnName = dt.Rows[0]["OrgEnName"].ToString(),
-                                OrgKuName = dt.Rows[0]["OrgKuName"].ToString(),
-                                OrgArNameUp = dt.Rows[0]["OrgArNameUp"].ToString(),
-                                OrgEnNameUp = dt.Rows[0]["OrgEnNameUp"].ToString(),
-                                OrgKuNameUp = dt.Rows[0]["OrgKuNameUp"].ToString(),
-                                OrgIsActive = bool.Parse(dt.Rows[0]["OrgIsActive"].ToString()),
-                                Note = dt.Rows[0]["ObjDescription"].ToString()
-                            };
                             Response_MV = new ResponseModelView
                             {
-                                Success = true,
-                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
-                                Data = OrgTable_M
+                                Success = false,
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoPermission],
+                                Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
                             };
                             return Response_MV;
                         }
                         else
                         {
-                            Response_MV = new ResponseModelView
+                            string getOrgInfo = "SELECT OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName, " +
+                                            "       OrgArNameUp, OrgEnNameUp, OrgKuNameUp, OrgIsActive, ObjDescription  " +
+                                           $"FROM  [User].[V_OrgTable]  WHERE OrgId= {OrgID} ";
+                            DataTable dt = new DataTable();
+                            dt = await Task.Run(() => dam.FireDataTable(getOrgInfo));
+                            if (dt == null)
                             {
-                                Success = false,
-                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoData],
-                                Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
-                            };
-                            return Response_MV;
+                                return null;
+                            }
+                            OrgTableModel OrgTable_M = new OrgTableModel();
+                            if (dt.Rows.Count > 0)
+                            {
+                                OrgTable_M = new OrgTableModel
+                                {
+                                    OrgId = Convert.ToInt32(dt.Rows[0]["OrgId"].ToString()),
+                                    OrgUp = Convert.ToInt32(dt.Rows[0]["OrgUp"].ToString()),
+                                    OrgLevel = Convert.ToInt32(dt.Rows[0]["OrgLevel"].ToString()),
+                                    OrgArName = dt.Rows[0]["OrgArName"].ToString(),
+                                    OrgEnName = dt.Rows[0]["OrgEnName"].ToString(),
+                                    OrgKuName = dt.Rows[0]["OrgKuName"].ToString(),
+                                    OrgArNameUp = dt.Rows[0]["OrgArNameUp"].ToString(),
+                                    OrgEnNameUp = dt.Rows[0]["OrgEnNameUp"].ToString(),
+                                    OrgKuNameUp = dt.Rows[0]["OrgKuNameUp"].ToString(),
+                                    OrgIsActive = bool.Parse(dt.Rows[0]["OrgIsActive"].ToString()),
+                                    Note = dt.Rows[0]["ObjDescription"].ToString()
+                                };
+                                Response_MV = new ResponseModelView
+                                {
+                                    Success = true,
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
+                                    Data = OrgTable_M
+                                };
+                                return Response_MV;
+                            }
+                            else
+                            {
+                                Response_MV = new ResponseModelView
+                                {
+                                    Success = false,
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoData],
+                                    Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                                };
+                                return Response_MV;
+                            }
                         }
                     }
                 }
@@ -283,37 +297,50 @@ namespace DMS_API.Services
         {
             try
             {
-                Session_S = new SessionService();
-                var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
-                if (ResponseSession.Success == false)
+                if (ArName.IsEmpty() == true)
                 {
-                    return ResponseSession;
+                    Response_MV = new ResponseModelView
+                    {
+                        Success = false,
+                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.OrgNameMustEnter],
+                        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                    };
+                    return Response_MV;
                 }
                 else
                 {
-                    int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
-                    List<OrgTableModel> OrgTable_Mlist = new List<OrgTableModel>();
-                    OrgTable_Mlist = await GlobalService.GetOrgsParentWithChildsByUserLoginID_Table(userLoginID);
-
-                    if (OrgTable_Mlist == null)
+                    Session_S = new SessionService();
+                    var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
+                    if (ResponseSession.Success == false)
                     {
-                        Response_MV = new ResponseModelView
-                        {
-                            Success = false,
-                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
-                            Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
-                        };
-                        return Response_MV;
+                        return ResponseSession;
                     }
                     else
                     {
-                        Response_MV = new ResponseModelView
+                        int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
+                        List<OrgTableModel> OrgTable_Mlist = new List<OrgTableModel>();
+                        OrgTable_Mlist = await GlobalService.GetOrgsParentWithChildsByUserLoginID_Table(userLoginID);
+
+                        if (OrgTable_Mlist == null)
                         {
-                            Success = true,
-                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
-                            Data = new { Org = OrgTable_Mlist.Where(x => x.OrgArName.Contains(ArName)) }
-                        };
-                        return Response_MV;
+                            Response_MV = new ResponseModelView
+                            {
+                                Success = false,
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
+                                Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                            };
+                            return Response_MV;
+                        }
+                        else
+                        {
+                            Response_MV = new ResponseModelView
+                            {
+                                Success = true,
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
+                                Data = new { Org = OrgTable_Mlist.Where(x => x.OrgArName.Contains(ArName)) }
+                            };
+                            return Response_MV;
+                        }
                     }
                 }
             }

@@ -185,66 +185,79 @@ namespace DMS_API.Services
         {
             try
             {
-                Session_S = new SessionService();
-                var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
-                if (ResponseSession.Success == false)
+                if (GroupId == 0 || GroupId.ToString().IsInt() == false)
                 {
-                    return ResponseSession;
+                    Response_MV = new ResponseModelView
+                    {
+                        Success = false,
+                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsInt],
+                        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                    };
+                    return Response_MV;
                 }
                 else
                 {
-                    string getGroupInfo = "SELECT  ObjId, ObjTitle, ObjClsId, ClsName, ObjIsActive, CONVERT(DATE,ObjCreationDate,104) AS ObjCreationDate, " +
-                                          "        ObjDescription, UserOwnerID, OwnerFullName, OwnerUserName, OrgOwner, OrgEnName,OrgArName , OrgKuName " +
-                                         $"FROM    [User].V_Groups    WHERE   ObjId={GroupId} ";
-                    dt = new DataTable();
-                    dt = await Task.Run(() => dam.FireDataTable(getGroupInfo));
-                    if (dt == null)
+                    Session_S = new SessionService();
+                    var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
+                    if (ResponseSession.Success == false)
                     {
-                        Response_MV = new ResponseModelView
-                        {
-                            Success = false,
-                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
-                            Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
-                        };
-                        return Response_MV;
-                    }
-                    Group_Mlist = new List<GroupModel>();
-                    if (dt.Rows.Count > 0)
-                    {
-                        Group_M = new GroupModel
-                        {
-                            ObjId = Convert.ToInt32(dt.Rows[0]["ObjId"].ToString()),
-                            ObjTitle = dt.Rows[0]["ObjTitle"].ToString(),
-                            ObjClsId = Convert.ToInt32(dt.Rows[0]["ObjClsId"].ToString()),
-                            ClsName = dt.Rows[0]["ClsName"].ToString(),
-                            ObjIsActive = bool.Parse(dt.Rows[0]["ObjIsActive"].ToString()),
-                            ObjCreationDate = DateTime.Parse(dt.Rows[0]["ObjCreationDate"].ToString()).ToShortDateString(),
-                            ObjDescription = dt.Rows[0]["ObjDescription"].ToString(),
-                            UserOwnerID = Convert.ToInt32(dt.Rows[0]["UserOwnerID"].ToString()),
-                            OwnerFullName = dt.Rows[0]["OwnerFullName"].ToString(),
-                            OwnerUserName = dt.Rows[0]["OwnerUserName"].ToString(),
-                            OrgOwner = dt.Rows[0]["OrgOwner"].ToString(),
-                            OrgEnName = dt.Rows[0]["OrgEnName"].ToString(),
-                            OrgArName = dt.Rows[0]["OrgArName"].ToString(),
-                            OrgKuName = dt.Rows[0]["OrgKuName"].ToString(),
-                        };
-                        Response_MV = new ResponseModelView
-                        {
-                            Success = true,
-                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
-                            Data = Group_M
-                        };
-                        return Response_MV;
+                        return ResponseSession;
                     }
                     else
                     {
-                        Response_MV = new ResponseModelView
+                        string getGroupInfo = "SELECT  ObjId, ObjTitle, ObjClsId, ClsName, ObjIsActive, CONVERT(DATE,ObjCreationDate,104) AS ObjCreationDate, " +
+                                              "        ObjDescription, UserOwnerID, OwnerFullName, OwnerUserName, OrgOwner, OrgEnName,OrgArName , OrgKuName " +
+                                             $"FROM    [User].V_Groups    WHERE   ObjId={GroupId} ";
+                        dt = new DataTable();
+                        dt = await Task.Run(() => dam.FireDataTable(getGroupInfo));
+                        if (dt == null)
                         {
-                            Success = false,
-                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoData],
-                            Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
-                        };
-                        return Response_MV;
+                            Response_MV = new ResponseModelView
+                            {
+                                Success = false,
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
+                                Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                            };
+                            return Response_MV;
+                        }
+                        Group_Mlist = new List<GroupModel>();
+                        if (dt.Rows.Count > 0)
+                        {
+                            Group_M = new GroupModel
+                            {
+                                ObjId = Convert.ToInt32(dt.Rows[0]["ObjId"].ToString()),
+                                ObjTitle = dt.Rows[0]["ObjTitle"].ToString(),
+                                ObjClsId = Convert.ToInt32(dt.Rows[0]["ObjClsId"].ToString()),
+                                ClsName = dt.Rows[0]["ClsName"].ToString(),
+                                ObjIsActive = bool.Parse(dt.Rows[0]["ObjIsActive"].ToString()),
+                                ObjCreationDate = DateTime.Parse(dt.Rows[0]["ObjCreationDate"].ToString()).ToShortDateString(),
+                                ObjDescription = dt.Rows[0]["ObjDescription"].ToString(),
+                                UserOwnerID = Convert.ToInt32(dt.Rows[0]["UserOwnerID"].ToString()),
+                                OwnerFullName = dt.Rows[0]["OwnerFullName"].ToString(),
+                                OwnerUserName = dt.Rows[0]["OwnerUserName"].ToString(),
+                                OrgOwner = dt.Rows[0]["OrgOwner"].ToString(),
+                                OrgEnName = dt.Rows[0]["OrgEnName"].ToString(),
+                                OrgArName = dt.Rows[0]["OrgArName"].ToString(),
+                                OrgKuName = dt.Rows[0]["OrgKuName"].ToString(),
+                            };
+                            Response_MV = new ResponseModelView
+                            {
+                                Success = true,
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
+                                Data = Group_M
+                            };
+                            return Response_MV;
+                        }
+                        else
+                        {
+                            Response_MV = new ResponseModelView
+                            {
+                                Success = false,
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoData],
+                                Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                            };
+                            return Response_MV;
+                        }
                     }
                 }
             }
@@ -485,23 +498,23 @@ namespace DMS_API.Services
         {
             try
             {
-                Session_S = new SessionService();
-                var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
-                if (ResponseSession.Success == false)
+                if (GroupName.IsEmpty() == true)
                 {
-                    return ResponseSession;
+                    Response_MV = new ResponseModelView
+                    {
+                        Success = false,
+                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GroupTitleMustEnter],
+                        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                    };
+                    return Response_MV;
                 }
                 else
                 {
-                    if (ValidationService.IsEmpty(GroupName) == true)
+                    Session_S = new SessionService();
+                    var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
+                    if (ResponseSession.Success == false)
                     {
-                        Response_MV = new ResponseModelView
-                        {
-                            Success = false,
-                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GroupTitleMustEnter],
-                            Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
-                        };
-                        return Response_MV;
+                        return ResponseSession;
                     }
                     else
                     {

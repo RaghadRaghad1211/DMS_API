@@ -60,7 +60,7 @@ namespace DMS_API.Services
                 }
                 else
                 {
-                    if (ValidationService.IsEmpty(Document_MV.DocumentTitle) == true || string.IsNullOrEmpty(Document_MV.DocumentTitle))
+                    if (Document_MV.DocumentTitle.IsEmpty() == true)
                     {
                         Response_MV = new ResponseModelView
                         {
@@ -285,6 +285,8 @@ namespace DMS_API.Services
                                           $"         @NewValue = @MyNewValue OUTPUT  SELECT @MyNewValue AS newValue ";
 
 
+
+
                             var outValue = await Task.Run(() => dam.FireDataTable(exeut));
                             if (outValue.Rows[0][0].ToString() == 0.ToString() || outValue.Rows[0][0].ToString() == null || outValue.Rows[0][0].ToString().Trim() == "")
                             {
@@ -406,79 +408,33 @@ namespace DMS_API.Services
         {
             try
             {
-                Session_S = new SessionService();
-                var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
-                if (ResponseSession.Success == false)
+                if (DocumentId == 0 || DocumentId.ToString().IsInt() == false)
                 {
-                    return ResponseSession;
+                    Response_MV = new ResponseModelView
+                    {
+                        Success = false,
+                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsInt],
+                        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                    };
+                    return Response_MV;
                 }
                 else
                 {
-                    int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
-                    var result = GlobalService.CheckUserPermissionsOnFolderAndDocument((SessionModel)ResponseSession.Data, DocumentId).Result;
-                    bool checkManagePermission = result == null ? false : result.IsRead;
-                    if (checkManagePermission == true)
+                    Session_S = new SessionService();
+                    var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
+                    if (ResponseSession.Success == false)
                     {
-                        int CheckActivation = int.Parse(dam.FireSQL($"SELECT COUNT(*) FROM [Document].[V_Documents] WHERE ObjId={DocumentId} AND ObjIsActive=1"));
-                        if (CheckActivation == 0)
+                        return ResponseSession;
+                    }
+                    else
+                    {
+                        int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
+                        var result = GlobalService.CheckUserPermissionsOnFolderAndDocument((SessionModel)ResponseSession.Data, DocumentId).Result;
+                        bool checkManagePermission = result == null ? false : result.IsRead;
+                        if (checkManagePermission == true)
                         {
-                            Response_MV = new ResponseModelView
-                            {
-                                Success = false,
-                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoData],
-                                Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
-                            };
-                            return Response_MV;
-                        }
-                        else
-                        {
-                            string getDocumentmatedateInfo = "SELECT    ObjId, ObjClsId, CDToolBoxId AS 'ToolId', TbToolName AS 'ToolType', CDID AS 'Key', KVValue AS 'Value', TbMultiSelect " +
-                                                             "FROM      [Document].V_DocumentsMetadata " +
-                                                            $"WHERE     ObjId={DocumentId}  ";
-                            dt = new DataTable();
-                            dt = await Task.Run(() => dam.FireDataTable(getDocumentmatedateInfo));
-                            if (dt == null)
-                            {
-                                Response_MV = new ResponseModelView
-                                {
-                                    Success = false,
-                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
-                                    Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
-                                };
-                                return Response_MV;
-                            }
-
-                            KeyValue_Mlist = new List<KeyValueModel>();
-                            if (dt.Rows.Count > 0)
-                            {
-                                for (int i = 0; i < dt.Rows.Count; i++)
-                                {
-                                    KeyValue_M = new KeyValueModel
-                                    {
-                                        Key = Convert.ToInt32(dt.Rows[i]["Key"].ToString()),
-                                        Value = dt.Rows[i]["Value"].ToString(),
-                                        ToolId = Convert.ToInt32(dt.Rows[i]["ToolId"].ToString()),
-                                        ToolType = dt.Rows[i]["ToolType"].ToString(),
-                                    };
-                                    KeyValue_Mlist.Add(KeyValue_M);
-                                }
-                                ViewDocument_MV = new DocumentMetadataModelView
-                                {
-                                    ObjId = DocumentId,
-                                    ObjClsId = Convert.ToInt32(GlobalService.ClassType.Document),
-                                    KeysValues = KeyValue_Mlist,
-                                    DocumentFilePath = await GlobalService.GetFullPathOfDocumentNameInServerFolder(DocumentId, Environment)
-                                };
-
-                                Response_MV = new ResponseModelView
-                                {
-                                    Success = true,
-                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
-                                    Data = ViewDocument_MV
-                                };
-                                return Response_MV;
-                            }
-                            else
+                            int CheckActivation = int.Parse(dam.FireSQL($"SELECT COUNT(*) FROM [Document].[V_Documents] WHERE ObjId={DocumentId} AND ObjIsActive=1"));
+                            if (CheckActivation == 0)
                             {
                                 Response_MV = new ResponseModelView
                                 {
@@ -488,17 +444,76 @@ namespace DMS_API.Services
                                 };
                                 return Response_MV;
                             }
+                            else
+                            {
+                                string getDocumentmatedateInfo = "SELECT    ObjId, ObjClsId, CDToolBoxId AS 'ToolId', TbToolName AS 'ToolType', CDID AS 'Key', KVValue AS 'Value', TbMultiSelect " +
+                                                                 "FROM      [Document].V_DocumentsMetadata " +
+                                                                $"WHERE     ObjId={DocumentId}  ";
+                                dt = new DataTable();
+                                dt = await Task.Run(() => dam.FireDataTable(getDocumentmatedateInfo));
+                                if (dt == null)
+                                {
+                                    Response_MV = new ResponseModelView
+                                    {
+                                        Success = false,
+                                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
+                                        Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                                    };
+                                    return Response_MV;
+                                }
+
+                                KeyValue_Mlist = new List<KeyValueModel>();
+                                if (dt.Rows.Count > 0)
+                                {
+                                    for (int i = 0; i < dt.Rows.Count; i++)
+                                    {
+                                        KeyValue_M = new KeyValueModel
+                                        {
+                                            Key = Convert.ToInt32(dt.Rows[i]["Key"].ToString()),
+                                            Value = dt.Rows[i]["Value"].ToString(),
+                                            ToolId = Convert.ToInt32(dt.Rows[i]["ToolId"].ToString()),
+                                            ToolType = dt.Rows[i]["ToolType"].ToString(),
+                                        };
+                                        KeyValue_Mlist.Add(KeyValue_M);
+                                    }
+                                    ViewDocument_MV = new DocumentMetadataModelView
+                                    {
+                                        ObjId = DocumentId,
+                                        ObjClsId = Convert.ToInt32(GlobalService.ClassType.Document),
+                                        KeysValues = KeyValue_Mlist,
+                                        DocumentFilePath = await GlobalService.GetFullPathOfDocumentNameInServerFolder(DocumentId, Environment)
+                                    };
+
+                                    Response_MV = new ResponseModelView
+                                    {
+                                        Success = true,
+                                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
+                                        Data = ViewDocument_MV
+                                    };
+                                    return Response_MV;
+                                }
+                                else
+                                {
+                                    Response_MV = new ResponseModelView
+                                    {
+                                        Success = false,
+                                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoData],
+                                        Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                                    };
+                                    return Response_MV;
+                                }
+                            }
                         }
-                    }
-                    else
-                    {
-                        Response_MV = new ResponseModelView
+                        else
                         {
-                            Success = false,
-                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoPermission],
-                            Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
-                        };
-                        return Response_MV;
+                            Response_MV = new ResponseModelView
+                            {
+                                Success = false,
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoPermission],
+                                Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                            };
+                            return Response_MV;
+                        }
                     }
                 }
             }

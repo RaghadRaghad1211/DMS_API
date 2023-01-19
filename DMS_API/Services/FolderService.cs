@@ -238,77 +238,33 @@ namespace DMS_API.Services
         {
             try
             {
-                Session_S = new SessionService();
-                var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
-                if (ResponseSession.Success == false)
+                if (FolderId == 0 || FolderId.ToString().IsInt() == false)
                 {
-                    return ResponseSession;
+                    Response_MV = new ResponseModelView
+                    {
+                        Success = false,
+                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsInt],
+                        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                    };
+                    return Response_MV;
                 }
                 else
                 {
-                    int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
-                    var result = GlobalService.CheckUserPermissionsOnFolderAndDocument((SessionModel)ResponseSession.Data, FolderId).Result;
-                    bool checkManagePermission = result == null ? false : result.IsRead;
-                    if (checkManagePermission == true)
+                    Session_S = new SessionService();
+                    var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
+                    if (ResponseSession.Success == false)
                     {
-                        int CheckActivation = int.Parse(dam.FireSQL($"SELECT COUNT(*) FROM [User].V_Folders WHERE ObjId={FolderId} AND ObjIsActive=1"));
-                        if (CheckActivation == 0)
+                        return ResponseSession;
+                    }
+                    else
+                    {
+                        int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
+                        var result = GlobalService.CheckUserPermissionsOnFolderAndDocument((SessionModel)ResponseSession.Data, FolderId).Result;
+                        bool checkManagePermission = result == null ? false : result.IsRead;
+                        if (checkManagePermission == true)
                         {
-                            Response_MV = new ResponseModelView
-                            {
-                                Success = false,
-                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoData],
-                                Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
-                            };
-                            return Response_MV;
-                        }
-                        else
-                        {
-                            string getFolderInfo = "SELECT   ObjId, ObjTitle, ObjClsId, ClsName, ObjIsActive, CONVERT(DATE,ObjCreationDate,104) AS ObjCreationDate, " +
-                                                   "         ObjDescription, UserOwnerID, OwnerFullName, OwnerUserName, OrgOwner, OrgEnName,OrgArName , OrgKuName " +
-                                                  $"FROM    [User].V_Folders    WHERE   ObjId={FolderId} ";
-                            dt = new DataTable();
-                            dt = await Task.Run(() => dam.FireDataTable(getFolderInfo));
-                            if (dt == null)
-                            {
-                                Response_MV = new ResponseModelView
-                                {
-                                    Success = false,
-                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
-                                    Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
-                                };
-                                return Response_MV;
-                            }
-                            if (dt.Rows.Count > 0)
-                            {
-                                Folder_M = new FolderModel
-                                {
-                                    ObjId = Convert.ToInt32(dt.Rows[0]["ObjId"].ToString()),
-                                    ObjTitle = dt.Rows[0]["ObjTitle"].ToString(),
-                                    ObjClsId = Convert.ToInt32(dt.Rows[0]["ObjClsId"].ToString()),
-                                    ClsName = dt.Rows[0]["ClsName"].ToString(),
-                                    ObjIsActive = bool.Parse(dt.Rows[0]["ObjIsActive"].ToString()),
-                                    ObjCreationDate = DateTime.Parse(dt.Rows[0]["ObjCreationDate"].ToString()).ToShortDateString(),
-                                    ObjDescription = dt.Rows[0]["ObjDescription"].ToString(),
-                                    UserOwnerID = Convert.ToInt32(dt.Rows[0]["UserOwnerID"].ToString()),
-                                    OwnerFullName = dt.Rows[0]["OwnerFullName"].ToString(),
-                                    OwnerUserName = dt.Rows[0]["OwnerUserName"].ToString(),
-                                    OrgOwner = dt.Rows[0]["OrgOwner"].ToString(),
-                                    OrgEnName = dt.Rows[0]["OrgEnName"].ToString(),
-                                    OrgArName = dt.Rows[0]["OrgArName"].ToString(),
-                                    OrgKuName = dt.Rows[0]["OrgKuName"].ToString(),
-                                    IsFavoriteFolder = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) FROM [User].[V_Favourites] WHERE [ObjUserId] ={userLoginID} AND " +
-                                                                                   $"[ObjFavId]={FolderId} AND [IsActive] = 1 ")) > 0 ? true : false,
-                                };
-                                Response_MV = new ResponseModelView
-                                {
-                                    Success = true,
-                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
-                                    Data = Folder_M
-                                };
-                                return Response_MV;
-                            }
-                            else
+                            int CheckActivation = int.Parse(dam.FireSQL($"SELECT COUNT(*) FROM [User].V_Folders WHERE ObjId={FolderId} AND ObjIsActive=1"));
+                            if (CheckActivation == 0)
                             {
                                 Response_MV = new ResponseModelView
                                 {
@@ -318,17 +274,74 @@ namespace DMS_API.Services
                                 };
                                 return Response_MV;
                             }
+                            else
+                            {
+                                string getFolderInfo = "SELECT   ObjId, ObjTitle, ObjClsId, ClsName, ObjIsActive, CONVERT(DATE,ObjCreationDate,104) AS ObjCreationDate, " +
+                                                       "         ObjDescription, UserOwnerID, OwnerFullName, OwnerUserName, OrgOwner, OrgEnName,OrgArName , OrgKuName " +
+                                                      $"FROM    [User].V_Folders    WHERE   ObjId={FolderId} ";
+                                dt = new DataTable();
+                                dt = await Task.Run(() => dam.FireDataTable(getFolderInfo));
+                                if (dt == null)
+                                {
+                                    Response_MV = new ResponseModelView
+                                    {
+                                        Success = false,
+                                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
+                                        Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                                    };
+                                    return Response_MV;
+                                }
+                                if (dt.Rows.Count > 0)
+                                {
+                                    Folder_M = new FolderModel
+                                    {
+                                        ObjId = Convert.ToInt32(dt.Rows[0]["ObjId"].ToString()),
+                                        ObjTitle = dt.Rows[0]["ObjTitle"].ToString(),
+                                        ObjClsId = Convert.ToInt32(dt.Rows[0]["ObjClsId"].ToString()),
+                                        ClsName = dt.Rows[0]["ClsName"].ToString(),
+                                        ObjIsActive = bool.Parse(dt.Rows[0]["ObjIsActive"].ToString()),
+                                        ObjCreationDate = DateTime.Parse(dt.Rows[0]["ObjCreationDate"].ToString()).ToShortDateString(),
+                                        ObjDescription = dt.Rows[0]["ObjDescription"].ToString(),
+                                        UserOwnerID = Convert.ToInt32(dt.Rows[0]["UserOwnerID"].ToString()),
+                                        OwnerFullName = dt.Rows[0]["OwnerFullName"].ToString(),
+                                        OwnerUserName = dt.Rows[0]["OwnerUserName"].ToString(),
+                                        OrgOwner = dt.Rows[0]["OrgOwner"].ToString(),
+                                        OrgEnName = dt.Rows[0]["OrgEnName"].ToString(),
+                                        OrgArName = dt.Rows[0]["OrgArName"].ToString(),
+                                        OrgKuName = dt.Rows[0]["OrgKuName"].ToString(),
+                                        IsFavoriteFolder = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) FROM [User].[V_Favourites] WHERE [ObjUserId] ={userLoginID} AND " +
+                                                                                       $"[ObjFavId]={FolderId} AND [IsActive] = 1 ")) > 0 ? true : false,
+                                    };
+                                    Response_MV = new ResponseModelView
+                                    {
+                                        Success = true,
+                                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
+                                        Data = Folder_M
+                                    };
+                                    return Response_MV;
+                                }
+                                else
+                                {
+                                    Response_MV = new ResponseModelView
+                                    {
+                                        Success = false,
+                                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoData],
+                                        Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                                    };
+                                    return Response_MV;
+                                }
+                            }
                         }
-                    }
-                    else
-                    {
-                        Response_MV = new ResponseModelView
+                        else
                         {
-                            Success = false,
-                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoPermission],
-                            Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
-                        };
-                        return Response_MV;
+                            Response_MV = new ResponseModelView
+                            {
+                                Success = false,
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoPermission],
+                                Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                            };
+                            return Response_MV;
+                        }
                     }
                 }
             }

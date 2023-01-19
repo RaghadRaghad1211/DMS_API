@@ -37,7 +37,17 @@ namespace DMS_API.Services
             Group = 2,
             Org = 3,
             Folder = 4,
-            Document = 5
+            Document = 5,
+            Version = 6
+        }
+
+        public enum ActionType
+        {
+            عرض,
+            انشاء,
+            ادخال,
+            تعديل,
+            حذف,
         }
         #endregion
 

@@ -490,86 +490,99 @@ namespace DMS_API.Services
         {
             try
             {
-                Session_S = new SessionService();
-                var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
-                if (ResponseSession.Success == false)
+                if (ObjectId == 0 || ObjectId.ToString().IsInt() == false)
                 {
-                    return ResponseSession;
+                    Response_MV = new ResponseModelView
+                    {
+                        Success = false,
+                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsInt],
+                        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                    };
+                    return Response_MV;
                 }
                 else
                 {
-                    int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
-                    var result = GlobalService.CheckUserPermissionsOnFolderAndDocument((SessionModel)ResponseSession.Data, ObjectId).Result;
-                    bool checkManagePermission = result == null ? false : result.IsRead;
-                    if (checkManagePermission == false)
+                    Session_S = new SessionService();
+                    var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
+                    if (ResponseSession.Success == false)
                     {
-                        Response_MV = new ResponseModelView
-                        {
-                            Success = false,
-                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoPermission],
-                            Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
-                        };
-                        return Response_MV;
+                        return ResponseSession;
                     }
                     else
                     {
-                        string getPermessions = " SELECT   SourObjId, SourTitle, SourType, SourTypeName," +
-                                                "          IsRead, IsWrite, IsManage, IsQR " +
-                                                " FROM     [User].[V_Permission]" +
-                                               $" WHERE    SourObjId= {ObjectId} AND DestObjId= {userLoginID} ";
-
-                        dt = new DataTable();
-                        dt = await Task.Run(() => dam.FireDataTable(getPermessions));
-                        if (dt == null)
+                        int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
+                        var result = GlobalService.CheckUserPermissionsOnFolderAndDocument((SessionModel)ResponseSession.Data, ObjectId).Result;
+                        bool checkManagePermission = result == null ? false : result.IsRead;
+                        if (checkManagePermission == false)
                         {
                             Response_MV = new ResponseModelView
                             {
                                 Success = false,
-                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
-                                Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
-                            };
-                            return Response_MV;
-                        }
-                        Permessions_Mlist = new List<PermessionsModel>();
-                        if (dt.Rows.Count > 0)
-                        {
-                            Permessions_M = new PermessionsModel
-                            {
-                                SourObjId = Convert.ToInt32(dt.Rows[0]["SourObjId"].ToString()),
-                                SourTitle = dt.Rows[0]["SourTitle"].ToString(),
-                                SourType = Convert.ToInt32(dt.Rows[0]["SourType"].ToString()),
-                                SourTypeName = dt.Rows[0]["SourTypeName"].ToString(),
-                                //DestObjId = Convert.ToInt32(dt.Rows[0]["DestObjId"].ToString()),
-                                //DestTitle = dt.Rows[0]["DestTitle"].ToString(),
-                                //DestType = Convert.ToInt32(dt.Rows[0]["DestType"].ToString()),
-                                //DestTypeName = dt.Rows[0]["DestTypeName"].ToString(),
-                                IsRead = bool.Parse(dt.Rows[0]["IsRead"].ToString()),
-                                IsWrite = bool.Parse(dt.Rows[0]["IsWrite"].ToString()),
-                                IsManage = bool.Parse(dt.Rows[0]["IsManage"].ToString()),
-                                IsQR = bool.Parse(dt.Rows[0]["IsQR"].ToString()),
-                                SourUserName = dt.Rows[0]["SourUserName"].ToString(),
-                                SourOrgArName = dt.Rows[0]["SourOrgArName"].ToString(),
-                                SourOrgEnName = dt.Rows[0]["SourOrgEnName"].ToString(),
-                                SourOrgKuName = dt.Rows[0]["SourOrgKuName"].ToString(),
-                                SourCreationDate = DateTime.Parse(dt.Rows[0]["SourCreationDate"].ToString()).ToShortDateString()
-                            };
-                            Response_MV = new ResponseModelView
-                            {
-                                Success = true,
-                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
-                                Data = Permessions_M
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoPermission],
+                                Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
                             };
                             return Response_MV;
                         }
                         else
                         {
-                            Response_MV = new ResponseModelView
+                            string getPermessions = " SELECT   SourObjId, SourTitle, SourType, SourTypeName," +
+                                                    "          IsRead, IsWrite, IsManage, IsQR " +
+                                                    " FROM     [User].[V_Permission]" +
+                                                   $" WHERE    SourObjId= {ObjectId} AND DestObjId= {userLoginID} ";
+
+                            dt = new DataTable();
+                            dt = await Task.Run(() => dam.FireDataTable(getPermessions));
+                            if (dt == null)
                             {
-                                Success = true,
-                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoData],
-                                Data = Permessions_M
-                            };
-                            return Response_MV;
+                                Response_MV = new ResponseModelView
+                                {
+                                    Success = false,
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
+                                    Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                                };
+                                return Response_MV;
+                            }
+                            Permessions_Mlist = new List<PermessionsModel>();
+                            if (dt.Rows.Count > 0)
+                            {
+                                Permessions_M = new PermessionsModel
+                                {
+                                    SourObjId = Convert.ToInt32(dt.Rows[0]["SourObjId"].ToString()),
+                                    SourTitle = dt.Rows[0]["SourTitle"].ToString(),
+                                    SourType = Convert.ToInt32(dt.Rows[0]["SourType"].ToString()),
+                                    SourTypeName = dt.Rows[0]["SourTypeName"].ToString(),
+                                    //DestObjId = Convert.ToInt32(dt.Rows[0]["DestObjId"].ToString()),
+                                    //DestTitle = dt.Rows[0]["DestTitle"].ToString(),
+                                    //DestType = Convert.ToInt32(dt.Rows[0]["DestType"].ToString()),
+                                    //DestTypeName = dt.Rows[0]["DestTypeName"].ToString(),
+                                    IsRead = bool.Parse(dt.Rows[0]["IsRead"].ToString()),
+                                    IsWrite = bool.Parse(dt.Rows[0]["IsWrite"].ToString()),
+                                    IsManage = bool.Parse(dt.Rows[0]["IsManage"].ToString()),
+                                    IsQR = bool.Parse(dt.Rows[0]["IsQR"].ToString()),
+                                    SourUserName = dt.Rows[0]["SourUserName"].ToString(),
+                                    SourOrgArName = dt.Rows[0]["SourOrgArName"].ToString(),
+                                    SourOrgEnName = dt.Rows[0]["SourOrgEnName"].ToString(),
+                                    SourOrgKuName = dt.Rows[0]["SourOrgKuName"].ToString(),
+                                    SourCreationDate = DateTime.Parse(dt.Rows[0]["SourCreationDate"].ToString()).ToShortDateString()
+                                };
+                                Response_MV = new ResponseModelView
+                                {
+                                    Success = true,
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
+                                    Data = Permessions_M
+                                };
+                                return Response_MV;
+                            }
+                            else
+                            {
+                                Response_MV = new ResponseModelView
+                                {
+                                    Success = true,
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoData],
+                                    Data = Permessions_M
+                                };
+                                return Response_MV;
+                            }
                         }
                     }
                 }
