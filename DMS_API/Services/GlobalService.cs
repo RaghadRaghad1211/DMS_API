@@ -40,7 +40,6 @@ namespace DMS_API.Services
             Document = 5,
             Version = 6
         }
-
         public enum ActionType
         {
             عرض,
@@ -192,9 +191,8 @@ namespace DMS_API.Services
                 {
                     getOrgInfo = $"SELECT OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName, OrgIsActive FROM [User].[V_Org]  WHERE {whereField}= {OrgOwnerID} AND OrgIsActive=1";
                 }
-                //string getOrgInfo = $"SELECT TOP 1 OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName FROM [User].[GetOrgsbyUserId]({userLoginID}) ";
                 DataTable dt = new DataTable();
-                dt = await Task.Run(() => dam.FireDataTable(getOrgInfo));
+                dt = dam.FireDataTable(getOrgInfo);
                 if (dt == null)
                 {
                     return null;
@@ -237,9 +235,9 @@ namespace DMS_API.Services
         {
             try
             {
-                string getOrgInfo = $"SELECT OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName, OrgIsActive   FROM [User].[GetOrgsChildsByParentId]({OrgId}) WHERE OrgIsActive=1"; // WHERE AND OrgIsActive='{JustActive}'
+                string getOrgInfo = $"SELECT OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName, OrgIsActive   FROM [User].[GetOrgsChildsByParentId]({OrgId}) WHERE OrgIsActive=1";
                 DataTable dtChild = new DataTable();
-                dtChild = await Task.Run(() => dam.FireDataTable(getOrgInfo));
+                dtChild = dam.FireDataTable(getOrgInfo);
                 OrgModel Org_M1 = new OrgModel();
                 List<OrgModel> Org_Mlist1 = new List<OrgModel>();
                 if (dtChild.Rows.Count > 0)
@@ -258,18 +256,6 @@ namespace DMS_API.Services
                             OrgChild = await GetOrgsChilds(Convert.ToInt32(dtChild.Rows[i]["OrgId"].ToString()))
                         };
                         Org_Mlist1.Add(Org_M1);
-
-                        //if (IsOrgAdmin == false)
-                        //{
-                        //    if (Org_M1.OrgIsActive == true)
-                        //    {
-                        //        Org_Mlist1.Add(Org_M1);
-                        //    }
-                        //}
-                        //else
-                        //{
-                        //    Org_Mlist1.Add(Org_M1);
-                        //}
                     }
                 }
                 return Org_Mlist1;
@@ -292,7 +278,7 @@ namespace DMS_API.Services
                 string getOrgInfo = "SELECT OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName , OrgArNameUp, OrgEnNameUp, OrgKuNameUp, OrgIsActive, ObjDescription  " +
                                    $"FROM [User].[GetOrgsbyUserIdTable]({userLoginID}) ORDER BY OrgId ";
                 DataTable dt = new DataTable();
-                dt = await Task.Run(() => dam.FireDataTable(getOrgInfo));
+                dt = dam.FireDataTable(getOrgInfo);
                 if (dt == null)
                 {
                     return null;
@@ -320,7 +306,7 @@ namespace DMS_API.Services
                         };
                         OrgTable_Mlist.Add(OrgTable_M);
                     }
-                    return OrgTable_Mlist;
+                    return await Task.FromResult(OrgTable_Mlist);
                 }
                 else
                 {
@@ -373,7 +359,7 @@ namespace DMS_API.Services
                                           $"ObjTitle LIKE '{title}%' AND ObjIsActive=1 ";
 
                         dt = new DataTable();
-                        dt = await Task.Run(() => dam.FireDataTable(getResult));
+                        dt = dam.FireDataTable(getResult);
                         if (dt == null)
                         {
                             Response_MV = new ResponseModelView
@@ -458,11 +444,11 @@ namespace DMS_API.Services
                                                          $"FROM        [User].[GetFolderDesktopByUserId]({userLoginID}) ");
 
                     DataTable dtGetDisktopFolder = new DataTable();
-                    dtGetDisktopFolder = await Task.Run(() => dam.FireDataTable("SELECT      FolderId, FolderTitle  " +
+                    dtGetDisktopFolder = dam.FireDataTable("SELECT      FolderId, FolderTitle  " +
                                                                                $"FROM        [User].[GetFolderDesktopByUserId]({userLoginID}) " +
                                                                                 "ORDER BY    FolderId " +
                                                                                $"OFFSET      ({_PageNumberDesktop}-1)*{_PageRowsDesktop} ROWS " +
-                                                                               $"FETCH NEXT   {_PageRowsDesktop} ROWS ONLY "));
+                                                                               $"FETCH NEXT   {_PageRowsDesktop} ROWS ONLY ");
                     MyDesktopFolder MyDesktopFolder = new MyDesktopFolder();
                     List<MyDesktopFolder> MyDesktopFolder_List = new List<MyDesktopFolder>();
                     if (dtGetDisktopFolder.Rows.Count > 0)
@@ -485,11 +471,11 @@ namespace DMS_API.Services
                     var MaxTotalFav = dam.FireDataTable($"SELECT COUNT(*) AS TotalRowsFav, CEILING(COUNT(*) / CAST({_PageRowsFav} AS FLOAT)) AS MaxPageFav " +
                                                          $"FROM   [User].[V_Favourites] WHERE [ObjUserId] = {userLoginID} AND [IsActive] = 1  ");
                     DataTable dtGetFavorite = new DataTable();
-                    dtGetFavorite = await Task.Run(() => dam.FireDataTable("SELECT ObjFavId AS 'FavoriteId', ObjTitle AS 'FavoriteTitle', ObjClsId AS 'FavTypeId', ClsName AS 'FavTypeName'  " +
+                    dtGetFavorite = dam.FireDataTable("SELECT ObjFavId AS 'FavoriteId', ObjTitle AS 'FavoriteTitle', ObjClsId AS 'FavTypeId', ClsName AS 'FavTypeName'  " +
                                                                           $"FROM   [User].[V_Favourites] WHERE [ObjUserId] = {userLoginID} AND [IsActive] = 1 " +
                                                                            "ORDER BY    FavoriteId " +
                                                                           $"OFFSET      ({_PageNumberFav}-1)*{_PageRowsFav} ROWS " +
-                                                                          $"FETCH NEXT   {_PageRowsFav} ROWS ONLY "));
+                                                                          $"FETCH NEXT   {_PageRowsFav} ROWS ONLY ");
                     MyFavorite MyFavorite = new MyFavorite();
                     List<MyFavorite> MyFavorite_List = new List<MyFavorite>();
                     if (dtGetFavorite.Rows.Count > 0)
@@ -514,10 +500,10 @@ namespace DMS_API.Services
                     var MaxTotalGroup = dam.FireDataTable($"SELECT COUNT(*) AS TotalRowsGroup, CEILING(COUNT(*) / CAST({_PageRowsGroup} AS FLOAT)) AS MaxPageGroup " +
                                                          $"FROM    [User].[GetMyGroupsbyUserId]({userLoginID}) ");
                     DataTable dtGetGroup = new DataTable();
-                    dtGetGroup = await Task.Run(() => dam.FireDataTable($"SELECT      GroupId, GroupName   FROM    [User].[GetMyGroupsbyUserId]({userLoginID}) " +
+                    dtGetGroup = dam.FireDataTable($"SELECT      GroupId, GroupName   FROM    [User].[GetMyGroupsbyUserId]({userLoginID}) " +
                                                                         $"ORDER BY    GroupId " +
                                                                         $"OFFSET      ({_PageNumberGroup}-1)*{_PageRowsGroup} ROWS " +
-                                                                        $"FETCH NEXT   {_PageRowsGroup} ROWS ONLY "));
+                                                                        $"FETCH NEXT   {_PageRowsGroup} ROWS ONLY ");
                     MyGroup MyGroup = new MyGroup();
                     List<MyGroup> MyGroup_List = new List<MyGroup>();
                     if (dtGetGroup.Rows.Count > 0)
@@ -728,13 +714,13 @@ namespace DMS_API.Services
                         IsManage = true,
                         IsQR = true
                     };
-                    return PerType_M;
+                    return await Task.FromResult(PerType_M);
                 }
                 else
                 {
                     if (ResponseSession.IsOrgAdmin == false && ResponseSession.IsGroupOrgAdmin == false)
                     {
-                        string ParentId = dam.FireSQL($"SELECT LcParentObjId   FROM [User].[V_Links] WHERE [LcChildObjId]={ObjectId}   ");
+                        string ParentId = dam.FireSQL($"SELECT LcParentObjId   FROM [User].[V_Links] WHERE [LcChildObjId]={ObjectId} AND [LcIsActive]=1   ");
                         if (ParentId.IsEmpty() == true)
                         {
                             PermissionTypeModel PerType_M = new PermissionTypeModel
@@ -746,7 +732,7 @@ namespace DMS_API.Services
                                 IsManage = false,
                                 IsQR = false
                             };
-                            return PerType_M;
+                            return await Task.FromResult(PerType_M);
                         }
                         else
                         {
@@ -754,7 +740,7 @@ namespace DMS_API.Services
                                                    $"FROM    [Document].[GetChildsInParentWithPermissions] ({ResponseSession.UserID}, {Convert.ToInt32(ParentId)}) WHERE SourObjId={ObjectId} ";
 
                             DataTable dt = new DataTable();
-                            dt = await Task.Run(() => dam.FireDataTable(getPermissions));
+                            dt = dam.FireDataTable(getPermissions);
                             if (dt == null)
                             {
                                 return null;
@@ -772,7 +758,7 @@ namespace DMS_API.Services
                                         IsManage = bool.Parse(dt.Rows[0]["IsManage"].ToString()),
                                         IsQR = bool.Parse(dt.Rows[0]["IsQR"].ToString())
                                     };
-                                    return PerType_M;
+                                    return await Task.FromResult(PerType_M);
                                 }
                                 return null;
                             }
@@ -1090,7 +1076,7 @@ namespace DMS_API.Services
                 string QrFileName = SecurityService.RoundomKey(30);
                 string QRquery = "INSERT INTO [Main].[QRLookup] (QrId, QrObjId, QrIsPraivet, QrExpiry, QrIsActive) OUTPUT INSERTED.QrId " +
                                 $"VALUES('{QrFileName}', {QRLookup_M.QrDocumentId}, {Convert.ToInt16(QRLookup_M.QrIsPraivet)}, '{DateTime.Now}', {1}) ";
-                var outValueQRcodeId = await Task.Run(() => dam.DoQueryAndPutOutValue(QRquery, "QrId"));
+                var outValueQRcodeId = dam.DoQueryAndPutOutValue(QRquery, "QrId");
                 if (outValueQRcodeId == null || outValueQRcodeId.Trim() == "")
                 {
                     Response_MV = new ResponseModelView

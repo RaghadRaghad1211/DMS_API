@@ -12,7 +12,7 @@ namespace DMS_API.Controllers
     public class UserController : ControllerBase
     {
         #region Properteis
-        private UserService User_S;
+        private readonly UserService User_S;
         private ResponseModelView Response_MV { get; set; }
         #endregion
 
@@ -123,11 +123,11 @@ namespace DMS_API.Controllers
 
         [HttpGet]
         [Route("TestGet")]
-        public async Task<IActionResult> TestGet()
-        {
+        public  IActionResult TestGet()
+        { 
             string GG = "GSCOM-NDC" + "©" + DateTime.Now.Year;
             DataAccessService dam = new DataAccessService(SecurityService.ConnectionString);
-            return await Task.FromResult(Ok(dam.FireSQL("SELECT COUNT(*) FROM [User].Users") + $" {GG}"));
+            return Ok(dam.FireSQL("SELECT COUNT(*) FROM [User].Users") + $" {GG}");
         }
 
     }

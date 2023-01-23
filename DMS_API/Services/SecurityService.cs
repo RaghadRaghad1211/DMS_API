@@ -20,9 +20,9 @@ namespace DMS_API.Services
     {
         #region Properteis
         public static readonly string ConnectionString =
-        "Server=10.55.101.20,1433;Database=DMS_DB;Integrated Security=false;User ID=dms; Password=dms;Connection Timeout=60;"; // السيرفر
-                                                                                                                               // "Server=HAEL\\SQL2022;Database=DMS_DB;Integrated Security=false;User ID=dms; Password=dms;"; // البيت
-                                                                                                                               // "Server=NDC-8RW6WC3\\SQL2014;Database=DMS_DB;Integrated Security=false;User ID=dms; Password=dms;"; // الدائرة
+        "Server=10.55.101.20,1433;Database=DMS_DB;Integrated Security=false;User ID=dms; Password=dms;"; // السيرفر
+        // "Server=HAEL\\SQL2022;Database=DMS_DB;Integrated Security=false;User ID=dms; Password=dms;"; // البيت
+        // "Server=NDC-8RW6WC3\\SQLSERVER2019;Database=DMS_DB;Integrated Security=false;User ID=dms; Password=dms;"; // الدائرة
 
 
         public static readonly string HostFilesUrl =
@@ -245,7 +245,7 @@ namespace DMS_API.Services
                 byte[] saltBytes = new byte[] { 2, 1, 1, 2, 1, 9, 8, 9 };
                 using (MemoryStream ms = new MemoryStream())
                 {
-                    using (RijndaelManaged AES = new RijndaelManaged())
+                    using (Aes AES = Aes.Create())
                     {
                         AES.KeySize = 256;
                         AES.BlockSize = 128;
@@ -284,7 +284,7 @@ namespace DMS_API.Services
                 byte[] saltBytes = new byte[] { 2, 1, 1, 2, 1, 9, 8, 9 };
                 using (MemoryStream ms = new MemoryStream())
                 {
-                    using (RijndaelManaged AES = new RijndaelManaged())
+                    using (Aes AES =  Aes.Create())
                     {
                         AES.KeySize = 256;
                         AES.BlockSize = 128;
@@ -409,7 +409,7 @@ namespace DMS_API.Services
             }
         }
         /// <summary>
-        /// Mwthod return key ring.
+        /// Method return keyRing.
         /// </summary>
         /// <param name="MasterKey"></param>
         /// <param name="UserPassword"></param>

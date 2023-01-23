@@ -154,7 +154,6 @@ namespace ArchiveAPI.Services
                 this.CON.Open();
             }
         }
-
         
         public bool CheckConnectionNetwork()
         {
@@ -167,7 +166,7 @@ namespace ArchiveAPI.Services
                 }
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }
@@ -265,7 +264,7 @@ namespace ArchiveAPI.Services
                     }
                     myReader.Close();
                 }
-
+                this.CON.Close();
                 return OutValue;
             }
             catch (Exception)
@@ -304,7 +303,7 @@ namespace ArchiveAPI.Services
                     // var fff = myReader["ObjId"].ToString();
                     myReader.Close();
                 }
-
+                this.CON.Close();
                 return OutValue;
             }
             catch (Exception)
@@ -312,7 +311,6 @@ namespace ArchiveAPI.Services
                 return null;
             }
         }
-
 
         /// <summary>
         /// Method Doing StoredProcedure { Insert , Update , Delete } and Return String Value , So You Must Define Object String Type For Recieve The String From this Method .
@@ -349,7 +347,7 @@ namespace ArchiveAPI.Services
                     }
                     myReader.Close();
                 }
-
+                this.CON.Close();
                 return OutValue;
             }
             catch (Exception ex)
@@ -453,6 +451,7 @@ namespace ArchiveAPI.Services
                 this.CMD = sqlCommand;
                 this.CMD.CommandTimeout = this.CON.ConnectionTimeout;
                 str = (this.CMD.ExecuteScalar() == null ? "" : this.CMD.ExecuteScalar().ToString());
+                this.CON.Close();
                 return str;
             }
             catch (Exception)

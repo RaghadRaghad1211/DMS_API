@@ -3,6 +3,8 @@ using DMS_API.Models;
 using DMS_API.ModelsView;
 using System.Data;
 using System.Net;
+using System.Text;
+
 namespace DMS_API.Services
 {
     /// <summary>
@@ -43,12 +45,12 @@ namespace DMS_API.Services
                         Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.TokenEmpty],
                         Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
                     };
-                    return Response_MV;
+                    return await Task.FromResult(Response_MV);
                 }
                 else
                 {
                     Session_M = new SessionModel();
-                    Session_M = await Task.Run(() => this.CheckAuthentication(RequestHeader.Token));
+                    Session_M = this.CheckAuthentication(RequestHeader.Token);
                     if (Session_M == null)
                     {
                         Response_MV = new ResponseModelView
@@ -57,7 +59,7 @@ namespace DMS_API.Services
                             Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
                             Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
                         };
-                        return Response_MV;
+                        return await Task.FromResult(Response_MV);
                     }
                     else
                     {
@@ -69,7 +71,7 @@ namespace DMS_API.Services
                                 Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.Unauthorized],
                                 Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
                             };
-                            return Response_MV;
+                            return await Task.FromResult(Response_MV);
                         }
                         else
                         {
@@ -81,7 +83,7 @@ namespace DMS_API.Services
                                     Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExpiredToken],
                                     Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
                                 };
-                                return Response_MV;
+                                return await Task.FromResult(Response_MV);
                             }
                             else
                             {
@@ -90,7 +92,7 @@ namespace DMS_API.Services
                                     Success = true,
                                     Data = Session_M
                                 };
-                                return Response_MV;
+                                return await Task.FromResult(Response_MV);
                             }
                         }
                     }
@@ -107,7 +109,7 @@ namespace DMS_API.Services
                 return Response_MV;
             }
         }
-        private async Task<SessionModel> CheckAuthentication(string UserToken)
+        private SessionModel CheckAuthentication(string UserToken)
         {
             try
             {
@@ -115,7 +117,7 @@ namespace DMS_API.Services
                                  "FROM     Security.V_Session " +
                                 $"WHERE Token='{UserToken}' ";
                 Dt = new DataTable();
-                Dt = await Task.Run(() => dam.FireDataTable(get));
+                Dt = dam.FireDataTable(get);
                 if (Dt == null)
                 {
                     Session_M = new SessionModel
@@ -162,22 +164,22 @@ namespace DMS_API.Services
                     //dam.DoQuery($"DELETE FROM Security.Session WHERE UserID={jwtToken.UserID}");
                     string insert = "INSERT INTO Security.Session (Token, UserID, Expairy) OUTPUT INSERTED.UserID " +
                               $"VALUES('{jwtToken.TokenID}',{jwtToken.UserID}, '{jwtToken.TokenExpairy}')";
-                    string outValue = await Task.Run(() => dam.DoQueryAndPutOutValue(insert, "UserID"));
-                    if (outValue == null || outValue.Trim() == "") { return false; }
-                    else { return true; }
+                    string outValue = dam.DoQueryAndPutOutValue(insert, "UserID");
+                    if (outValue == null || outValue.Trim() == "") { return await Task.FromResult(false); }
+                    else { return await Task.FromResult(true); }
                 }
                 else
                 {
                     string update = $"UPDATE Security.Session " +
                                     $"SET Token='{jwtToken.TokenID}', Expairy='{jwtToken.TokenExpairy}' " +
                                     $"WHERE UserID={jwtToken.UserID}";
-                    await Task.Run(() => dam.DoQuery(update));
-                    return true;
+                    dam.DoQuery(update);
+                    return await Task.FromResult(true);
                 }
             }
             catch (Exception)
             {
-                return false;
+                return await Task.FromResult(false);
             }
         }
         #endregion

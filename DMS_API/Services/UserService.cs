@@ -112,7 +112,7 @@ namespace DMS_API.Services
 
                                     dt = new DataTable();
                                     await Task.Delay(1000);
-                                    dt = await Task.Run(() => dam.FireDataTable(getUserInfo));
+                                    dt = dam.FireDataTable(getUserInfo);
                                     if (dt == null)
                                     {
                                         Response_MV = new ResponseModelView
@@ -258,7 +258,7 @@ namespace DMS_API.Services
                         else
                         {
                             DataTable dtEmail = new DataTable();
-                            dtEmail = await Task.Run(() => dam.FireDataTable($"SELECT UsUserName, UsPhoneNo, UsEmail FROM [User].Users WHERE UsId ={UserId} "));
+                            dtEmail = dam.FireDataTable($"SELECT UsUserName, UsPhoneNo, UsEmail FROM [User].Users WHERE UsId ={UserId} ");
                             if (dtEmail.Rows.Count > 0)
                             {
                                 string RounPass = SecurityService.RoundomPassword(10);
@@ -269,7 +269,7 @@ namespace DMS_API.Services
                                 if (isResetEmail == true && isResetOTP == true)
                                 {
                                     string reset = $"UPDATE [User].Users SET UsPassword='{SecurityService.PasswordEnecrypt(RounPass, dtEmail.Rows[0]["UsUserName"].ToString())}' WHERE UsId ={UserId} ";
-                                    await Task.Run(() => dam.DoQuery(reset));
+                                    dam.DoQuery(reset);
                                     Response_MV = new ResponseModelView
                                     {
                                         Success = true,
@@ -338,7 +338,7 @@ namespace DMS_API.Services
                 else
                 {
                     DataTable dtEmail = new DataTable();
-                    dtEmail = await Task.Run(() => dam.FireDataTable($"SELECT UsPhoneNo, UsEmail FROM [User].Users WHERE UsUserName ='{Username}' "));
+                    dtEmail = dam.FireDataTable($"SELECT UsPhoneNo, UsEmail FROM [User].Users WHERE UsUserName ='{Username}' ");
                     if (dtEmail.Rows.Count > 0)
                     {
                         string RounPass = SecurityService.RoundomPassword(10);
@@ -349,7 +349,7 @@ namespace DMS_API.Services
                         if (isResetEmail == true && isResetOTP == true)
                         {
                             string reset = $"UPDATE [User].Users SET UsPassword='{SecurityService.PasswordEnecrypt(RounPass, Username)}' WHERE UsUserName ='{Username}' ";
-                            await Task.Run(() => dam.DoQuery(reset));
+                            dam.DoQuery(reset);
                             Response_MV = new ResponseModelView
                             {
                                 Success = true,
@@ -449,7 +449,7 @@ namespace DMS_API.Services
                         if (checkExist > 0)
                         {
                             string change = $"UPDATE [User].Users SET UsPassword='{SecurityService.PasswordEnecrypt(ChangePassword_MV.NewPassword, dam.FireSQL($"SELECT UsUserName FROM [User].Users WHERE UsId ={userLoginID}"))}' WHERE UsId ={userLoginID} ";
-                            await Task.Run(() => dam.DoQuery(change));
+                            dam.DoQuery(change);
                             Response_MV = new ResponseModelView
                             {
                                 Success = true,
@@ -548,12 +548,13 @@ namespace DMS_API.Services
                                                      "            UsUserEmpNo, UsUserIdintNo, UsIsOnLine, OrgOwner, [User].V_Users.OrgArName, [User].V_Users.OrgEnName, [User].V_Users.OrgKuName, Note " +
                                                      "FROM        [User].V_Users " +
                                                     $"INNER JOIN  [User].GetOrgsbyUserId({userLoginID}) AS GetOrgsbyUserId ON[User].V_Users.OrgOwner = GetOrgsbyUserId.OrgId " +
+                                                    $"WHERE       [USERID] !={userLoginID} " +
                                                      "ORDER BY    UserID " +
                                                     $"OFFSET      ({_PageNumber}-1)*{_PageRows} ROWS " +
                                                     $"FETCH NEXT   {_PageRows} ROWS ONLY ";
 
                                 dt = new DataTable();
-                                dt = await Task.Run(() => dam.FireDataTable(getUserInfo));
+                                dt = dam.FireDataTable(getUserInfo);
                                 if (dt == null)
                                 {
                                     Response_MV = new ResponseModelView
@@ -678,7 +679,7 @@ namespace DMS_API.Services
                                                 $"FROM     [User].V_Users WHERE UserID={UserId} ";
 
                             dt = new DataTable();
-                            dt = await Task.Run(() => dam.FireDataTable(getUserInfo));
+                            dt = dam.FireDataTable(getUserInfo);
                             if (dt == null)
                             {
                                 Response_MV = new ResponseModelView
@@ -869,7 +870,7 @@ namespace DMS_API.Services
                                 if (checkDeblicatePhone == 0)
                                 {
                                     string exeut = $"EXEC [User].[AddUserPro] '{AddUser_MV.UserName.Trim()}', '{userLoginID}', '{AddUser_MV.OrgOwner}', '{AddUser_MV.Note}', '{AddUser_MV.FirstName.Trim()}',  '{AddUser_MV.SecondName.Trim()}', '{AddUser_MV.ThirdName.Trim()}', '{AddUser_MV.LastName.Trim()}', '{SecurityService.PasswordEnecrypt(AddUser_MV.Password.Trim(), AddUser_MV.UserName.Trim())}', '{AddUser_MV.PhoneNo.Trim()}', '{AddUser_MV.Email.ToLower().Trim()}', '{AddUser_MV.IsActive}', '{AddUser_MV.UserEmpNo}', '{AddUser_MV.UserIdintNo}', '{AddUser_MV.IsOrgAdmin}' ";
-                                    var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
+                                    var outValue = dam.DoQueryExecProcedure(exeut);
 
                                     if (outValue == null || outValue.Trim() == "")
                                     {
@@ -1019,7 +1020,7 @@ namespace DMS_API.Services
                             if (checkDeblicate > 0)
                             {
                                 string exeut = $"EXEC [User].[UpdateUserPro] '{EditUser_MV.UserID}', '{EditUser_MV.IsActive}',  '{EditUser_MV.OrgOwner}', '{EditUser_MV.Note}', '{EditUser_MV.FirstName.Trim()}', '{EditUser_MV.SecondName.Trim()}', '{EditUser_MV.ThirdName.Trim()}', '{EditUser_MV.LastName.Trim()}', '{EditUser_MV.PhoneNo.Trim()}', '{EditUser_MV.Email.ToLower().Trim()}', '{EditUser_MV.UserEmpNo}', '{EditUser_MV.UserIdintNo}', '{EditUser_MV.IsOrgAdmin}' ";
-                                var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
+                                var outValue = dam.DoQueryExecProcedure(exeut);
 
                                 if (outValue == null || outValue.Trim() == "")
                                 {
@@ -1118,7 +1119,7 @@ namespace DMS_API.Services
                                             $"FROM     [User].V_Users WHERE UsUserName LIKE '{Username}%' AND [OrgOwner] IN (SELECT [OrgId] FROM [User].[GetOrgsbyUserId]({userLoginID})) AND [USERID] !={userLoginID} ";
 
                         dt = new DataTable();
-                        dt = await Task.Run(() => dam.FireDataTable(getUserInfo));
+                        dt = dam.FireDataTable(getUserInfo);
                         if (dt == null)
                         {
                             Response_MV = new ResponseModelView
@@ -1261,7 +1262,7 @@ namespace DMS_API.Services
                                                 $"FETCH NEXT   {_PageRows} ROWS ONLY ";
 
                                 dt = new DataTable();
-                                dt = await Task.Run(() => dam.FireDataTable(getUserInfo));
+                                dt = dam.FireDataTable(getUserInfo);
                                 if (dt == null)
                                 {
                                     Response_MV = new ResponseModelView
@@ -1395,7 +1396,7 @@ namespace DMS_API.Services
                             else
                             {
                                 string edit = $"UPDATE [User].Users SET UsEmail='{EditMyContact_MV.MyEmail}', UsPhoneNo='{EditMyContact_MV.MyPhoneNo}' WHERE UsId ={userLoginID} ";
-                                await Task.Run(() => dam.DoQuery(edit));
+                                dam.DoQuery(edit);
                                 Response_MV = new ResponseModelView
                                 {
                                     Success = true,
@@ -1471,9 +1472,9 @@ namespace DMS_API.Services
                     else
                     {
                         DataTable dtGetGroup = new DataTable();
-                        dtGetGroup = await Task.Run(() => dam.FireDataTable("SELECT      GroupId, GroupName   " +
+                        dtGetGroup = dam.FireDataTable("SELECT      GroupId, GroupName   " +
                                                                            $"FROM        [User].[GetMyGroupsbyUserId]({UserId}) " +
-                                                                            $"ORDER BY   GroupId "));
+                                                                            $"ORDER BY   GroupId ");
                         MyGroup MyGroup = new MyGroup();
                         List<MyGroup> MyGroup_List = new List<MyGroup>();
                         if (dtGetGroup.Rows.Count > 0)
@@ -1499,8 +1500,8 @@ namespace DMS_API.Services
                         {
                             Response_MV = new ResponseModelView
                             {
-                                Success = false,
-                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoData],
+                                Success = true,
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoGroup],
                                 Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
                             };
                             return Response_MV;

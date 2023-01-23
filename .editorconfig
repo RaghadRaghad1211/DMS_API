@@ -77,6 +77,9 @@ dotnet_diagnostic.SYSLIB0022.severity = silent
 
 # CA1416: Validate platform compatibility
 dotnet_diagnostic.CA1416.severity = silent
+csharp_style_expression_bodied_accessors = true:silent
+csharp_style_expression_bodied_lambdas = true:silent
+csharp_style_expression_bodied_local_functions = false:silent
 
 [*.{cs,vb}]
 #### Naming styles ####

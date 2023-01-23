@@ -231,7 +231,7 @@ namespace DMS_API.Services
                                             "       OrgArNameUp, OrgEnNameUp, OrgKuNameUp, OrgIsActive, ObjDescription  " +
                                            $"FROM  [User].[V_OrgTable]  WHERE OrgId= {OrgID} ";
                             DataTable dt = new DataTable();
-                            dt = await Task.Run(() => dam.FireDataTable(getOrgInfo));
+                            dt = dam.FireDataTable(getOrgInfo);
                             if (dt == null)
                             {
                                 return null;
@@ -427,7 +427,7 @@ namespace DMS_API.Services
                                 {
                                     string OrgAdminUsername = "Admin@" + SecurityService.RoundomPassword(6);
                                     string exeut = $"EXEC [User].[AddOrgPro] '{AddOrg_MV.OrgArName}', '{userLoginID}', '{orgOwnerID}', '{AddOrg_MV.Note}', '{AddOrg_MV.OrgUp}', '{AddOrg_MV.OrgEnName}', '{AddOrg_MV.OrgKuName}', '{OrgAdminUsername}', '{SecurityService.PasswordEnecrypt("00000000", OrgAdminUsername)}' ";
-                                    var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
+                                    var outValue = dam.DoQueryExecProcedure(exeut);
 
                                     if (outValue == null || outValue.Trim() == "")
                                     {
@@ -562,7 +562,7 @@ namespace DMS_API.Services
                                 if (checkDeblicate > 0)
                                 {
                                     string exeut = $"EXEC [User].[UpdateOrgPro]  '{EditOrg_MV.OrgId}', '{EditOrg_MV.OrgArName}', '{userLoginID}', '{orgOwnerID}','{EditOrg_MV.IsActive}',  '{EditOrg_MV.Note}', '{EditOrg_MV.OrgUp}', '{EditOrg_MV.OrgEnName}', '{EditOrg_MV.OrgKuName}'";
-                                    var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
+                                    var outValue =  dam.DoQueryExecProcedure(exeut);
 
                                     if (outValue == null || outValue.Trim() == "")
                                     {

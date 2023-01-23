@@ -67,7 +67,7 @@ namespace DMS_API.Services
                                                     $"WHERE  LcIsActive=1 ";
 
                         dt = new DataTable();
-                        dt = await Task.Run(() => dam.FireDataTable(getParintChildInfo));
+                        dt = dam.FireDataTable(getParintChildInfo);
                         if (dt == null)
                         {
                             Response_MV = new ResponseModelView
@@ -179,7 +179,7 @@ namespace DMS_API.Services
                                                          $"WHERE  LcIsActive=1";
 
                         dt = new DataTable();
-                        dt = await Task.Run(() => dam.FireDataTable(getGroupChildInfo_Search));
+                        dt = dam.FireDataTable(getGroupChildInfo_Search);
                         if (dt == null)
                         {
                             Response_MV = new ResponseModelView
@@ -302,7 +302,7 @@ namespace DMS_API.Services
                                                         "WHERE  IsActive=1 ";
 
                             dt = new DataTable();
-                            dt = await Task.Run(() => dam.FireDataTable(getChildNotinGroup));
+                            dt = dam.FireDataTable(getChildNotinGroup);
                             if (dt == null)
                             {
                                 Response_MV = new ResponseModelView
@@ -405,7 +405,7 @@ namespace DMS_API.Services
                                                             "WHERE  IsActive=1 ";
 
                         dt = new DataTable();
-                        dt = await Task.Run(() => dam.FireDataTable(GetChildsNotInGroup_Search));
+                        dt = dam.FireDataTable(GetChildsNotInGroup_Search);
                         if (dt == null)
                         {
                             Response_MV = new ResponseModelView
@@ -515,7 +515,7 @@ namespace DMS_API.Services
 
                         string Query = GlobalService.GetQueryLinkPro(LinkGroupChilds_MV.ChildIds);
                         string exeut = $"EXEC [Main].[AddLinksPro]  '{LinkGroupChilds_MV.GroupId}', '{(int)GlobalService.ClassType.Group}', '{Query}',{1} ";
-                        var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
+                        var outValue = dam.DoQueryExecProcedure(exeut);
                         if (outValue == 0.ToString() || (outValue == null || outValue.Trim() == ""))
                         {
                             Response_MV = new ResponseModelView
@@ -593,7 +593,7 @@ namespace DMS_API.Services
                         {
                             string Query = GlobalService.GetQueryLinkPro(LinkGroupChilds_MV.ChildIds);
                             string exeut = $"EXEC [Main].[UpdateLinksPro]  '{LinkGroupChilds_MV.GroupId}', '{(int)GlobalService.ClassType.Group}', '{Query}','{0}' ";
-                            var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
+                            var outValue = dam.DoQueryExecProcedure(exeut);
                             if (outValue == 0.ToString() || (outValue == null || outValue.Trim() == ""))
                             {
                                 Response_MV = new ResponseModelView
@@ -696,7 +696,7 @@ namespace DMS_API.Services
                         {
                             string Query = GlobalService.GetQueryLinkPro(MoveChildToNewFolder_MV.ChildIds);
                             string moveChild2Folder = $"EXEC [Main].[MoveChildToFolderPro] '{MoveChildToNewFolder_MV.CurrentFolderId}','{MoveChildToNewFolder_MV.NewFolderId}', '{(int)GlobalService.ClassType.Folder}', '{Query}' ";
-                            var outValue = await Task.Run(() => dam.DoQueryExecProcedure(moveChild2Folder));
+                            var outValue = dam.DoQueryExecProcedure(moveChild2Folder);
                             if (outValue == 0.ToString() || (outValue == null || outValue.Trim() == ""))
                             {
                                 Response_MV = new ResponseModelView
@@ -786,7 +786,7 @@ namespace DMS_API.Services
                         }
                         string Query = GlobalService.GetQueryLinkPro(LinkFolderChilds_MV.ChildIds);
                         string exeut = $"EXEC [Main].[UpdateLinksPro]  '{LinkFolderChilds_MV.FolderId}', '{(int)GlobalService.ClassType.Folder}', '{Query}','{0}' ";
-                        var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
+                        var outValue = dam.DoQueryExecProcedure(exeut);
                         if (outValue == 0.ToString() || (outValue == null || outValue.Trim() == ""))
                         {
                             Response_MV = new ResponseModelView

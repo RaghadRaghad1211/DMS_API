@@ -105,7 +105,7 @@ namespace DMS_API.Services
                                                 $"OFFSET       ({_PageNumber}-1)*{_PageRows} ROWS " +
                                                 $"FETCH NEXT    {_PageRows} ROWS ONLY ";
                                     Dt = new DataTable();
-                                    Dt = await Task.Run(() => dam.FireDataTable(get));
+                                    Dt =  dam.FireDataTable(get);
                                     if (Dt == null)
                                     {
                                         Response_MV = new ResponseModelView
@@ -213,7 +213,7 @@ namespace DMS_API.Services
                             string Mlang = GlobalService.GetMessageColumn(RequestHeader.Lang);
                             string get = $"SELECT Trid, TrKey, TrArName, TrEnName, TrKrName FROM Main.Translation WHERE Trid={TransId}";
                             Dt = new DataTable();
-                            Dt = await Task.Run(() => dam.FireDataTable(get));
+                            Dt =  dam.FireDataTable(get);
                             if (Dt == null)
                             {
                                 Response_MV = new ResponseModelView
@@ -317,7 +317,7 @@ namespace DMS_API.Services
                             if (checkDeblicate == 0)
                             {
                                 string insert = "INSERT INTO Main.Translation (TrKey, TrArName, TrEnName, TrKrName) OUTPUT INSERTED.TrId VALUES(@TrKey, @TrArName, @TrEnName, @TrKrName) ";
-                                string outValue = await Task.Run(() => dam.DoQueryAndPutOutValue(insert, "TrId", Translation_M.TrKey, Translation_M.TrArName, Translation_M.TrEnName, Translation_M.TrKrName));
+                                string outValue = dam.DoQueryAndPutOutValue(insert, "TrId", Translation_M.TrKey, Translation_M.TrArName, Translation_M.TrEnName, Translation_M.TrKrName);
                                 if (outValue == null || outValue.Trim() == "")
                                 {
                                     Response_MV = new ResponseModelView
@@ -412,7 +412,7 @@ namespace DMS_API.Services
                             if (check > 0)
                             {
                                 string update = $"UPDATE Main.Translation SET TrArName='{Translation_M.TrArName}', TrEnName='{Translation_M.TrEnName}', TrKrName='{Translation_M.TrKrName}'  WHERE Trid={Translation_M.Trid} ";
-                                await Task.Run(() => dam.DoQuery(update));
+                                dam.DoQuery(update);
 
                                 Response_MV = new ResponseModelView
                                 {
@@ -424,7 +424,6 @@ namespace DMS_API.Services
                             }
                             else
                             {
-                                // not found id for this record
                                 Response_MV = new ResponseModelView
                                 {
                                     Success = false,
@@ -539,7 +538,7 @@ namespace DMS_API.Services
                                                                      $"OFFSET ({_PageNumber}-1)*{_PageRows} ROWS " +
                                                                      $"FETCH NEXT {_PageRows} ROWS ONLY ";
                                         Dt = new DataTable();
-                                        Dt = await Task.Run(() => dam.FireDataTable(get));
+                                        Dt =  dam.FireDataTable(get);
                                         if (Dt == null)
                                         {
                                             Response_MV = new ResponseModelView
@@ -614,7 +613,7 @@ namespace DMS_API.Services
                 string Mlang = GlobalService.GetTranslationColumn(Lang);
                 string get = $"SELECT DISTINCT  TrKey, {Mlang} AS 'Word' FROM Main.Translation";
                 Dt = new DataTable();
-                Dt = await Task.Run(() => dam.FireDataTable(get));
+                Dt =  dam.FireDataTable(get);
                 if (Dt == null)
                 {
                     Response_MV = new ResponseModelView
@@ -623,7 +622,7 @@ namespace DMS_API.Services
                         Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.ExceptionError],
                         Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
                     };
-                    return Response_MV;
+                    return await Task.FromResult(Response_MV);
                 }
                 Dictionary<string, string> dict1 = new();
                 if (Dt.Rows.Count > 0)
@@ -643,7 +642,7 @@ namespace DMS_API.Services
                         Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.GetSuccess],
                         Data = dict2
                     };
-                    return Response_MV;
+                    return await Task.FromResult(Response_MV);
                 }
                 else
                 {
@@ -653,7 +652,7 @@ namespace DMS_API.Services
                         Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.NoData],
                         Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
                     };
-                    return Response_MV;
+                    return await Task.FromResult(Response_MV);
                 }
             }
             catch (Exception ex)
@@ -664,7 +663,7 @@ namespace DMS_API.Services
                     Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.ExceptionError] + " - " + ex.Message,
                     Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
                 };
-                return Response_MV;
+                return await Task.FromResult(Response_MV);
             }
         }
         #endregion

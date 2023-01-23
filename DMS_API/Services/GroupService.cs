@@ -104,7 +104,7 @@ namespace DMS_API.Services
                                                      $"FETCH NEXT  {_PageRows} ROWS ONLY ";
 
                                 dt = new DataTable();
-                                dt = await Task.Run(() => dam.FireDataTable(getGroupInfo));
+                                dt = dam.FireDataTable(getGroupInfo);
                                 if (dt == null)
                                 {
                                     Response_MV = new ResponseModelView
@@ -209,7 +209,7 @@ namespace DMS_API.Services
                                               "        ObjDescription, UserOwnerID, OwnerFullName, OwnerUserName, OrgOwner, OrgEnName,OrgArName , OrgKuName " +
                                              $"FROM    [User].V_Groups    WHERE   ObjId={GroupId} ";
                         dt = new DataTable();
-                        dt = await Task.Run(() => dam.FireDataTable(getGroupInfo));
+                        dt = dam.FireDataTable(getGroupInfo);
                         if (dt == null)
                         {
                             Response_MV = new ResponseModelView
@@ -323,7 +323,7 @@ namespace DMS_API.Services
                             if (checkDeblicate == 0)
                             {
                                 string exeut = $"EXEC [User].[AddGroupPro] '{(int)GlobalService.ClassType.Group}','{Group_MV.GroupTitle}', '{userLoginID}', '{Group_MV.GroupOrgOwnerID}', '{Group_MV.GroupDescription}' ";
-                                var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
+                                var outValue = dam.DoQueryExecProcedure(exeut);
 
                                 if (outValue == null || outValue.Trim() == "" || outValue == 0.ToString())
                                 {
@@ -436,7 +436,7 @@ namespace DMS_API.Services
                                 if (checkDeblicate == 0)
                                 {
                                     string exeut = $"EXEC [User].[UpdateGroupPro] '{Group_MV.GroupId}','{Group_MV.GroupTitle}', '{Group_MV.GroupIsActive}','{Group_MV.GroupDescription}' ";
-                                    var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
+                                    var outValue = dam.DoQueryExecProcedure(exeut);
 
                                     if (outValue == null || outValue.Trim() == "" || outValue == 0.ToString())
                                     {
@@ -566,7 +566,7 @@ namespace DMS_API.Services
 
 
                                 dt = new DataTable();
-                                dt = await Task.Run(() => dam.FireDataTable(getgroupInfo));
+                                dt = dam.FireDataTable(getgroupInfo);
                                 if (dt == null)
                                 {
                                     Response_MV = new ResponseModelView

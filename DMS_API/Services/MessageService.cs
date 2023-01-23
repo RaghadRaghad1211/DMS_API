@@ -49,6 +49,7 @@
         public static readonly string IsInt = "IsInt";
         public static readonly string IsDate = "IsInt";
         public static readonly string NoData = "NoData";
+        public static readonly string NoGroup = "NoGroup";
         public static readonly string IsExist = "IsExist";
         public static readonly string UsernameIsExist = "UsernameIsExist";
         public static readonly string PhoneIsExist = "PhoneIsExist";
@@ -100,6 +101,7 @@
                 new Dictionary<string, string>()
                 {
                      {NoData,"لا توجد بيانات" },
+                     {NoGroup,"لا توجد مجموعة" },
                      {UsernameMustEnter,"يجب ادخال اسم المستخدم" },
                      {PasswordMustEnter,"يجب ادخال اسم كلمة المرور" },
                      {Password8Characters, "يجب ادخال 8 احرف او اكثر" },
@@ -173,6 +175,7 @@
                 new Dictionary<string, string>()
                 {
                      {NoData,"No Data Found" },
+                     {NoGroup,"No Groups Found" },
                      {UsernameMustEnter,"Username Must Enter" },
                      {PasswordMustEnter,"Password Must Enter" },
                      {Password8Characters, "Must enter 8 characters or more" },

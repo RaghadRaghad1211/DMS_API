@@ -63,7 +63,7 @@ namespace DMS_API.Services
                         if (checkDeblicate == 0)
                         {
                             string exeut = $"EXEC [User].[AddFolderPro] '{(int)GlobalService.ClassType.Folder}','{Folder_MV.FolderTitle}', '{userLoginID}', '{Folder_MV.FolderOrgOwnerID}', '{Folder_MV.FolderDescription}', '{Folder_MV.FolderPerantId}' ";
-                            var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
+                            var outValue = dam.DoQueryExecProcedure(exeut);
 
                             if (outValue == null || outValue.Trim() == "" || outValue == 0.ToString())
                             {
@@ -167,7 +167,7 @@ namespace DMS_API.Services
                                 if (checkDeblicate == 0)
                                 {
                                     string exeut = $"EXEC [User].[UpdateFolderPro] '{Folder_MV.FolderId}','{Folder_MV.FolderTitle}', '1', '{Folder_MV.FolderDescription}', '{Folder_MV.IsFavoriteFolder}' ";
-                                    var outValue = await Task.Run(() => dam.DoQueryExecProcedure(exeut));
+                                    var outValue = dam.DoQueryExecProcedure(exeut);
 
                                     if (outValue == null || outValue.Trim() == "" || outValue == 0.ToString())
                                     {
@@ -280,7 +280,7 @@ namespace DMS_API.Services
                                                        "         ObjDescription, UserOwnerID, OwnerFullName, OwnerUserName, OrgOwner, OrgEnName,OrgArName , OrgKuName " +
                                                       $"FROM    [User].V_Folders    WHERE   ObjId={FolderId} ";
                                 dt = new DataTable();
-                                dt = await Task.Run(() => dam.FireDataTable(getFolderInfo));
+                                dt = dam.FireDataTable(getFolderInfo);
                                 if (dt == null)
                                 {
                                     Response_MV = new ResponseModelView

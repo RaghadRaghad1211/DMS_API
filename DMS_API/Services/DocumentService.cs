@@ -33,10 +33,11 @@ namespace DMS_API.Services
             dam = new DataAccessService(SecurityService.ConnectionString);
 
 
-            //  var keyring = SecurityService.EncryptDocument("F:\\IIS\\DMS\\dm.pdf", "F:\\IIS\\DMS\\", "12345678");
-            //  string keyring = "mpd2lXu2/jC2ffzOVs6mq4sI8JBAMUbyzDcGUpCCEBg0iFZual8ZNdEi7DwkPz11O5cPXblrJt6xrxyMxhwM4MYFoP2pqdiCKp79dxSyTaaoBLa3IZrBF6r96mlH6LJ/";
+            //  var keyring = SecurityService.EncryptDocument("F:\\IIS\\DMS\\dm.pdf", "F:\\IIS\\DMS\\");
+            //  string keyring = "{|\|DC-0F-!R@Q}$+RHlXGcRbbKKiRXbu41JSw==$blUTOXsppIWf7iS8r+JYi5c4Sp4QoBU6uRImRM+nX8A=";
 
             //  var ee = SecurityService.DecryptDocument("F:\\IIS\\DMS\\dm.pdf.enc", keyring, "55", "12345678");
+          
         }
         #endregion
 
@@ -114,7 +115,7 @@ namespace DMS_API.Services
                                               $"         '{Document_MV.DocumentDescription}', '{Document_MV.KeysValues}', '{Document_MV.DocumentPerantId}', '{(int)GlobalService.ClassType.Folder}', " +
                                               $"          @NewValue = @MyNewValue OUTPUT  SELECT @MyNewValue AS newValue ";
 
-                                var outValue = await Task.Run(() => dam.FireDataTable(exeut));
+                                var outValue = dam.FireDataTable(exeut);
                                 if (outValue.Rows[0][0].ToString() == 0.ToString() || outValue.Rows[0][0].ToString() == null || outValue.Rows[0][0].ToString().Trim() == "")
                                 {
                                     Response_MV = new ResponseModelView
@@ -152,18 +153,25 @@ namespace DMS_API.Services
                                                 filestream.Close();
                                             }
 
-                                            // تشفير
-                                            //var UserFolder = Path.Combine(DocFolder, userLoginID.ToString());
-                                            //if (!Directory.Exists(UserFolder))
+
+
+
+
+                                            //// تشفير
+                                            //var MasterKey = SecurityService.EncryptDocument(FilePath, Path.GetDirectoryName(FilePath));
+                                            //DataTable DTuserPass = new DataTable();
+                                            //DTuserPass = dam.FireDataTable($"SELECT UserId, UsPassword FROM [User].[GetUsersPassHaveReadOnObject]({int.Parse(outValue.Rows[0][0].ToString())})");
+                                            //if (DTuserPass.Rows.Count > 0)
                                             //{
-                                            //    Directory.CreateDirectory(UserFolder);
+                                            //    for (int i = 0; i < DTuserPass.Rows.Count; i++)
+                                            //    {
+                                            //        var KeyRing = SecurityService.Encrypt(MasterKey, DTuserPass.Rows[0]["UsPassword"].ToString());
+                                            //        // insert to keyring table.
+                                            //    }
                                             //}
 
 
-                                            //var MasterKey = SecurityService.EncryptDocument(FilePath, UserFolder);
 
-                                            //var UserPass = dam.FireSQL($"SELECT UsPassword FROM [User].Users WHERE UsId ={userLoginID}");
-                                            //var Keyring = SecurityService.Encrypt(MasterKey, UserPass);
 
 
                                         }
@@ -177,7 +185,6 @@ namespace DMS_API.Services
                                     return Response_MV;
                                 }
                             }
-
                         }
                         else
                         {
@@ -287,7 +294,7 @@ namespace DMS_API.Services
 
 
 
-                            var outValue = await Task.Run(() => dam.FireDataTable(exeut));
+                            var outValue =  dam.FireDataTable(exeut);
                             if (outValue.Rows[0][0].ToString() == 0.ToString() || outValue.Rows[0][0].ToString() == null || outValue.Rows[0][0].ToString().Trim() == "")
                             {
                                 Response_MV = new ResponseModelView
@@ -318,10 +325,6 @@ namespace DMS_API.Services
                                         var DocFolder = await GlobalService.CreateDocumentFolderInServerFolder(Convert.ToInt32(outValue.Rows[0][0].ToString()), Environment);
                                         if (DocFolder != null)
                                         {
-                                            // تشفير
-
-
-
                                             string DocumentFileName = SecurityService.RoundomKey(GlobalService.LengthKey) + SecurityService.EnecryptText(outValue.Rows[0][0].ToString()) + SecurityService.RoundomKey(GlobalService.LengthKey) + Path.GetExtension(DocFileNameWithExten).Trim();
                                             string fillPath = Path.Combine(DocFolder, DocumentFileName);
                                             using (FileStream filestream = System.IO.File.Create(fillPath))
@@ -330,6 +333,23 @@ namespace DMS_API.Services
                                                 filestream.Flush();
                                                 filestream.Close();
                                             }
+
+
+
+                                            //// تشفير
+                                            //var MasterKey = SecurityService.EncryptDocument(FilePath, Path.GetDirectoryName(FilePath));
+                                            //DataTable DTuserPass = new DataTable();
+                                            //DTuserPass = dam.FireDataTable($"SELECT UserId, UsPassword FROM [User].[GetUsersPassHaveReadOnObject]({int.Parse(outValue.Rows[0][0].ToString())})");
+                                            //if (DTuserPass.Rows.Count > 0)
+                                            //{
+                                            //    for (int i = 0; i < DTuserPass.Rows.Count; i++)
+                                            //    {
+                                            //        var KeyRing = SecurityService.Encrypt(MasterKey, DTuserPass.Rows[0]["UsPassword"].ToString());
+                                            //        // insert to keyring table.
+                                            //    }
+                                            //}
+
+
                                         }
                                     }
                                 }
@@ -342,17 +362,36 @@ namespace DMS_API.Services
                                     var DocFolder = await GlobalService.CreateDocumentFolderInServerFolder(Convert.ToInt32(outValue.Rows[0][0].ToString()), Environment);
                                     if (DocFolder != null)
                                     {
-                                        // تشفير
-
-
-
                                         string DocumentFileName = SecurityService.RoundomKey(GlobalService.LengthKey) + SecurityService.EnecryptText(outValue.Rows[0][0].ToString()) + SecurityService.RoundomKey(GlobalService.LengthKey) + Path.GetExtension(getOldDocFile).Trim();
-                                        File.Copy(getOldDocFile, Path.Combine(DocFolder, DocumentFileName));
+                                        string getNewDocFile = Path.Combine(DocFolder, DocumentFileName);
+                                        File.Copy(getOldDocFile, getNewDocFile);
+
+
+
+
+
+
+                                        //// تشفير
+                                        //var MasterKey = SecurityService.EncryptDocument(getNewDocFile, Path.GetDirectoryName(getNewDocFile));
+                                        //DataTable DTuserPass = new DataTable();
+                                        //DTuserPass = dam.FireDataTable($"SELECT UserId, UsPassword FROM [User].[GetUsersPassHaveReadOnObject]({int.Parse(outValue.Rows[0][0].ToString())})");
+                                        //if (DTuserPass.Rows.Count > 0)
+                                        //{
+                                        //    for (int i = 0; i < DTuserPass.Rows.Count; i++)
+                                        //    {
+                                        //        var KeyRing = SecurityService.Encrypt(MasterKey, DTuserPass.Rows[0]["UsPassword"].ToString());
+                                        //        // insert to keyring table.
+                                        //    }
+                                        //}
+
+
+
+
+
+
                                     }
 
                                 }
-
-
                                 Response_MV = new ResponseModelView
                                 {
                                     Success = true,
@@ -450,7 +489,7 @@ namespace DMS_API.Services
                                                                  "FROM      [Document].V_DocumentsMetadata " +
                                                                 $"WHERE     ObjId={DocumentId}  ";
                                 dt = new DataTable();
-                                dt = await Task.Run(() => dam.FireDataTable(getDocumentmatedateInfo));
+                                dt = dam.FireDataTable(getDocumentmatedateInfo);
                                 if (dt == null)
                                 {
                                     Response_MV = new ResponseModelView

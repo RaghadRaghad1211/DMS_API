@@ -201,7 +201,7 @@ namespace DMS_API.Services
         /// true: size is valid.
         /// false: size is not valid.
         /// </summary>
-        /// <param name="DocumentSize"></param>
+        /// <param name="DocumentSize">Document Size</param>
         /// <returns></returns>
         public static bool FileSizeIsValid(this long DocumentSize)
         {
@@ -212,6 +212,22 @@ namespace DMS_API.Services
                 return false;
             }
             return true;
+        }
+        /// <summary>
+        /// Check Sql Injection is valid or not,
+        /// and return bool variable,
+        /// true: input is valid.
+        /// false: input is not valid. 
+        /// </summary>
+        /// <param name="input">input string</param>
+        /// <returns></returns>
+        public static bool SqlInjectionValid(this string input)
+        {
+            if (input.ToLower().Contains("drop") || input.ToLower().Contains("alter") || input.ToLower().Contains("delete"))
+            {
+                return false;
+            }
+            return Regex.IsMatch(input, @"^[a-zA-Z0-9]+$");
         }
         #endregion
     }
