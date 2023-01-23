@@ -1,6 +1,7 @@
 ﻿using DMS_API.ModelsView;
 using DMS_API.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace DMS_API.Controllers
 {
@@ -27,8 +28,21 @@ namespace DMS_API.Controllers
         [Route("AddDocument")]
         public async Task<IActionResult> AddDocument([FromForm] DocumentModelView Document_MV, [FromHeader] RequestHeaderModelView RequestHeader)
         {
-            Response_MV = await Document_S.AddDocument(Document_MV, RequestHeader);
-            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
+            if (Document_MV.IsSqlInjectionList())
+            {
+                Response_MV = new ResponseModelView
+                {
+                    Success = false,
+                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.SqlInjection],
+                    Data = new HttpResponseMessage(HttpStatusCode.UnprocessableEntity).StatusCode
+                };
+                return UnprocessableEntity(Response_MV);
+            }
+            else
+            {
+                Response_MV = await Document_S.AddDocument(Document_MV, RequestHeader);
+                return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
+            }
         }
 
         [HttpPost]

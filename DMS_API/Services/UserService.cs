@@ -820,7 +820,7 @@ namespace DMS_API.Services
                             };
                             return Response_MV;
                         }
-                        else if (AddUser_MV.OrgOwner == 0) // (AddUser_MV.OrgOwner == 0 || AddUser_MV.UserOwner == 0)
+                        else if (AddUser_MV.OrgOwner == 0)
                         {
                             Response_MV = new ResponseModelView
                             {
@@ -869,22 +869,12 @@ namespace DMS_API.Services
                                 int checkDeblicatePhone = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) FROM [User].Users WHERE UsPhoneNo = '{AddUser_MV.PhoneNo}' "));
                                 if (checkDeblicatePhone == 0)
                                 {
-                                    string exeut = $"EXEC [User].[AddUserPro] '{AddUser_MV.UserName.Trim()}', '{userLoginID}', '{AddUser_MV.OrgOwner}', '{AddUser_MV.Note}', '{AddUser_MV.FirstName.Trim()}',  '{AddUser_MV.SecondName.Trim()}', '{AddUser_MV.ThirdName.Trim()}', '{AddUser_MV.LastName.Trim()}', '{SecurityService.PasswordEnecrypt(AddUser_MV.Password.Trim(), AddUser_MV.UserName.Trim())}', '{AddUser_MV.PhoneNo.Trim()}', '{AddUser_MV.Email.ToLower().Trim()}', '{AddUser_MV.IsActive}', '{AddUser_MV.UserEmpNo}', '{AddUser_MV.UserIdintNo}', '{AddUser_MV.IsOrgAdmin}' ";
-                                    var outValue = dam.DoQueryExecProcedure(exeut);
-
-                                    if (outValue == null || outValue.Trim() == "")
+                                    int checkDeblicateEmail = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) FROM [User].Users WHERE UsEmail = '{AddUser_MV.Email}' "));
+                                    if (checkDeblicateEmail == 0)
                                     {
-                                        Response_MV = new ResponseModelView
-                                        {
-                                            Success = false,
-                                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.InsertFaild],
-                                            Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
-                                        };
-                                        return Response_MV;
-                                    }
-                                    else
-                                    {
-                                        if (outValue == 0.ToString())
+                                        string exeut = $"EXEC [User].[AddUserPro] '{AddUser_MV.UserName.Trim()}', '{userLoginID}', '{AddUser_MV.OrgOwner}', '{AddUser_MV.Note}', '{AddUser_MV.FirstName.Trim()}',  '{AddUser_MV.SecondName.Trim()}', '{AddUser_MV.ThirdName.Trim()}', '{AddUser_MV.LastName.Trim()}', '{SecurityService.PasswordEnecrypt(AddUser_MV.Password.Trim(), AddUser_MV.UserName.Trim())}', '{AddUser_MV.PhoneNo.Trim()}', '{AddUser_MV.Email.ToLower().Trim()}', '{AddUser_MV.IsActive}', '{AddUser_MV.UserEmpNo}', '{AddUser_MV.UserIdintNo}', '{AddUser_MV.IsOrgAdmin}' ";
+                                        var outValue = dam.DoQueryExecProcedure(exeut);
+                                        if (outValue == null || outValue.Trim() == "")
                                         {
                                             Response_MV = new ResponseModelView
                                             {
@@ -896,14 +886,37 @@ namespace DMS_API.Services
                                         }
                                         else
                                         {
-                                            Response_MV = new ResponseModelView
+                                            if (outValue == 0.ToString())
                                             {
-                                                Success = true,
-                                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.InsertSuccess],
-                                                Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
-                                            };
-                                            return Response_MV;
+                                                Response_MV = new ResponseModelView
+                                                {
+                                                    Success = false,
+                                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.InsertFaild],
+                                                    Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                                                };
+                                                return Response_MV;
+                                            }
+                                            else
+                                            {
+                                                Response_MV = new ResponseModelView
+                                                {
+                                                    Success = true,
+                                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.InsertSuccess],
+                                                    Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
+                                                };
+                                                return Response_MV;
+                                            }
                                         }
+                                    }
+                                    else
+                                    {
+                                        Response_MV = new ResponseModelView
+                                        {
+                                            Success = false,
+                                            Message = AddUser_MV.UserName + " " + MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.EmailIsExist],
+                                            Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                                        };
+                                        return Response_MV;
                                     }
                                 }
                                 else

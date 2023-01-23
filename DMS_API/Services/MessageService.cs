@@ -53,6 +53,7 @@
         public static readonly string IsExist = "IsExist";
         public static readonly string UsernameIsExist = "UsernameIsExist";
         public static readonly string PhoneIsExist = "PhoneIsExist";
+        public static readonly string EmailIsExist = "EmailIsExist";
         public static readonly string IsNotExist = "IsNotExist";
         public static readonly string MustFillInformation = "MustFillInformation";
         public static readonly string ServerError = "Server Error";
@@ -88,6 +89,7 @@
         public static readonly string QrCodeIsEmpty = "QrCodeIsEmpty";
         public static readonly string QrCodeIsWrong = "QrCodeIsWrong";
         public static readonly string QrCodeIsPraivet = "QrCodeIsPraivet";
+        public static readonly string SqlInjection = "SqlInjection";
 
         // public static readonly string FileSize = "MustSelectedPermissionForObject";
 
@@ -149,6 +151,7 @@
                      {OrgNameMustEnter, "يجب اضافة اسم الموؤسسة" },
                      { UsernameIsExist, "أسم المستخدم موجود" },
                      { PhoneIsExist, "رقم الهاتف موجود" },
+                     { EmailIsExist, "البريد الالكتروني موجود" },
                      { MoveSuccess, "تمت عملية النقل" },
                      { MoveFaild, "فشل بعملية النقل" },
                      {DocumentTitelMustEnter ,"يجب ادخال عنوان الوثيقة"},
@@ -166,6 +169,7 @@
                      {QrCodeIsEmpty ,"يجب ادخال رمز التحقق"},
                      {QrCodeIsWrong ,"رمز التحقق خطأ"},
                      {QrCodeIsPraivet ,"يجب ادخال اسم المستخدم وكلمة المرور لقراءة رمز التحقق"},
+                     {SqlInjection ,$"الكشف عن وجود خطر في استعلام قاعدة البيانات {" - SQL Injection"}"},
 
 
                 }
@@ -223,6 +227,7 @@
                      {OrgNameMustEnter, "OrgName Must Enter" },
                      {UsernameIsExist, "Username is exist" },
                       { PhoneIsExist, "Phone Is Exist" },
+                      { EmailIsExist, "Email Is Exist" },
                      { MoveSuccess, "Move Success" },
                      { MoveFaild, "Move Faild" },
                      {DocumentTitelMustEnter ,"Document Titel Must Enter"},
@@ -240,6 +245,9 @@
                      {QrCodeIsEmpty ,"QR code must be entered"},
                     { QrCodeIsWrong ,"QR code is wrong"},
                      {QrCodeIsPraivet ,"Must enter your username and password to read the QR code"},
+                     {SqlInjection ,"Detect a threat in the database query - SQL Injection"},
+
+
 
 
 

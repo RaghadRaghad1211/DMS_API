@@ -37,7 +37,8 @@ namespace DMS_API.Services
             //  string keyring = "{|\|DC-0F-!R@Q}$+RHlXGcRbbKKiRXbu41JSw==$blUTOXsppIWf7iS8r+JYi5c4Sp4QoBU6uRImRM+nX8A=";
 
             //  var ee = SecurityService.DecryptDocument("F:\\IIS\\DMS\\dm.pdf.enc", keyring, "55", "12345678");
-          
+
+
         }
         #endregion
 
@@ -87,6 +88,16 @@ namespace DMS_API.Services
                         {
                             Success = false,
                             Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.InvalidFileSize],
+                            Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                        };
+                        return Response_MV;
+                    }
+                    else if (Document_MV.DocumentPerantId <= 0 || Document_MV.DocumentPerantId.ToString().IsInt() == false)
+                    {
+                        Response_MV = new ResponseModelView
+                        {
+                            Success = false,
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsInt],
                             Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
                         };
                         return Response_MV;
@@ -294,7 +305,7 @@ namespace DMS_API.Services
 
 
 
-                            var outValue =  dam.FireDataTable(exeut);
+                            var outValue = dam.FireDataTable(exeut);
                             if (outValue.Rows[0][0].ToString() == 0.ToString() || outValue.Rows[0][0].ToString() == null || outValue.Rows[0][0].ToString().Trim() == "")
                             {
                                 Response_MV = new ResponseModelView

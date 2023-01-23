@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using Newtonsoft.Json.Linq;
+using System.Globalization;
 using System.Reflection;
 using System.Text.RegularExpressions;
 namespace DMS_API.Services
@@ -137,65 +138,6 @@ namespace DMS_API.Services
             }
         }
         /// <summary>
-        /// Check password strength,
-        /// and return string variable, which level of strength
-        /// true: is phoneNumber.
-        /// false: is not phoneNumber.
-        /// </summary>
-        /// <param name="TxtPassword"></param>
-        /// <returns></returns>
-        public static string IsPasswordStrength(this string TxtPassword)
-        {
-            string[] Strength = { "يجب ادخال 8 احرف", "ضعيف", "متوسط", "قوي", "قوي جداً" };
-
-            string pBox = TxtPassword.Trim();
-            if (pBox.Length < 8)
-            {
-                return Strength[0];
-            }
-            else
-            {
-                int numberOfDigits = 0, numberOfLowerLetters = 0, numberOfUpperLetters = 0, numberOfSymbols = 0;
-
-                foreach (char c in pBox)
-                {
-                    if (char.IsNumber(c))
-                    {
-                        numberOfDigits++;
-                    }
-                    else if (char.IsLower(c))
-                    {
-                        numberOfLowerLetters++;
-                    }
-                    else if (char.IsUpper(c))
-                    {
-                        numberOfUpperLetters++;
-                    }
-                    else if (char.IsPunctuation(c))
-                    {
-                        numberOfSymbols++;
-                    }
-                }
-
-                if (numberOfDigits > 0 && numberOfSymbols > 0 && numberOfLowerLetters > 0 && numberOfUpperLetters > 0)
-                {
-                    return Strength[4];
-                }
-                else if ((numberOfDigits.Equals(0) && numberOfSymbols > 0 && numberOfLowerLetters > 0 && numberOfUpperLetters > 0) || (numberOfDigits > 0 && numberOfSymbols.Equals(0) && numberOfLowerLetters > 0 && numberOfUpperLetters > 0) || (numberOfDigits > 0 && numberOfSymbols > 0 && numberOfLowerLetters.Equals(0) && numberOfUpperLetters > 0) || (numberOfDigits > 0 && numberOfSymbols > 0 && numberOfLowerLetters > 0 && numberOfUpperLetters.Equals(0)))
-                {
-                    return Strength[3];
-                }
-                else if ((numberOfDigits.Equals(0) && numberOfSymbols.Equals(0) && numberOfLowerLetters > 0 && numberOfUpperLetters > 0) || (numberOfDigits.Equals(0) && numberOfLowerLetters.Equals(0) && numberOfSymbols > 0 && numberOfUpperLetters > 0) || (numberOfDigits.Equals(0) && numberOfUpperLetters.Equals(0) && numberOfLowerLetters > 0 && numberOfSymbols > 0) || (numberOfSymbols.Equals(0) && numberOfLowerLetters.Equals(0) && numberOfDigits > 0 && numberOfUpperLetters > 0) || (numberOfSymbols.Equals(0) && numberOfUpperLetters.Equals(0) && numberOfDigits > 0 && numberOfLowerLetters > 0) || (numberOfLowerLetters.Equals(0) && numberOfUpperLetters.Equals(0) && numberOfDigits > 0 && numberOfSymbols > 0))
-                {
-                    return Strength[2];
-                }
-                else
-                {
-                    return Strength[1];
-                }
-            }
-        }
-        /// <summary>
         /// Check file size of document is valid or not,
         /// and return bool variable,
         /// true: size is valid.
@@ -214,20 +156,58 @@ namespace DMS_API.Services
             return true;
         }
         /// <summary>
-        /// Check Sql Injection is valid or not,
+        /// Check parameter is Sql Injection or not,
         /// and return bool variable,
-        /// true: input is valid.
-        /// false: input is not valid. 
+        /// true: input is Sql Injection.
+        /// false: input is not Sql Injection. 
         /// </summary>
-        /// <param name="input">input string</param>
+        /// <param name="Input">input parameter</param>
         /// <returns></returns>
-        public static bool SqlInjectionValid(this string input)
+        public static bool IsSqlInjection(this string Input)
         {
-            if (input.ToLower().Contains("drop") || input.ToLower().Contains("alter") || input.ToLower().Contains("delete"))
+            bool isSQLInjection = false;
+            string[] sqlCheckList = { "--",";--",";","/*","*/","@@","@","=","+","char","nchar","varchar","nvarchar","convert",
+                                      "set","union","alter","begin","cast","create","cursor","and","or","end","exec","execute",
+                                      "declare","select","insert","update","delete","waitfor","drop","fetch","kill","truncate",
+                                      "sys","sysobjects","syscolumns","database","table","xp_cmdshell"};
+            // string CheckString = Input.Replace("'", "''");
+            Input = Input == null ? "" : Input.Trim();
+            for (int i = 0; i <= sqlCheckList.Length - 1; i++)
             {
-                return false;
+                if ((Input.Contains(sqlCheckList[i], StringComparison.OrdinalIgnoreCase)))
+                { isSQLInjection = true; }
             }
-            return Regex.IsMatch(input, @"^[a-zA-Z0-9]+$");
+            return isSQLInjection;
+        }
+        /// <summary>
+        /// Check class parameters is Sql Injection or not,
+        /// and return bool variable,
+        /// true: input is Sql Injection.
+        /// false: input is not Sql Injection. 
+        /// </summary>
+        /// <param name="InputClass">input class parameters</param>
+        /// <returns></returns>
+        public static bool IsSqlInjectionList(this object InputClass)
+        {
+            bool isSQLInjection = false;
+            string[] sqlCheckList = { "--",";--",";","/*","*/","@@","@","=","+","char","nchar","varchar","nvarchar","convert",
+                                      "set","union","alter","begin","cast","create","cursor","and","or","end","exec","execute",
+                                      "declare","select","insert","update","delete","waitfor","drop","fetch","kill","truncate",
+                                      "sys","sysobjects","syscolumns","database","table","xp_cmdshell"};
+            var obj = InputClass.GetType();
+            foreach (PropertyInfo property in obj.GetProperties())
+            {
+                var name = property.Name;
+                var value = property.GetValue(InputClass, null)?.ToString();
+                value = value == null ? "" : value.Trim();
+                // string CheckString = value.Replace("'", "''");
+                for (int i = 0; i <= sqlCheckList.Length - 1; i++)
+                {
+                    if ((value.Contains(sqlCheckList[i], StringComparison.OrdinalIgnoreCase)))
+                    { isSQLInjection = true; }
+                }
+            }
+            return isSQLInjection;
         }
         #endregion
     }
