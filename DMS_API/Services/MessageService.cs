@@ -56,10 +56,10 @@
         public static readonly string EmailIsExist = "EmailIsExist";
         public static readonly string IsNotExist = "IsNotExist";
         public static readonly string MustFillInformation = "MustFillInformation";
-        public static readonly string ServerError = "Server Error";
         public static readonly string ServiceUnavailable = "ServiceUnavailable";
-        public static readonly string ExceptionError = "Exception Error";
-        public static readonly string TokenEmpty = "Token Empty";
+        public static readonly string ServiceAvailable = "ServiceAvailable";
+        public static readonly string ExceptionError = "ExceptionError";
+        public static readonly string TokenEmpty = "TokenEmpty";
         public static readonly string ConfirmPasswordIsIncorrect = "ConfirmPasswordIsIncorrect";
         public static readonly string PhoneIncorrect = "PhoneIncorrect";
         public static readonly string EmailIncorrect = "EmailIncorrect";
@@ -126,8 +126,8 @@
                      { Forbidden, "المستخدم ممنوع من طلب هذا الإجراء" },
                      { ExpiredToken, "انتهت صلاحية رمز الوصول" },
                      { ExceptionError, "فشل - استثناء" },
-                     {ServerError ,"خطأ في الخادم"},
-                     { ServiceUnavailable, "حدث خطأ اثناء الاتصال في الخادم" },
+                     { ServiceUnavailable, "حدث خطأ اثناء الاتصال بالخادم" },
+                     { ServiceAvailable, "يوجد الاتصال بالخادم" },
                      {IsInt ,"يجب ادخال رقم"},
                      {TokenEmpty ,"رمز الوصول فارغ"},
                      {ConfirmPasswordIsIncorrect ,"تأكيد كلمة المرور غير صحيحة"},
@@ -202,8 +202,8 @@
                      { Forbidden, "User is Forbidden from requesting this action" },
                      { ExpiredToken, "The access token expired" },
                      { ExceptionError, "Faild - Exception" },
-                     {ServerError ,"Server Error"},
                      { ServiceUnavailable, "An error occurred while connecting to the server" },
+                     { ServiceAvailable, "There is a connection to the server" },
                      {IsInt ,"Must enter Number"},
                      {TokenEmpty ,"Token Is Empty"},
                      {ConfirmPasswordIsIncorrect ,"Confirm Password Is Incorrect"},

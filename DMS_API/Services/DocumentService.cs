@@ -1,6 +1,7 @@
 ﻿using ArchiveAPI.Services;
 using DMS_API.Models;
 using DMS_API.ModelsView;
+using Microsoft.AspNetCore.Http.Headers;
 using Org.BouncyCastle.Crypto.Tls;
 using QRCoder;
 using System;
@@ -31,6 +32,7 @@ namespace DMS_API.Services
         {
             Environment = environment;
             dam = new DataAccessService(SecurityService.ConnectionString);
+
 
 
             //  var keyring = SecurityService.EncryptDocument("F:\\IIS\\DMS\\dm.pdf", "F:\\IIS\\DMS\\");
@@ -92,7 +94,8 @@ namespace DMS_API.Services
                         };
                         return Response_MV;
                     }
-                    else if (Document_MV.DocumentPerantId <= 0 || Document_MV.DocumentPerantId.ToString().IsInt() == false)
+                    else if (Document_MV.DocumentPerantId.ToString().IsInt() == false || Document_MV.DocumentPerantId <= 0 ||
+                             Document_MV.DocumentOrgOwnerID.ToString().IsInt() == false || Document_MV.DocumentOrgOwnerID <= 0)
                     {
                         Response_MV = new ResponseModelView
                         {
@@ -259,6 +262,18 @@ namespace DMS_API.Services
                             };
                             return Response_MV;
                         }
+                        else if (Document_MV.DocumentPerantId.ToString().IsInt() == false ||Document_MV.DocumentPerantId <= 0 || 
+                                 Document_MV.DocumentOrgOwnerID.ToString().IsInt() == false ||Document_MV.DocumentOrgOwnerID <= 0 || 
+                                 Document_MV.DocumentId.ToString().IsInt() == false||Document_MV.DocumentId <= 0 )
+                        {
+                            Response_MV = new ResponseModelView
+                            {
+                                Success = false,
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsInt],
+                                Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                            };
+                            return Response_MV;
+                        }
                         if (haveFile == true)
                         {
                             if (Document_MV.DocumentFile.Length <= 0)
@@ -301,8 +316,6 @@ namespace DMS_API.Services
                                           $"EXEC      [Document].[UpdateDocumentPro] '{Document_MV.DocumentId}','{Convert.ToInt32(GlobalService.ClassType.Document)}','{Document_MV.DocumentTitle}', '{userLoginID}', '{Document_MV.DocumentOrgOwnerID}', " +
                                           $"         '{Document_MV.DocumentDescription}', '{Document_MV.KeysValues}', '{Document_MV.DocumentPerantId}', '{(int)GlobalService.ClassType.Folder}', " +
                                           $"         @NewValue = @MyNewValue OUTPUT  SELECT @MyNewValue AS newValue ";
-
-
 
 
                             var outValue = dam.FireDataTable(exeut);
@@ -458,7 +471,7 @@ namespace DMS_API.Services
         {
             try
             {
-                if (DocumentId == 0 || DocumentId.ToString().IsInt() == false)
+                if (DocumentId.ToString().IsInt() == false||DocumentId <= 0 )
                 {
                     Response_MV = new ResponseModelView
                     {

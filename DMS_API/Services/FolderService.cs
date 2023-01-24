@@ -45,12 +45,23 @@ namespace DMS_API.Services
                 }
                 else
                 {
-                    if (ValidationService.IsEmpty(Folder_MV.FolderTitle) == true || string.IsNullOrEmpty(Folder_MV.FolderTitle))
+                    if (Folder_MV.FolderTitle.IsEmpty() == true)
                     {
                         Response_MV = new ResponseModelView
                         {
                             Success = false,
                             Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.FolderTitleMustEnter],
+                            Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                        };
+                        return Response_MV;
+                    }
+                    else if (Folder_MV.FolderPerantId.ToString().IsInt() == false || Folder_MV.FolderPerantId <= 0 ||
+                             Folder_MV.FolderOrgOwnerID.ToString().IsInt() == false || Folder_MV.FolderOrgOwnerID <= 0)
+                    {
+                        Response_MV = new ResponseModelView
+                        {
+                            Success = false,
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsInt],
                             Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
                         };
                         return Response_MV;
@@ -134,12 +145,24 @@ namespace DMS_API.Services
                     bool checkManagePermission = result == null ? false : result.IsWrite;
                     if (checkManagePermission == true)
                     {
-                        if (ValidationService.IsEmpty(Folder_MV.FolderTitle) == true)
+                        if (Folder_MV.FolderTitle.IsEmpty() == true)
                         {
                             Response_MV = new ResponseModelView
                             {
                                 Success = false,
                                 Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.FolderTitleMustEnter],
+                                Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                            };
+                            return Response_MV;
+                        }
+                        else if (Folder_MV.FolderId.ToString().IsInt() == false || Folder_MV.FolderId <= 0 ||
+                                 Folder_MV.FolderPerantId.ToString().IsInt() == false || Folder_MV.FolderPerantId <= 0 ||
+                                 Folder_MV.FolderOrgOwnerID.ToString().IsInt() == false || Folder_MV.FolderOrgOwnerID <= 0)
+                        {
+                            Response_MV = new ResponseModelView
+                            {
+                                Success = false,
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsInt],
                                 Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
                             };
                             return Response_MV;
@@ -238,7 +261,7 @@ namespace DMS_API.Services
         {
             try
             {
-                if (FolderId == 0 || FolderId.ToString().IsInt() == false)
+                if (FolderId.ToString().IsInt() == false||FolderId <= 0)
                 {
                     Response_MV = new ResponseModelView
                     {

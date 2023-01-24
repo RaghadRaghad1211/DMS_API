@@ -38,17 +38,24 @@ namespace DMS_API.Controllers
                 };
                 return UnprocessableEntity(Response_MV);
             }
-            else
-            {
-                Response_MV = await Document_S.AddDocument(Document_MV, RequestHeader);
-                return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
-            }
+            Response_MV = await Document_S.AddDocument(Document_MV, RequestHeader);
+            return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
 
         [HttpPost]
         [Route("EditDocument")]
         public async Task<IActionResult> EditDocument([FromForm] DocumentModelView Document_MV, [FromHeader] RequestHeaderModelView RequestHeader)
         {
+            if (Document_MV.IsSqlInjectionList())
+            {
+                Response_MV = new ResponseModelView
+                {
+                    Success = false,
+                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.SqlInjection],
+                    Data = new HttpResponseMessage(HttpStatusCode.UnprocessableEntity).StatusCode
+                };
+                return UnprocessableEntity(Response_MV);
+            }
             Response_MV = await Document_S.EditDocument(Document_MV, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
@@ -57,6 +64,16 @@ namespace DMS_API.Controllers
         [Route("ViewDocumentMetadata/{DocumentId}")]
         public async Task<IActionResult> GetDocumentMetadata([FromRoute] int DocumentId, [FromHeader] RequestHeaderModelView RequestHeader)
         {
+            if (DocumentId.ToString().IsSqlInjection())
+            {
+                Response_MV = new ResponseModelView
+                {
+                    Success = false,
+                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.SqlInjection],
+                    Data = new HttpResponseMessage(HttpStatusCode.UnprocessableEntity).StatusCode
+                };
+                return UnprocessableEntity(Response_MV);
+            }
             Response_MV = await Document_S.GetDocumentMetadata(DocumentId, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }

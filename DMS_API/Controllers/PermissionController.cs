@@ -1,4 +1,5 @@
-﻿using DMS_API.Models;
+﻿using ArchiveAPI.Services;
+using DMS_API.Models;
 using DMS_API.ModelsView;
 using DMS_API.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -104,6 +105,17 @@ namespace DMS_API.Controllers
         {
             Response_MV = await Permissions_S.ReadQRcodePDFofDocumentPrivate(QRcode, Login_MV, Lang);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
+        }
+
+        [HttpGet]
+        [Route("CheckConnectionNetwork")]
+        public async Task<IActionResult> CheckConnectionNetwork([FromHeader] string? Lang = "Ar")
+        {
+            string GSCOM = "NDC" + "© " + DateTime.Now;
+            DataAccessService dam = new DataAccessService(SecurityService.ConnectionString);
+            var connection = await Task.Run(() => dam.CheckConnectionNetwork());
+            return connection == true ? Ok(new { Success = true, Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.ServiceAvailable] + $" {GSCOM}" }) :
+                                        NotFound(new { Success = false, Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.ServiceUnavailable] + $" {GSCOM}" });
         }
         #endregion
     }

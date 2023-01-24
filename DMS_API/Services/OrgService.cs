@@ -194,7 +194,7 @@ namespace DMS_API.Services
         {
             try
             {
-                if (OrgID == 0 || OrgID.ToString().IsInt() == false)
+                if (OrgID.ToString().IsInt() == false || OrgID == 0)
                 {
                     Response_MV = new ResponseModelView
                     {
@@ -366,27 +366,47 @@ namespace DMS_API.Services
         {
             try
             {
-                Session_S = new SessionService();
-                var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
-                if (ResponseSession.Success == false)
+                if (AddOrg_MV.OrgArName.IsEmpty() == true)
                 {
-                    return ResponseSession;
+                    Response_MV = new ResponseModelView
+                    {
+                        Success = false,
+                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.TitelArIsEmpty],
+                        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                    };
+                    return Response_MV;
+                }
+                else if (AddOrg_MV.OrgEnName.IsEmpty() == true)
+                {
+                    Response_MV = new ResponseModelView
+                    {
+                        Success = false,
+                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.TitelEnIsEmpty],
+                        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                    };
+                    return Response_MV;
+                }
+                else if (AddOrg_MV.OrgUp.ToString().IsInt() == false)
+                {
+                    Response_MV = new ResponseModelView
+                    {
+                        Success = false,
+                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsInt],
+                        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                    };
+                    return Response_MV;
                 }
                 else
                 {
-                    int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
-                    if (((SessionModel)ResponseSession.Data).IsOrgAdmin == false && ((SessionModel)ResponseSession.Data).IsGroupOrgAdmin == false)
+                    Session_S = new SessionService();
+                    var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
+                    if (ResponseSession.Success == false)
                     {
-                        Response_MV = new ResponseModelView
-                        {
-                            Success = false,
-                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoPermission],
-                            Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
-                        };
-                        return Response_MV;
+                        return ResponseSession;
                     }
                     else
                     {
+                        int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
                         if (((SessionModel)ResponseSession.Data).IsOrgAdmin == false && ((SessionModel)ResponseSession.Data).IsGroupOrgAdmin == false)
                         {
                             Response_MV = new ResponseModelView
@@ -399,23 +419,13 @@ namespace DMS_API.Services
                         }
                         else
                         {
-                            if (ValidationService.IsEmpty(AddOrg_MV.OrgArName) == true)
+                            if (((SessionModel)ResponseSession.Data).IsOrgAdmin == false && ((SessionModel)ResponseSession.Data).IsGroupOrgAdmin == false)
                             {
                                 Response_MV = new ResponseModelView
                                 {
                                     Success = false,
-                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.TitelArIsEmpty],
-                                    Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
-                                };
-                                return Response_MV;
-                            }
-                            else if (ValidationService.IsEmpty(AddOrg_MV.OrgEnName) == true)
-                            {
-                                Response_MV = new ResponseModelView
-                                {
-                                    Success = false,
-                                    Message = AddOrg_MV.OrgEnName + " " + MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.TitelEnIsEmpty],
-                                    Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoPermission],
+                                    Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
                                 };
                                 return Response_MV;
                             }
@@ -500,27 +510,47 @@ namespace DMS_API.Services
         {
             try
             {
-                Session_S = new SessionService();
-                var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
-                if (ResponseSession.Success == false)
+                if (EditOrg_MV.OrgArName.IsEmpty() == true)
                 {
-                    return ResponseSession;
+                    Response_MV = new ResponseModelView
+                    {
+                        Success = false,
+                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.TitelArIsEmpty],
+                        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                    };
+                    return Response_MV;
+                }
+                else if (EditOrg_MV.OrgEnName.IsEmpty() == true)
+                {
+                    Response_MV = new ResponseModelView
+                    {
+                        Success = false,
+                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.TitelEnIsEmpty],
+                        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                    };
+                    return Response_MV;
+                }
+                else if (EditOrg_MV.OrgUp.ToString().IsInt() == false || EditOrg_MV.OrgId.ToString().IsInt() == false || EditOrg_MV.OrgId <= 0)
+                {
+                    Response_MV = new ResponseModelView
+                    {
+                        Success = false,
+                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsInt],
+                        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                    };
+                    return Response_MV;
                 }
                 else
                 {
-                    int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
-                    if (((SessionModel)ResponseSession.Data).IsOrgAdmin == false && ((SessionModel)ResponseSession.Data).IsGroupOrgAdmin == false)
+                    Session_S = new SessionService();
+                    var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
+                    if (ResponseSession.Success == false)
                     {
-                        Response_MV = new ResponseModelView
-                        {
-                            Success = false,
-                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoPermission],
-                            Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
-                        };
-                        return Response_MV;
+                        return ResponseSession;
                     }
                     else
                     {
+                        int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
                         if (((SessionModel)ResponseSession.Data).IsOrgAdmin == false && ((SessionModel)ResponseSession.Data).IsGroupOrgAdmin == false)
                         {
                             Response_MV = new ResponseModelView
@@ -533,36 +563,24 @@ namespace DMS_API.Services
                         }
                         else
                         {
-
-                            if (ValidationService.IsEmpty(EditOrg_MV.OrgArName) == true)
+                            if (((SessionModel)ResponseSession.Data).IsOrgAdmin == false && ((SessionModel)ResponseSession.Data).IsGroupOrgAdmin == false)
                             {
                                 Response_MV = new ResponseModelView
                                 {
                                     Success = false,
-                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.TitelArIsEmpty],
-                                    Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
-                                };
-                                return Response_MV;
-                            }
-                            else if (ValidationService.IsEmpty(EditOrg_MV.OrgEnName) == true)
-                            {
-                                Response_MV = new ResponseModelView
-                                {
-                                    Success = false,
-                                    Message = EditOrg_MV.OrgEnName + " " + MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.TitelEnIsEmpty],
-                                    Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoPermission],
+                                    Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
                                 };
                                 return Response_MV;
                             }
                             else
                             {
-
                                 int checkDeblicate = Convert.ToInt32(dam.FireSQL($"SELECT COUNT(*) FROM [User].Orgs WHERE OrgId = {EditOrg_MV.OrgId}  "));
                                 int orgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {userLoginID} "));
                                 if (checkDeblicate > 0)
                                 {
                                     string exeut = $"EXEC [User].[UpdateOrgPro]  '{EditOrg_MV.OrgId}', '{EditOrg_MV.OrgArName}', '{userLoginID}', '{orgOwnerID}','{EditOrg_MV.IsActive}',  '{EditOrg_MV.Note}', '{EditOrg_MV.OrgUp}', '{EditOrg_MV.OrgEnName}', '{EditOrg_MV.OrgKuName}'";
-                                    var outValue =  dam.DoQueryExecProcedure(exeut);
+                                    var outValue = dam.DoQueryExecProcedure(exeut);
 
                                     if (outValue == null || outValue.Trim() == "")
                                     {
@@ -625,7 +643,6 @@ namespace DMS_API.Services
                 return Response_MV;
             }
         }
-
         #endregion
 
     }

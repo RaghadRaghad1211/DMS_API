@@ -120,7 +120,7 @@ namespace DMS_API.Services
                                                                $"FETCH NEXT   {_PageRows} ROWS ONLY ";
 
                                         dt = new DataTable();
-                                        dt =  dam.FireDataTable(getPermessions);
+                                        dt = dam.FireDataTable(getPermessions);
                                         if (dt == null)
                                         {
                                             Response_MV = new ResponseModelView
@@ -217,7 +217,7 @@ namespace DMS_API.Services
                                                                $"FETCH NEXT   {_PageRows} ROWS ONLY ";
 
                                 dt = new DataTable();
-                                dt =  dam.FireDataTable(getPermessions);
+                                dt = dam.FireDataTable(getPermessions);
                                 if (dt == null)
                                 {
                                     Response_MV = new ResponseModelView
@@ -383,7 +383,7 @@ namespace DMS_API.Services
                                                            $"FETCH NEXT   {_PageRows} ROWS ONLY ";
 
                             dt = new DataTable();
-                            dt =  dam.FireDataTable(getPermessions);
+                            dt = dam.FireDataTable(getPermessions);
                             if (dt == null)
                             {
                                 Response_MV = new ResponseModelView
@@ -490,7 +490,7 @@ namespace DMS_API.Services
         {
             try
             {
-                if (ObjectId == 0 || ObjectId.ToString().IsInt() == false)
+                if (ObjectId.ToString().IsInt() == false || ObjectId <= 0)
                 {
                     Response_MV = new ResponseModelView
                     {
@@ -531,7 +531,7 @@ namespace DMS_API.Services
                                                    $" WHERE    SourObjId= {ObjectId} AND DestObjId= {userLoginID} ";
 
                             dt = new DataTable();
-                            dt =  dam.FireDataTable(getPermessions);
+                            dt = dam.FireDataTable(getPermessions);
                             if (dt == null)
                             {
                                 Response_MV = new ResponseModelView
@@ -648,7 +648,7 @@ namespace DMS_API.Services
                             else
                             {
                                 string exeut = $"EXEC [User].[AddPermissionPro] '{userLoginID}','{item.SourObjId}','{item.SourClsId}', '{item.DestObjId}', '{item.DestClsId}','{true}', '{item.PerWrite}', '{item.PerManage}', '{item.PerQR}', '{item.PerToAllChilds}' ";
-                                var outValue =  dam.DoQueryExecProcedure(exeut);
+                                var outValue = dam.DoQueryExecProcedure(exeut);
                                 if (outValue == 0.ToString() || outValue == null || outValue.Trim() == "")
                                 {
                                     Response_MV = new ResponseModelView
@@ -1038,7 +1038,7 @@ namespace DMS_API.Services
 
 
                             dt = new DataTable();
-                            dt =  dam.FireDataTable(getPermessions);
+                            dt = dam.FireDataTable(getPermessions);
                             if (dt == null)
                             {
                                 Response_MV = new ResponseModelView
@@ -1198,7 +1198,7 @@ namespace DMS_API.Services
                 {
                     string getQrInfo = $"SELECT [QrObjId], [QrIsPraivet], [QrIsActive]  FROM [Main].[QRLookup] WHERE [QrId]='{QRcode}'  ";
                     DataTable dt = new DataTable();
-                    dt =  dam.FireDataTable(getQrInfo);
+                    dt = dam.FireDataTable(getQrInfo);
                     if (dt == null)
                     {
                         Response_MV = new ResponseModelView
@@ -1295,7 +1295,7 @@ namespace DMS_API.Services
                 {
                     string getQrInfo = $"SELECT [QrObjId], [QrIsPraivet], [QrIsActive]  FROM [Main].[QRLookup] WHERE [QrId]='{QRcode}'  ";
                     DataTable dt = new DataTable();
-                    dt =  dam.FireDataTable(getQrInfo);
+                    dt = dam.FireDataTable(getQrInfo);
                     if (dt == null)
                     {
                         Response_MV = new ResponseModelView
@@ -1423,7 +1423,6 @@ namespace DMS_API.Services
                 return Response_MV;
             }
         }
-
         #endregion
     }
 }

@@ -225,7 +225,7 @@ namespace DMS_API.Services
         {
             try
             {
-                if (UserId == 0 || UserId.ToString().IsInt() == false)
+                if (UserId.ToString().IsInt() == false || UserId == 0)
                 {
                     Response_MV = new ResponseModelView
                     {
@@ -641,7 +641,7 @@ namespace DMS_API.Services
         {
             try
             {
-                if (UserId == 0 || UserId.ToString().IsInt() == false)
+                if (UserId.ToString().IsInt() == false || UserId == 0)
                 {
                     Response_MV = new ResponseModelView
                     {
@@ -1452,7 +1452,7 @@ namespace DMS_API.Services
         /// <returns>Response { (bool)Success, (string)Message, (object)Data}</returns>
         public async Task<ResponseModelView> GetGroupsOfUser(int UserId, RequestHeaderModelView RequestHeader)
         {
-            if (UserId == 0 || UserId.ToString().IsInt() == false)
+            if (UserId.ToString().IsInt() == false || UserId == 0)
             {
                 Response_MV = new ResponseModelView
                 {

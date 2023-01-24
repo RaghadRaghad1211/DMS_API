@@ -184,15 +184,11 @@ namespace DMS_API.Services
                 string whereField = OrgOwnerID == 0 ? "OrgUp" : "OrgId";
                 string? getOrgInfo;
                 if (IsGeneral == true)
-                {
                     getOrgInfo = $"SELECT OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName, OrgIsActive FROM [User].[V_Org]  WHERE OrgUp= 0 AND OrgIsActive=1";
-                }
                 else
-                {
                     getOrgInfo = $"SELECT OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName, OrgIsActive FROM [User].[V_Org]  WHERE {whereField}= {OrgOwnerID} AND OrgIsActive=1";
-                }
                 DataTable dt = new DataTable();
-                dt = dam.FireDataTable(getOrgInfo);
+                dt = await Task.Run(() => dam.FireDataTable(getOrgInfo));
                 if (dt == null)
                 {
                     return null;
@@ -237,7 +233,7 @@ namespace DMS_API.Services
             {
                 string getOrgInfo = $"SELECT OrgId, OrgUp, OrgLevel, OrgArName, OrgEnName, OrgKuName, OrgIsActive   FROM [User].[GetOrgsChildsByParentId]({OrgId}) WHERE OrgIsActive=1";
                 DataTable dtChild = new DataTable();
-                dtChild = dam.FireDataTable(getOrgInfo);
+                dtChild = await Task.Run(() => dam.FireDataTable(getOrgInfo));
                 OrgModel Org_M1 = new OrgModel();
                 List<OrgModel> Org_Mlist1 = new List<OrgModel>();
                 if (dtChild.Rows.Count > 0)

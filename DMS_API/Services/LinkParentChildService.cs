@@ -41,7 +41,7 @@ namespace DMS_API.Services
         {
             try
             {
-                if (GroupId == 0 || GroupId.ToString().IsInt() == false)
+                if (GroupId.ToString().IsInt() == false || GroupId <= 0)
                 {
                     Response_MV = new ResponseModelView
                     {
@@ -152,92 +152,116 @@ namespace DMS_API.Services
         {
             try
             {
-                Session_S = new SessionService();
-                var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
-                if (ResponseSession.Success == false)
+                if (SearchChildOfGroup_MV.ChildTypeId.ToString().IsInt() == false || SearchChildOfGroup_MV.ChildTypeId <= 0 ||
+                     SearchChildOfGroup_MV.GroupId.ToString().IsInt() == false || SearchChildOfGroup_MV.GroupId <= 0)
                 {
-                    return ResponseSession;
+                    Response_MV = new ResponseModelView
+                    {
+                        Success = false,
+                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsInt],
+                        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                    };
+                    return Response_MV;
+                }
+                else if (SearchChildOfGroup_MV.TitleSearch.IsEmpty() == true)
+                {
+                    Response_MV = new ResponseModelView
+                    {
+                        Success = false,
+                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GroupTitleMustEnter],
+                        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                    };
+                    return Response_MV;
                 }
                 else
                 {
-                    int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
-                    if (((SessionModel)ResponseSession.Data).IsOrgAdmin == false && ((SessionModel)ResponseSession.Data).IsGroupOrgAdmin == false)
+                    Session_S = new SessionService();
+                    var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
+                    if (ResponseSession.Success == false)
                     {
-                        Response_MV = new ResponseModelView
-                        {
-                            Success = false,
-                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoPermission],
-                            Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
-                        };
-                        return Response_MV;
+                        return ResponseSession;
                     }
                     else
                     {
-                        string getGroupChildInfo_Search = "SELECT LcId,ParentUserOwnerId,ParentOrgOwnerId, LcParentObjId, ObjTitle, LcParentClsId, ParentClassType, " +
-                                                          "       LcChildObjId, ChildTitle, LcChildClsId, ChildClassType, ChildCreationDate, LcIsActive " +
-                                                         $"FROM   [User].[GetChildsInGroup_Search]({SearchChildOfGroup_MV.GroupId}, {SearchChildOfGroup_MV.ChildTypeId},'{SearchChildOfGroup_MV.TitleSearch}') " +
-                                                         $"WHERE  LcIsActive=1";
-
-                        dt = new DataTable();
-                        dt = dam.FireDataTable(getGroupChildInfo_Search);
-                        if (dt == null)
+                        int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
+                        if (((SessionModel)ResponseSession.Data).IsOrgAdmin == false && ((SessionModel)ResponseSession.Data).IsGroupOrgAdmin == false)
                         {
                             Response_MV = new ResponseModelView
                             {
                                 Success = false,
-                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
-                                Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
-                            };
-                            return Response_MV;
-                        }
-                        LinkParentChild_Mlist = new List<LinkParentChildModel>();
-                        if (dt.Rows.Count > 0)
-                        {
-                            for (int i = 0; i < dt.Rows.Count; i++)
-                            {
-                                LinkParentChild_M = new LinkParentChildModel
-                                {
-                                    LcId = Convert.ToInt32(dt.Rows[i]["LcId"].ToString()),
-                                    ParentUserOwnerId = Convert.ToInt32(dt.Rows[i]["ParentUserOwnerId"].ToString()),
-                                    ParentOrgOwnerId = Convert.ToInt32(dt.Rows[i]["ParentOrgOwnerId"].ToString()),
-                                    ParentId = Convert.ToInt32(dt.Rows[i]["LcParentObjId"].ToString()),
-                                    ParentTitle = dt.Rows[i]["ObjTitle"].ToString(),
-                                    ParentClsId = Convert.ToInt32(dt.Rows[i]["LcParentClsId"].ToString()),
-                                    ParentClassType = dt.Rows[i]["ParentClassType"].ToString(),
-                                    ChildId = Convert.ToInt32(dt.Rows[i]["LcChildObjId"].ToString()),
-                                    ChildTitle = dt.Rows[i]["ChildTitle"].ToString(),
-                                    ChildClsId = Convert.ToInt32(dt.Rows[i]["LcChildClsId"].ToString()),
-                                    ChildClassType = dt.Rows[i]["ChildClassType"].ToString(),
-                                    ChildCreationDate = DateTime.Parse(dt.Rows[i]["ChildCreationDate"].ToString()).ToShortDateString(),
-                                    LcIsActive = bool.Parse(dt.Rows[i]["LcIsActive"].ToString()),
-                                };
-                                LinkParentChild_Mlist.Add(LinkParentChild_M);
-                            }
-                            Response_MV = new ResponseModelView
-                            {
-                                Success = true,
-                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
-                                Data = new
-                                {
-                                    Users = LinkParentChild_Mlist.Where(x => x.ChildClsId == 1),
-                                    Groups = LinkParentChild_Mlist.Where(x => x.ChildClsId == 2)
-                                }
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoPermission],
+                                Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
                             };
                             return Response_MV;
                         }
                         else
                         {
-                            Response_MV = new ResponseModelView
+                            string getGroupChildInfo_Search = "SELECT LcId,ParentUserOwnerId,ParentOrgOwnerId, LcParentObjId, ObjTitle, LcParentClsId, ParentClassType, " +
+                                                              "       LcChildObjId, ChildTitle, LcChildClsId, ChildClassType, ChildCreationDate, LcIsActive " +
+                                                             $"FROM   [User].[GetChildsInGroup_Search]({SearchChildOfGroup_MV.GroupId}, {SearchChildOfGroup_MV.ChildTypeId},'{SearchChildOfGroup_MV.TitleSearch}') " +
+                                                             $"WHERE  LcIsActive=1";
+
+                            dt = new DataTable();
+                            dt = dam.FireDataTable(getGroupChildInfo_Search);
+                            if (dt == null)
                             {
-                                Success = true,
-                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoData],
-                                Data = new
+                                Response_MV = new ResponseModelView
                                 {
-                                    Users = LinkParentChild_Mlist.Where(x => x.ChildClsId == 1),
-                                    Groups = LinkParentChild_Mlist.Where(x => x.ChildClsId == 2)
+                                    Success = false,
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
+                                    Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                                };
+                                return Response_MV;
+                            }
+                            LinkParentChild_Mlist = new List<LinkParentChildModel>();
+                            if (dt.Rows.Count > 0)
+                            {
+                                for (int i = 0; i < dt.Rows.Count; i++)
+                                {
+                                    LinkParentChild_M = new LinkParentChildModel
+                                    {
+                                        LcId = Convert.ToInt32(dt.Rows[i]["LcId"].ToString()),
+                                        ParentUserOwnerId = Convert.ToInt32(dt.Rows[i]["ParentUserOwnerId"].ToString()),
+                                        ParentOrgOwnerId = Convert.ToInt32(dt.Rows[i]["ParentOrgOwnerId"].ToString()),
+                                        ParentId = Convert.ToInt32(dt.Rows[i]["LcParentObjId"].ToString()),
+                                        ParentTitle = dt.Rows[i]["ObjTitle"].ToString(),
+                                        ParentClsId = Convert.ToInt32(dt.Rows[i]["LcParentClsId"].ToString()),
+                                        ParentClassType = dt.Rows[i]["ParentClassType"].ToString(),
+                                        ChildId = Convert.ToInt32(dt.Rows[i]["LcChildObjId"].ToString()),
+                                        ChildTitle = dt.Rows[i]["ChildTitle"].ToString(),
+                                        ChildClsId = Convert.ToInt32(dt.Rows[i]["LcChildClsId"].ToString()),
+                                        ChildClassType = dt.Rows[i]["ChildClassType"].ToString(),
+                                        ChildCreationDate = DateTime.Parse(dt.Rows[i]["ChildCreationDate"].ToString()).ToShortDateString(),
+                                        LcIsActive = bool.Parse(dt.Rows[i]["LcIsActive"].ToString()),
+                                    };
+                                    LinkParentChild_Mlist.Add(LinkParentChild_M);
                                 }
-                            };
-                            return Response_MV;
+                                Response_MV = new ResponseModelView
+                                {
+                                    Success = true,
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
+                                    Data = new
+                                    {
+                                        Users = LinkParentChild_Mlist.Where(x => x.ChildClsId == 1),
+                                        Groups = LinkParentChild_Mlist.Where(x => x.ChildClsId == 2)
+                                    }
+                                };
+                                return Response_MV;
+                            }
+                            else
+                            {
+                                Response_MV = new ResponseModelView
+                                {
+                                    Success = true,
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoData],
+                                    Data = new
+                                    {
+                                        Users = LinkParentChild_Mlist.Where(x => x.ChildClsId == 1),
+                                        Groups = LinkParentChild_Mlist.Where(x => x.ChildClsId == 2)
+                                    }
+                                };
+                                return Response_MV;
+                            }
                         }
                     }
                 }
@@ -264,7 +288,7 @@ namespace DMS_API.Services
         {
             try
             {
-                if (GroupId == 0 || GroupId.ToString().IsInt() == false)
+                if (GroupId.ToString().IsInt() == false || GroupId <= 0)
                 {
                     Response_MV = new ResponseModelView
                     {
@@ -379,82 +403,106 @@ namespace DMS_API.Services
         {
             try
             {
-                Session_S = new SessionService();
-                var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
-                if (ResponseSession.Success == false)
+                if (SearchChildOfGroup_MV.ChildTypeId.ToString().IsInt() == false || SearchChildOfGroup_MV.ChildTypeId <= 0 ||
+                     SearchChildOfGroup_MV.GroupId.ToString().IsInt() == false || SearchChildOfGroup_MV.GroupId <= 0)
                 {
-                    return ResponseSession;
+                    Response_MV = new ResponseModelView
+                    {
+                        Success = false,
+                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsInt],
+                        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                    };
+                    return Response_MV;
+                }
+                else if (SearchChildOfGroup_MV.TitleSearch.IsEmpty() == true)
+                {
+                    Response_MV = new ResponseModelView
+                    {
+                        Success = false,
+                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GroupTitleMustEnter],
+                        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                    };
+                    return Response_MV;
                 }
                 else
                 {
-                    int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
-                    if (((SessionModel)ResponseSession.Data).IsOrgAdmin == false && ((SessionModel)ResponseSession.Data).IsGroupOrgAdmin == false)
+                    Session_S = new SessionService();
+                    var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
+                    if (ResponseSession.Success == false)
                     {
-                        Response_MV = new ResponseModelView
-                        {
-                            Success = false,
-                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoPermission],
-                            Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
-                        };
-                        return Response_MV;
+                        return ResponseSession;
                     }
                     else
                     {
-                        string GetChildsNotInGroup_Search = "SELECT  ID, Title, IsActive, Type " +
-                                                           $"FROM   [User].[GetChildsNotInGroup_Search] ({SearchChildOfGroup_MV.GroupId} ,{userLoginID}, {SearchChildOfGroup_MV.ChildTypeId},'{SearchChildOfGroup_MV.TitleSearch}')  " +
-                                                            "WHERE  IsActive=1 ";
-
-                        dt = new DataTable();
-                        dt = dam.FireDataTable(GetChildsNotInGroup_Search);
-                        if (dt == null)
+                        int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
+                        if (((SessionModel)ResponseSession.Data).IsOrgAdmin == false && ((SessionModel)ResponseSession.Data).IsGroupOrgAdmin == false)
                         {
                             Response_MV = new ResponseModelView
                             {
                                 Success = false,
-                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
-                                Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
-                            };
-                            return Response_MV;
-                        }
-                        ChildNotInParent_MVlist = new List<GetChildNotInParentModelView>();
-                        if (dt.Rows.Count > 0)
-                        {
-                            for (int i = 0; i < dt.Rows.Count; i++)
-                            {
-                                ChildNotInParent_M = new GetChildNotInParentModelView
-                                {
-                                    ID = Convert.ToInt32(dt.Rows[i]["ID"].ToString()),
-                                    Title = dt.Rows[i]["Title"].ToString(),
-                                    Type = dt.Rows[i]["Type"].ToString(),
-                                    IsActive = bool.Parse(dt.Rows[i]["IsActive"].ToString()),
-                                };
-                                ChildNotInParent_MVlist.Add(ChildNotInParent_M);
-                            }
-                            Response_MV = new ResponseModelView
-                            {
-                                Success = true,
-                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
-                                Data = new
-                                {
-                                    Users = ChildNotInParent_MVlist.Where(x => x.Type == "User"),
-                                    Groups = ChildNotInParent_MVlist.Where(x => x.Type == "Group")
-                                }
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoPermission],
+                                Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
                             };
                             return Response_MV;
                         }
                         else
                         {
-                            Response_MV = new ResponseModelView
+                            string GetChildsNotInGroup_Search = "SELECT  ID, Title, IsActive, Type " +
+                                                               $"FROM   [User].[GetChildsNotInGroup_Search] ({SearchChildOfGroup_MV.GroupId} ,{userLoginID}, {SearchChildOfGroup_MV.ChildTypeId},'{SearchChildOfGroup_MV.TitleSearch}')  " +
+                                                                "WHERE  IsActive=1 ";
+
+                            dt = new DataTable();
+                            dt = dam.FireDataTable(GetChildsNotInGroup_Search);
+                            if (dt == null)
                             {
-                                Success = true,
-                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoData],
-                                Data = new
+                                Response_MV = new ResponseModelView
                                 {
-                                    Users = ChildNotInParent_MVlist.Where(x => x.Type == "User"),
-                                    Groups = ChildNotInParent_MVlist.Where(x => x.Type == "Group")
+                                    Success = false,
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
+                                    Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                                };
+                                return Response_MV;
+                            }
+                            ChildNotInParent_MVlist = new List<GetChildNotInParentModelView>();
+                            if (dt.Rows.Count > 0)
+                            {
+                                for (int i = 0; i < dt.Rows.Count; i++)
+                                {
+                                    ChildNotInParent_M = new GetChildNotInParentModelView
+                                    {
+                                        ID = Convert.ToInt32(dt.Rows[i]["ID"].ToString()),
+                                        Title = dt.Rows[i]["Title"].ToString(),
+                                        Type = dt.Rows[i]["Type"].ToString(),
+                                        IsActive = bool.Parse(dt.Rows[i]["IsActive"].ToString()),
+                                    };
+                                    ChildNotInParent_MVlist.Add(ChildNotInParent_M);
                                 }
-                            };
-                            return Response_MV;
+                                Response_MV = new ResponseModelView
+                                {
+                                    Success = true,
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
+                                    Data = new
+                                    {
+                                        Users = ChildNotInParent_MVlist.Where(x => x.Type == "User"),
+                                        Groups = ChildNotInParent_MVlist.Where(x => x.Type == "Group")
+                                    }
+                                };
+                                return Response_MV;
+                            }
+                            else
+                            {
+                                Response_MV = new ResponseModelView
+                                {
+                                    Success = true,
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoData],
+                                    Data = new
+                                    {
+                                        Users = ChildNotInParent_MVlist.Where(x => x.Type == "User"),
+                                        Groups = ChildNotInParent_MVlist.Where(x => x.Type == "Group")
+                                    }
+                                };
+                                return Response_MV;
+                            }
                         }
                     }
                 }
@@ -481,58 +529,70 @@ namespace DMS_API.Services
         {
             try
             {
-                Session_S = new SessionService();
-                var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
-                if (ResponseSession.Success == false)
+                if (LinkGroupChilds_MV.GroupId.ToString().IsInt() == false || LinkGroupChilds_MV.GroupId <= 0)
                 {
-                    return ResponseSession;
+                    Response_MV = new ResponseModelView
+                    {
+                        Success = false,
+                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsInt],
+                        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                    };
+                    return Response_MV;
+                }
+                else if (LinkGroupChilds_MV.ChildIds.Count == 0)
+                {
+                    Response_MV = new ResponseModelView
+                    {
+                        Success = false,
+                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.MustSelectedObjects],
+                        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                    };
+                    return Response_MV;
                 }
                 else
                 {
-                    int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
-                    if (((SessionModel)ResponseSession.Data).IsOrgAdmin == false && ((SessionModel)ResponseSession.Data).IsGroupOrgAdmin == false)
+                    Session_S = new SessionService();
+                    var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
+                    if (ResponseSession.Success == false)
                     {
-                        Response_MV = new ResponseModelView
-                        {
-                            Success = false,
-                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoPermission],
-                            Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
-                        };
-                        return Response_MV;
+                        return ResponseSession;
                     }
                     else
                     {
-                        if (LinkGroupChilds_MV.ChildIds.Count == 0)
+                        int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
+                        if (((SessionModel)ResponseSession.Data).IsOrgAdmin == false && ((SessionModel)ResponseSession.Data).IsGroupOrgAdmin == false)
                         {
                             Response_MV = new ResponseModelView
                             {
                                 Success = false,
-                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.MustSelectedObjects],
-                                Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
-                            };
-                            return Response_MV;
-                        }
-
-                        string Query = GlobalService.GetQueryLinkPro(LinkGroupChilds_MV.ChildIds);
-                        string exeut = $"EXEC [Main].[AddLinksPro]  '{LinkGroupChilds_MV.GroupId}', '{(int)GlobalService.ClassType.Group}', '{Query}',{1} ";
-                        var outValue = dam.DoQueryExecProcedure(exeut);
-                        if (outValue == 0.ToString() || (outValue == null || outValue.Trim() == ""))
-                        {
-                            Response_MV = new ResponseModelView
-                            {
-                                Success = false,
-                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.InsertFaild],
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoPermission],
                                 Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
                             };
                             return Response_MV;
                         }
-                        Response_MV = new ResponseModelView
+                        else
                         {
-                            Success = true,
-                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.InsertSuccess],
-                            Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
-                        };
-                        return Response_MV;
+                            string Query = GlobalService.GetQueryLinkPro(LinkGroupChilds_MV.ChildIds);
+                            string exeut = $"EXEC [Main].[AddLinksPro]  '{LinkGroupChilds_MV.GroupId}', '{(int)GlobalService.ClassType.Group}', '{Query}',{1} ";
+                            var outValue = dam.DoQueryExecProcedure(exeut);
+                            if (outValue == 0.ToString() || (outValue == null || outValue.Trim() == ""))
+                            {
+                                Response_MV = new ResponseModelView
+                                {
+                                    Success = false,
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.InsertFaild],
+                                    Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                                };
+                                return Response_MV;
+                            }
+                            Response_MV = new ResponseModelView
+                            {
+                                Success = true,
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.InsertSuccess],
+                                Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
+                            };
+                            return Response_MV;
+                        }
                     }
                 }
             }
@@ -558,34 +618,44 @@ namespace DMS_API.Services
         {
             try
             {
-                Session_S = new SessionService();
-                var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
-                if (ResponseSession.Success == false)
+                if (LinkGroupChilds_MV.GroupId.ToString().IsInt() == false || LinkGroupChilds_MV.GroupId <= 0)
                 {
-                    return ResponseSession;
+                    Response_MV = new ResponseModelView
+                    {
+                        Success = false,
+                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsInt],
+                        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                    };
+                    return Response_MV;
+                }
+                else if (LinkGroupChilds_MV.ChildIds.Count == 0)
+                {
+                    Response_MV = new ResponseModelView
+                    {
+                        Success = false,
+                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.MustSelectedObjects],
+                        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                    };
+                    return Response_MV;
                 }
                 else
                 {
-                    int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
-                    if (((SessionModel)ResponseSession.Data).IsOrgAdmin == false && ((SessionModel)ResponseSession.Data).IsGroupOrgAdmin == false)
+                    Session_S = new SessionService();
+                    var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
+                    if (ResponseSession.Success == false)
                     {
-                        Response_MV = new ResponseModelView
-                        {
-                            Success = false,
-                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoPermission],
-                            Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
-                        };
-                        return Response_MV;
+                        return ResponseSession;
                     }
                     else
                     {
-                        if (LinkGroupChilds_MV.ChildIds.Count == 0)
+                        int userLoginID = ((SessionModel)ResponseSession.Data).UserID;
+                        if (((SessionModel)ResponseSession.Data).IsOrgAdmin == false && ((SessionModel)ResponseSession.Data).IsGroupOrgAdmin == false)
                         {
                             Response_MV = new ResponseModelView
                             {
                                 Success = false,
-                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.MustSelectedObjects],
-                                Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.NoPermission],
+                                Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
                             };
                             return Response_MV;
                         }
@@ -743,23 +813,33 @@ namespace DMS_API.Services
         {
             try
             {
-                Session_S = new SessionService();
-                var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
-                if (ResponseSession.Success == false)
+                if (LinkFolderChilds_MV.FolderId.ToString().IsInt() == false || LinkFolderChilds_MV.FolderId <= 0)
                 {
-                    return ResponseSession;
+                    Response_MV = new ResponseModelView
+                    {
+                        Success = false,
+                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.IsInt],
+                        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                    };
+                    return Response_MV;
+                }
+                else if (LinkFolderChilds_MV.ChildIds.Count == 0)
+                {
+                    Response_MV = new ResponseModelView
+                    {
+                        Success = false,
+                        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.MustSelectedObjects],
+                        Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                    };
+                    return Response_MV;
                 }
                 else
                 {
-                    if (LinkFolderChilds_MV.ChildIds.Count == 0 || LinkFolderChilds_MV.ChildIds == null)
+                    Session_S = new SessionService();
+                    var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
+                    if (ResponseSession.Success == false)
                     {
-                        Response_MV = new ResponseModelView
-                        {
-                            Success = false,
-                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.MustSelectedObjects],
-                            Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
-                        };
-                        return Response_MV;
+                        return ResponseSession;
                     }
                     else
                     {
