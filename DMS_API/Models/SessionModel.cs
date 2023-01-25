@@ -7,5 +7,6 @@
         public bool IsOrgAdmin { get; set; }
         public bool IsGroupOrgAdmin { get; set; }
         public bool IsExpairy { get; set; }
+        public bool IsActive { get; set; }
     }
 }

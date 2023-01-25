@@ -1,7 +1,6 @@
 ﻿using ArchiveAPI.Services;
 using DMS_API.Models;
 using DMS_API.ModelsView;
-using Microsoft.AspNetCore.Http.Headers;
 using System.Data;
 using System.Net;
 namespace DMS_API.Services
@@ -30,7 +29,7 @@ namespace DMS_API.Services
         #region Functions
         /// <summary>
         /// Everyone To Do:
-        /// Login into Documents Management System (DMS)
+        /// Login into Documents Management System (DMS).
         /// </summary>
         /// <param name="User_MV">Body Parameters</param>
         /// <param name="Lang">Header Language</param>
@@ -1521,6 +1520,73 @@ namespace DMS_API.Services
                         }
                     }
                 }
+            }
+        }
+        /// <summary>
+        /// Everyone To Do:
+        /// Logout from Documents Management System (DMS).
+        /// </summary>
+        /// <param name="RequestHeader">Header Parameters</param>
+        /// <returns>Response { (bool)Success, (string)Message, (object)Data}</returns>
+        public async Task<ResponseModelView> Logout(RequestHeaderModelView RequestHeader)
+        {
+            try
+            {
+                Session_S = new SessionService();
+                var ResponseSession = await Session_S.CheckAuthorizationResponse(RequestHeader);
+                if (ResponseSession.Success == false)
+                {
+                    return ResponseSession;
+                }
+                else
+                {
+                    int UserLogin = ((SessionModel)ResponseSession.Data).UserID;
+                    if (UserLogin.ToString().IsInt() && UserLogin > 0)
+                    {
+                        var outputActive = dam.DoQueryAndPutOutValue($"UPDATE  [Security].Session   SET IsActive=0    OUTPUT INSERTED.IsActive    WHERE UserID={UserLogin} ", "IsActive");
+                        var outputOnLine = dam.DoQueryAndPutOutValue($"UPDATE  [User].Users         SET UsIsOnLine=0  OUTPUT INSERTED.UsIsOnLine  WHERE UsId={UserLogin} ", "UsIsOnLine");
+                        if (outputActive == null || outputOnLine == null)
+                        {
+                            Response_MV = new ResponseModelView
+                            {
+                                Success = false,
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError],
+                                Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                            };
+                            return Response_MV;
+                        }
+                        else
+                        {
+                            Response_MV = new ResponseModelView
+                            {
+                                Success = true,
+                                Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.LogoutSuccess],
+                                Data = new HttpResponseMessage(HttpStatusCode.OK).StatusCode
+                            };
+                            return Response_MV;
+                        }
+                    }
+                    else
+                    {
+                        Response_MV = new ResponseModelView
+                        {
+                            Success = true,
+                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.LogoutFaild],
+                            Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                        };
+                        return Response_MV;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Response_MV = new ResponseModelView
+                {
+                    Success = false,
+                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.ExceptionError] + " - " + ex.Message,
+                    Data = new HttpResponseMessage(HttpStatusCode.ExpectationFailed).StatusCode
+                };
+                return Response_MV;
             }
         }
         #endregion

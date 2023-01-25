@@ -3,6 +3,8 @@ using DMS_API.Models;
 using DMS_API.ModelsView;
 using System.Data;
 using System.Net;
+using static iTextSharp.text.pdf.PdfReader;
+
 namespace DMS_API.Services
 {
     /// <summary>
@@ -61,7 +63,7 @@ namespace DMS_API.Services
                     {
                         int _PageNumber = Pagination_MV.PageNumber == 0 ? 1 : Pagination_MV.PageNumber;
                         int _PageRows = Pagination_MV.PageRows == 0 ? 1 : Pagination_MV.PageRows;
-                        int CurrentPage = _PageNumber;
+                        int CurrentPage = _PageNumber; int PageRows = _PageRows;
 
                         int orgOwnerID = Convert.ToInt32(dam.FireSQL($"SELECT OrgOwner FROM [User].V_Users WHERE UserID = {userLoginID} "));
                         string whereField = orgOwnerID == 0 ? "SELECT '0' as OrgId UNION SELECT OrgId" : "SELECT OrgId";
@@ -144,7 +146,7 @@ namespace DMS_API.Services
                                     {
                                         Success = true,
                                         Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetSuccess],
-                                        Data = new { TotalRows = MaxTotal.Rows[0]["TotalRows"], MaxPage = MaxTotal.Rows[0]["MaxPage"], CurrentPage, data = Group_Mlist }
+                                        Data = new { TotalRows = MaxTotal.Rows[0]["TotalRows"], MaxPage = MaxTotal.Rows[0]["MaxPage"], CurrentPage, PageRows, data = Group_Mlist }
                                     };
                                     return Response_MV;
                                 }

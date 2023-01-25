@@ -169,9 +169,8 @@ namespace DMS_API.Services
             string[] sqlCheckList = { "--",";--",";","/*","*/","@@","@","=","+","char","nchar","varchar","nvarchar","convert",
                                       "set","union","alter","begin","cast","create","cursor","and","or","end","exec","execute",
                                       "declare","select","insert","update","delete","waitfor","drop","fetch","kill","truncate",
-                                      "sys","sysobjects","syscolumns","database","table","xp_cmdshell"};
-            // string CheckString = Input.Replace("'", "''");
-            Input = Input == null ? "" : Input.Trim();
+                                      "from","sys","sysobjects","syscolumns","database","table","xp_cmdshell"};
+            Input = Input == null ? "" : Input.Trim().ToLower();
             for (int i = 0; i <= sqlCheckList.Length - 1; i++)
             {
                 if ((Input.Contains(sqlCheckList[i], StringComparison.OrdinalIgnoreCase)))
@@ -193,13 +192,13 @@ namespace DMS_API.Services
             string[] sqlCheckList = { "--",";--",";","/*","*/","@@","@","=","+","char","nchar","varchar","nvarchar","convert",
                                       "set","union","alter","begin","cast","create","cursor","and","or","end","exec","execute",
                                       "declare","select","insert","update","delete","waitfor","drop","fetch","kill","truncate",
-                                      "sys","sysobjects","syscolumns","database","table","xp_cmdshell"};
+                                      "from","sys","sysobjects","syscolumns","database","table","xp_cmdshell"};
             var obj = InputClass.GetType();
             foreach (PropertyInfo property in obj.GetProperties())
             {
                 var name = property.Name;
                 var value = property.GetValue(InputClass, null)?.ToString();
-                value = value == null ? "" : value.Trim();
+                value = value == null ? "" : value.Trim().ToLower();
                 // string CheckString = value.Replace("'", "''");
                 for (int i = 0; i <= sqlCheckList.Length - 1; i++)
                 {

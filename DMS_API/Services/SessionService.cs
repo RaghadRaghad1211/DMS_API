@@ -37,7 +37,7 @@ namespace DMS_API.Services
         {
             try
             {
-                if (ValidationService.IsEmpty(RequestHeader.Token) == true)
+                if (RequestHeader.Token.IsEmpty() == true)
                 {
                     Response_MV = new ResponseModelView
                     {
@@ -75,7 +75,17 @@ namespace DMS_API.Services
                         }
                         else
                         {
-                            if (Session_M.IsExpairy == true)
+                            if (Session_M.IsActive == false)
+                            {
+                                Response_MV = new ResponseModelView
+                                {
+                                    Success = false,
+                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.DisactiveToken],
+                                    Data = new HttpResponseMessage(HttpStatusCode.BadRequest).StatusCode
+                                };
+                                return await Task.FromResult(Response_MV);
+                            }
+                            else if (Session_M.IsExpairy == true)
                             {
                                 Response_MV = new ResponseModelView
                                 {
@@ -113,7 +123,7 @@ namespace DMS_API.Services
         {
             try
             {
-                string get = "SELECT   UserID, IsAdministrator, IsOrgAdmin, IsExpairy " +
+                string get = "SELECT   UserID, IsAdministrator, IsOrgAdmin, IsActive, IsExpairy " +
                                  "FROM     Security.V_Session " +
                                 $"WHERE Token='{UserToken}' ";
                 Dt = new DataTable();
@@ -135,7 +145,8 @@ namespace DMS_API.Services
                         IsAdministrator = Convert.ToBoolean(Dt.Rows[0]["IsAdministrator"].ToString()), // Forbidden
                         IsOrgAdmin = Convert.ToBoolean(Dt.Rows[0]["IsOrgAdmin"].ToString()), // Forbidden
                         IsGroupOrgAdmin = inGroupAdmins > 0 ? true : false, // Forbidden
-                        IsExpairy = Convert.ToBoolean(Dt.Rows[0]["IsExpairy"].ToString()) // ExpiredToken
+                        IsExpairy = Convert.ToBoolean(Dt.Rows[0]["IsExpairy"].ToString()), // ExpiredToken
+                        IsActive = Convert.ToBoolean(Dt.Rows[0]["IsActive"].ToString()) // DisactiveToken
                     };
                     return Session_M;
                 }
@@ -171,7 +182,7 @@ namespace DMS_API.Services
                 else
                 {
                     string update = $"UPDATE Security.Session " +
-                                    $"SET Token='{jwtToken.TokenID}', Expairy='{jwtToken.TokenExpairy}' " +
+                                    $"SET Token='{jwtToken.TokenID}', Expairy='{jwtToken.TokenExpairy}', IsActive=1 " +
                                     $"WHERE UserID={jwtToken.UserID}";
                     dam.DoQuery(update);
                     return await Task.FromResult(true);

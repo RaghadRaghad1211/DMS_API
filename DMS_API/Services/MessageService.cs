@@ -24,6 +24,7 @@
         public static readonly string Forbidden = "Forbidden";
         public static readonly string Unauthorized = "Unauthorized";
         public static readonly string ExpiredToken = "ExpiredToken";
+        public static readonly string DisactiveToken = "DisactiveToken";
         public static readonly string ChangePasswordSuccess = "ChangeSuccess";
         public static readonly string ChangePasswordFaild = "ChangePasswordFaild";
         public static readonly string SaveSuccess = "SaveSuccess";
@@ -36,6 +37,8 @@
         public static readonly string MoveFaild = "MoveFaild";
         public static readonly string UserNotActive = "UserNotActive";
         public static readonly string LoginFaild = "LoginFaild";
+        public static readonly string LogoutSuccess = "LogoutSuccess";
+        public static readonly string LogoutFaild = "LogoutFaild";
         public static readonly string InsertFaild = "InsertFaild";
         public static readonly string UpdateFaild = "UpdateFaild";
         public static readonly string GetSuccess = "GetSuccess";
@@ -110,6 +113,8 @@
                      {GetSuccess,"تم جلب البيانات بشكل صحيح" },
                      {GetFaild,"فشل في جلب البيانات" },
                      { LoginFaild, "فشل بالدخول" },
+                     { LogoutFaild, "فشل بعملية الخروج" },
+                     {LogoutSuccess,"تم الخروج من النظام"},
                      { UserNotActive, "المستخدم غير فعال" },
                      { InsertSuccess, "تمت عملية الاضافة" },
                      { InsertFaild, "فشل بعملية الادخال" },
@@ -125,9 +130,10 @@
                      { Unauthorized, "المستخدم غير مصرح له بطلب هذا الإجراء" },
                      { Forbidden, "المستخدم ممنوع من طلب هذا الإجراء" },
                      { ExpiredToken, "انتهت صلاحية رمز الوصول" },
+                     { DisactiveToken, "رمز الوصول غير فعال" },
                      { ExceptionError, "فشل - استثناء" },
                      { ServiceUnavailable, "حدث خطأ اثناء الاتصال بالخادم" },
-                     { ServiceAvailable, "يوجد الاتصال بالخادم" },
+                     { ServiceAvailable, "يوجد اتصال بالخادم" },
                      {IsInt ,"يجب ادخال رقم"},
                      {TokenEmpty ,"رمز الوصول فارغ"},
                      {ConfirmPasswordIsIncorrect ,"تأكيد كلمة المرور غير صحيحة"},
@@ -186,6 +192,8 @@
                      {GetSuccess,"Get Data Success" },
                      {GetFaild,"Get Data Faild" },
                      {LoginFaild,"Login Faild"},
+                     {LogoutFaild,"Logout Faild"},
+                     {LogoutSuccess,"Logout Success"},
                      { UserNotActive, "User is Not Active" },
                      { InsertSuccess, "Insert Success" },
                      { InsertFaild, "Insert Faild" },
@@ -201,6 +209,7 @@
                      { Unauthorized, "User is Unauthorized to request this action" },
                      { Forbidden, "User is Forbidden from requesting this action" },
                      { ExpiredToken, "The access token expired" },
+                     { DisactiveToken, "The access token Disactive" },
                      { ExceptionError, "Faild - Exception" },
                      { ServiceUnavailable, "An error occurred while connecting to the server" },
                      { ServiceAvailable, "There is a connection to the server" },

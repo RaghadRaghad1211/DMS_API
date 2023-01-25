@@ -734,7 +734,7 @@ namespace DMS_API.Services
                             }
                             else
                             {
-                                string exeut = $"EXEC [User].[UpdatePermissionPro] '{item.SourObjId}', '{item.DestObjId}', '{item.PerRead}', '{item.PerWrite}', '{item.PerManage}', '{item.PerQR}', '{false}' ";
+                                string exeut = $"EXEC [User].[UpdatePermissionPro] '{item.SourObjId}', '{item.DestObjId}', '{item.PerRead}', '{item.PerWrite}', '{item.PerManage}', '{item.PerQR}', '{item.PerToAllChilds}' ";
                                 var outValue = dam.DoQueryExecProcedure(exeut);
                                 if (outValue == 0.ToString() || outValue == null || outValue.Trim() == "")
                                 {
