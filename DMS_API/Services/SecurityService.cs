@@ -28,7 +28,7 @@ namespace DMS_API.Services
         public static readonly string HostFilesUrl =
             "http://10.55.101.10:90/DMSserver";  // السيرفر
                                                  //  "http://192.168.43.39:90/DMSserver"; //  البيت
-                                             //      "http://10.92.92.239:90/DMSserver"; // الدائرة
+                                                 //      "http://10.92.92.239:90/DMSserver"; // الدائرة
 
         private static string PasswordSalt;
         private static string CrypticSalt;
@@ -284,7 +284,7 @@ namespace DMS_API.Services
                 byte[] saltBytes = new byte[] { 2, 1, 1, 2, 1, 9, 8, 9 };
                 using (MemoryStream ms = new MemoryStream())
                 {
-                    using (Aes AES =  Aes.Create())
+                    using (Aes AES = Aes.Create())
                     {
                         AES.KeySize = 256;
                         AES.BlockSize = 128;
@@ -409,84 +409,12 @@ namespace DMS_API.Services
             }
         }
         /// <summary>
-        /// Method return keyRing.
+        /// Decrypt Document and return master key.
         /// </summary>
-        /// <param name="MasterKey"></param>
-        /// <param name="UserPassword"></param>
+        /// <param name="SourcePdfFile"></param>
+        /// <param name="DestFilePath"></param>
         /// <returns></returns>
-        public static string Encrypt(string MasterKey, string UserPassword)
-        {
-            try
-            {
-                UTF8Encoding utf8 = new UTF8Encoding();
-                byte[] passwordBytes = utf8.GetBytes(UserPassword);
-                byte[] plainBytes = utf8.GetBytes(MasterKey);
-                byte[] aesKey = SHA256.Create().ComputeHash(passwordBytes);
-                byte[] aesIV = MD5.Create().ComputeHash(passwordBytes);
-
-                using (Aes aes = Aes.Create())
-                {
-                    aes.Key = aesKey;
-                    aes.IV = aesIV;
-                    aes.Mode = CipherMode.CBC;
-                    aes.Padding = PaddingMode.PKCS7;
-
-                    using (MemoryStream memoryStream = new MemoryStream())
-                    {
-                        CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateEncryptor(), CryptoStreamMode.Write);
-
-                        cryptoStream.Write(plainBytes, 0, plainBytes.Length);
-                        cryptoStream.FlushFinalBlock();
-
-                        byte[] bEnc = memoryStream.ToArray();
-                        return Convert.ToBase64String(bEnc);
-                    }
-                }
-            }
-            catch (Exception)
-            {
-                return null;
-            }
-        }
-
-
-        public static string DecryptDocument(string SourceFile, string UserKeyRing, string UserId, string UserPassword)
-        {
-            try
-            {
-                UTF8Encoding utf8 = new UTF8Encoding();
-                byte[] passwordBytes = utf8.GetBytes(UserPassword);
-                byte[] encBytes = Convert.FromBase64String(UserKeyRing);
-                byte[] aesKey = SHA256.Create().ComputeHash(passwordBytes);
-                byte[] aesIV = MD5.Create().ComputeHash(passwordBytes);
-
-                using (Aes aes = Aes.Create())
-                {
-                    aes.Key = aesKey;
-                    aes.IV = aesIV;
-                    aes.Mode = CipherMode.CBC;
-                    aes.Padding = PaddingMode.PKCS7;
-
-                    using (MemoryStream memoryStream = new MemoryStream())
-                    {
-                        CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateDecryptor(), CryptoStreamMode.Write);
-
-                        cryptoStream.Write(encBytes, 0, encBytes.Length);
-                        cryptoStream.FlushFinalBlock();
-
-                        byte[] bClear = memoryStream.ToArray();
-                        var MasterKey = utf8.GetString(bClear);
-                        return Decrypt(SourceFile, MasterKey, UserId);
-                    }
-
-                }
-            }
-            catch (Exception)
-            {
-                return null;
-            }
-        }
-        private static string Decrypt(string SourceFile, string MasterKey, string UserId)
+        public static string DecryptDocument(string SourceFile, string MasterKey, string UserId)
         {
             try
             {
@@ -512,7 +440,7 @@ namespace DMS_API.Services
                         throw new Exception("Key provided is not valid/ not recognised by this system");
                     }
 
-                    string sClearFile = newSourceFile.Substring(0, newSourceFile.Length - 4);
+                    string sClearFile = newSourceFile.Substring(0, newSourceFile.Length - Path.GetExtension(SourceFile).Length);
                     if (File.Exists(sClearFile))
                     {
                         File.Delete(sClearFile);
@@ -562,6 +490,86 @@ namespace DMS_API.Services
                 return null;
             }
         }
+
+        /// <summary>
+        /// Method return keyRing.
+        /// </summary>
+        /// <param name="MasterKey"></param>
+        /// <param name="UserPassword"></param>
+        /// <returns></returns>
+        public static string Encrypt(string MasterKey, string UserPassword)
+        {
+            try
+            {
+                UTF8Encoding utf8 = new UTF8Encoding();
+                byte[] passwordBytes = utf8.GetBytes(UserPassword);
+                byte[] plainBytes = utf8.GetBytes(MasterKey);
+                byte[] aesKey = SHA256.Create().ComputeHash(passwordBytes);
+                byte[] aesIV = MD5.Create().ComputeHash(passwordBytes);
+
+                using (Aes aes = Aes.Create())
+                {
+                    aes.Key = aesKey;
+                    aes.IV = aesIV;
+                    aes.Mode = CipherMode.CBC;
+                    aes.Padding = PaddingMode.PKCS7;
+
+                    using (MemoryStream memoryStream = new MemoryStream())
+                    {
+                        CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateEncryptor(), CryptoStreamMode.Write);
+
+                        cryptoStream.Write(plainBytes, 0, plainBytes.Length);
+                        cryptoStream.FlushFinalBlock();
+
+                        byte[] bEnc = memoryStream.ToArray();
+                        return Convert.ToBase64String(bEnc);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+
+        public static string Decrypt(string SourceFile, string UserKeyRing, string UserId, string UserPassword)
+        {
+            try
+            {
+                UTF8Encoding utf8 = new UTF8Encoding();
+                byte[] passwordBytes = utf8.GetBytes(UserPassword);
+                byte[] encBytes = Convert.FromBase64String(UserKeyRing);
+                byte[] aesKey = SHA256.Create().ComputeHash(passwordBytes);
+                byte[] aesIV = MD5.Create().ComputeHash(passwordBytes);
+
+                using (Aes aes = Aes.Create())
+                {
+                    aes.Key = aesKey;
+                    aes.IV = aesIV;
+                    aes.Mode = CipherMode.CBC;
+                    aes.Padding = PaddingMode.PKCS7;
+
+                    using (MemoryStream memoryStream = new MemoryStream())
+                    {
+                        CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateDecryptor(), CryptoStreamMode.Write);
+
+                        cryptoStream.Write(encBytes, 0, encBytes.Length);
+                        cryptoStream.FlushFinalBlock();
+
+                        byte[] bClear = memoryStream.ToArray();
+                        var MasterKey = utf8.GetString(bClear);
+                        return DecryptDocument(SourceFile, MasterKey, UserId);
+                    }
+
+                }
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
 
 
 

@@ -35,10 +35,10 @@ namespace DMS_API.Services
 
 
 
-            //  var keyring = SecurityService.EncryptDocument("F:\\IIS\\DMS\\dm.pdf", "F:\\IIS\\DMS\\");
-            //  string keyring = "{|\|DC-0F-!R@Q}$+RHlXGcRbbKKiRXbu41JSw==$blUTOXsppIWf7iS8r+JYi5c4Sp4QoBU6uRImRM+nX8A=";
+           //  var keyring = SecurityService.EncryptDocument("F:\\IIS\\DMS\\dm.pdf", "F:\\IIS\\DMS\\");
+              // string keyring = @"{|\|DC-0F-!R@Q}$dwSocTfGR01MPaFnvWUpLw==$fHaKKkPFIFmqdjtFkSZ32LxdMzzRDLhC9l3ddoxfEMg=";
 
-            //  var ee = SecurityService.DecryptDocument("F:\\IIS\\DMS\\dm.pdf.enc", keyring, "55", "12345678");
+              //   var ee = SecurityService.DecryptDocument("F:\\IIS\\DMS\\dm.pdf.enc", keyring, "55");
 
 
         }
@@ -142,6 +142,7 @@ namespace DMS_API.Services
                                 }
                                 else
                                 {
+                                    int DocId = (int)Convert.ToInt64(outValue.Rows[0][0].ToString());
                                     if (Document_MV.DocumentFile.Length > 0)
                                     {
                                         string DocFileNameWithExten = Document_MV.DocumentFile.FileName;
@@ -155,10 +156,10 @@ namespace DMS_API.Services
                                             };
                                             return Response_MV;
                                         }
-                                        var DocFolder = await GlobalService.CreateDocumentFolderInServerFolder(Convert.ToInt32(outValue.Rows[0][0].ToString()), Environment);
+                                        var DocFolder = await GlobalService.CreateDocumentFolderInServerFolder(DocId, Environment);
                                         if (DocFolder != null)
                                         {
-                                            string DocumentFileName = SecurityService.RoundomKey(GlobalService.LengthKey) + SecurityService.EnecryptText(outValue.Rows[0][0].ToString()) + SecurityService.RoundomKey(GlobalService.LengthKey) + Path.GetExtension(DocFileNameWithExten).Trim();
+                                            string DocumentFileName = SecurityService.RoundomKey(GlobalService.LengthKey) + SecurityService.EnecryptText(DocId.ToString()) + SecurityService.RoundomKey(GlobalService.LengthKey) + Path.GetExtension(DocFileNameWithExten).Trim();
                                             string FilePath = Path.Combine(DocFolder, DocumentFileName);
                                             using (FileStream filestream = System.IO.File.Create(FilePath))
                                             {
@@ -167,27 +168,23 @@ namespace DMS_API.Services
                                                 filestream.Close();
                                             }
 
-
-
-
-
-                                            //// تشفير
-                                            //var MasterKey = SecurityService.EncryptDocument(FilePath, Path.GetDirectoryName(FilePath));
-                                            //DataTable DTuserPass = new DataTable();
-                                            //DTuserPass = dam.FireDataTable($"SELECT UserId, UsPassword FROM [User].[GetUsersPassHaveReadOnObject]({int.Parse(outValue.Rows[0][0].ToString())})");
-                                            //if (DTuserPass.Rows.Count > 0)
-                                            //{
-                                            //    for (int i = 0; i < DTuserPass.Rows.Count; i++)
-                                            //    {
-                                            //        var KeyRing = SecurityService.Encrypt(MasterKey, DTuserPass.Rows[0]["UsPassword"].ToString());
-                                            //        // insert to keyring table.
-                                            //    }
-                                            //}
-
-
-
-
-
+                                            // تشفير
+                                            string DocKey = SecurityService.EncryptDocument(FilePath, Path.GetDirectoryName(FilePath));
+                                            if (DocKey.IsEmpty() == true)
+                                            {
+                                                Response_MV = new ResponseModelView
+                                                {
+                                                    Success = false,
+                                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.DocKeyFaild],
+                                                    Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                                                };
+                                                return Response_MV;
+                                            }
+                                            else
+                                            {
+                                                string insert = $"insert into  [Document].[MasterKeys] VALUES({DocId},'{DocKey}',{1})";
+                                                dam.DoQuery(insert);
+                                            }
                                         }
                                     }
                                     Response_MV = new ResponseModelView
@@ -262,9 +259,9 @@ namespace DMS_API.Services
                             };
                             return Response_MV;
                         }
-                        else if (Document_MV.DocumentPerantId.ToString().IsInt() == false ||Document_MV.DocumentPerantId <= 0 || 
-                                 Document_MV.DocumentOrgOwnerID.ToString().IsInt() == false ||Document_MV.DocumentOrgOwnerID <= 0 || 
-                                 Document_MV.DocumentId.ToString().IsInt() == false||Document_MV.DocumentId <= 0 )
+                        else if (Document_MV.DocumentPerantId.ToString().IsInt() == false || Document_MV.DocumentPerantId <= 0 ||
+                                 Document_MV.DocumentOrgOwnerID.ToString().IsInt() == false || Document_MV.DocumentOrgOwnerID <= 0 ||
+                                 Document_MV.DocumentId.ToString().IsInt() == false || Document_MV.DocumentId <= 0)
                         {
                             Response_MV = new ResponseModelView
                             {
@@ -471,7 +468,7 @@ namespace DMS_API.Services
         {
             try
             {
-                if (DocumentId.ToString().IsInt() == false||DocumentId <= 0 )
+                if (DocumentId.ToString().IsInt() == false || DocumentId <= 0)
                 {
                     Response_MV = new ResponseModelView
                     {

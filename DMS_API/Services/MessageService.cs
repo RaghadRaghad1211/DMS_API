@@ -93,6 +93,7 @@
         public static readonly string QrCodeIsWrong = "QrCodeIsWrong";
         public static readonly string QrCodeIsPraivet = "QrCodeIsPraivet";
         public static readonly string SqlInjection = "SqlInjection";
+        public static readonly string DocKeyFaild = "CreationFaild";
 
         // public static readonly string FileSize = "MustSelectedPermissionForObject";
 
@@ -176,6 +177,7 @@
                      {QrCodeIsWrong ,"رمز التحقق خطأ"},
                      {QrCodeIsPraivet ,"يجب ادخال اسم المستخدم وكلمة المرور لقراءة رمز التحقق"},
                      {SqlInjection ,$"الكشف عن وجود خطر في استعلام قاعدة البيانات {" - SQL Injection"}"},
+                     { DocKeyFaild, "فشل بعملية انشاء مفتاح الوثيقة" },
 
 
                 }
@@ -255,7 +257,7 @@
                     { QrCodeIsWrong ,"QR code is wrong"},
                      {QrCodeIsPraivet ,"Must enter your username and password to read the QR code"},
                      {SqlInjection ,"Detect a threat in the database query - SQL Injection"},
-
+                     { DocKeyFaild, "Failed to create the document key" }, 
 
 
 

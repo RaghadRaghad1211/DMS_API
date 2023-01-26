@@ -1,6 +1,7 @@
 ﻿using DMS_API.ModelsView;
 using DMS_API.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace DMS_API.Controllers
 {
@@ -41,6 +42,16 @@ namespace DMS_API.Controllers
         [Route("GetOrgsParentWithChilds_Table")]
         public async Task<IActionResult> GetOrgsParentWithChilds_Table([FromBody] PaginationModelView Pagination_MV, [FromHeader] RequestHeaderModelView RequestHeader)
         {
+            if (Pagination_MV.IsSqlInjectionList())
+            {
+                Response_MV = new ResponseModelView
+                {
+                    Success = false,
+                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.SqlInjection],
+                    Data = new HttpResponseMessage(HttpStatusCode.UnprocessableEntity).StatusCode
+                };
+                return UnprocessableEntity(Response_MV);
+            }
             Response_MV = await Org_S.GetOrgsParentWithChilds_Table(Pagination_MV,RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
@@ -49,6 +60,16 @@ namespace DMS_API.Controllers
         [Route("GetOrgByID/{OrgID}")]
         public async Task<IActionResult> GetOrgByID([FromRoute] int OrgID, [FromHeader] RequestHeaderModelView RequestHeader)
         {
+            if (OrgID.ToString().IsSqlInjection())
+            {
+                Response_MV = new ResponseModelView
+                {
+                    Success = false,
+                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.SqlInjection],
+                    Data = new HttpResponseMessage(HttpStatusCode.UnprocessableEntity).StatusCode
+                };
+                return UnprocessableEntity(Response_MV);
+            }
             Response_MV = await Org_S.GetOrgByID(OrgID,RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
@@ -57,6 +78,16 @@ namespace DMS_API.Controllers
         [Route("SearchOrgsByArName/{OrgArName}")]
         public async Task<IActionResult> SearchOrgsByArName([FromRoute] string OrgArName, [FromHeader] RequestHeaderModelView RequestHeader)
         {
+            if (OrgArName.IsSqlInjection())
+            {
+                Response_MV = new ResponseModelView
+                {
+                    Success = false,
+                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.SqlInjection],
+                    Data = new HttpResponseMessage(HttpStatusCode.UnprocessableEntity).StatusCode
+                };
+                return UnprocessableEntity(Response_MV);
+            }
             Response_MV = await Org_S.SearchOrgsByArName(OrgArName, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
@@ -65,6 +96,16 @@ namespace DMS_API.Controllers
         [Route("AddOrg")]
         public async Task<IActionResult> AddOrg([FromBody] AddOrgModelView AddOrg_MV, [FromHeader] RequestHeaderModelView RequestHeader)
         {
+            if (AddOrg_MV.IsSqlInjectionList())
+            {
+                Response_MV = new ResponseModelView
+                {
+                    Success = false,
+                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.SqlInjection],
+                    Data = new HttpResponseMessage(HttpStatusCode.UnprocessableEntity).StatusCode
+                };
+                return UnprocessableEntity(Response_MV);
+            }
             Response_MV = await Org_S.AddOrg(AddOrg_MV, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
@@ -73,6 +114,16 @@ namespace DMS_API.Controllers
         [Route("EditOrg")]
         public async Task<IActionResult> EditOrg([FromBody] EditOrgModelView EditOrg_MV, [FromHeader] RequestHeaderModelView RequestHeader)
         {
+            if (EditOrg_MV.IsSqlInjectionList())
+            {
+                Response_MV = new ResponseModelView
+                {
+                    Success = false,
+                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.SqlInjection],
+                    Data = new HttpResponseMessage(HttpStatusCode.UnprocessableEntity).StatusCode
+                };
+                return UnprocessableEntity(Response_MV);
+            }
             Response_MV = await Org_S.EditOrg(EditOrg_MV, RequestHeader);
             return Response_MV.Success == true ? Ok(Response_MV) : StatusCode((int)Response_MV.Data, Response_MV);
         }
