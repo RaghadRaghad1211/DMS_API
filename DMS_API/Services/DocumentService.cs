@@ -35,10 +35,10 @@ namespace DMS_API.Services
 
 
 
-           //  var keyring = SecurityService.EncryptDocument("F:\\IIS\\DMS\\dm.pdf", "F:\\IIS\\DMS\\");
-              // string keyring = @"{|\|DC-0F-!R@Q}$dwSocTfGR01MPaFnvWUpLw==$fHaKKkPFIFmqdjtFkSZ32LxdMzzRDLhC9l3ddoxfEMg=";
+            //  var keyring = SecurityService.EncryptDocument("F:\\IIS\\DMS\\dm.pdf", "F:\\IIS\\DMS\\");
+            // string keyring = @"{|\|DC-0F-!R@Q}$dwSocTfGR01MPaFnvWUpLw==$fHaKKkPFIFmqdjtFkSZ32LxdMzzRDLhC9l3ddoxfEMg=";
 
-              //   var ee = SecurityService.DecryptDocument("F:\\IIS\\DMS\\dm.pdf.enc", keyring, "55");
+            //   var ee = SecurityService.DecryptDocument("F:\\IIS\\DMS\\dm.pdf.enc", keyring, "55");
 
 
         }
@@ -74,7 +74,7 @@ namespace DMS_API.Services
                         };
                         return Response_MV;
                     }
-                    else if (Document_MV.DocumentFile.Length <= 0)
+                    else if (Document_MV.DocumentFile == null || Document_MV.DocumentFile.Length <= 0)
                     {
                         Response_MV = new ResponseModelView
                         {
@@ -169,7 +169,7 @@ namespace DMS_API.Services
                                             }
 
                                             // تشفير
-                                            string DocKey = SecurityService.EncryptDocument(FilePath, Path.GetDirectoryName(FilePath));
+                                            string DocKey = SecurityService.EncryptDocument(FilePath, Path.GetDirectoryName(FilePath), DocId.ToString());
                                             if (DocKey.IsEmpty() == true)
                                             {
                                                 Response_MV = new ResponseModelView
@@ -182,7 +182,8 @@ namespace DMS_API.Services
                                             }
                                             else
                                             {
-                                                string insert = $"insert into  [Document].[MasterKeys] VALUES({DocId},'{DocKey}',{1})";
+                                                string insert = "INSERT INTO  [Document].[MasterKeys] " +
+                                                               $"(DocId, DocKey,IsActive) VALUES({DocId},'{DocKey}',{1})";
                                                 dam.DoQuery(insert);
                                             }
                                         }

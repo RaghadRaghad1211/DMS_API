@@ -202,8 +202,11 @@ namespace DMS_API.Services
                 // string CheckString = value.Replace("'", "''");
                 for (int i = 0; i <= sqlCheckList.Length - 1; i++)
                 {
-                    if ((value.Contains(sqlCheckList[i], StringComparison.OrdinalIgnoreCase)))
-                    { isSQLInjection = true; }
+                    if (property.PropertyType.Name != "IFormFile")
+                    {
+                        if ((value.Contains(sqlCheckList[i], StringComparison.OrdinalIgnoreCase)))
+                        { isSQLInjection = true; }
+                    }
                 }
             }
             return isSQLInjection;

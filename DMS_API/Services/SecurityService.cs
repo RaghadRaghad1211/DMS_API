@@ -354,7 +354,7 @@ namespace DMS_API.Services
         /// <param name="SourcePdfFile"></param>
         /// <param name="DestFilePath"></param>
         /// <returns></returns>
-        public static string EncryptDocument(string SourcePdfFile, string DestFilePath)
+        public static string EncryptDocument(string SourcePdfFile, string DestFilePath, string DocumentId)
         {
             try
             {
@@ -370,7 +370,7 @@ namespace DMS_API.Services
                         aes.GenerateIV();
                         aes.GenerateKey();
 
-                        MasterKey = DocumentSalt + "$" + Convert.ToBase64String(aes.IV) + "$" + Convert.ToBase64String(aes.Key);
+                        MasterKey = EnecryptText(DocumentId) + "$" + Convert.ToBase64String(aes.IV) + "$" + Convert.ToBase64String(aes.Key);
                         using (FileStream fsIn = new FileStream(SourcePdfFile, FileMode.Open, FileAccess.Read, FileShare.None))
                         {
                             using (FileStream fsOut = new FileStream(sEncFile, FileMode.Create, FileAccess.Write, FileShare.None))
@@ -414,7 +414,7 @@ namespace DMS_API.Services
         /// <param name="SourcePdfFile"></param>
         /// <param name="DestFilePath"></param>
         /// <returns></returns>
-        public static string DecryptDocument(string SourceFile, string MasterKey, string UserId)
+        public static string DecryptDocument(string SourceFile, string MasterKey, string UserId, string DocumentId)
         {
             try
             {
@@ -425,7 +425,7 @@ namespace DMS_API.Services
 
                     byte[] IV = new byte[1];
                     byte[] Key = new byte[1];
-                    if (MasterKey.StartsWith(DocumentSalt))
+                    if (MasterKey.StartsWith(EnecryptText(DocumentId)))
                     {
                         string[] sParts = MasterKey.Split("$");
                         if (sParts.Count() != 3)
@@ -559,7 +559,7 @@ namespace DMS_API.Services
 
                         byte[] bClear = memoryStream.ToArray();
                         var MasterKey = utf8.GetString(bClear);
-                        return DecryptDocument(SourceFile, MasterKey, UserId);
+                        return DecryptDocument(SourceFile, MasterKey, UserId,"");
                     }
 
                 }
