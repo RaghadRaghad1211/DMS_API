@@ -1246,11 +1246,28 @@ namespace DMS_API.Services
                             }
                             else
                             {
+                                int DocumentId = (int)Convert.ToInt64(dt.Rows[0]["QrObjId"].ToString());
+                                string getDocKey = dam.FireSQL("SELECT  DocKey FROM [Document].[MasterKeys] " +
+                                                                  $"WHERE   DocId={DocumentId} AND IsActive={1} ");
+                                if (getDocKey.IsEmpty() == true)
+                                {
+                                    Response_MV = new ResponseModelView
+                                    {
+                                        Success = false,
+                                        Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.GetFaild],
+                                        Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                                    };
+                                    return Response_MV;
+                                }
+                                string sourcEncryptFile = await GlobalService.GetFullPathOfDocumentInServerFolder_Encrypt(DocumentId, Environment);
+                                string destDecryptFile = await GlobalService.GetTempDocumentLocationInServerFolder(Environment);
+                                string getDocumentFile = SecurityService.DecryptDocument(sourcEncryptFile, destDecryptFile, getDocKey, DocumentId);
+
                                 Response_MV = new ResponseModelView
                                 {
                                     Success = true,
                                     Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.GetSuccess],
-                                    Data = new { DocumentFilePath = await GlobalService.GetFullPathOfDocumentNameInServerFolder(Convert.ToInt32(dt.Rows[0]["QrObjId"].ToString()), Environment) }
+                                    Data = new { DocumentFilePath = getDocumentFile }
                                 };
                                 return Response_MV;
                             }
@@ -1376,11 +1393,30 @@ namespace DMS_API.Services
                                             }
                                             else
                                             {
+                                                int UserId = Convert.ToInt32(dam.FireSQL($"SELECT  UsId   FROM    [User].Users   WHERE   UsUserName = '{Login_MV.Username}' AND " +
+                                                                                         $"        UsPassword = '{SecurityService.PasswordEnecrypt(Login_MV.Password.Trim(), Login_MV.Username.Trim())}' "));
+                                                int DocumentId = (int)Convert.ToInt64(dt.Rows[0]["QrObjId"].ToString());
+                                                string getDocKey = dam.FireSQL("SELECT  DocKey FROM [Document].[MasterKeys] " +
+                                                                                  $"WHERE   DocId={DocumentId} AND IsActive={1} ");
+                                                if (getDocKey.IsEmpty() == true)
+                                                {
+                                                    Response_MV = new ResponseModelView
+                                                    {
+                                                        Success = false,
+                                                        Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.GetFaild],
+                                                        Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                                                    };
+                                                    return Response_MV;
+                                                }
+                                                string sourcEncryptFile = await GlobalService.GetFullPathOfDocumentInServerFolder_Encrypt(DocumentId, Environment);
+                                                string destDecryptFile = await GlobalService.GetTempDocumentLocationInServerFolder(Environment);
+                                                string getDocumentFile = SecurityService.DecryptDocument(sourcEncryptFile, destDecryptFile, getDocKey, DocumentId, UserId);
+
                                                 Response_MV = new ResponseModelView
                                                 {
                                                     Success = true,
                                                     Message = MessageService.MsgDictionary[Lang.ToLower()][MessageService.GetSuccess],
-                                                    Data = new { DocumentFilePath = await GlobalService.GetFullPathOfDocumentNameInServerFolder(Convert.ToInt32(dt.Rows[0]["QrObjId"].ToString()), Environment) }
+                                                    Data = new { DocumentFilePath = getDocumentFile }
                                                 };
                                                 return Response_MV;
                                             }

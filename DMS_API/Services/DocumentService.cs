@@ -19,10 +19,10 @@ namespace DMS_API.Services
     public class DocumentService
     {
         #region Properteis
-        private IWebHostEnvironment Environment { get; }
         private readonly DataAccessService dam;
+        private IWebHostEnvironment Environment { get; }
         private SessionService Session_S { get; set; }
-        private DataTable dt { get; set; }
+        private DataTable Dt { get; set; }
         private DocumentMetadataModelView ViewDocument_MV { get; set; }
         private KeyValueModel KeyValue_M { get; set; }
         private List<KeyValueModel> KeyValue_Mlist { get; set; }
@@ -34,15 +34,6 @@ namespace DMS_API.Services
         {
             Environment = environment;
             dam = new DataAccessService(SecurityService.ConnectionString);
-
-
-
-            //  var keyring = SecurityService.EncryptDocument("F:\\IIS\\DMS\\dm.pdf", "F:\\IIS\\DMS\\");
-            // string keyring = @"{|\|DC-0F-!R@Q}$dwSocTfGR01MPaFnvWUpLw==$fHaKKkPFIFmqdjtFkSZ32LxdMzzRDLhC9l3ddoxfEMg=";
-
-            //   var ee = SecurityService.DecryptDocument("F:\\IIS\\DMS\\dm.pdf.enc", keyring, "55");
-
-
         }
         #endregion
 
@@ -169,9 +160,8 @@ namespace DMS_API.Services
                                                 filestream.Flush();
                                                 filestream.Close();
                                             }
-
                                             // تشفير
-                                            string DocKey = SecurityService.EncryptDocument(FilePath, Path.GetDirectoryName(FilePath), DocId.ToString());
+                                            string DocKey = SecurityService.EncryptDocument(FilePath, Path.GetDirectoryName(FilePath), DocId);
                                             if (DocKey.IsEmpty() == true)
                                             {
                                                 Response_MV = new ResponseModelView
@@ -359,9 +349,8 @@ namespace DMS_API.Services
                                                 filestream.Close();
                                             }
 
-
                                             //// تشفير
-                                            //string DocKey = SecurityService.EncryptDocument(FilePath, Path.GetDirectoryName(FilePath), DocId.ToString());
+                                            //string DocKey = SecurityService.EncryptDocument(FilePath, Path.GetDirectoryName(FilePath), DocId);
                                             //if (DocKey.IsEmpty() == true)
                                             //{
                                             //    Response_MV = new ResponseModelView
@@ -382,8 +371,6 @@ namespace DMS_API.Services
                                             //                   $"SET     IsActive=0  WHERE DocId= {Document_MV.DocumentId} ";
                                             //    dam.DoQuery(update);
                                             //}
-
-
                                         }
                                     }
                                 }
@@ -522,9 +509,9 @@ namespace DMS_API.Services
                                 string getDocumentmatedateInfo = "SELECT    ObjId, ObjClsId, CDToolBoxId AS 'ToolId', TbToolName AS 'ToolType', CDID AS 'Key', KVValue AS 'Value', TbMultiSelect " +
                                                                  "FROM      [Document].V_DocumentsMetadata " +
                                                                 $"WHERE     ObjId={DocumentId}  ";
-                                dt = new DataTable();
-                                dt = dam.FireDataTable(getDocumentmatedateInfo);
-                                if (dt == null)
+                                Dt = new DataTable();
+                                Dt = dam.FireDataTable(getDocumentmatedateInfo);
+                                if (Dt == null)
                                 {
                                     Response_MV = new ResponseModelView
                                     {
@@ -536,25 +523,40 @@ namespace DMS_API.Services
                                 }
 
                                 KeyValue_Mlist = new List<KeyValueModel>();
-                                if (dt.Rows.Count > 0)
+                                if (Dt.Rows.Count > 0)
                                 {
-                                    for (int i = 0; i < dt.Rows.Count; i++)
+                                    for (int i = 0; i < Dt.Rows.Count; i++)
                                     {
                                         KeyValue_M = new KeyValueModel
                                         {
-                                            Key = Convert.ToInt32(dt.Rows[i]["Key"].ToString()),
-                                            Value = dt.Rows[i]["Value"].ToString(),
-                                            ToolId = Convert.ToInt32(dt.Rows[i]["ToolId"].ToString()),
-                                            ToolType = dt.Rows[i]["ToolType"].ToString(),
+                                            Key = Convert.ToInt32(Dt.Rows[i]["Key"].ToString()),
+                                            Value = Dt.Rows[i]["Value"].ToString(),
+                                            ToolId = Convert.ToInt32(Dt.Rows[i]["ToolId"].ToString()),
+                                            ToolType = Dt.Rows[i]["ToolType"].ToString(),
                                         };
                                         KeyValue_Mlist.Add(KeyValue_M);
                                     }
+                                    string getDocKey = dam.FireSQL("SELECT  DocKey FROM [Document].[MasterKeys] " +
+                                                                  $"WHERE   DocId={DocumentId} AND IsActive={1} ");
+                                    if (getDocKey.IsEmpty() == true)
+                                    {
+                                        Response_MV = new ResponseModelView
+                                        {
+                                            Success = false,
+                                            Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.GetFaild],
+                                            Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                                        };
+                                        return Response_MV;
+                                    }
+                                    string sourcEncryptFile = await GlobalService.GetFullPathOfDocumentInServerFolder_Encrypt(DocumentId, Environment);
+                                    string destDecryptFile = await GlobalService.GetTempDocumentLocationInServerFolder(Environment);
+                                    string getDocumentFile = SecurityService.DecryptDocument(sourcEncryptFile, destDecryptFile, getDocKey, DocumentId, userLoginID);
                                     ViewDocument_MV = new DocumentMetadataModelView
                                     {
                                         ObjId = DocumentId,
                                         ObjClsId = Convert.ToInt32(GlobalService.ClassType.Document),
                                         KeysValues = KeyValue_Mlist,
-                                        DocumentFilePath = await GlobalService.GetFullPathOfDocumentNameInServerFolder(DocumentId, Environment)
+                                        DocumentFilePath = getDocumentFile
                                     };
 
                                     Response_MV = new ResponseModelView

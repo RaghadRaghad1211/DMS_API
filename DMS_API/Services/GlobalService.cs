@@ -13,6 +13,7 @@ using System.Text;
 using System.Reflection.Metadata;
 using Microsoft.Extensions.FileProviders;
 using System.Globalization;
+using System.Diagnostics;
 
 namespace DMS_API.Services
 {
@@ -597,6 +598,23 @@ namespace DMS_API.Services
             }
         }
         /// <summary>
+        /// Get temp folder location in server where Document PDF save it.
+        /// </summary>
+        /// <param name="Environment">Environment Parameter</param>
+        /// <returns></returns>
+        public static async Task<string> GetTempDocumentLocationInServerFolder(IWebHostEnvironment Environment)
+        {
+            try
+            {
+                var path = await Task.Run(() => Path.Combine(Environment.WebRootPath, "DMSserver", $"DOCtemp_{DateTime.Now.ToString("dd-MM-yyyy")}"));
+                return path;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+        /// <summary>
         /// Create and save document in folder server.
         /// </summary>
         /// <param name="DocumentId">Document Id</param>
@@ -650,6 +668,38 @@ namespace DMS_API.Services
             }
         }
         /// <summary>
+        /// Get full path of document encrypted with name and extintion in folder server.
+        /// </summary>
+        /// <param name="DocumentId">Document Id</param>
+        /// <param name="LengthKey">Length Key encrypted</param>
+        /// <param name="Environment">Environment Parameter</param>
+        /// <returns></returns>
+        public static async Task<string> GetFullPathOfDocumentInServerFolder_Encrypt(int DocumentId, IWebHostEnvironment Environment)
+        {
+            try
+            {
+                string[] getFiles = Directory.GetFiles(
+                                              Path.Combine(
+                                             await GlobalService.GetDocumentLocationInServerFolder(DocumentId, Environment),
+                                                   DocumentId.ToString()), "*.enc");
+                foreach (var file in getFiles)
+                {
+                    string fileName = Path.GetFileNameWithoutExtension(file);
+                    fileName = fileName.Substring(0, fileName.Length - 4);
+                    if (fileName.Contains(SecurityService.EnecryptText(DocumentId.ToString())) && fileName.Length == LengthKey * 2 + SecurityService.EnecryptText(DocumentId.ToString()).Length)
+                    {
+                        return file;
+                        // return getParentFolder + "/" + Path.GetFileName(file);
+                    }
+                }
+                return null;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+        /// <summary>
         /// Get full path of QR PDF with name and extintion in folder server.
         /// </summary>
         /// <param name="QrFileName">Qr File Name</param>
@@ -660,6 +710,23 @@ namespace DMS_API.Services
             {
                 string getQR_PDF = await Task.Run(() => SecurityService.HostFilesUrl + "/" + $"QRtemp_{DateTime.Now.ToString("dd-MM-yyyy")}" + "/" + QrFileName + ".pdf");
                 return getQR_PDF;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+        /// <summary>
+        /// Get full path of document PDF with name and extintion in folder server.
+        /// </summary>
+        /// <param name="DocFileName">Document File Name</param>
+        /// <returns></returns>
+        public static  string GetFullPathOfDocunentPdfNameInServerFolder(string DocFileName)
+        {
+            try
+            {
+                string getDOC_PDF = SecurityService.HostFilesUrl + "/" + $"DOCtemp_{DateTime.Now.ToString("dd-MM-yyyy")}" + "/" + DocFileName;
+                return getDOC_PDF;
             }
             catch (Exception)
             {

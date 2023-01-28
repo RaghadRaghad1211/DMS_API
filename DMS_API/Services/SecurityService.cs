@@ -20,15 +20,15 @@ namespace DMS_API.Services
     {
         #region Properteis
         public static readonly string ConnectionString =
-        "Server=10.55.101.20,1433;Database=DMS_DB;Integrated Security=false;User ID=dms; Password=dms;"; // السيرفر
-        // "Server=HAEL\\SQL2022;Database=DMS_DB;Integrated Security=false;User ID=dms; Password=dms;"; // البيت
+         // "Server=10.55.101.20,1433;Database=DMS_DB;Integrated Security=false;User ID=dms; Password=dms;"; // السيرفر
+         "Server=HAEL\\SQL2022;Database=DMS_DB;Integrated Security=false;User ID=dms; Password=dms;"; // البيت
         // "Server=NDC-8RW6WC3\\SQLSERVER2019;Database=DMS_DB;Integrated Security=false;User ID=dms; Password=dms;"; // الدائرة
 
 
         public static readonly string HostFilesUrl =
-            "http://10.55.101.10:90/DMSserver";  // السيرفر
-                                                 //  "http://192.168.43.39:90/DMSserver"; //  البيت
-                                                 //      "http://10.92.92.239:90/DMSserver"; // الدائرة
+                                                   // "http://10.55.101.10:90/DMSserver";  // السيرفر
+                                                   "http://192.168.43.39:90/DMSserver"; //  البيت
+                                                                                        //      "http://10.92.92.239:90/DMSserver"; // الدائرة
 
         private static string PasswordSalt;
         private static string CrypticSalt;
@@ -341,27 +341,20 @@ namespace DMS_API.Services
             }
             return res.ToString();
         }
-
-
-
-
-
-
-
         /// <summary>
         /// Encrypt Document and return master key.
         /// </summary>
         /// <param name="SourcePdfFile"></param>
         /// <param name="DestFilePath"></param>
         /// <returns></returns>
-        public static string EncryptDocument(string SourcePdfFile, string DestFilePath, string DocumentId)
+        public static string EncryptDocument(string SourcePdfFile, string DestFilePath, int DocumentId)
         {
             try
             {
                 if (GetSecureKeys() == true)
                 {
                     string? MasterKey = null;
-                    string sEncFile = DestFilePath + Path.GetFileName(SourcePdfFile) + ".enc";
+                    string sEncFile = Path.Combine(DestFilePath, Path.GetFileName(SourcePdfFile) + ".enc");
                     using (Aes aes = Aes.Create())
                     {
                         aes.KeySize = 256;
@@ -370,7 +363,7 @@ namespace DMS_API.Services
                         aes.GenerateIV();
                         aes.GenerateKey();
 
-                        MasterKey = EnecryptText(DocumentId) + "$" + Convert.ToBase64String(aes.IV) + "$" + Convert.ToBase64String(aes.Key);
+                        MasterKey = EnecryptText(DocumentId.ToString()) + "$" + Convert.ToBase64String(aes.IV) + "$" + Convert.ToBase64String(aes.Key);
                         using (FileStream fsIn = new FileStream(SourcePdfFile, FileMode.Open, FileAccess.Read, FileShare.None))
                         {
                             using (FileStream fsOut = new FileStream(sEncFile, FileMode.Create, FileAccess.Write, FileShare.None))
@@ -394,9 +387,7 @@ namespace DMS_API.Services
                     {
                         File.Delete(SourcePdfFile);
                     }
-
                     return MasterKey;
-                    //  return Encrypt(MasterKey, UserPassword);
                 }
                 else
                 {
@@ -414,33 +405,32 @@ namespace DMS_API.Services
         /// <param name="SourcePdfFile"></param>
         /// <param name="DestFilePath"></param>
         /// <returns></returns>
-        public static string DecryptDocument(string SourceFile, string MasterKey, string UserId, string DocumentId)
+        public static string DecryptDocument(string SourceFile, string DestFile, string MasterKey, int DocumentId, int UserId=0)
         {
             try
             {
                 if (GetSecureKeys() == true)
                 {
-                    string newSourceFile = Path.Combine(Path.GetDirectoryName(SourceFile), $"{UserId}_" + Path.GetFileName(SourceFile));
-                    File.Copy(SourceFile, newSourceFile);
+                    string userid = UserId > 0 ? UserId.ToString() : $"Gest{DateTime.Now.ToString("HH-mm-ss-ffff")}";
 
                     byte[] IV = new byte[1];
                     byte[] Key = new byte[1];
-                    if (MasterKey.StartsWith(EnecryptText(DocumentId)))
+                    if (MasterKey.StartsWith(EnecryptText(DocumentId.ToString())))
                     {
                         string[] sParts = MasterKey.Split("$");
                         if (sParts.Count() != 3)
                         {
-                            throw new Exception("V1 Key provided is not valid does not have 3 parts");
+                            return null;
                         }
                         IV = Convert.FromBase64String(sParts[1]);
                         Key = Convert.FromBase64String(sParts[2]);
                     }
                     else
                     {
-                        throw new Exception("Key provided is not valid/ not recognised by this system");
+                        return null;
                     }
+                    string sClearFile = Path.Combine(DestFile, $"{userid}_" + Path.GetFileNameWithoutExtension(SourceFile));
 
-                    string sClearFile = newSourceFile.Substring(0, newSourceFile.Length - Path.GetExtension(SourceFile).Length);
                     if (File.Exists(sClearFile))
                     {
                         File.Delete(sClearFile);
@@ -454,7 +444,7 @@ namespace DMS_API.Services
                         aes.IV = IV;
                         aes.Key = Key;
 
-                        using (FileStream fsIn = new FileStream(newSourceFile, FileMode.Open, FileAccess.Read, FileShare.None))
+                        using (FileStream fsIn = new FileStream(SourceFile, FileMode.Open, FileAccess.Read, FileShare.None))
                         {
                             using (FileStream fsOut = new FileStream(sClearFile, FileMode.Create, FileAccess.Write, FileShare.None))
                             {
@@ -474,11 +464,8 @@ namespace DMS_API.Services
 
                         aes.Clear();
                     }
-                    if (File.Exists(newSourceFile))
-                    {
-                        File.Delete(newSourceFile);
-                    }
-                    return sClearFile;
+                    string finalFile = GlobalService.GetFullPathOfDocunentPdfNameInServerFolder($"{userid}_" + Path.GetFileNameWithoutExtension(SourceFile));
+                    return finalFile;
                 }
                 else
                 {
@@ -490,6 +477,10 @@ namespace DMS_API.Services
                 return null;
             }
         }
+
+
+
+
 
         /// <summary>
         /// Method return keyRing.
@@ -533,7 +524,7 @@ namespace DMS_API.Services
         }
 
 
-        public static string Decrypt(string SourceFile, string UserKeyRing, string UserId, string UserPassword)
+        public static string Decrypt(string SourceFile, string UserKeyRing, int UserId, string UserPassword)
         {
             try
             {
@@ -559,7 +550,7 @@ namespace DMS_API.Services
 
                         byte[] bClear = memoryStream.ToArray();
                         var MasterKey = utf8.GetString(bClear);
-                        return DecryptDocument(SourceFile, MasterKey, UserId,"");
+                        return DecryptDocument(SourceFile, "", MasterKey, UserId, 0);
                     }
 
                 }
