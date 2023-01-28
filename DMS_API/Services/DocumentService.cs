@@ -9,6 +9,8 @@ using System.Data;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Net;
+using System.Security.Cryptography;
+
 namespace DMS_API.Services
 {
     /// <summary>
@@ -329,6 +331,7 @@ namespace DMS_API.Services
                             }
                             else
                             {
+                                int DocId = (int)Convert.ToInt64(outValue.Rows[0][0].ToString());
                                 if (haveFile == true)
                                 {
                                     if (Document_MV.DocumentFile.Length > 0)
@@ -344,12 +347,12 @@ namespace DMS_API.Services
                                             };
                                             return Response_MV;
                                         }
-                                        var DocFolder = await GlobalService.CreateDocumentFolderInServerFolder(Convert.ToInt32(outValue.Rows[0][0].ToString()), Environment);
+                                        var DocFolder = await GlobalService.CreateDocumentFolderInServerFolder(DocId, Environment);
                                         if (DocFolder != null)
                                         {
-                                            string DocumentFileName = SecurityService.RoundomKey(GlobalService.LengthKey) + SecurityService.EnecryptText(outValue.Rows[0][0].ToString()) + SecurityService.RoundomKey(GlobalService.LengthKey) + Path.GetExtension(DocFileNameWithExten).Trim();
-                                            string fillPath = Path.Combine(DocFolder, DocumentFileName);
-                                            using (FileStream filestream = System.IO.File.Create(fillPath))
+                                            string DocumentFileName = SecurityService.RoundomKey(GlobalService.LengthKey) + SecurityService.EnecryptText(DocId.ToString()) + SecurityService.RoundomKey(GlobalService.LengthKey) + Path.GetExtension(DocFileNameWithExten).Trim();
+                                            string FilePath = Path.Combine(DocFolder, DocumentFileName);
+                                            using (FileStream filestream = System.IO.File.Create(FilePath))
                                             {
                                                 Document_MV.DocumentFile.CopyTo(filestream);
                                                 filestream.Flush();
@@ -357,18 +360,27 @@ namespace DMS_API.Services
                                             }
 
 
-
                                             //// تشفير
-                                            //var MasterKey = SecurityService.EncryptDocument(FilePath, Path.GetDirectoryName(FilePath));
-                                            //DataTable DTuserPass = new DataTable();
-                                            //DTuserPass = dam.FireDataTable($"SELECT UserId, UsPassword FROM [User].[GetUsersPassHaveReadOnObject]({int.Parse(outValue.Rows[0][0].ToString())})");
-                                            //if (DTuserPass.Rows.Count > 0)
+                                            //string DocKey = SecurityService.EncryptDocument(FilePath, Path.GetDirectoryName(FilePath), DocId.ToString());
+                                            //if (DocKey.IsEmpty() == true)
                                             //{
-                                            //    for (int i = 0; i < DTuserPass.Rows.Count; i++)
+                                            //    Response_MV = new ResponseModelView
                                             //    {
-                                            //        var KeyRing = SecurityService.Encrypt(MasterKey, DTuserPass.Rows[0]["UsPassword"].ToString());
-                                            //        // insert to keyring table.
-                                            //    }
+                                            //        Success = false,
+                                            //        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.DocKeyFaild],
+                                            //        Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                                            //    };
+                                            //    return Response_MV;
+                                            //}
+                                            //else
+                                            //{
+                                            //    string insert = "INSERT INTO  [Document].[MasterKeys] " +
+                                            //                   $"(DocId, DocKey,IsActive) VALUES({DocId},'{DocKey}',{1})";
+                                            //    dam.DoQuery(insert);
+
+                                            //    string update = "UPDATE  [Document].[MasterKeys] " +
+                                            //                   $"SET     IsActive=0  WHERE DocId= {Document_MV.DocumentId} ";
+                                            //    dam.DoQuery(update);
                                             //}
 
 
