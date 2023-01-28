@@ -17,12 +17,14 @@ namespace DMS_API.Controllers
         #region Properteis
         private readonly UserService User_S;
         private ResponseModelView Response_MV { get; set; }
+        private IWebHostEnvironment Environment { get; }
         #endregion
 
         #region Constructor
-        public UserController()
+        public UserController(IWebHostEnvironment environment)
         {
-            User_S = new UserService();
+            Environment = environment;
+            User_S = new UserService(Environment);
         }
         #endregion
 
@@ -248,7 +250,7 @@ namespace DMS_API.Controllers
         public async Task<IActionResult> Logout([FromHeader] RequestHeaderModelView RequestHeader)
         {
             Response_MV = await User_S.Logout(RequestHeader);
-            if (Response_MV.Success==true)
+            if (Response_MV.Success == true)
             {
                 await HttpContext.SignOutAsync();
             }
@@ -258,8 +260,8 @@ namespace DMS_API.Controllers
 
         [HttpGet]
         [Route("TestGet")]
-        public  IActionResult TestGet()
-        { 
+        public IActionResult TestGet()
+        {
             string GG = "GSCOM-NDC" + "©" + DateTime.Now.Year;
             DataAccessService dam = new DataAccessService(SecurityService.ConnectionString);
             return Ok(dam.FireSQL("SELECT COUNT(*) FROM [User].Users") + $" {GG}");

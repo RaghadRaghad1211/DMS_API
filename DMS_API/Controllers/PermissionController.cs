@@ -16,7 +16,7 @@ namespace DMS_API.Controllers
         #region Properteis
         private readonly PermissionsService Permissions_S;
         private ResponseModelView Response_MV { get; set; }
-        public IWebHostEnvironment Environment { get; }
+        private IWebHostEnvironment Environment { get; }
 
         #endregion
 
@@ -24,7 +24,7 @@ namespace DMS_API.Controllers
         public PermissionController(IWebHostEnvironment environment)
         {
             Environment = environment;
-            Permissions_S = new PermissionsService(environment);
+            Permissions_S = new PermissionsService(Environment);
         }
         #endregion
 

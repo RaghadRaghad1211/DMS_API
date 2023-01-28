@@ -12,6 +12,7 @@ namespace DMS_API.Services
     {
         #region Properteis
         private readonly DataAccessService dam;
+        private IWebHostEnvironment Environment { get; }
         private SessionService Session_S { get; set; }
         private DataTable dt { get; set; }
         private UserModel User_M { get; set; }
@@ -20,8 +21,9 @@ namespace DMS_API.Services
         #endregion
 
         #region Constructor        
-        public UserService()
+        public UserService(IWebHostEnvironment environment)
         {
+            Environment = environment;
             dam = new DataAccessService(SecurityService.ConnectionString);
         }
         #endregion
@@ -176,6 +178,7 @@ namespace DMS_API.Services
                                             else
                                             {
                                                 dam.DoQuery($"UPDATE [User].Users SET UsIsOnLine=1 WHERE UserID={Convert.ToInt32(dt.Rows[0]["UserID"].ToString())}");
+                                                var result = await GlobalService.DeleteTempsForUser(User_M.UserID, Environment);
                                                 Response_MV = new ResponseModelView
                                                 {
                                                     Success = true,

@@ -562,6 +562,29 @@ namespace DMS_API.Services
             }
         }
         /// <summary>
+        /// Delete all decrypted documents for the user login
+        /// </summary>
+        /// <param name="UserId"></param>
+        /// <param name="Environment"></param>
+        /// <returns></returns>
+        public static async Task<bool> DeleteTempsForUser(int UserId, IWebHostEnvironment Environment)
+        {
+            try
+            {
+                string pathDMSserver = Path.Combine(Environment.WebRootPath, "DMSserver", $"DOCtemp_{DateTime.Now.ToString("dd-MM-yyyy")}");
+                var userFiles = Directory.GetFiles(pathDMSserver, $"{UserId}_*", SearchOption.TopDirectoryOnly);
+                foreach (var file in userFiles)
+                {
+                    File.Delete(file);
+                }
+                return await Task.FromResult( true);
+            }
+            catch (Exception)
+            {
+                return await Task.FromResult(false);
+            }
+        }
+        /// <summary>
         /// Get folder location in server where document save it.
         /// </summary>
         /// <param name="DocumentId">Document Id</param>
@@ -689,7 +712,6 @@ namespace DMS_API.Services
                     if (fileName.Contains(SecurityService.EnecryptText(DocumentId.ToString())) && fileName.Length == LengthKey * 2 + SecurityService.EnecryptText(DocumentId.ToString()).Length)
                     {
                         return file;
-                        // return getParentFolder + "/" + Path.GetFileName(file);
                     }
                 }
                 return null;
@@ -721,7 +743,7 @@ namespace DMS_API.Services
         /// </summary>
         /// <param name="DocFileName">Document File Name</param>
         /// <returns></returns>
-        public static  string GetFullPathOfDocunentPdfNameInServerFolder(string DocFileName)
+        public static string GetFullPathOfDocunentPdfNameInServerFolder(string DocFileName)
         {
             try
             {

@@ -1,16 +1,7 @@
 using DMS_API.ModelsView;
 using DMS_API.Services;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
-using Newtonsoft.Json;
 using Serilog;
 using System.Net;
-using System.Text;
-
-
-
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,16 +30,25 @@ try
     string pathNewTempQR = Path.Combine(pathDMSserver, $"QRtemp_{DateTime.Now.ToString("dd-MM-yyyy")}");
     if (!Directory.Exists(pathNewTempQR))
     { Directory.CreateDirectory(pathNewTempQR); }
-    string pathOldTempQR = Path.Combine(pathDMSserver, $"QRtemp_{DateTime.Now.AddDays(-1).ToString("dd-MM-yyyy")}");
-    if (Directory.Exists(pathOldTempQR))
-    { Directory.Delete(pathOldTempQR, true); }
+    var direcsQR = Directory.GetDirectories(pathDMSserver, "QRtemp_*", SearchOption.TopDirectoryOnly);
+    foreach (var dire in direcsQR)
+    {
+        FileInfo info = new FileInfo(dire);
+        if (info.CreationTime <= DateTime.Now.AddDays(-1))
+            Directory.Delete(info.FullName, true);
+    }
+
 
     string pathNewTempDOC = Path.Combine(pathDMSserver, $"DOCtemp_{DateTime.Now.ToString("dd-MM-yyyy")}");
     if (!Directory.Exists(pathNewTempDOC))
     { Directory.CreateDirectory(pathNewTempDOC); }
-    string pathOldTempDOC = Path.Combine(pathDMSserver, $"DOCtemp_{DateTime.Now.AddDays(-1).ToString("dd-MM-yyyy")}");
-    if (Directory.Exists(pathOldTempDOC))
-    { Directory.Delete(pathOldTempDOC, true); }
+    var direcsDOC = Directory.GetDirectories(pathDMSserver, "DOCtemp_*", SearchOption.TopDirectoryOnly);
+    foreach (var dire in direcsDOC)
+    {
+        FileInfo info = new FileInfo(dire);
+        if (info.CreationTime <= DateTime.Now.AddDays(-1))
+            Directory.Delete(info.FullName, true);
+    }
     #endregion
     #region Cors
     builder.Services.AddCors(options =>
@@ -85,35 +85,6 @@ try
     //         IssuerSigningKey = new SymmetricSecurityKey(KeyByte)
     //     };
     // });
-    #endregion
-    #region AddSwaggerGen-Authorization
-    //builder.Services.AddSwaggerGen(option =>
-    //{
-    //    option.SwaggerDoc("v1", new OpenApiInfo { Title = "Demo DMS_API", Version = "v1" });
-    //    option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    //    {
-    //        In = ParameterLocation.Header,
-    //        Description = "Please enter a valid token",
-    //        Name = "Authorization",
-    //        Type = SecuritySchemeType.Http,
-    //        BearerFormat = "JWT",
-    //        Scheme = "Bearer"
-    //    });
-    //    option.AddSecurityRequirement(new OpenApiSecurityRequirement
-    //{
-    //    {
-    //        new OpenApiSecurityScheme
-    //        {
-    //            Reference = new OpenApiReference
-    //            {
-    //                Type=ReferenceType.SecurityScheme,
-    //                Id="Bearer"
-    //            }
-    //        },
-    //        new string[]{}
-    //    }
-    //});
-    //});
     #endregion
     builder.Services.AddControllers();
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

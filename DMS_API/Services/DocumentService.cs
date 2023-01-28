@@ -161,7 +161,7 @@ namespace DMS_API.Services
                                                 filestream.Close();
                                             }
                                             // تشفير
-                                            string DocKey = SecurityService.EncryptDocument(FilePath, Path.GetDirectoryName(FilePath), DocId);
+                                            string DocKey = SecurityService.EncryptDocument(FilePath, Path.GetDirectoryName(FilePath));
                                             if (DocKey.IsEmpty() == true)
                                             {
                                                 Response_MV = new ResponseModelView
@@ -321,7 +321,7 @@ namespace DMS_API.Services
                             }
                             else
                             {
-                                int DocId = (int)Convert.ToInt64(outValue.Rows[0][0].ToString());
+                                int DocIdNew = (int)Convert.ToInt64(outValue.Rows[0][0].ToString());
                                 if (haveFile == true)
                                 {
                                     if (Document_MV.DocumentFile.Length > 0)
@@ -337,10 +337,10 @@ namespace DMS_API.Services
                                             };
                                             return Response_MV;
                                         }
-                                        var DocFolder = await GlobalService.CreateDocumentFolderInServerFolder(DocId, Environment);
+                                        var DocFolder = await GlobalService.CreateDocumentFolderInServerFolder(DocIdNew, Environment);
                                         if (DocFolder != null)
                                         {
-                                            string DocumentFileName = SecurityService.RoundomKey(GlobalService.LengthKey) + SecurityService.EnecryptText(DocId.ToString()) + SecurityService.RoundomKey(GlobalService.LengthKey) + Path.GetExtension(DocFileNameWithExten).Trim();
+                                            string DocumentFileName = SecurityService.RoundomKey(GlobalService.LengthKey) + SecurityService.EnecryptText(DocIdNew.ToString()) + SecurityService.RoundomKey(GlobalService.LengthKey) + Path.GetExtension(DocFileNameWithExten).Trim();
                                             string FilePath = Path.Combine(DocFolder, DocumentFileName);
                                             using (FileStream filestream = System.IO.File.Create(FilePath))
                                             {
@@ -349,69 +349,55 @@ namespace DMS_API.Services
                                                 filestream.Close();
                                             }
 
-                                            //// تشفير
-                                            //string DocKey = SecurityService.EncryptDocument(FilePath, Path.GetDirectoryName(FilePath), DocId);
-                                            //if (DocKey.IsEmpty() == true)
-                                            //{
-                                            //    Response_MV = new ResponseModelView
-                                            //    {
-                                            //        Success = false,
-                                            //        Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.DocKeyFaild],
-                                            //        Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
-                                            //    };
-                                            //    return Response_MV;
-                                            //}
-                                            //else
-                                            //{
-                                            //    string insert = "INSERT INTO  [Document].[MasterKeys] " +
-                                            //                   $"(DocId, DocKey,IsActive) VALUES({DocId},'{DocKey}',{1})";
-                                            //    dam.DoQuery(insert);
+                                            // تشفير
+                                            string DocKey = SecurityService.EncryptDocument(FilePath, Path.GetDirectoryName(FilePath));
+                                            if (DocKey.IsEmpty() == true)
+                                            {
+                                                Response_MV = new ResponseModelView
+                                                {
+                                                    Success = false,
+                                                    Message = MessageService.MsgDictionary[RequestHeader.Lang.ToLower()][MessageService.DocKeyFaild],
+                                                    Data = new HttpResponseMessage(HttpStatusCode.NotFound).StatusCode
+                                                };
+                                                return Response_MV;
+                                            }
+                                            else
+                                            {
+                                                string insert = "INSERT INTO  [Document].[MasterKeys] " +
+                                                               $"(DocId, DocKey,IsActive) VALUES({DocIdNew},'{DocKey}',{1})";
+                                                dam.DoQuery(insert);
 
-                                            //    string update = "UPDATE  [Document].[MasterKeys] " +
-                                            //                   $"SET     IsActive=0  WHERE DocId= {Document_MV.DocumentId} ";
-                                            //    dam.DoQuery(update);
-                                            //}
+                                                string update = "UPDATE  [Document].[MasterKeys] " +
+                                                               $"SET     IsActive=0  WHERE DocId= {Document_MV.DocumentId} ";
+                                                dam.DoQuery(update);
+                                            }
                                         }
                                     }
                                 }
                                 else
                                 {
                                     string getOldDocFile = Path.Combine(await GlobalService.GetDocumentLocationInServerFolder(Document_MV.DocumentId, Environment), Document_MV.DocumentId.ToString(),
-                                                                        Path.GetFileName(await GlobalService.GetFullPathOfDocumentNameInServerFolder(Document_MV.DocumentId, Environment)));
+                                                                        Path.GetFileName(await GlobalService.GetFullPathOfDocumentInServerFolder_Encrypt(Document_MV.DocumentId, Environment)));
 
-
-                                    var DocFolder = await GlobalService.CreateDocumentFolderInServerFolder(Convert.ToInt32(outValue.Rows[0][0].ToString()), Environment);
+                                    var DocFolder = await GlobalService.CreateDocumentFolderInServerFolder(DocIdNew, Environment);
                                     if (DocFolder != null)
                                     {
-                                        string DocumentFileName = SecurityService.RoundomKey(GlobalService.LengthKey) + SecurityService.EnecryptText(outValue.Rows[0][0].ToString()) + SecurityService.RoundomKey(GlobalService.LengthKey) + Path.GetExtension(getOldDocFile).Trim();
+                                        string DocumentFileName = SecurityService.RoundomKey(GlobalService.LengthKey) + SecurityService.EnecryptText(DocIdNew.ToString()) + SecurityService.RoundomKey(GlobalService.LengthKey) + ".pdf" + Path.GetExtension(getOldDocFile).Trim();
+                                        //string DocumentFileName = Path.GetFileName(getOldDocFile);
                                         string getNewDocFile = Path.Combine(DocFolder, DocumentFileName);
                                         File.Copy(getOldDocFile, getNewDocFile);
 
+                                        // تشفير
+                                        string DocKey = dam.FireSQL($"SELECT DocKey FROM [Document].[MasterKeys] WHERE DocId= {Document_MV.DocumentId} ");
+                                        string insert = "INSERT INTO  [Document].[MasterKeys] " +
+                                                        "(DocId, DocKey,IsActive) " +
+                                                       $"VALUES({DocIdNew},'{DocKey}',{1})";
+                                        dam.DoQuery(insert);
 
-
-
-
-
-                                        //// تشفير
-                                        //var MasterKey = SecurityService.EncryptDocument(getNewDocFile, Path.GetDirectoryName(getNewDocFile));
-                                        //DataTable DTuserPass = new DataTable();
-                                        //DTuserPass = dam.FireDataTable($"SELECT UserId, UsPassword FROM [User].[GetUsersPassHaveReadOnObject]({int.Parse(outValue.Rows[0][0].ToString())})");
-                                        //if (DTuserPass.Rows.Count > 0)
-                                        //{
-                                        //    for (int i = 0; i < DTuserPass.Rows.Count; i++)
-                                        //    {
-                                        //        var KeyRing = SecurityService.Encrypt(MasterKey, DTuserPass.Rows[0]["UsPassword"].ToString());
-                                        //        // insert to keyring table.
-                                        //    }
-                                        //}
-
-
-
-
-
-
+                                        string update = "UPDATE  [Document].[MasterKeys] " +
+                                                       $"SET     IsActive=0  WHERE DocId= {Document_MV.DocumentId} ";
+                                        dam.DoQuery(update);
                                     }
-
                                 }
                                 Response_MV = new ResponseModelView
                                 {
@@ -550,7 +536,7 @@ namespace DMS_API.Services
                                     }
                                     string sourcEncryptFile = await GlobalService.GetFullPathOfDocumentInServerFolder_Encrypt(DocumentId, Environment);
                                     string destDecryptFile = await GlobalService.GetTempDocumentLocationInServerFolder(Environment);
-                                    string getDocumentFile = SecurityService.DecryptDocument(sourcEncryptFile, destDecryptFile, getDocKey, DocumentId, userLoginID);
+                                    string getDocumentFile = SecurityService.DecryptDocument(sourcEncryptFile, destDecryptFile, getDocKey, userLoginID);
                                     ViewDocument_MV = new DocumentMetadataModelView
                                     {
                                         ObjId = DocumentId,

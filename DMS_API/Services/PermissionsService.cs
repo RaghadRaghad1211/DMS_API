@@ -1261,7 +1261,7 @@ namespace DMS_API.Services
                                 }
                                 string sourcEncryptFile = await GlobalService.GetFullPathOfDocumentInServerFolder_Encrypt(DocumentId, Environment);
                                 string destDecryptFile = await GlobalService.GetTempDocumentLocationInServerFolder(Environment);
-                                string getDocumentFile = SecurityService.DecryptDocument(sourcEncryptFile, destDecryptFile, getDocKey, DocumentId);
+                                string getDocumentFile = SecurityService.DecryptDocument(sourcEncryptFile, destDecryptFile, getDocKey,0);
 
                                 Response_MV = new ResponseModelView
                                 {
@@ -1410,7 +1410,7 @@ namespace DMS_API.Services
                                                 }
                                                 string sourcEncryptFile = await GlobalService.GetFullPathOfDocumentInServerFolder_Encrypt(DocumentId, Environment);
                                                 string destDecryptFile = await GlobalService.GetTempDocumentLocationInServerFolder(Environment);
-                                                string getDocumentFile = SecurityService.DecryptDocument(sourcEncryptFile, destDecryptFile, getDocKey, DocumentId, UserId);
+                                                string getDocumentFile = SecurityService.DecryptDocument(sourcEncryptFile, destDecryptFile, getDocKey, UserId);
 
                                                 Response_MV = new ResponseModelView
                                                 {
